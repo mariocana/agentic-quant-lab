@@ -16,3 +16,8 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+### Materiale corso MultiCharts: binari pesanti (video, zip, installer)
+mc/**/*.mp4
+mc/**/*.zip
+mc/**/*.exe
+mc/*.zip
