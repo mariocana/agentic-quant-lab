@@ -1,0 +1,179 @@
+{ =====================================================================
+  ORB_Breakout  -  Opening Range Breakout (base model)  -  PowerLanguage
+  ---------------------------------------------------------------------
+  Porting di mql5/orb/OrbBreakout_EA.mq5, allineato al "Fabio Valentini
+  Model" validato nel corso (NQ 5 min, 2021-2026: avg trade $183 netto,
+  WR 58%, PF 1.28, 823 trade).
+
+  REGOLE (long; short opzionale speculare):
+    1) RANGE  : high/low delle barre fra ORB_Start e ORB_Start+ORB_Dur_Min.
+    2) ENTRY  : la PRIMA barra che CHIUDE oltre il range -> "this bar on close".
+    3) STOP   : estremo OPPOSTO del range (long: SL = range low).
+    4) TARGET : TP_RR x R, con R = |entry - stop| (default 1R).
+    5) TIME   : flat alla barra che attraversa Trade_End se SL/TP non colpiti.
+    Un trade al giorno. Filtro delta opzionale (UpTicks - DownTicks >= soglia).
+
+  SIZING: SizingMode 0 = contratti fissi ; 1 = rischio $ fisso per trade
+          (contratti = Risk_USD / (R x BigPointValue), tetto Max_Contracts).
+          NON composto: e' la modalita' "vol targeting" che confrontiamo
+          con i lotti fissi sul return/DD.
+
+  CHART: NQ (continuous @NQ) 5 min, timezone Exchange = Chicago (CT).
+         Tutti gli orari sono in ORA DEL CHART (HHMM). Default: range
+         08:30-09:00 CT (= 09:30-10:00 NY), flat 14:00 CT (= 15:00 NY).
+         Barre timbrate a FINE periodo: la barra "0835" copre 08:30-08:35.
+         IOG off. Max bars back >= 100.
+  ===================================================================== }
+
+Inputs:
+    ORB_Start_H(8),            { ora inizio range, ora del chart }
+    ORB_Start_M(30),
+    ORB_Dur_Min(30),           { durata del range in minuti }
+    Trade_End_H(14),           { flat + fine ingressi }
+    Trade_End_M(0),
+    UseEntryCutoff(false),     { blocca nuovi ingressi da Cutoff in poi }
+    Cutoff_H(12),
+    Cutoff_M(0),
+    TP_RR(1.0),                { take profit in multipli di R }
+    AllowLong(true),
+    AllowShort(false),         { il video: aggiunge poco }
+    SizingMode(0),             { 0 = contratti fissi, 1 = rischio $ fisso }
+    Num_Contracts(1),
+    Risk_USD(500),             { rischio $ per trade in SizingMode 1 }
+    Max_Contracts(20),         { tetto di sicurezza }
+    UseDeltaFilter(false),     { richiede UpTicks/DownTicks nel feed }
+    DeltaThreshold(200),
+    ShowLog(false);
+
+Variables:
+    ORB_Start_Time(0), ORB_End_Time(0), Trade_End_Time(0), Cutoff_Time(0),
+    Cur_Date(0), Bar_Time(0), Prev_Bar_Time(0),
+    In_ORB(false), ORB_Inited(false), ORB_Done(false),
+    ORB_High(0), ORB_Low(0),
+    Traded_Today(false), In_Window(false),
+    Was_InPos(false), Pos_SL(0), Pos_TP(0),
+    EP(0), R(0), BarDelta(0), DeltaOK(true), Qty(0);
+
+{ ----- helper: HHMM -> minuti dal giorno e viceversa ----- }
+Once begin
+    ORB_Start_Time = ORB_Start_H * 100 + ORB_Start_M;
+    Value1 = ORB_Start_H * 60 + ORB_Start_M + ORB_Dur_Min;    { minuti }
+    Value1 = Mod(Value1, 1440);
+    ORB_End_Time   = IntPortion(Value1 / 60) * 100 + Mod(Value1, 60);
+    Trade_End_Time = Trade_End_H * 100 + Trade_End_M;
+    Cutoff_Time    = Cutoff_H * 100 + Cutoff_M;
+end;
+
+if CurrentBar < 2 then begin
+    Cur_Date = Date;
+    Prev_Bar_Time = Time;
+end;
+
+if CurrentBar >= 2 then begin
+
+    Bar_Time = Time;
+
+    { ===== RESET GIORNALIERO ===== }
+    if Date <> Cur_Date then begin
+        Cur_Date = Date;
+        ORB_Inited = false; ORB_Done = false;
+        ORB_High = 0; ORB_Low = 0;
+        Traded_Today = false;
+        Pos_SL = 0; Pos_TP = 0;
+    end;
+
+    { ===== COSTRUZIONE DEL RANGE (barre chiuse dentro la finestra) ===== }
+    In_ORB = Bar_Time > ORB_Start_Time and Bar_Time <= ORB_End_Time;
+    if In_ORB then begin
+        if ORB_Inited = false then begin
+            ORB_High = High; ORB_Low = Low; ORB_Inited = true;
+        end
+        else begin
+            if High > ORB_High then ORB_High = High;
+            if Low  < ORB_Low  then ORB_Low  = Low;
+        end;
+    end;
+    if ORB_Inited and ORB_Done = false and Bar_Time > ORB_End_Time then begin
+        ORB_Done = true;
+        if ShowLog then Print("ORB ", Date:8:0, " High=", ORB_High:8:2, " Low=", ORB_Low:8:2);
+    end;
+
+    { ===== POSIZIONE -> FLAT: pulisci i livelli ===== }
+    if MarketPosition <> 0 then Was_InPos = true;
+    if MarketPosition = 0 and Was_InPos then begin
+        Was_InPos = false; Pos_SL = 0; Pos_TP = 0;
+    end;
+
+    { ===== TIME EXIT: prima barra che attraversa Trade_End ===== }
+    if Bar_Time >= Trade_End_Time and Prev_Bar_Time < Trade_End_Time then begin
+        if MarketPosition = 1  then Sell       ("EOD-L") this bar on close;
+        if MarketPosition = -1 then BuyToCover ("EOD-S") this bar on close;
+    end;
+
+    { ===== SL / TP re-emessi ogni barra finche' in posizione ===== }
+    if MarketPosition = 1 and Pos_SL <> 0 and Pos_TP <> 0 then begin
+        Sell ("L-TP") next bar at Pos_TP limit;
+        Sell ("L-SL") next bar at Pos_SL stop;
+    end;
+    if MarketPosition = -1 and Pos_SL <> 0 and Pos_TP <> 0 then begin
+        BuyToCover ("S-TP") next bar at Pos_TP limit;
+        BuyToCover ("S-SL") next bar at Pos_SL stop;
+    end;
+
+    { ===== FINESTRA D'INGRESSO ===== }
+    In_Window = ORB_Done and Bar_Time > ORB_End_Time and Bar_Time < Trade_End_Time;
+    if UseEntryCutoff and Bar_Time >= Cutoff_Time then In_Window = false;
+
+    { ===== FILTRO DELTA (opzionale) ===== }
+    BarDelta = UpTicks - DownTicks;
+    DeltaOK = true;
+
+    { ===== ENTRY ===== }
+    if In_Window and Traded_Today = false and MarketPosition = 0
+       and ORB_High > ORB_Low then begin
+
+        { ----- LONG ----- }
+        if AllowLong and Close > ORB_High then begin
+            EP = Close;
+            R  = EP - ORB_Low;
+            if UseDeltaFilter then DeltaOK = BarDelta >= DeltaThreshold;
+            if R > 0 and DeltaOK then begin
+                Qty = Num_Contracts;
+                if SizingMode = 1 and BigPointValue > 0 then
+                    Qty = IntPortion(Risk_USD / (R * BigPointValue));
+                Qty = MaxList(1, MinList(Qty, Max_Contracts));
+                Pos_SL = ORB_Low;
+                Pos_TP = EP + TP_RR * R;
+                Buy ("ORB-L") Qty contracts this bar on close;
+                { bracket gia' attivo sulla prima barra dopo l'ingresso }
+                Sell ("L-TP-E") next bar at Pos_TP limit;
+                Sell ("L-SL-E") next bar at Pos_SL stop;
+                Traded_Today = true;
+                if ShowLog then Print("LONG ", Date:8:0, " ", Bar_Time:4:0,
+                    " EP=", EP:8:2, " SL=", Pos_SL:8:2, " TP=", Pos_TP:8:2, " Qty=", Qty:3:0);
+            end;
+        end
+        { ----- SHORT ----- }
+        else if AllowShort and Close < ORB_Low then begin
+            EP = Close;
+            R  = ORB_High - EP;
+            if UseDeltaFilter then DeltaOK = BarDelta <= -DeltaThreshold;
+            if R > 0 and DeltaOK then begin
+                Qty = Num_Contracts;
+                if SizingMode = 1 and BigPointValue > 0 then
+                    Qty = IntPortion(Risk_USD / (R * BigPointValue));
+                Qty = MaxList(1, MinList(Qty, Max_Contracts));
+                Pos_SL = ORB_High;
+                Pos_TP = EP - TP_RR * R;
+                SellShort ("ORB-S") Qty contracts this bar on close;
+                BuyToCover ("S-TP-E") next bar at Pos_TP limit;
+                BuyToCover ("S-SL-E") next bar at Pos_SL stop;
+                Traded_Today = true;
+                if ShowLog then Print("SHORT ", Date:8:0, " ", Bar_Time:4:0,
+                    " EP=", EP:8:2, " SL=", Pos_SL:8:2, " TP=", Pos_TP:8:2, " Qty=", Qty:3:0);
+            end;
+        end;
+    end;
+
+    Prev_Bar_Time = Bar_Time;
+end;
