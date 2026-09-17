@@ -66,8 +66,10 @@ questo c'è il nuovo input `MaxRisk_USD` (salta il giorno se 1 contratto rischia
 X $, es. 4000). È una regola di rischio, non un filtro di edge, ma va comunque
 verificata con lo split‑sample.
 
-Prossimo run: `SizingMode 1, Risk_USD 4000, Max_Contracts 5` e, separatamente,
-`SizingMode 0, MaxRisk_USD 4000`. Confronto su net/DD.
+Per l'obiettivo prop il sizing in $ non si testa qui: si sviluppa a **1 contratto NQ**
+e la size in micro la decide il simulatore prop (`mc/docs/pipeline_prop.md`, Stage 7).
+`MaxRisk_USD` resta un candidato da validare allo Stage 4 (in termini di micro: 1 MNQ
+che rischia > $500 = range > 250 pt).
 
 **Caso noto — half‑day**: nelle vigilie di festa (CME chiude 12:15 CT) la barra delle
 14:00 non esiste e il trade resta aperto fino alla riapertura Globex (domenica 17:00),

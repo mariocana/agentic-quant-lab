@@ -1,5 +1,7 @@
 # Protocollo di test — versione MultiCharts (Fase 2)
 
+> Versione operativa con i gate: **`pipeline_prop.md`**. Questo file resta come riferimento generale.
+
 Sostituisce `mql5/docs/fase2_testing.md` per le strategie portate su MultiCharts.
 Fonte: Institutional Protocol (vedi `institutional_protocol_digest.md`) + le nostre
 regole già in uso (lotti fissi, split‑sample per i filtri, niente compounding).
