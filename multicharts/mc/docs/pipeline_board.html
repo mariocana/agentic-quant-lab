@@ -1,0 +1,188 @@
+<title>Pipeline Prop</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  --bg:#F4F6F8; --surface:#FFFFFF; --ink:#1A222C; --muted:#5F6B77; --line:#D8DEE5; --line-soft:#E9EDF1;
+  --accent:#0F6E7A; --accent-ink:#0A4F58;
+  --pass:#1F8A4C; --pass-bg:#DDF3E5; --active:#B86E00; --active-bg:#FBEBD0;
+  --blocked:#B3261E; --blocked-bg:#F9DEDC; --pending:#8A95A0; --pending-bg:#EEF1F4; --na:#B8C0C8; --na-bg:#F2F4F6;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:#0F1419; --surface:#171D24; --ink:#E7EBEF; --muted:#9AA5B0; --line:#2B343E; --line-soft:#222A33;
+    --accent:#4FB3BF; --accent-ink:#8ED3DB;
+    --pass:#5ED28A; --pass-bg:#173B27; --active:#F2B45A; --active-bg:#3E2C10;
+    --blocked:#F28B82; --blocked-bg:#4A1F1B; --pending:#7F8A95; --pending-bg:#1F262E; --na:#5C6670; --na-bg:#1A2027;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:#0F1419; --surface:#171D24; --ink:#E7EBEF; --muted:#9AA5B0; --line:#2B343E; --line-soft:#222A33;
+  --accent:#4FB3BF; --accent-ink:#8ED3DB;
+  --pass:#5ED28A; --pass-bg:#173B27; --active:#F2B45A; --active-bg:#3E2C10;
+  --blocked:#F28B82; --blocked-bg:#4A1F1B; --pending:#7F8A95; --pending-bg:#1F262E; --na:#5C6670; --na-bg:#1A2027;
+}
+body { background:var(--bg); color:var(--ink); font-family:var(--body); font-size:14px; line-height:1.5;
+       padding-inline:clamp(16px,3vw,40px); padding-block:24px 48px; }
+.wrap { max-width:1180px; margin:0 auto; display:grid; gap:24px; }
+h1,h2,h3 { font-family:var(--display); text-wrap:balance; margin:0; }
+h1 { font-size:2rem; font-weight:700; letter-spacing:-.01em; }
+h2 { font-size:1.15rem; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+.mono { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.muted { color:var(--muted); }
+header { display:grid; gap:8px; }
+header .top { display:flex; flex-wrap:wrap; align-items:baseline; gap:12px 20px; }
+header .updated { color:var(--muted); font-size:.85rem; }
+header .goal { font-size:1.05rem; max-width:65ch; }
+header .facts { display:flex; flex-wrap:wrap; gap:8px 24px; font-size:.85rem; color:var(--muted); }
+header .facts b { color:var(--ink); font-weight:500; }
+.status { display:flex; flex-wrap:wrap; gap:8px 20px; font-size:.9rem; padding:10px 14px; background:var(--surface);
+           border:1px solid var(--line); border-radius:6px; }
+.status span b { font-family:var(--mono); font-weight:500; }
+.board { background:var(--surface); border:1px solid var(--line); border-radius:6px; overflow-x:auto; }
+table { border-collapse:collapse; width:100%; min-width:760px; }
+thead th { font-family:var(--display); font-weight:600; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em;
+            color:var(--muted); padding:12px 6px 8px; text-align:center; border-bottom:1px solid var(--line); white-space:nowrap; }
+thead th:first-child { text-align:left; padding-left:16px; }
+thead th .stnum { display:block; font-family:var(--mono); font-size:.95rem; color:var(--ink); }
+thead th .stname { display:block; font-size:.7rem; }
+tr.strat th { text-align:left; padding:14px 12px 4px 16px; vertical-align:top; font-weight:400; }
+tr.strat td { text-align:center; padding:14px 6px 4px; vertical-align:middle; }
+tr.strat .name { font-family:var(--display); font-weight:600; font-size:1.05rem; }
+tr.strat .meta { color:var(--muted); font-size:.8rem; }
+tr.note td { padding:0 16px 14px 16px; border-bottom:1px solid var(--line-soft); }
+tr.note .notetext { color:var(--muted); font-size:.85rem; max-width:80ch; }
+tr.note .metrics { font-size:.8rem; margin-top:4px; }
+tbody tr:last-child td { border-bottom:0; }
+.chip { display:inline-grid; place-items:center; width:30px; height:30px; border-radius:4px; font-weight:600;
+         border:1px solid transparent; }
+.chip.pass    { background:var(--pass-bg); color:var(--pass); border-color:var(--pass); }
+.chip.active  { background:var(--active-bg); color:var(--active); border-color:var(--active); }
+.chip.blocked { background:var(--blocked-bg); color:var(--blocked); border-color:var(--blocked); }
+.chip.fail    { background:var(--blocked-bg); color:var(--blocked); border-color:var(--blocked); }
+.chip.pending { background:var(--pending-bg); color:var(--pending); }
+.chip.na      { background:var(--na-bg); color:var(--na); }
+.where { white-space:nowrap; padding-right:16px !important; }
+.pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:.78rem; font-weight:500; }
+.pill.pass { background:var(--pass-bg); color:var(--pass); }
+.pill.active { background:var(--active-bg); color:var(--active); }
+.pill.blocked, .pill.fail { background:var(--blocked-bg); color:var(--blocked); }
+.pill.pending { background:var(--pending-bg); color:var(--pending); }
+.legend { display:flex; flex-wrap:wrap; gap:6px 18px; font-size:.8rem; color:var(--muted); padding:0 4px; }
+.legend .chip { width:20px; height:20px; font-size:.75rem; margin-right:6px; vertical-align:middle; }
+.cols { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:24px; }
+@media (max-width:820px) { .cols { grid-template-columns:1fr; } }
+section.card { background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px 18px; display:grid; gap:12px; align-content:start; }
+ol.gates, ul.plain { list-style:none; margin:0; padding:0; display:grid; gap:10px; }
+ol.gates li { display:grid; grid-template-columns:28px 1fr; gap:10px; align-items:start; }
+ol.gates .gnum { display:inline-grid; place-items:center; width:26px; height:26px; border-radius:4px; background:var(--pending-bg); color:var(--ink); font-size:.85rem; }
+ol.gates b { font-family:var(--display); font-weight:600; }
+ol.gates .gate { color:var(--muted); font-size:.85rem; }
+ul.plain li { padding-left:14px; position:relative; }
+ul.plain li::before { content:""; position:absolute; left:0; top:.6em; width:6px; height:6px; border-radius:50%; background:var(--blocked); }
+ul.log li { display:grid; grid-template-columns:88px 1fr; gap:10px; font-size:.9rem; }
+ul.log .date { color:var(--muted); font-size:.8rem; padding-top:2px; }
+a { color:var(--accent); }
+footer { color:var(--muted); font-size:.8rem; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="top">
+      <h1>Pipeline Prop</h1>
+      <span class="updated">aggiornata il <span class="mono">2026-09-17</span></span>
+    </div>
+    <p class="goal">Strategie per passare l&#x27;eval prop e incassare i payout. Nient&#x27;altro.</p>
+    <div class="facts">
+      <span><b>Profilo</b> WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore</span>
+      <span><b>Prop di riferimento</b> Apex 50k EOD trailing · target $3.000 · max DD $2.500 · daily loss $1.000 · 21 giorni</span>
+    </div>
+  </header>
+
+  <div class="status">
+    <span>strategie <b>5</b></span>
+    <span>avviate <b>4</b></span>
+    <span>bloccate <b>1</b></span>
+    <span>stage più avanzato superato <b>1</b> / 9</span>
+  </div>
+
+  <div class="board">
+    <table>
+      <thead><tr><th scope="col">Strategia</th><th scope="col"><span class="stnum">0</span><span class="stname">Spec</span></th><th scope="col"><span class="stnum">1</span><span class="stname">Mecc.</span></th><th scope="col"><span class="stnum">2</span><span class="stname">IS</span></th><th scope="col"><span class="stnum">3</span><span class="stname">MC</span></th><th scope="col"><span class="stnum">4</span><span class="stname">Migl.</span></th><th scope="col"><span class="stnum">5</span><span class="stname">OOS</span></th><th scope="col"><span class="stnum">6</span><span class="stname">Boot.</span></th><th scope="col"><span class="stnum">7</span><span class="stname">Prop</span></th><th scope="col"><span class="stnum">8</span><span class="stname">Basket</span></th><th scope="col"><span class="stnum">9</span><span class="stname">Deploy</span></th><th scope="col">Dove sta</th></tr></thead>
+      <tbody>
+        <tr class="strat">
+          <th scope="row">
+            <div class="name">ORB Breakout</div>
+            <div class="meta">trend / breakout · <span class="mono">NQ 5m</span></div>
+          </th>
+          <td><span class="chip pass" title="Spec: passato"><span class="sym">✓</span></span></td><td><span class="chip pass" title="Meccanica: passato"><span class="sym">✓</span></span></td><td><span class="chip blocked" title="Backtest IS: bloccato"><span class="sym">■</span></span></td><td><span class="chip pending" title="Monte Carlo: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Migliorie: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="OOS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Bootstrap: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Prop sim: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Basket: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Deploy: da fare"><span class="sym">·</span></span></td>
+          <td class="where"><span class="pill blocked">Stage 2 · Backtest IS</span></td>
+        </tr>
+        <tr class="note"><td colspan="12"><div class="notetext">Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.</div><div class="metrics mono">61 trade · WR 47.5% · avg −$169 · DD $40.3k <span class="muted">(4 mesi, 0 costi — non valido)</span></div></td></tr>
+        <tr class="strat">
+          <th scope="row">
+            <div class="name">VaultBreak</div>
+            <div class="meta">trend / vol breakout · <span class="mono">NQ 5m RTH</span></div>
+          </th>
+          <td><span class="chip pass" title="Spec: passato"><span class="sym">✓</span></span></td><td><span class="chip active" title="Meccanica: in corso"><span class="sym">●</span></span></td><td><span class="chip pending" title="Backtest IS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Monte Carlo: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Migliorie: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="OOS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Bootstrap: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Prop sim: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Basket: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Deploy: da fare"><span class="sym">·</span></span></td>
+          <td class="where"><span class="pill active">Stage 1 · Meccanica</span></td>
+        </tr>
+        <tr class="note"><td colspan="12"><div class="notetext">Spec scritta. Codice: template del corso (rolling ATR 252), orari da spostare ET→CT.</div></td></tr>
+        <tr class="strat">
+          <th scope="row">
+            <div class="name">VWAP Pullback</div>
+            <div class="meta">mean reverting · <span class="mono">NQ 1m</span></div>
+          </th>
+          <td><span class="chip pass" title="Spec: passato"><span class="sym">✓</span></span></td><td><span class="chip pending" title="Meccanica: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Backtest IS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Monte Carlo: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Migliorie: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="OOS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Bootstrap: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Prop sim: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Basket: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Deploy: da fare"><span class="sym">·</span></span></td>
+          <td class="where"><span class="pill pass">Stage 0 · Spec</span></td>
+        </tr>
+        <tr class="note"><td colspan="12"><div class="notetext">Spec scritta. EOD flat obbligatorio; variante ADX da ricostruire (non verificata).</div></td></tr>
+        <tr class="strat">
+          <th scope="row">
+            <div class="name">Gold Asian Range</div>
+            <div class="meta">trend / altro asset · <span class="mono">GC 15m</span></div>
+          </th>
+          <td><span class="chip pass" title="Spec: passato"><span class="sym">✓</span></span></td><td><span class="chip pending" title="Meccanica: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Backtest IS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Monte Carlo: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Migliorie: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="OOS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Bootstrap: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Prop sim: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Basket: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Deploy: da fare"><span class="sym">·</span></span></td>
+          <td class="where"><span class="pill pass">Stage 0 · Spec</span></td>
+        </tr>
+        <tr class="note"><td colspan="12"><div class="notetext">Spec scritta. Variante A (no TP, WR 34%) solo per il basket funded; variante B (TP 1R) per l&#x27;eval.</div></td></tr>
+        <tr class="strat">
+          <th scope="row">
+            <div class="name">Evento macro</div>
+            <div class="meta">event driven · <span class="mono">—</span></div>
+          </th>
+          <td><span class="chip pending" title="Spec: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Meccanica: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Backtest IS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Monte Carlo: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Migliorie: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="OOS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Bootstrap: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Prop sim: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Basket: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Deploy: da fare"><span class="sym">·</span></span></td>
+          <td class="where"><span class="pill pending">non iniziata</span></td>
+        </tr>
+        <tr class="note"><td colspan="12"><div class="notetext">Dopo i primi tre.</div></td></tr></tbody>
+    </table>
+  </div>
+  <div class="legend">
+    <span><span class="chip pass">✓</span>gate passato</span>
+    <span><span class="chip active">●</span>in corso</span>
+    <span><span class="chip blocked">■</span>bloccato (manca qualcosa)</span>
+    <span><span class="chip fail">✕</span>fallito → cimitero</span>
+    <span><span class="chip pending">·</span>da fare</span>
+  </div>
+
+  <div class="cols">
+    <section class="card">
+      <h2>Gate per stage</h2>
+      <ol class="gates"><li><span class="gnum mono">0</span><div><b>Spec</b><div class="gate">Ipotesi + perché, famiglia, entry/exit, date IS/OOS e kill scritti in SPEC.md</div></div></li><li><span class="gnum mono">1</span><div><b>Meccanica</b><div class="gate">1 contratto, 100 gg: trade dove previsto, 1/giorno, flat, P&amp;L ×10 con 10 contratti</div></div></li><li><span class="gnum mono">2</span><div><b>Backtest IS</b><div class="gate">n ≥ 200 · avg trade ≥ $70 (NQ) · PF ≥ 1.2 · WR ≥ 55% · R:R 0.5–1 · DD÷10 ≤ $1.250 · peggior trade÷10 ≤ $500 · nessun anno &gt; 50%</div></div></li><li><span class="gnum mono">3</span><div><b>Monte Carlo</b><div class="gate">Reshuffle 1000: mediana &gt; 0 · &lt; 10% sim negative · DD 95°÷10 ≤ $2.500</div></div></li><li><span class="gnum mono">4</span><div><b>Migliorie</b><div class="gate">Solo IS, split‑sample, ≤ 3 input, cluster; ripetere gate 2 e 3</div></div></li><li><span class="gnum mono">5</span><div><b>OOS</b><div class="gate">Una volta: avg trade/WR/PF stesso ordine · WR ≥ 50% · DD ≤ 1.5× IS · fail = cimitero</div></div></li><li><span class="gnum mono">6</span><div><b>Bootstrap</b><div class="gate">EV &gt; 0 in $ e R · P(EV≤0) &lt; 5% IS, &lt; 10% OOS · CI sovrapposti · percentili DD salvati</div></div></li><li><span class="gnum mono">7</span><div><b>Prop sim</b><div class="gate">Eval: pass ≥ 40% al 1°, ≥ 85% in 4, ≤ 15 gg · Funded: qualification ≥ 50%, payout &gt; 4× fee</div></div></li><li><span class="gnum mono">8</span><div><b>Basket</b><div class="gate">corr ≤ 0.2 · giorni attivi ≥ 90% · basket &gt; migliore singola · funded ≥ 70% · cap 2 mini</div></div></li><li><span class="gnum mono">9</span><div><b>Deploy</b><div class="gate">Paper ≥ 1 sett. · eval con budget dichiarato · VPS · 75° riduci / 95° stop</div></div></li></ol>
+    </section>
+    <div style="display:grid;gap:24px;align-content:start">
+      <section class="card">
+        <h2>Blocchi attuali</h2>
+        <ul class="plain"><li>Storico: i dati free coprono 4 mesi. Da verificare quanto indietro va il feed dxFeed CME Market Depth (chart @NQ 5m da 2020‑01‑01); altrimenti TradeStation ($500 deposito → 6 mesi di dati) o IQFeed.</li><li>Licenza MultiCharts: trial 30 giorni. Opzioni: licenza, oppure broker che la include (AMP, Optimus, Ironbeam).</li></ul>
+      </section>
+      <section class="card">
+        <h2>Diario</h2>
+        <ul class="plain log"><li><span class="mono date">2026-09-17</span><span>Pipeline con gate definita. Spec Stage 0 per ORB, VaultBreak, VWAP Pullback, Gold Asian Range. Flag 0/1 nell&#x27;ORB per l&#x27;ottimizzatore; run SizingMode 1 identico al fisso (Risk_USD troppo basso per NQ) — sizing in $ rimandato al simulatore prop.</span></li><li><span class="mono date">2026-09-17</span><span>ORB Stage 1 passato su @ES e @NQ: 1 trade/giorno, EOD 14:00, SL/TP = range, fuso Chicago confermato dalle riaperture domenicali 17:00. Caso noto: half‑day → gap exit.</span></li><li><span class="mono date">2026-09-16</span><span>Corso Institutional Protocol letto per intero (PDF, codice, 18 video trascritti). Digest + protocollo MC in mc/docs. Porting ORB in PowerLanguage.</span></li><li><span class="mono date">2026-09-14</span><span>Decisa la migrazione da MetaTrader 5 a MultiCharts. Journal discrezionale creato (journal/).</span></li></ul>
+      </section>
+    </div>
+  </div>
+
+  <footer>Fonte: <span class="mono">mc/docs/pipeline_status.json</span> nel repo · regole complete in <span class="mono">mc/docs/pipeline_prop.md</span></footer>
+</div>

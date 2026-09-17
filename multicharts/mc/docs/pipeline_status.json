@@ -1,0 +1,56 @@
+{
+  "updated": "2026-09-17",
+  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
+  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
+  "prop": "Apex 50k EOD trailing · target $3.000 · max DD $2.500 · daily loss $1.000 · 21 giorni",
+  "stages": [
+    {"id": 0, "name": "Spec",        "short": "Spec",     "gate": "Ipotesi + perché, famiglia, entry/exit, date IS/OOS e kill scritti in SPEC.md"},
+    {"id": 1, "name": "Meccanica",   "short": "Mecc.",    "gate": "1 contratto, 100 gg: trade dove previsto, 1/giorno, flat, P&L ×10 con 10 contratti"},
+    {"id": 2, "name": "Backtest IS", "short": "IS",       "gate": "n ≥ 200 · avg trade ≥ $70 (NQ) · PF ≥ 1.2 · WR ≥ 55% · R:R 0.5–1 · DD÷10 ≤ $1.250 · peggior trade÷10 ≤ $500 · nessun anno > 50%"},
+    {"id": 3, "name": "Monte Carlo", "short": "MC",       "gate": "Reshuffle 1000: mediana > 0 · < 10% sim negative · DD 95°÷10 ≤ $2.500"},
+    {"id": 4, "name": "Migliorie",   "short": "Migl.",    "gate": "Solo IS, split‑sample, ≤ 3 input, cluster; ripetere gate 2 e 3"},
+    {"id": 5, "name": "OOS",         "short": "OOS",      "gate": "Una volta: avg trade/WR/PF stesso ordine · WR ≥ 50% · DD ≤ 1.5× IS · fail = cimitero"},
+    {"id": 6, "name": "Bootstrap",   "short": "Boot.",    "gate": "EV > 0 in $ e R · P(EV≤0) < 5% IS, < 10% OOS · CI sovrapposti · percentili DD salvati"},
+    {"id": 7, "name": "Prop sim",    "short": "Prop",     "gate": "Eval: pass ≥ 40% al 1°, ≥ 85% in 4, ≤ 15 gg · Funded: qualification ≥ 50%, payout > 4× fee"},
+    {"id": 8, "name": "Basket",      "short": "Basket",   "gate": "corr ≤ 0.2 · giorni attivi ≥ 90% · basket > migliore singola · funded ≥ 70% · cap 2 mini"},
+    {"id": 9, "name": "Deploy",      "short": "Deploy",   "gate": "Paper ≥ 1 sett. · eval con budget dichiarato · VPS · 75° riduci / 95° stop"}
+  ],
+  "strategies": [
+    {
+      "name": "ORB Breakout", "family": "trend / breakout", "instrument": "NQ 5m", "path": "mc/strategies/ORB_Breakout",
+      "stages": {"0": "pass", "1": "pass", "2": "blocked"},
+      "note": "Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.",
+      "metrics": {"trade": 61, "wr": "47.5%", "avg": "−$169", "dd": "$40.3k", "period": "4 mesi, 0 costi — non valido"}
+    },
+    {
+      "name": "VaultBreak", "family": "trend / vol breakout", "instrument": "NQ 5m RTH", "path": "mc/strategies/VaultBreak",
+      "stages": {"0": "pass", "1": "active"},
+      "note": "Spec scritta. Codice: template del corso (rolling ATR 252), orari da spostare ET→CT."
+    },
+    {
+      "name": "VWAP Pullback", "family": "mean reverting", "instrument": "NQ 1m", "path": "mc/strategies/VWAP_Pullback",
+      "stages": {"0": "pass", "1": "pending"},
+      "note": "Spec scritta. EOD flat obbligatorio; variante ADX da ricostruire (non verificata)."
+    },
+    {
+      "name": "Gold Asian Range", "family": "trend / altro asset", "instrument": "GC 15m", "path": "mc/strategies/GoldAsianRange",
+      "stages": {"0": "pass", "1": "pending"},
+      "note": "Spec scritta. Variante A (no TP, WR 34%) solo per il basket funded; variante B (TP 1R) per l'eval."
+    },
+    {
+      "name": "Evento macro", "family": "event driven", "instrument": "—", "path": "",
+      "stages": {},
+      "note": "Dopo i primi tre."
+    }
+  ],
+  "blockers": [
+    "Storico: i dati free coprono 4 mesi. Da verificare quanto indietro va il feed dxFeed CME Market Depth (chart @NQ 5m da 2020‑01‑01); altrimenti TradeStation ($500 deposito → 6 mesi di dati) o IQFeed.",
+    "Licenza MultiCharts: trial 30 giorni. Opzioni: licenza, oppure broker che la include (AMP, Optimus, Ironbeam)."
+  ],
+  "log": [
+    {"date": "2026-09-17", "text": "Pipeline con gate definita. Spec Stage 0 per ORB, VaultBreak, VWAP Pullback, Gold Asian Range. Flag 0/1 nell'ORB per l'ottimizzatore; run SizingMode 1 identico al fisso (Risk_USD troppo basso per NQ) — sizing in $ rimandato al simulatore prop."},
+    {"date": "2026-09-17", "text": "ORB Stage 1 passato su @ES e @NQ: 1 trade/giorno, EOD 14:00, SL/TP = range, fuso Chicago confermato dalle riaperture domenicali 17:00. Caso noto: half‑day → gap exit."},
+    {"date": "2026-09-16", "text": "Corso Institutional Protocol letto per intero (PDF, codice, 18 video trascritti). Digest + protocollo MC in mc/docs. Porting ORB in PowerLanguage."},
+    {"date": "2026-09-14", "text": "Decisa la migrazione da MetaTrader 5 a MultiCharts. Journal discrezionale creato (journal/)."}
+  ]
+}
