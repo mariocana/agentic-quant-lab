@@ -12,6 +12,10 @@
     4) TARGET : TP_RR x R, con R = |entry - stop| (default 1R).
     5) TIME   : flat alla barra che attraversa Trade_End se SL/TP non colpiti.
     Un trade al giorno. Filtro delta opzionale (UpTicks - DownTicks >= soglia).
+    MaxRisk_USD: salta il giorno se il range e' cosi' largo che 1 contratto
+    rischia piu' di X $ (regola di rischio, non filtro di edge).
+    I flag sono numerici 0/1 (non bool) perche' l'ottimizzatore di MC
+    accetta solo input numerici.
 
   SIZING: SizingMode 0 = contratti fissi ; 1 = rischio $ fisso per trade
           (contratti = Risk_USD / (R x BigPointValue), tetto Max_Contracts).
@@ -31,17 +35,18 @@ Inputs:
     ORB_Dur_Min(30),           { durata del range in minuti }
     Trade_End_H(14),           { flat + fine ingressi }
     Trade_End_M(0),
-    UseEntryCutoff(false),     { blocca nuovi ingressi da Cutoff in poi }
+    UseEntryCutoff(0),         { 1 = blocca nuovi ingressi da Cutoff in poi }
     Cutoff_H(12),
     Cutoff_M(0),
     TP_RR(1.0),                { take profit in multipli di R }
-    AllowLong(true),
-    AllowShort(false),         { il video: aggiunge poco }
+    AllowLong(1),              { 0/1 (numerici: cosi' l'ottimizzatore li vede) }
+    AllowShort(0),             { il video: aggiunge poco }
     SizingMode(0),             { 0 = contratti fissi, 1 = rischio $ fisso }
     Num_Contracts(1),
-    Risk_USD(500),             { rischio $ per trade in SizingMode 1 }
+    Risk_USD(4000),            { rischio $ per trade in SizingMode 1 (NQ: >= 3000, altrimenti sempre 1 contratto) }
     Max_Contracts(20),         { tetto di sicurezza }
-    UseDeltaFilter(false),     { richiede UpTicks/DownTicks nel feed }
+    MaxRisk_USD(0),            { salta il trade se 1 contratto rischia piu' di X $ (0 = off) }
+    UseDeltaFilter(0),         { 1 = richiede UpTicks/DownTicks nel feed }
     DeltaThreshold(200),
     ShowLog(false);
 
@@ -122,7 +127,7 @@ if CurrentBar >= 2 then begin
 
     { ===== FINESTRA D'INGRESSO ===== }
     In_Window = ORB_Done and Bar_Time > ORB_End_Time and Bar_Time < Trade_End_Time;
-    if UseEntryCutoff and Bar_Time >= Cutoff_Time then In_Window = false;
+    if UseEntryCutoff = 1 and Bar_Time >= Cutoff_Time then In_Window = false;
 
     { ===== FILTRO DELTA (opzionale) ===== }
     BarDelta = UpTicks - DownTicks;
@@ -133,10 +138,11 @@ if CurrentBar >= 2 then begin
        and ORB_High > ORB_Low then begin
 
         { ----- LONG ----- }
-        if AllowLong and Close > ORB_High then begin
+        if AllowLong = 1 and Close > ORB_High then begin
             EP = Close;
             R  = EP - ORB_Low;
-            if UseDeltaFilter then DeltaOK = BarDelta >= DeltaThreshold;
+            if UseDeltaFilter = 1 then DeltaOK = BarDelta >= DeltaThreshold;
+            if MaxRisk_USD > 0 and R * BigPointValue > MaxRisk_USD then DeltaOK = false;   { range troppo largo }
             if R > 0 and DeltaOK then begin
                 Qty = Num_Contracts;
                 if SizingMode = 1 and BigPointValue > 0 then
@@ -154,10 +160,11 @@ if CurrentBar >= 2 then begin
             end;
         end
         { ----- SHORT ----- }
-        else if AllowShort and Close < ORB_Low then begin
+        else if AllowShort = 1 and Close < ORB_Low then begin
             EP = Close;
             R  = ORB_High - EP;
-            if UseDeltaFilter then DeltaOK = BarDelta <= -DeltaThreshold;
+            if UseDeltaFilter = 1 then DeltaOK = BarDelta <= -DeltaThreshold;
+            if MaxRisk_USD > 0 and R * BigPointValue > MaxRisk_USD then DeltaOK = false;
             if R > 0 and DeltaOK then begin
                 Qty = Num_Contracts;
                 if SizingMode = 1 and BigPointValue > 0 then

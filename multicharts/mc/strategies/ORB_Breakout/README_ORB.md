@@ -57,6 +57,18 @@ Campione troppo corto per giudicare. Su NQ tutto il danno è giugno (−$22k, 4 
 $6.5–8.9k su range di apertura di 300–450 pt): con R enorme il rischio $ esplode →
 motiva il confronto `SizingMode 1` (rischio $ fisso) vs contratti fissi.
 
+**Run `SizingMode 1` con `Risk_USD 500` = identico al fisso** (report `_SizingMode_1`):
+su NQ 1 contratto a 1R rischia già $1.000–9.000 (range 50–450 pt × $20), quindi
+`500 / (R×20)` è sempre < 1 e il codice arrotonda a 1 contratto. Per vedere l'effetto
+serve `Risk_USD ≥ 3000–4000` (default ora 4000): giorni con range stretto → 3–4
+contratti, giorni con range enorme → 1. Sotto 1 contratto non si può scendere: per
+questo c'è il nuovo input `MaxRisk_USD` (salta il giorno se 1 contratto rischia più di
+X $, es. 4000). È una regola di rischio, non un filtro di edge, ma va comunque
+verificata con lo split‑sample.
+
+Prossimo run: `SizingMode 1, Risk_USD 4000, Max_Contracts 5` e, separatamente,
+`SizingMode 0, MaxRisk_USD 4000`. Confronto su net/DD.
+
 **Caso noto — half‑day**: nelle vigilie di festa (CME chiude 12:15 CT) la barra delle
 14:00 non esiste e il trade resta aperto fino alla riapertura Globex (domenica 17:00),
 dove esce a mercato o sullo stop (es. 3 lug e 19 giu 2026). Non è evitabile a priori
@@ -72,3 +84,6 @@ dove esce a mercato o sullo stop (es. 3 lug e 19 giu 2026). Non è evitabile a p
   dopo l'ingresso.
 - Time exit `this bar on close` sulla prima barra che attraversa `Trade_End`.
 - `SizingMode 1`: contratti = `Risk_USD / (R × BigPointValue)`, R in punti; non composto.
+- I flag (`AllowLong`, `AllowShort`, `UseEntryCutoff`, `UseDeltaFilter`) sono **0/1
+  numerici**, non `true/false`: l'ottimizzatore di MultiCharts vede solo input numerici.
+  Solo `ShowLog` resta bool.
