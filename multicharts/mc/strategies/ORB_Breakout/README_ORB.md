@@ -1,6 +1,6 @@
 # ORB_Breakout — istruzioni per il primo test in MultiCharts
 
-Codice: `ORB_Breakout.txt` (signal PowerLanguage). Indicatore di supporto: l'**ORB Box**
+Codice: `ORB_Breakout.txt` (signal PowerLanguage). Report dei test in `reports/`. Indicatore di supporto: l'**ORB Box**
 del corso (`mc/protocollo/6. Code Templates/2. Indicators/4. OpeningRangeBreakout_Box.txt`),
 serve solo per vedere il range sul chart.
 
@@ -42,6 +42,27 @@ Se qualcosa non torna, manda uno screenshot del chart + la lista trade.
 - Esperimenti nell'ordine: `AllowShort true` (atteso: aggiunge poco), `UseDeltaFilter
   true` (solo se il feed ha UpTicks/DownTicks ≠ 0), `SizingMode 1` vs 0 sul return/DD,
   `ORB_Dur_Min 60` (variante IB).
+
+## Stato dei test (dati dxFeed sample, 1 mag → 17 set 2026, 1 contratto, zero costi)
+Report in `reports/`. Meccanica **verificata** su @ES e @NQ: un trade/giorno, ingressi
+solo dopo le 09:00, EOD alle 14:00 esatte, SL/TP = altezza del range, bracket attivo
+dalla prima barra. Fuso confermato **Chicago**: le riaperture domenicali cadono alle 17:00.
+
+| | trade | win % | net | max DD | avg trade |
+|---|---|---|---|---|---|
+| @ES | 64 | 40.6% | −$7.4k | $10.0k | −$116 |
+| @NQ | 61 | 47.5% | −$10.3k | $40.3k | −$169 |
+
+Campione troppo corto per giudicare. Su NQ tutto il danno è giugno (−$22k, 4 stop da
+$6.5–8.9k su range di apertura di 300–450 pt): con R enorme il rischio $ esplode →
+motiva il confronto `SizingMode 1` (rischio $ fisso) vs contratti fissi.
+
+**Caso noto — half‑day**: nelle vigilie di festa (CME chiude 12:15 CT) la barra delle
+14:00 non esiste e il trade resta aperto fino alla riapertura Globex (domenica 17:00),
+dove esce a mercato o sullo stop (es. 3 lug e 19 giu 2026). Non è evitabile a priori
+(alle 12:15 il codice non sa che il mercato chiude); il corso lo conta a parte come
+"gap exit". Su 5 anni sono ~8 giorni: da tenere d'occhio nella lista trade, non da
+"sistemare" con filtri.
 
 ## Note sul codice
 - Barre timbrate a fine periodo: il range usa le barre con `Time` in
