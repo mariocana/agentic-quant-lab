@@ -94,7 +94,7 @@
         "0": "pass",
         "1": "active"
       },
-      "note": "Spec scritta. Codice: template del corso (rolling ATR 252), orari da spostare ET→CT."
+      "note": "Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati."
     },
     {
       "name": "VWAP Pullback",
@@ -105,7 +105,7 @@
         "0": "pass",
         "1": "pending"
       },
-      "note": "Spec scritta. EOD flat obbligatorio; variante ADX da ricostruire (non verificata)."
+      "note": "Codice pronto (`VWAP_Pullback.txt`): bias ORB + retest VWAP, stop/target sui pivot, EOD flat obbligatorio, 1 contratto. Chart Globex 24h, MaxBarsBack ≥ 42. In attesa dati."
     },
     {
       "name": "Gold Asian Range",
@@ -132,6 +132,10 @@
     "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
   ],
   "log": [
+    {
+      "date": "2026-09-22",
+      "text": "Codice PowerLanguage pronto anche per VaultBreak (rolling ATR 252, chart RTH) e VWAP Pullback (EOD flat obbligatorio, niente sizing per margine). Le tre strategie NQ partiranno insieme allo Stage 1 appena ci sono i dati."
+    },
     {
       "date": "2026-09-22",
       "text": "Licenza: mensile MC quando arriva il conto TradeStation, lifetime a Black Friday. Da chiedere al supporto lo sconto crossgrade."
