@@ -111,5 +111,8 @@ randomizzazioni per non essere identici agli altri account.
 | Gold Asian Range (GC 15m) | trend, altro asset | 0 | winner Strategy of the Month |
 | Evento macro (CPI/FOMC) | evento | — | dopo i primi tre |
 
-**Blocco attuale**: lo storico. Con 4 mesi non si supera nessun gate dal 2 in poi.
-Decisione da prendere: TradeStation (deposito $500 → dati gratis 6 mesi) o IQFeed.
+**Blocco attuale**: la licenza MultiCharts (la trial non abilita dxFeed). Con dxFeed:
+9 anni di barre a 1 min, 2 anni tick, live + DOM 10 livelli → copre storico e live.
+Note dati: futures **non back‑adjusted** (irrilevante per strategie flat EOD; per Gold
+Asian segnare i giorni di roll trimestrale nella lista trade); DOM storico assente →
+il filtro delta si testa solo sugli ultimi 2 anni (tick).
