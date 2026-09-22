@@ -128,9 +128,14 @@
     }
   ],
   "blockers": [
-    "Licenza MultiCharts: la trial non abilita il feed dxFeed già sottoscritto. Decisione: licenza ora (annuale/lifetime, flag Market data, profilo NON‑PRO). Con dxFeed: 9 anni di barre a 1 min, 2 anni tick, 40 anni daily, live + 10 livelli DOM → copre storico e live, TradeStation non serve."
+    "Storico: apertura conto TradeStation (via TradeStation International) in corso. Dati CME/CBOT/NYMEX/COMEX real‑time + depth gratis per 90 giorni dal funding (poi $40/mese se < $40 di commissioni), inattività $10/mese (waived con $5k equity o 10 trade/90 gg). MC salva lo storico in locale: 90 giorni bastano per il backfill. Live per l'eval = Rithmic/Apex.",
+    "Licenza MultiCharts entro fine trial (annuale/lifetime o broker che la include). dxFeed via MC scartato: doppio abbonamento con Volumetrica, entitlement non trasferibile."
   ],
   "log": [
+    {
+      "date": "2026-09-22",
+      "text": "Decisione dati: TradeStation per lo storico (video del corso: NQ intraday dal 2015/16), Rithmic/Apex per il live. Verificato pricing TS: dati CME gratis 90 gg, inattività $10 waived con 10 trade/90 gg. dxFeed Volumetrica non usabile in MC (entitlement per‑vendor)."
+    },
     {
       "date": "2026-09-22",
       "text": "Verificato dxFeed via MC: 9 anni di minuti (IS 2020–24 + OOS coperti), futures non back‑adjusted (ok per strategie flat EOD; segnare i giorni di roll per Gold Asian), DOM storico assente (filtro delta solo su 2 anni di tick). Richiede licenza attiva → unico blocco rimasto."
