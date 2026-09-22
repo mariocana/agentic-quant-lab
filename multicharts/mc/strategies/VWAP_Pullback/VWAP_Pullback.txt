@@ -1,0 +1,260 @@
+{ =====================================================================
+  VWAP_Pullback  -  NQ, ritorno sul VWAP nella direzione del bias
+  ---------------------------------------------------------------------
+  Dal template del corso "13. VWAP Pullback NQ Margin Vol 1min TF",
+  ripulito per l'uso prop. Spec: SPEC.md.
+
+  REGOLE
+    1) BIAS: si costruisce l'opening range 08:30-09:00 CT; la prima
+       chiusura oltre il range LATCHA il bias (long sopra / short sotto).
+    2) RETEST: con il bias attivo si aspetta il ritorno sul VWAP di
+       sessione. RetestMode 1 = il minimo tocca il VWAP (long);
+       RetestMode 2 = una chiusura sotto e poi il reclaim.
+    3) ENTRY: alla prima chiusura che riconquista il VWAP nella direzione
+       del bias -> next bar at market. Un trade al giorno (default).
+    4) STOP: StopMode 1 = ultimo pivot swing (StopSwingLen); StopMode 2 =
+       estremo del pullback. TARGET: ultimo pivot opposto (TargetSwingLen).
+       Filtri MinRR e MaxStopPoints (0 = off).
+    5) FLAT a EODFlatTime: OBBLIGATORIO per la prop (l'originale poteva
+       tenere overnight fino alla risoluzione del bracket).
+
+  DIFFERENZE dal template: niente sizing per margine/rischio % (size in
+  micro dal simulatore prop, qui 1 contratto); flag 0/1 ottimizzabili;
+  EOD flat attivo di default.
+
+  CHART: @NQ 1 min, sessione **Globex 24h** (17:00-16:00 CT), timezone
+         Exchange, volume da trade data. Orari in ORA DEL CHART (CT).
+         IOG off. Max bars back >= 42 (con StopSwingLen 20).
+  ===================================================================== }
+
+Inputs:
+    { --- sessione (ora del chart, CT) --- }
+    ORStartTime(830),          { apertura cash = inizio opening range }
+    OREndTime(900),
+    VwapStartTime(830),        { accumulo VWAP di sessione }
+    VwapEndTime(1500),
+    EntryStartTime(900),       { finestra ingressi }
+    EntryEndTime(1400),
+    EODFlatTime(1455),         { flat obbligatorio }
+    DayResetTime(2300),        { reset giornaliero (mezzanotte NY) }
+    { --- logica --- }
+    RetestMode(1),             { 1 = tocco del VWAP, 2 = close-through + reclaim }
+    StopMode(1),               { 1 = pivot swing, 2 = estremo del pullback }
+    StopSwingLen(20),
+    TargetSwingLen(5),
+    BufferPts(0),              { cuscinetto in punti oltre lo stop }
+    MinRR(0),                  { scarta il setup se target/stop < MinRR (0 = off) }
+    MaxStopPoints(0),          { scarta il setup se lo stop e' piu' largo (0 = off) }
+    MaxTradesPerDay(1),
+    TradeLongs(1),
+    TradeShorts(1),
+    UseEODFlat(1),
+    Num_Contracts(1),
+    ShowLog(0);
+
+Variables:
+    typPrice(0), barVol(0),
+    inORB(false), inVwapSess(false), inEntrySess(false),
+    orbReady(false), newDay(false),
+    orbHigh(0), orbLow(0),
+    cumPV(0), cumVol(0), vwap(0), vwapValid(false),
+    stopSwingHigh(0), stopSwingLow(0), tgtSwingHigh(0), tgtSwingLow(0),
+    hasStopSH(false), hasStopSL(false), hasTgtSH(false), hasTgtSL(false),
+    longBias(false), shortBias(false),
+    longTouched(false), shortTouched(false),
+    longThrough(false), shortThrough(false),
+    longLatched(false), shortLatched(false),
+    pullbackLow(0), pullbackHigh(0),
+    canTrack(false), canEnter(false),
+    longSignal(false), shortSignal(false),
+    longStop(0), longTgt(0), shortStop(0), shortTgt(0),
+    validLong(false), validShort(false),
+    activeStop(0), activeTgt(0),
+    tradesToday(0), isPivot(false), i1(0), buffer(0);
+
+buffer = BufferPts;
+typPrice = (High + Low + Close) / 3;
+barVol = Volume;
+if barVol <= 0 then barVol = Ticks;
+
+{ ===== FINESTRE DI SESSIONE ===== }
+inORB      = Time > ORStartTime    and Time <= OREndTime;
+inVwapSess = Time > VwapStartTime  and Time <= VwapEndTime;
+inEntrySess= Time > EntryStartTime and Time <= EntryEndTime;
+
+{ ===== RESET GIORNALIERO (23:00 CT = mezzanotte NY) ===== }
+newDay = CurrentBar = 1 or (Time > DayResetTime and Time[1] <= DayResetTime);
+if newDay then begin
+    tradesToday = 0;
+    orbReady = false;
+    longBias = false;    shortBias = false;
+    longTouched = false; shortTouched = false;
+    longThrough = false; shortThrough = false;
+end;
+
+{ ===== OPENING RANGE ===== }
+if inORB and inORB[1] = false then begin
+    orbHigh = High; orbLow = Low; orbReady = false;
+end;
+if inORB then begin
+    if High > orbHigh then orbHigh = High;
+    if Low  < orbLow  then orbLow  = Low;
+end;
+if inORB = false and inORB[1] then orbReady = true;
+
+{ ===== VWAP DI SESSIONE ===== }
+if inVwapSess and inVwapSess[1] = false then begin
+    cumPV = typPrice * barVol;
+    cumVol = barVol;
+end
+else if inVwapSess then begin
+    cumPV = cumPV + typPrice * barVol;
+    cumVol = cumVol + barVol;
+end;
+vwapValid = inVwapSess and cumVol > 0;
+if vwapValid then vwap = cumPV / cumVol;
+
+{ ===== PIVOT (stop e target) ===== }
+if CurrentBar > 2 * StopSwingLen then begin
+    isPivot = true;
+    for i1 = 0 to 2 * StopSwingLen begin
+        if i1 <> StopSwingLen and High[i1] >= High[StopSwingLen] then isPivot = false;
+    end;
+    if isPivot then begin stopSwingHigh = High[StopSwingLen]; hasStopSH = true; end;
+
+    isPivot = true;
+    for i1 = 0 to 2 * StopSwingLen begin
+        if i1 <> StopSwingLen and Low[i1] <= Low[StopSwingLen] then isPivot = false;
+    end;
+    if isPivot then begin stopSwingLow = Low[StopSwingLen]; hasStopSL = true; end;
+end;
+
+if CurrentBar > 2 * TargetSwingLen then begin
+    isPivot = true;
+    for i1 = 0 to 2 * TargetSwingLen begin
+        if i1 <> TargetSwingLen and High[i1] >= High[TargetSwingLen] then isPivot = false;
+    end;
+    if isPivot then begin tgtSwingHigh = High[TargetSwingLen]; hasTgtSH = true; end;
+
+    isPivot = true;
+    for i1 = 0 to 2 * TargetSwingLen begin
+        if i1 <> TargetSwingLen and Low[i1] <= Low[TargetSwingLen] then isPivot = false;
+    end;
+    if isPivot then begin tgtSwingLow = Low[TargetSwingLen]; hasTgtSL = true; end;
+end;
+
+{ ===== BIAS: prima chiusura oltre il range, latchata ===== }
+canTrack = orbReady and inORB = false;
+if canTrack and Close > orbHigh then longBias = true;
+if canTrack and Close < orbLow  then shortBias = true;
+
+{ ===== RETEST DEL VWAP ===== }
+canEnter = canTrack and inVwapSess and inEntrySess and vwapValid;
+longSignal = false; shortSignal = false;
+
+if canEnter and longBias then begin
+    if RetestMode = 1 then begin
+        if Low <= vwap then longTouched = true;
+        longSignal = longTouched and Close > vwap;
+    end
+    else begin
+        if Close < vwap then longThrough = true;
+        longSignal = longThrough and Close > vwap;
+    end;
+end;
+
+if canEnter and shortBias then begin
+    if RetestMode = 1 then begin
+        if High >= vwap then shortTouched = true;
+        shortSignal = shortTouched and Close < vwap;
+    end
+    else begin
+        if Close > vwap then shortThrough = true;
+        shortSignal = shortThrough and Close < vwap;
+    end;
+end;
+
+{ ===== ESTREMO DEL PULLBACK (StopMode 2) ===== }
+longLatched  = longTouched  or longThrough;
+shortLatched = shortTouched or shortThrough;
+
+if longLatched and longLatched[1] = false then pullbackLow = Low
+else if longLatched and Low < pullbackLow then pullbackLow = Low;
+
+if shortLatched and shortLatched[1] = false then pullbackHigh = High
+else if shortLatched and High > pullbackHigh then pullbackHigh = High;
+
+{ ===== LIVELLI E VALIDITA' ===== }
+if StopMode = 2 then begin
+    longStop  = pullbackLow  - buffer;
+    shortStop = pullbackHigh + buffer;
+end
+else begin
+    longStop  = stopSwingLow  - buffer;
+    shortStop = stopSwingHigh + buffer;
+end;
+longTgt  = tgtSwingHigh;
+shortTgt = tgtSwingLow;
+
+validLong = (StopMode = 2 or hasStopSL) and hasTgtSH
+    and (StopMode = 1 or longLatched)
+    and longStop < Close and longTgt > Close
+    and (MaxStopPoints = 0 or Close - longStop <= MaxStopPoints)
+    and (MinRR = 0 or (Close - longStop > 0
+         and (longTgt - Close) / (Close - longStop) >= MinRR));
+
+validShort = (StopMode = 2 or hasStopSH) and hasTgtSL
+    and (StopMode = 1 or shortLatched)
+    and shortStop > Close and shortTgt < Close
+    and (MaxStopPoints = 0 or shortStop - Close <= MaxStopPoints)
+    and (MinRR = 0 or (shortStop - Close > 0
+         and (Close - shortTgt) / (shortStop - Close) >= MinRR));
+
+{ ===== ENTRY ===== }
+if MarketPosition = 0 and tradesToday < MaxTradesPerDay then begin
+
+    if TradeLongs = 1 and longSignal and validLong then begin
+        Buy ("VWAP-L") Num_Contracts contracts next bar at market;
+        activeStop = longStop; activeTgt = longTgt;
+        tradesToday = tradesToday + 1;
+        longBias = false;    shortBias = false;
+        longTouched = false; shortTouched = false;
+        longThrough = false; shortThrough = false;
+        if ShowLog = 1 then
+            Print("VWAP LONG ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
+                  " stop=", activeStop:8:2, " tgt=", activeTgt:8:2,
+                  " RR=", (activeTgt - Close) / MaxList(0.01, Close - activeStop):5:2);
+    end;
+
+    if TradeShorts = 1 and shortSignal and validShort then begin
+        SellShort ("VWAP-S") Num_Contracts contracts next bar at market;
+        activeStop = shortStop; activeTgt = shortTgt;
+        tradesToday = tradesToday + 1;
+        longBias = false;    shortBias = false;
+        longTouched = false; shortTouched = false;
+        longThrough = false; shortThrough = false;
+        if ShowLog = 1 then
+            Print("VWAP SHORT ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
+                  " stop=", activeStop:8:2, " tgt=", activeTgt:8:2,
+                  " RR=", (Close - activeTgt) / MaxList(0.01, activeStop - Close):5:2);
+    end;
+end;
+
+{ ===== USCITE: bracket + flat EOD ===== }
+if MarketPosition = 1 then begin
+    if UseEODFlat = 1 and Time >= EODFlatTime and Time < DayResetTime then
+        Sell ("EOD-L") next bar at market
+    else begin
+        Sell ("L-TP") next bar at activeTgt limit;
+        Sell ("L-SL") next bar at activeStop stop;
+    end;
+end;
+
+if MarketPosition = -1 then begin
+    if UseEODFlat = 1 and Time >= EODFlatTime and Time < DayResetTime then
+        BuyToCover ("EOD-S") next bar at market
+    else begin
+        BuyToCover ("S-TP") next bar at activeTgt limit;
+        BuyToCover ("S-SL") next bar at activeStop stop;
+    end;
+end;
