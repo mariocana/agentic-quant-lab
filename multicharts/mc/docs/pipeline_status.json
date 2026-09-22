@@ -116,7 +116,7 @@
         "0": "pass",
         "1": "pending"
       },
-      "note": "Spec scritta. Variante A (no TP, WR 34%) solo per il basket funded; variante B (TP 1R) per l'eval."
+      "note": "Codice pronto (`GoldAsianRange.txt`): range 20:00–00:00 CT con wrap, stop OCO ai bordi, stop = ampiezza range, TP_RR opzionale, flat 10:00 CT. Variante A (TP_RR 0) per il basket funded, B (TP_RR 1/0.5) per l'eval. Overnight per costruzione → annotare i giorni di rollover. In attesa dati."
     },
     {
       "name": "Evento macro",
@@ -132,6 +132,10 @@
     "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
   ],
   "log": [
+    {
+      "date": "2026-09-22",
+      "text": "Codice pronto anche per Gold Asian Range: tutte e quattro le strategie sono scritte e aspettano solo i dati."
+    },
     {
       "date": "2026-09-22",
       "text": "Codice PowerLanguage pronto anche per VaultBreak (rolling ATR 252, chart RTH) e VWAP Pullback (EOD flat obbligatorio, niente sizing per margine). Le tre strategie NQ partiranno insieme allo Stage 1 appena ci sono i dati."
