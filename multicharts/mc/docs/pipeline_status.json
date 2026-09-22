@@ -129,9 +129,13 @@
   ],
   "blockers": [
     "Storico: apertura conto TradeStation (via TradeStation International) in corso. Dati CME/CBOT/NYMEX/COMEX real‑time + depth gratis per 90 giorni dal funding (poi $40/mese se < $40 di commissioni), inattività $10/mese (waived con $5k equity o 10 trade/90 gg). MC salva lo storico in locale: 90 giorni bastano per il backfill. Live per l'eval = Rithmic/Apex.",
-    "Licenza MultiCharts entro fine trial (annuale/lifetime o broker che la include). dxFeed via MC scartato: doppio abbonamento con Volumetrica, entitlement non trasferibile."
+    "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
   ],
   "log": [
+    {
+      "date": "2026-09-22",
+      "text": "Licenza: mensile MC quando arriva il conto TradeStation, lifetime a Black Friday. Da chiedere al supporto lo sconto crossgrade."
+    },
     {
       "date": "2026-09-22",
       "text": "Decisione dati: TradeStation per lo storico (video del corso: NQ intraday dal 2015/16), Rithmic/Apex per il live. Verificato pricing TS: dati CME gratis 90 gg, inattività $10 waived con 10 trade/90 gg. dxFeed Volumetrica non usabile in MC (entitlement per‑vendor)."
