@@ -1,0 +1,71 @@
+{ =====================================================================
+  VaultBreak Levels (rolling)  -  INDICATORE di supporto per VaultBreak.txt
+  Disegna NoiseUp (open sessione + NoiseMult x DailyATR rolling) e il VWAP
+  di sessione. Stessa logica del signal: tenere gli input uguali.
+  Applicare sullo stesso chart RTH 5 min, subchart 1, scaling "same as
+  instrument".
+  ===================================================================== }
+
+Inputs:
+    NoiseMult(0.60),
+    DailyATRLen(252);
+
+Variables:
+    intrabarpersist SessOpen(0),
+    intrabarpersist SessHigh(0),
+    intrabarpersist SessLow(999999),
+    intrabarpersist SessCount(0),
+    intrabarpersist DailyATR(0),
+    intrabarpersist RngSum(0),
+    intrabarpersist RngCnt(0),
+    intrabarpersist BufIdx(0),
+    intrabarpersist NoiseUp(0),
+    intrabarpersist cTPV(0),
+    intrabarpersist cVol(0),
+    intrabarpersist VWAP(0),
+    BarVol(0);
+
+Arrays:
+    intrabarpersist RngBuf[600](0);
+
+if Date <> Date[1] then begin
+    if SessCount >= 1 then begin
+        Value1 = SessHigh - SessLow;
+        if Value1 > 0 then begin
+            if RngCnt < DailyATRLen then begin
+                RngBuf[RngCnt] = Value1;
+                RngSum = RngSum + Value1;
+                RngCnt = RngCnt + 1;
+            end
+            else begin
+                RngSum = RngSum - RngBuf[BufIdx] + Value1;
+                RngBuf[BufIdx] = Value1;
+                BufIdx = BufIdx + 1;
+                if BufIdx >= DailyATRLen then BufIdx = 0;
+            end;
+            if RngCnt >= DailyATRLen then DailyATR = RngSum / DailyATRLen;
+        end;
+    end;
+    SessOpen  = Open;
+    SessHigh  = High;
+    SessLow   = Low;
+    SessCount = SessCount + 1;
+    cTPV = 0; cVol = 0; VWAP = Close;
+    if DailyATR > 0 then NoiseUp = SessOpen + NoiseMult * DailyATR
+    else NoiseUp = 0;
+end
+else begin
+    if High > SessHigh then SessHigh = High;
+    if Low  < SessLow  then SessLow  = Low;
+end;
+
+BarVol = Volume;
+if BarVol <= 0 then BarVol = Ticks;
+if BarVol > 0 then begin
+    cTPV = cTPV + ((High + Low + Close) / 3.0) * BarVol;
+    cVol = cVol + BarVol;
+end;
+if cVol > 0 then VWAP = cTPV / cVol;
+
+if NoiseUp > 0 then Plot1(NoiseUp, "NoiseUp") else NoPlot(1);
+Plot2(VWAP, "VWAP");
