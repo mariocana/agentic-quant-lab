@@ -128,10 +128,14 @@
     }
   ],
   "blockers": [
-    "Storico: conto TradeStation **approvato** (Futures *2420 + Equities *2379), in attesa del funding via SEPA sul conto Futures. Da lì partono i 90 giorni di dati CME gratis. Poi: wizard MC → TradeStation, chart @NQ 5 min dal 2016 per misurare la profondità dello storico.",
+    "Storico: bonifico SEPA €500 inviato, accredito atteso lunedì 28/09 sul conto Futures TradeStation. Al funding: checklist in `mc/docs/setup_tradestation.md` (entitlement NON‑PRO, wizard MC, misura profondità storico @NQ 5m/1m e @GC 15m, costi e session template, test di coerenza sui 100 giorni già fatti).",
     "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
   ],
   "log": [
+    {
+      "date": "2026-09-25",
+      "text": "Bonifico SEPA €500 inviato al conto Futures; accredito atteso lunedì. Scritta la checklist di setup TradeStation → MultiCharts."
+    },
     {
       "date": "2026-09-25",
       "text": "Conto TradeStation approvato (Futures + Equities). Si finanzia il conto Futures: è quello che abilita le entitlement dati CME."
