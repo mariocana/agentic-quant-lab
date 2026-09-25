@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-22",
+  "updated": "2026-09-25",
   "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
   "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
   "prop": "Apex 50k EOD trailing · target $3.000 · max DD $2.500 · daily loss $1.000 · 21 giorni",
@@ -128,10 +128,14 @@
     }
   ],
   "blockers": [
-    "Storico: apertura conto TradeStation (via TradeStation International) in corso. Dati CME/CBOT/NYMEX/COMEX real‑time + depth gratis per 90 giorni dal funding (poi $40/mese se < $40 di commissioni), inattività $10/mese (waived con $5k equity o 10 trade/90 gg). MC salva lo storico in locale: 90 giorni bastano per il backfill. Live per l'eval = Rithmic/Apex.",
+    "Storico: conto TradeStation **approvato** (Futures *2420 + Equities *2379), in attesa del funding via SEPA sul conto Futures. Da lì partono i 90 giorni di dati CME gratis. Poi: wizard MC → TradeStation, chart @NQ 5 min dal 2016 per misurare la profondità dello storico.",
     "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
   ],
   "log": [
+    {
+      "date": "2026-09-25",
+      "text": "Conto TradeStation approvato (Futures + Equities). Si finanzia il conto Futures: è quello che abilita le entitlement dati CME."
+    },
     {
       "date": "2026-09-22",
       "text": "Codice pronto anche per Gold Asian Range: tutte e quattro le strategie sono scritte e aspettano solo i dati."
