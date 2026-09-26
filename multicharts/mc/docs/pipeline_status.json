@@ -130,6 +130,10 @@
       "note": "Codice pronto (`VWAP_Pullback.txt`): bias ORB + retest VWAP, stop/target sui pivot, EOD flat obbligatorio, 1 contratto. Chart Globex 24h, MaxBarsBack ≥ 42. In attesa dati.",
       "log": [
         {
+          "date": "2026-09-26",
+          "text": "Live 005: hanno testato 100+ mean reversion intraday con uscita EOD e **nessuna** era adatta alla prop. Questa resta in lista (è più continuation-su-pullback che mean reversion pura) ma con un sospetto a carico: se fallisce i gate, non è sfortuna."
+        },
+        {
           "date": "2026-09-22",
           "text": "Spec + codice dal template 1 min. Tolto il sizing per margine/rischio %. **EOD flat reso obbligatorio** (l'originale teneva overnight fino alla risoluzione del bracket): cambia il profilo rispetto all'avg ~$80 del corso, va rivalidato. La variante ADX di Agnello (WR 82%) non è nel materiale: da ricostruire, non verificata."
         }
@@ -167,6 +171,10 @@
       "log": [
         {
           "date": "2026-09-26",
+          "text": "Live 005 conferma la scelta: in un basket long‑only l'aggiunta che alza davvero il pass rate è una long‑short o short‑only."
+        },
+        {
+          "date": "2026-09-26",
           "text": "Spec + codice dai template 18 del corso (dichiarati non validati dall'autore). BASE e FILTERED uniti con `UseFilters` per confrontarli nello stesso run; aggiunto `StopPts` (off di default) come variante prop pre‑registrata."
         }
       ],
@@ -188,6 +196,10 @@
     "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
   ],
   "log": [
+    {
+      "date": "2026-09-26",
+      "text": "Live 005 + Q&A. Gate aggiornati: correlazione target ~0 e **non negativa** (rischio hedging, vietato dalle prop); expiry < 5%; bench al **90° percentile** MC e ripresa solo a nuovo massimo; mai più conti che strategie; una sola posizione aperta per volta fra i conti. Nuovo concetto: massimizzare il pass rate ≠ massimizzare i conti funded/anno — «la size compra la velocità, non le probabilità». Riferimento del corso: basket a 3 strategie = 52,5% al primo tentativo, 5 giorni, $191 per funded."
+    },
     {
       "date": "2026-09-26",
       "text": "Nuovo materiale del corso valutato. **NQ First5** entra in pipeline: porta il lato short che manca al basket (ORB e VaultBreak sono long‑only). **Gold/Silver Reversion scartata**: nessun flat di fine giornata, hold multi‑day che blocca gli ingressi per settimane, pochi trade — incompatibile col trailing Apex; l'autore stesso la dà per non validata."

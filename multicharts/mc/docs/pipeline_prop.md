@@ -7,7 +7,7 @@ Come una pipeline CI: ogni stage ha un **gate**. Se il gate fallisce, la strateg
 ferma lì (o torna allo stage 4 se il problema è correggibile senza toccare l'OOS).
 Niente eccezioni "però l'equity è bella".
 
-Profilo target (Lezione 10, Live 1–4): **win rate ≥ 55–60%, R:R 0.5–1**, trade frequenti,
+Profilo target (Lezione 10, Live 1–5): **win rate ≥ 55–60%, R:R 0.5–1**, trade frequenti,
 DD per micro contratto piccolo rispetto al limite della prop. Sviluppo sempre su **NQ
 (o contratto pieno) a 1 contratto**; la size in micro la decide il simulatore.
 
@@ -92,18 +92,40 @@ Regole della prop inserite; sweep sui micro; correlazione fra tentativi (i tenta
 sono indipendenti: in un regime ostile il pass rate cumulato scende — Live 004).
 
 **Gate 7 — EVAL**: pass rate 1° tentativo ≥ 40%; entro 4 tentativi ≥ 85%; giorni medi
-per passare ≤ 15; DD medio < limite; size ottimale ≤ size "affidabile" (95° perc.
-perdita/contratto).
+per passare ≤ 15; **eval scadute (expiry) < 5%**; DD medio < limite; size ottimale
+≤ size "affidabile" (95° perc. perdita/contratto).
+Riferimento: il basket del corso (VaultBreak + VWAP‑ADX + Overnight Bias) fa **52,5%**
+al primo tentativo, 5 giorni medi, ~$191 di costo per conto funded.
+Due obiettivi diversi, da non confondere (Live 005): massimizzare il **pass rate** non è
+lo stesso che massimizzare i **conti funded per anno**. Un bracket aggressivo
+(SL = daily loss, TP = 1.5× SL) abbassa il pass rate 52%→38% ma accorcia il ciclo e porta
+da 26 a 35 funded/anno — conviene solo con un'aspettativa di payout alta per conto.
+**La size compra la velocità, non le probabilità**: 1 mini e 2 mini hanno lo stesso pass
+rate, ma 2 mini passano in 3 giorni invece di 6.
 **Gate 7 — FUNDED**: qualification rate ≥ 50% alla size di sopravvivenza; expected
 payout > costo del budget (≥ 4 × fee).
 
 ## Stage 8 — Basket (Colab prop multiple)
 Tutte le strategie che hanno passato lo Stage 7 vanno nel simulatore multi‑strategia.
 
-**Gate 8**: correlazione a coppie ≤ 0.2 (meglio ≤ 0); giorni attivi ≥ 90%; pass rate del
-basket > migliore singola; qualification funded ≥ 70%; nessuna strategia in drawdown
-oltre il 75° perc. al momento del deploy (quelle in DD pesante si benchano).
+**Gate 8**: correlazione a coppie **vicina a 0, NON negativa** (Live 005: in ambiente prop
+la correlazione negativa porta al rischio *hedging*, che è vietato); giorni attivi ≥ 90%;
+pass rate del basket > migliore singola; qualification funded ≥ 70%; nessuna strategia in
+drawdown oltre il **90° percentile** Monte Carlo al momento del deploy.
 Size per strategia = output del simulatore (micro), cap totale ≤ 2 mini.
+
+**Vincoli operativi multi‑account** (Live 005):
+- **Mai posizioni opposte** su strumenti correlati, né nello stesso conto né fra conti
+  diversi (long NQ su A + short ES su B = hedging → violazione). Soluzione: **una sola
+  posizione aperta per volta** fra tutti i conti.
+- **Non più conti che strategie**: nei test con 3 conti e trade distribuiti, il 17–25%
+  delle eval **scadeva** senza passare né fallire. Una eval scaduta è peggio di una persa.
+- Aprire una seconda eval mentre la prima è in corso **alza la correlazione fra tentativi**:
+  accorcia i tempi ma abbassa il pass rate. È un trade‑off, non un pasto gratis.
+- **Bench / ripresa**: si bencha una strategia quando il DD corrente supera il **90°
+  percentile** della distribuzione Monte Carlo; si riprende solo a **nuovo massimo di
+  equity** (non al recupero del 50% del DD). I fallimenti clusterizzano — e anche i
+  successi: a una strategia sui massimi si può dare più peso.
 
 ## Stage 9 — Deploy
 Paper ≥ 1 settimana; poi eval con size del simulatore, **budget dichiarato** (es. 3
@@ -130,6 +152,17 @@ Asian segnare i giorni di roll trimestrale nella lista trade); DOM storico assen
 il filtro delta si testa solo sugli ultimi 2 anni (tick).
 
 ---
+
+## Avvertenza sulla mean reversion (Live 005)
+
+Hanno testato **100+ strategie mean reversion intraday** con uscita a fine giornata:
+**nessuna** risultava adatta all'ambiente prop, e non alzavano nemmeno il pass rate. La
+mean reversion dà valore a livello di portafoglio, ma **multi‑day** — incompatibile col
+trailing di Apex. Quello che aggiunge valore reale a un basket long‑only è invece una
+strategia **long‑short o short‑only**.
+Conseguenza: il nostro **VWAP Pullback** (unica "mean reverting" in lista) parte con un
+sospetto a carico — se fallisce i gate non è sfortuna; e **NQ First5** copre il ruolo
+davvero mancante, quello short.
 
 ## Candidati valutati e scartati
 
