@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-25",
+  "updated": "2026-09-26",
   "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
   "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
   "prop": "Apex 50k EOD trailing · target $3.000 · max DD $2.500 · daily loss $1.000 · 21 giorni",
@@ -83,7 +83,22 @@
         "avg": "−$169",
         "dd": "$40.3k",
         "period": "4 mesi, 0 costi — non valido"
-      }
+      },
+      "log": [
+        {
+          "date": "2026-09-17",
+          "text": "Sizing: flag portati a 0/1 per l'ottimizzatore, aggiunto `MaxRisk_USD`. Il run `SizingMode 1` con Risk_USD 500 è risultato identico al fisso — su NQ 1 contratto a 1R rischia già $1.000–9.000, quindi la formula arrotondava sempre a 1. Sizing in $ rimandato allo Stage 7 (size in micro dal simulatore)."
+        },
+        {
+          "date": "2026-09-17",
+          "text": "**Gate 1 passato** su @ES (64 trade) e @NQ (61): un trade al giorno, EOD alle 14:00 esatte, SL/TP pari agli estremi del range, bracket attivo dalla prima barra. Fuso Chicago confermato dalle riaperture domenicali alle 17:05. Caso noto: nelle vigilie di festa (3 lug, 19 giu) manca la barra delle 14:00 → uscita alla riapertura."
+        },
+        {
+          "date": "2026-09-16",
+          "text": "Porting da `OrbBreakout_EA` (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2."
+        }
+      ],
+      "next": "Stage 2: backtest IS 2020‑01‑01 → 2024‑12‑31 su @NQ 5m, 1 contratto, costi on."
     },
     {
       "name": "VaultBreak",
@@ -94,7 +109,14 @@
         "0": "pass",
         "1": "active"
       },
-      "note": "Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati."
+      "note": "Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati.",
+      "log": [
+        {
+          "date": "2026-09-22",
+          "text": "Spec + codice. Scelta: ATR **rolling 252** invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti."
+        }
+      ],
+      "next": "Stage 1: chart @NQ 5m **RTH**, `DailyATRLen 20` per il lead‑in, verifica meccanica."
     },
     {
       "name": "VWAP Pullback",
@@ -105,7 +127,14 @@
         "0": "pass",
         "1": "pending"
       },
-      "note": "Codice pronto (`VWAP_Pullback.txt`): bias ORB + retest VWAP, stop/target sui pivot, EOD flat obbligatorio, 1 contratto. Chart Globex 24h, MaxBarsBack ≥ 42. In attesa dati."
+      "note": "Codice pronto (`VWAP_Pullback.txt`): bias ORB + retest VWAP, stop/target sui pivot, EOD flat obbligatorio, 1 contratto. Chart Globex 24h, MaxBarsBack ≥ 42. In attesa dati.",
+      "log": [
+        {
+          "date": "2026-09-22",
+          "text": "Spec + codice dal template 1 min. Tolto il sizing per margine/rischio %. **EOD flat reso obbligatorio** (l'originale teneva overnight fino alla risoluzione del bracket): cambia il profilo rispetto all'avg ~$80 del corso, va rivalidato. La variante ADX di Agnello (WR 82%) non è nel materiale: da ricostruire, non verificata."
+        }
+      ],
+      "next": "Stage 1: chart @NQ 1m Globex, MaxBarsBack ≥ 300, verifica meccanica e numero di trade."
     },
     {
       "name": "Gold Asian Range",
@@ -116,7 +145,14 @@
         "0": "pass",
         "1": "pending"
       },
-      "note": "Codice pronto (`GoldAsianRange.txt`): range 20:00–00:00 CT con wrap, stop OCO ai bordi, stop = ampiezza range, TP_RR opzionale, flat 10:00 CT. Variante A (TP_RR 0) per il basket funded, B (TP_RR 1/0.5) per l'eval. Overnight per costruzione → annotare i giorni di rollover. In attesa dati."
+      "note": "Codice pronto (`GoldAsianRange.txt`): range 20:00–00:00 CT con wrap, stop OCO ai bordi, stop = ampiezza range, TP_RR opzionale, flat 10:00 CT. Variante A (TP_RR 0) per il basket funded, B (TP_RR 1/0.5) per l'eval. Overnight per costruzione → annotare i giorni di rollover. In attesa dati.",
+      "log": [
+        {
+          "date": "2026-09-22",
+          "text": "Spec + codice. Range 20:00–00:00 CT con wrap sulla mezzanotte; stop OCO armati nell'istante in cui il range chiude (è il motivo per cui regge fill realistici). Variante A (no TP, WR 34%) fuori dal profilo eval → solo basket funded; variante B con TP 1R/0.5R per l'eval."
+        }
+      ],
+      "next": "Stage 1: chart @GC 15m, verifica meccanica + annotare i giorni di rollover."
     },
     {
       "name": "Evento macro",
@@ -124,7 +160,9 @@
       "instrument": "—",
       "path": "",
       "stages": {},
-      "note": "Dopo i primi tre."
+      "note": "Dopo i primi tre.",
+      "log": [],
+      "next": "Dopo i primi tre."
     }
   ],
   "blockers": [

@@ -21,6 +21,16 @@ def esc(s):
     return html.escape(str(s))
 
 
+def md(text):
+    """Escape + **grassetto** + `code` (il resto resta testo)."""
+    out = esc(text)
+    while out.count("**") >= 2:
+        out = out.replace("**", "<b>", 1).replace("**", "</b>", 1)
+    while out.count("`") >= 2:
+        out = out.replace("`", "<code>", 1).replace("`", "</code>", 1)
+    return out
+
+
 def current_stage(strat, stages):
     """Stage su cui la strategia si trova ora (ultimo non-pending)."""
     st = strat.get("stages", {})
@@ -63,7 +73,7 @@ def build(d):
           {''.join(cells)}
           <td class="where"><span class="pill {state}">{esc(where)}</span></td>
         </tr>
-        <tr class="note"><td colspan="{len(stages) + 2}"><div class="notetext">{esc(s["note"])}</div>{metrics}</td></tr>""")
+        <tr class="note"><td colspan="{len(stages) + 2}"><div class="notetext">{md(s["note"])}</div>{metrics}</td></tr>""")
 
     head_cells = "".join(
         f'<th scope="col"><span class="stnum">{g["id"]}</span><span class="stname">{esc(g["short"])}</span></th>'
@@ -79,12 +89,36 @@ def build(d):
             if v == "pass":
                 furthest = max(furthest, int(k))
 
+    # --- diario per strategia ---
+    diaries = []
+    for st in strategies:
+        cur = current_stage(st, stages)
+        state = st.get("stages", {}).get(str(cur["id"])) if cur else "pending"
+        where = f'Stage {cur["id"]} · {cur["name"]}' if cur else "non iniziata"
+        entries = "".join(
+            f'<li><span class="mono date">{esc(e["date"])}</span><span>{md(e["text"])}</span></li>'
+            for e in st.get("log", []))
+        if not entries:
+            entries = '<li class="empty"><span></span><span class="muted">nessuna voce</span></li>'
+        nxt = st.get("next")
+        nxt_html = (f'<div class="next"><span class="lbl">prossimo</span>{md(nxt)}</div>') if nxt else ""
+        diaries.append(f"""
+        <section class="card diary">
+          <div class="dhead">
+            <h3>{esc(st["name"])}</h3>
+            <span class="pill {state}">{esc(where)}</span>
+          </div>
+          <div class="meta mono">{esc(st["instrument"])}</div>
+          {nxt_html}
+          <ul class="plain log">{entries}</ul>
+        </section>""")
+
     gates = "".join(
         f'<li><span class="gnum mono">{g["id"]}</span><div><b>{esc(g["name"])}</b>'
         f'<div class="gate">{esc(g["gate"])}</div></div></li>' for g in stages)
-    blockers = "".join(f"<li>{esc(b)}</li>" for b in d.get("blockers", []))
+    blockers = "".join(f"<li>{md(b)}</li>" for b in d.get("blockers", []))
     log = "".join(
-        f'<li><span class="mono date">{esc(e["date"])}</span><span>{esc(e["text"])}</span></li>'
+        f'<li><span class="mono date">{esc(e["date"])}</span><span>{md(e["text"])}</span></li>'
         for e in d.get("log", []))
 
     return f"""<title>Pipeline Prop</title>
@@ -173,6 +207,20 @@ ul.plain li {{ padding-left:14px; position:relative; }}
 ul.plain li::before {{ content:""; position:absolute; left:0; top:.6em; width:6px; height:6px; border-radius:50%; background:var(--blocked); }}
 ul.log li {{ display:grid; grid-template-columns:88px 1fr; gap:10px; font-size:.9rem; }}
 ul.log .date {{ color:var(--muted); font-size:.8rem; padding-top:2px; }}
+.sechead {{ margin-top:8px; }}
+.diaries {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr)); gap:16px; align-items:start; }}
+.diary {{ gap:8px; }}
+.diary .dhead {{ display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px; }}
+.diary h3 {{ font-size:1.1rem; font-weight:600; }}
+.diary .meta {{ color:var(--muted); font-size:.8rem; }}
+.diary .next {{ font-size:.85rem; border-left:2px solid var(--accent); padding:2px 0 2px 10px; }}
+.diary .next .lbl {{ display:block; font-family:var(--display); text-transform:uppercase; letter-spacing:.06em;
+                     font-size:.7rem; color:var(--accent-ink); }}
+.diary ul.log li {{ grid-template-columns:76px 1fr; font-size:.85rem; }}
+.diary ul.plain li::before {{ display:none; }}
+.diary ul.plain li {{ padding-left:0; }}
+li.empty {{ }}
+code {{ font-family:var(--mono); font-size:.9em; background:var(--pending-bg); padding:1px 4px; border-radius:3px; }}
 a {{ color:var(--accent); }}
 footer {{ color:var(--muted); font-size:.8rem; }}
 </style>
@@ -222,11 +270,14 @@ footer {{ color:var(--muted); font-size:.8rem; }}
         <ul class="plain">{blockers}</ul>
       </section>
       <section class="card">
-        <h2>Diario</h2>
+        <h2>Decisioni e setup</h2>
         <ul class="plain log">{log}</ul>
       </section>
     </div>
   </div>
+
+  <h2 class="sechead">Diario per strategia</h2>
+  <div class="diaries">{''.join(diaries)}</div>
 
   <footer>Fonte: <span class="mono">mc/docs/pipeline_status.json</span> nel repo · regole complete in <span class="mono">mc/docs/pipeline_prop.md</span></footer>
 </div>

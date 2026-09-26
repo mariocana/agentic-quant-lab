@@ -84,6 +84,20 @@ ul.plain li { padding-left:14px; position:relative; }
 ul.plain li::before { content:""; position:absolute; left:0; top:.6em; width:6px; height:6px; border-radius:50%; background:var(--blocked); }
 ul.log li { display:grid; grid-template-columns:88px 1fr; gap:10px; font-size:.9rem; }
 ul.log .date { color:var(--muted); font-size:.8rem; padding-top:2px; }
+.sechead { margin-top:8px; }
+.diaries { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr)); gap:16px; align-items:start; }
+.diary { gap:8px; }
+.diary .dhead { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px; }
+.diary h3 { font-size:1.1rem; font-weight:600; }
+.diary .meta { color:var(--muted); font-size:.8rem; }
+.diary .next { font-size:.85rem; border-left:2px solid var(--accent); padding:2px 0 2px 10px; }
+.diary .next .lbl { display:block; font-family:var(--display); text-transform:uppercase; letter-spacing:.06em;
+                     font-size:.7rem; color:var(--accent-ink); }
+.diary ul.log li { grid-template-columns:76px 1fr; font-size:.85rem; }
+.diary ul.plain li::before { display:none; }
+.diary ul.plain li { padding-left:0; }
+li.empty { }
+code { font-family:var(--mono); font-size:.9em; background:var(--pending-bg); padding:1px 4px; border-radius:3px; }
 a { color:var(--accent); }
 footer { color:var(--muted); font-size:.8rem; }
 </style>
@@ -92,7 +106,7 @@ footer { color:var(--muted); font-size:.8rem; }
   <header>
     <div class="top">
       <h1>Pipeline Prop</h1>
-      <span class="updated">aggiornata il <span class="mono">2026-09-25</span></span>
+      <span class="updated">aggiornata il <span class="mono">2026-09-26</span></span>
     </div>
     <p class="goal">Strategie per passare l&#x27;eval prop e incassare i payout. Nient&#x27;altro.</p>
     <div class="facts">
@@ -129,7 +143,7 @@ footer { color:var(--muted); font-size:.8rem; }
           <td><span class="chip pass" title="Spec: passato"><span class="sym">✓</span></span></td><td><span class="chip active" title="Meccanica: in corso"><span class="sym">●</span></span></td><td><span class="chip pending" title="Backtest IS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Monte Carlo: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Migliorie: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="OOS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Bootstrap: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Prop sim: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Basket: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Deploy: da fare"><span class="sym">·</span></span></td>
           <td class="where"><span class="pill active">Stage 1 · Meccanica</span></td>
         </tr>
-        <tr class="note"><td colspan="12"><div class="notetext">Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati.</div></td></tr>
+        <tr class="note"><td colspan="12"><div class="notetext">Codice pronto (<code>VaultBreak.txt</code> + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati.</div></td></tr>
         <tr class="strat">
           <th scope="row">
             <div class="name">VWAP Pullback</div>
@@ -138,7 +152,7 @@ footer { color:var(--muted); font-size:.8rem; }
           <td><span class="chip pass" title="Spec: passato"><span class="sym">✓</span></span></td><td><span class="chip pending" title="Meccanica: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Backtest IS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Monte Carlo: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Migliorie: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="OOS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Bootstrap: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Prop sim: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Basket: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Deploy: da fare"><span class="sym">·</span></span></td>
           <td class="where"><span class="pill pass">Stage 0 · Spec</span></td>
         </tr>
-        <tr class="note"><td colspan="12"><div class="notetext">Codice pronto (`VWAP_Pullback.txt`): bias ORB + retest VWAP, stop/target sui pivot, EOD flat obbligatorio, 1 contratto. Chart Globex 24h, MaxBarsBack ≥ 42. In attesa dati.</div></td></tr>
+        <tr class="note"><td colspan="12"><div class="notetext">Codice pronto (<code>VWAP_Pullback.txt</code>): bias ORB + retest VWAP, stop/target sui pivot, EOD flat obbligatorio, 1 contratto. Chart Globex 24h, MaxBarsBack ≥ 42. In attesa dati.</div></td></tr>
         <tr class="strat">
           <th scope="row">
             <div class="name">Gold Asian Range</div>
@@ -147,7 +161,7 @@ footer { color:var(--muted); font-size:.8rem; }
           <td><span class="chip pass" title="Spec: passato"><span class="sym">✓</span></span></td><td><span class="chip pending" title="Meccanica: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Backtest IS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Monte Carlo: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Migliorie: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="OOS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Bootstrap: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Prop sim: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Basket: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Deploy: da fare"><span class="sym">·</span></span></td>
           <td class="where"><span class="pill pass">Stage 0 · Spec</span></td>
         </tr>
-        <tr class="note"><td colspan="12"><div class="notetext">Codice pronto (`GoldAsianRange.txt`): range 20:00–00:00 CT con wrap, stop OCO ai bordi, stop = ampiezza range, TP_RR opzionale, flat 10:00 CT. Variante A (TP_RR 0) per il basket funded, B (TP_RR 1/0.5) per l&#x27;eval. Overnight per costruzione → annotare i giorni di rollover. In attesa dati.</div></td></tr>
+        <tr class="note"><td colspan="12"><div class="notetext">Codice pronto (<code>GoldAsianRange.txt</code>): range 20:00–00:00 CT con wrap, stop OCO ai bordi, stop = ampiezza range, TP_RR opzionale, flat 10:00 CT. Variante A (TP_RR 0) per il basket funded, B (TP_RR 1/0.5) per l&#x27;eval. Overnight per costruzione → annotare i giorni di rollover. In attesa dati.</div></td></tr>
         <tr class="strat">
           <th scope="row">
             <div class="name">Evento macro</div>
@@ -175,14 +189,62 @@ footer { color:var(--muted); font-size:.8rem; }
     <div style="display:grid;gap:24px;align-content:start">
       <section class="card">
         <h2>Blocchi attuali</h2>
-        <ul class="plain"><li>Storico: bonifico SEPA €500 inviato, accredito atteso lunedì 28/09 sul conto Futures TradeStation. Al funding: checklist in `mc/docs/setup_tradestation.md` (entitlement NON‑PRO, wizard MC, misura profondità storico @NQ 5m/1m e @GC 15m, costi e session template, test di coerenza sui 100 giorni già fatti).</li><li>Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica.</li></ul>
+        <ul class="plain"><li>Storico: bonifico SEPA €500 inviato, accredito atteso lunedì 28/09 sul conto Futures TradeStation. Al funding: checklist in <code>mc/docs/setup_tradestation.md</code> (entitlement NON‑PRO, wizard MC, misura profondità storico @NQ 5m/1m e @GC 15m, costi e session template, test di coerenza sui 100 giorni già fatti).</li><li>Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica.</li></ul>
       </section>
       <section class="card">
-        <h2>Diario</h2>
+        <h2>Decisioni e setup</h2>
         <ul class="plain log"><li><span class="mono date">2026-09-25</span><span>Bonifico SEPA €500 inviato al conto Futures; accredito atteso lunedì. Scritta la checklist di setup TradeStation → MultiCharts.</span></li><li><span class="mono date">2026-09-25</span><span>Conto TradeStation approvato (Futures + Equities). Si finanzia il conto Futures: è quello che abilita le entitlement dati CME.</span></li><li><span class="mono date">2026-09-22</span><span>Codice pronto anche per Gold Asian Range: tutte e quattro le strategie sono scritte e aspettano solo i dati.</span></li><li><span class="mono date">2026-09-22</span><span>Codice PowerLanguage pronto anche per VaultBreak (rolling ATR 252, chart RTH) e VWAP Pullback (EOD flat obbligatorio, niente sizing per margine). Le tre strategie NQ partiranno insieme allo Stage 1 appena ci sono i dati.</span></li><li><span class="mono date">2026-09-22</span><span>Licenza: mensile MC quando arriva il conto TradeStation, lifetime a Black Friday. Da chiedere al supporto lo sconto crossgrade.</span></li><li><span class="mono date">2026-09-22</span><span>Decisione dati: TradeStation per lo storico (video del corso: NQ intraday dal 2015/16), Rithmic/Apex per il live. Verificato pricing TS: dati CME gratis 90 gg, inattività $10 waived con 10 trade/90 gg. dxFeed Volumetrica non usabile in MC (entitlement per‑vendor).</span></li><li><span class="mono date">2026-09-22</span><span>Verificato dxFeed via MC: 9 anni di minuti (IS 2020–24 + OOS coperti), futures non back‑adjusted (ok per strategie flat EOD; segnare i giorni di roll per Gold Asian), DOM storico assente (filtro delta solo su 2 anni di tick). Richiede licenza attiva → unico blocco rimasto.</span></li><li><span class="mono date">2026-09-17</span><span>Pipeline con gate definita. Spec Stage 0 per ORB, VaultBreak, VWAP Pullback, Gold Asian Range. Flag 0/1 nell&#x27;ORB per l&#x27;ottimizzatore; run SizingMode 1 identico al fisso (Risk_USD troppo basso per NQ) — sizing in $ rimandato al simulatore prop.</span></li><li><span class="mono date">2026-09-17</span><span>ORB Stage 1 passato su @ES e @NQ: 1 trade/giorno, EOD 14:00, SL/TP = range, fuso Chicago confermato dalle riaperture domenicali 17:00. Caso noto: half‑day → gap exit.</span></li><li><span class="mono date">2026-09-16</span><span>Corso Institutional Protocol letto per intero (PDF, codice, 18 video trascritti). Digest + protocollo MC in mc/docs. Porting ORB in PowerLanguage.</span></li><li><span class="mono date">2026-09-14</span><span>Decisa la migrazione da MetaTrader 5 a MultiCharts. Journal discrezionale creato (journal/).</span></li></ul>
       </section>
     </div>
   </div>
+
+  <h2 class="sechead">Diario per strategia</h2>
+  <div class="diaries">
+        <section class="card diary">
+          <div class="dhead">
+            <h3>ORB Breakout</h3>
+            <span class="pill blocked">Stage 2 · Backtest IS</span>
+          </div>
+          <div class="meta mono">NQ 5m</div>
+          <div class="next"><span class="lbl">prossimo</span>Stage 2: backtest IS 2020‑01‑01 → 2024‑12‑31 su @NQ 5m, 1 contratto, costi on.</div>
+          <ul class="plain log"><li><span class="mono date">2026-09-17</span><span>Sizing: flag portati a 0/1 per l&#x27;ottimizzatore, aggiunto <code>MaxRisk_USD</code>. Il run <code>SizingMode 1</code> con Risk_USD 500 è risultato identico al fisso — su NQ 1 contratto a 1R rischia già $1.000–9.000, quindi la formula arrotondava sempre a 1. Sizing in $ rimandato allo Stage 7 (size in micro dal simulatore).</span></li><li><span class="mono date">2026-09-17</span><span><b>Gate 1 passato</b> su @ES (64 trade) e @NQ (61): un trade al giorno, EOD alle 14:00 esatte, SL/TP pari agli estremi del range, bracket attivo dalla prima barra. Fuso Chicago confermato dalle riaperture domenicali alle 17:05. Caso noto: nelle vigilie di festa (3 lug, 19 giu) manca la barra delle 14:00 → uscita alla riapertura.</span></li><li><span class="mono date">2026-09-16</span><span>Porting da <code>OrbBreakout_EA</code> (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2.</span></li></ul>
+        </section>
+        <section class="card diary">
+          <div class="dhead">
+            <h3>VaultBreak</h3>
+            <span class="pill active">Stage 1 · Meccanica</span>
+          </div>
+          <div class="meta mono">NQ 5m RTH</div>
+          <div class="next"><span class="lbl">prossimo</span>Stage 1: chart @NQ 5m <b>RTH</b>, <code>DailyATRLen 20</code> per il lead‑in, verifica meccanica.</div>
+          <ul class="plain log"><li><span class="mono date">2026-09-22</span><span>Spec + codice. Scelta: ATR <b>rolling 252</b> invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti.</span></li></ul>
+        </section>
+        <section class="card diary">
+          <div class="dhead">
+            <h3>VWAP Pullback</h3>
+            <span class="pill pass">Stage 0 · Spec</span>
+          </div>
+          <div class="meta mono">NQ 1m</div>
+          <div class="next"><span class="lbl">prossimo</span>Stage 1: chart @NQ 1m Globex, MaxBarsBack ≥ 300, verifica meccanica e numero di trade.</div>
+          <ul class="plain log"><li><span class="mono date">2026-09-22</span><span>Spec + codice dal template 1 min. Tolto il sizing per margine/rischio %. <b>EOD flat reso obbligatorio</b> (l&#x27;originale teneva overnight fino alla risoluzione del bracket): cambia il profilo rispetto all&#x27;avg ~$80 del corso, va rivalidato. La variante ADX di Agnello (WR 82%) non è nel materiale: da ricostruire, non verificata.</span></li></ul>
+        </section>
+        <section class="card diary">
+          <div class="dhead">
+            <h3>Gold Asian Range</h3>
+            <span class="pill pass">Stage 0 · Spec</span>
+          </div>
+          <div class="meta mono">GC 15m</div>
+          <div class="next"><span class="lbl">prossimo</span>Stage 1: chart @GC 15m, verifica meccanica + annotare i giorni di rollover.</div>
+          <ul class="plain log"><li><span class="mono date">2026-09-22</span><span>Spec + codice. Range 20:00–00:00 CT con wrap sulla mezzanotte; stop OCO armati nell&#x27;istante in cui il range chiude (è il motivo per cui regge fill realistici). Variante A (no TP, WR 34%) fuori dal profilo eval → solo basket funded; variante B con TP 1R/0.5R per l&#x27;eval.</span></li></ul>
+        </section>
+        <section class="card diary">
+          <div class="dhead">
+            <h3>Evento macro</h3>
+            <span class="pill pending">non iniziata</span>
+          </div>
+          <div class="meta mono">—</div>
+          <div class="next"><span class="lbl">prossimo</span>Dopo i primi tre.</div>
+          <ul class="plain log"><li class="empty"><span></span><span class="muted">nessuna voce</span></li></ul>
+        </section></div>
 
   <footer>Fonte: <span class="mono">mc/docs/pipeline_status.json</span> nel repo · regole complete in <span class="mono">mc/docs/pipeline_prop.md</span></footer>
 </div>
