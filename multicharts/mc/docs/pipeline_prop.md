@@ -70,14 +70,26 @@ Parametri congelati sull'OOS.
 **Gate 5**: avg trade, WR, PF nello stesso ordine di grandezza dell'IS (WR non sotto
 50%); DD OOS ≤ DD IS × 1.5; equity con drift. Fail → **cimitero**, non si torna indietro.
 
+> **Notebook Colab da usare** (i link nei .txt delle lezioni sono superati; questi sono
+> quelli aggiornati, citati nel PDF della Lezione 10 e usati nella Live 003):
+> - Bootstrap EV / drawdown (Stage 6): `4. Validation…/2. Colab_Montecarlo.txt`
+> - **Prop, singola strategia (Stage 7)**: https://colab.research.google.com/drive/1XyYJ4l-nZNPd8hgqdabHlHJPZXAwv4Up
+> - **Prop, multi‑strategia (Stage 8)**: https://colab.research.google.com/drive/1lrWNv1uHRwQu3k9bfREOIJOmoHZ7Trza
+>
+> Le versioni aggiornate accettano direttamente l'export MC (niente CSV da ripulire),
+> simulano il percorso **intraday** (stime più conservative) e calcolano il numero
+> massimo di contratti "affidabile" (95° perc. della perdita per contratto vs DD prop):
+> sopra quella soglia le stime diventano ottimistiche.
+
 ## Stage 6 — Bootstrap (Colab Monte Carlo, IS + OOS)
 Export List of Trades → notebook. Risk per contract = SL medio in $.
 
 **Gate 6**: EV > 0 in $ e in R; P(EV ≤ 0) < 5% IS, < 10% OOS; CI IS/OOS sovrapposti.
 Salva percentili DD dopo 10/20/40 trade (yardstick live).
 
-## Stage 7 — Simulatore prop, singola strategia (Colab prop, OOS)
-Regole della prop inserite; sweep sui micro; correlazione fra tentativi.
+## Stage 7 — Simulatore prop, singola strategia (Colab prop single, OOS)
+Regole della prop inserite; sweep sui micro; correlazione fra tentativi (i tentativi NON
+sono indipendenti: in un regime ostile il pass rate cumulato scende — Live 004).
 
 **Gate 7 — EVAL**: pass rate 1° tentativo ≥ 40%; entro 4 tentativi ≥ 85%; giorni medi
 per passare ≤ 15; DD medio < limite; size ottimale ≤ size "affidabile" (95° perc.
@@ -85,7 +97,7 @@ perdita/contratto).
 **Gate 7 — FUNDED**: qualification rate ≥ 50% alla size di sopravvivenza; expected
 payout > costo del budget (≥ 4 × fee).
 
-## Stage 8 — Basket
+## Stage 8 — Basket (Colab prop multiple)
 Tutte le strategie che hanno passato lo Stage 7 vanno nel simulatore multi‑strategia.
 
 **Gate 8**: correlazione a coppie ≤ 0.2 (meglio ≤ 0); giorni attivi ≥ 90%; pass rate del
