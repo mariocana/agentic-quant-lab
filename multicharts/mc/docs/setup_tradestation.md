@@ -22,6 +22,23 @@ Da fare nell'ordine, appena i fondi sono accreditati sul conto **Futures**.
 - [ ] QuoteManager → il simbolo mostra il range scaricato: lo storico resta **in locale**
       anche dopo la scadenza dei dati real‑time.
 
+## 3b. Scaricare lo storico (una volta sola)
+Regola: **barre da 1 minuto, non tick**. Da 1 min MC comprime 5 e 15 min, quindi un solo
+download per strumento copre tutte le strategie; lo storico a tick è più corto, pesa
+centinaia di milioni di righe e rende lente ottimizzazioni e backtest.
+- [ ] @NQ **1 min**, range dal 2016 (o dalla prima barra disponibile) a oggi → serve a
+      ORB e VaultBreak (per compressione a 5 min) e a VWAP Pullback (nativo).
+- [ ] @GC **1 min**, stesso range → Gold Asian per compressione a 15 min.
+- [ ] Lascia completare il backfill; i dati restano nel database locale anche quando
+      scadono i 90 giorni di real‑time.
+- [ ] **Bar Magnifier** (Strategy Properties): attivo, risoluzione 1 minuto. Serve per i
+      fill intrabar sulle barre da 5 min, dove stop e target possono essere toccati nella
+      stessa barra. Nei report fatti con i dati di prova era *Disabled*.
+- [ ] Tick: **non ora**. Se serviranno (filtro delta, precisione fill), se ne scarica una
+      finestra di 1–2 anni, non tutto lo storico.
+- Nota piano: l'Historical Data Downloader con scheduler è una funzione **Advanced**; con
+  Standard il backfill si fa aprendo il chart con il range pieno.
+
 ## 4. Impostazioni comuni prima dei test
 - [ ] Format Instrument → Settings → Time zone **Exchange** (CT). Verifica che l'apertura
       cash cada alle **08:30**.
