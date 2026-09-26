@@ -128,3 +128,18 @@ randomizzazioni per non essere identici agli altri account.
 Note dati: futures **non back‑adjusted** (irrilevante per strategie flat EOD; per Gold
 Asian segnare i giorni di roll trimestrale nella lista trade); DOM storico assente →
 il filtro delta si testa solo sugli ultimi 2 anni (tick).
+
+---
+
+## Ramo B — prop su CFD (FTMO & simili). Rimandato
+
+Non ora, ma registrato per non ripensarci da capo:
+- **FTMO non supporta MultiCharts**: si esegue su MT4/MT5, cTrader o DXtrade. Quindi non
+  è un mirroring da MC ma un ramo separato su **MT5**, dove il lavoro MQL5 già fatto
+  (`mql5/orb`, `ivb`, `range_breakout`, `Include/PropGuard.mqh`) torna utile.
+- **Regole diverse → profilo diverso**: Apex ha il *trailing drawdown* (vincolo severo →
+  WR alto, R:R basso); FTMO ha perdita massima **statica** dal saldo iniziale + limite
+  giornaliero, più tollerante verso R:R alto e WR basso. Strategie scartate per l'eval
+  Apex (es. Gold Asian variante A, WR 34% senza TP) potrebbero rientrare qui.
+- Se e quando: servirà un simulatore prop adattato a quelle regole (il notebook del corso
+  è scritto per il trailing di Apex) e nuove soglie nei gate 2, 3 e 7.
