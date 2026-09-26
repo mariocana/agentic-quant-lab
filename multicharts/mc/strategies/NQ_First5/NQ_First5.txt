@@ -1,0 +1,136 @@
+{ =====================================================================
+  NQ_First5  -  direzione dei primi 5 minuti, tenuta fino alla chiusura
+  ---------------------------------------------------------------------
+  Unione dei due template del corso (18. BASE e 18. FILTERED) in un solo
+  signal: `UseFilters` sceglie fra base case e versione filtrata, così si
+  confrontano nello stesso run. Spec: SPEC.md.
+
+  SEGNALE
+    Barra di riferimento = prima barra a 5 min della sessione NY, quella
+    che chiude a SignalTime (08:35 CT). Alla sua chiusura:
+      close > EMA(EMALength) -> long ; close < EMA -> short
+    Ingresso "this bar at close". Un segnale per giorno solare.
+  USCITA
+    Chiusura della prima barra con Time >= ExitTime (15:00 CT = 16:00 NY).
+    `SetExitOnClose` come rete di sicurezza per le mezze giornate.
+  FILTRI (UseFilters = 1), misurati in ADR (range medio di sessione):
+    1) range della barra di riferimento >= RefBarMinRange x ADR(20)
+    2) ADR(20) >= VolRegimeRatio x ADR(100)
+    Un giorno che fallisce un filtro non fa trade e non riprova.
+    Warm-up: nessun trade prima di VolRegimeLongLen sessioni.
+
+  StopPts: NON fa parte della versione validata (default 0 = off). E' la
+  variante pre-registrata per l'uso prop (senza stop una seduta come il
+  05/08/2024 vale ~$2.000 su 1 MNQ): da validare con lo split-sample
+  allo Stage 4, non da accendere prima.
+
+  CHART: @NQ 5 min, sessione **Globex 24h**, timezone Exchange (CT).
+         Bar Magnifier non necessario (tutti i fill sono a chiusura barra).
+         Il chart DEVE restare a 5 minuti: la barra di riferimento e'
+         definita su quella risoluzione.
+  ===================================================================== }
+
+Inputs:
+    EMALength(12),             { EMA sulle chiusure a 5 min }
+    SignalTime(835),           { chiusura della barra di riferimento, CT }
+    ExitTime(1500),            { prima barra che chiude a/dopo questo orario }
+    SessionOpen(830),          { apertura sessione diurna, per l'ADR }
+    AllowLongs(1),
+    AllowShorts(1),
+    UseFilters(0),             { 0 = base case, 1 = versione filtrata }
+    RefBarMinRange(0.15),      { range barra rif. >= frazione di ADR; 0 = off }
+    VolRegimeRatio(1.10),      { ADR breve >= mult. dell'ADR lungo }
+    ADRLength(20),             { sessioni nell'ADR breve, max 30 }
+    VolRegimeLongLen(100),     { sessioni nell'ADR lungo, max 120, = warm-up }
+    StopPts(0),                { variante prop: stop in punti NQ; 0 = off }
+    NumContracts(1);
+
+Arrays:
+    sessRange[120](0);
+
+Variables:
+    ema(0), dayHigh(0), dayLow(0), inSession(false),
+    rIdx(0), rN(0), rSum(0), adr(0), adrLong(0),
+    k(0), refRangeOK(false), regimeOK(false), signalDone(false);
+
+once begin
+    if RefBarMinRange < 0 or VolRegimeRatio <= 0 then
+        RaiseRunTimeError("RefBarMinRange >= 0 e VolRegimeRatio > 0.");
+    if ADRLength < 1 or ADRLength > 30 or ADRLength <> IntPortion(ADRLength) then
+        RaiseRunTimeError("ADRLength intero fra 1 e 30.");
+    if VolRegimeLongLen < 1 or VolRegimeLongLen > 120 or
+       VolRegimeLongLen <> IntPortion(VolRegimeLongLen) then
+        RaiseRunTimeError("VolRegimeLongLen intero fra 1 e 120.");
+    if SessionOpen >= SignalTime or SignalTime >= ExitTime then
+        RaiseRunTimeError("Serve SessionOpen < SignalTime < ExitTime.");
+end;
+
+ema = XAverage(Close, EMALength);
+
+{ ---- range di sessione in un ring buffer da 120 slot ---- }
+if Time > SessionOpen and Time <= ExitTime then begin
+    if inSession = false then begin
+        dayHigh = High;
+        dayLow  = Low;
+        inSession = true;
+    end
+    else begin
+        dayHigh = MaxList(dayHigh, High);
+        dayLow  = MinList(dayLow, Low);
+    end;
+end
+else if inSession then begin
+    sessRange[rIdx] = dayHigh - dayLow;
+    rIdx = Mod(rIdx + 1, 120);
+    rN = MinList(rN + 1, 120);
+
+    rSum = 0;
+    for k = 1 to MinList(ADRLength, rN) begin
+        rSum = rSum + sessRange[Mod(rIdx - k + 120, 120)];
+    end;
+    adr = rSum / MinList(ADRLength, rN);
+
+    rSum = 0;
+    for k = 1 to MinList(VolRegimeLongLen, rN) begin
+        rSum = rSum + sessRange[Mod(rIdx - k + 120, 120)];
+    end;
+    adrLong = rSum / MinList(VolRegimeLongLen, rN);
+    inSession = false;
+end;
+
+{ ---- un segnale per giorno ---- }
+if Date <> Date[1] then
+    signalDone = false;
+
+{ ---- ingresso sulla barra di riferimento ---- }
+if MarketPosition = 0 and signalDone = false and Time = SignalTime then begin
+
+    refRangeOK = true;
+    regimeOK   = true;
+    if UseFilters = 1 then begin
+        if RefBarMinRange > 0 then
+            refRangeOK = rN > 0 and (High - Low) >= RefBarMinRange * adr;
+        regimeOK = rN >= VolRegimeLongLen and adr >= VolRegimeRatio * adrLong;
+    end;
+
+    if refRangeOK and regimeOK then begin
+        if Close > ema and AllowLongs = 1 then
+            Buy ("F5.L") NumContracts contracts this bar at close
+        else if Close < ema and AllowShorts = 1 then
+            SellShort ("F5.S") NumContracts contracts this bar at close;
+    end;
+    signalDone = true;
+end;
+
+{ ---- stop opzionale (variante prop, off di default) ---- }
+if StopPts > 0 then
+    SetStopLoss(StopPts * BigPointValue * MaxList(1, CurrentContracts));
+
+{ ---- uscita a tempo alla chiusura cash ---- }
+if MarketPosition > 0 and Time >= ExitTime then
+    Sell ("F5.LX") this bar at close;
+if MarketPosition < 0 and Time >= ExitTime then
+    BuyToCover ("F5.SX") this bar at close;
+
+{ ---- rete di sicurezza per le mezze giornate ---- }
+SetExitOnClose;
