@@ -131,6 +131,20 @@ il filtro delta si testa solo sugli ultimi 2 anni (tick).
 
 ---
 
+## Candidati valutati e scartati
+
+- **Gold/Silver Reversion** (template 17 del corso, GC vs SI, 5 min). Fade del movimento
+  dell'oro relativo all'argento, z‑score su finestra mobile. Scartata: **nessun flat di
+  fine giornata** (una posizione aperta blocca gli ingressi per settimane e porta rischio
+  overnight/weekend, il peggio col trailing di Apex), pochissimi trade rispetto ai 21
+  giorni di eval, e col default `HedgeRatio 5` il segnale è di fatto l'argento — nelle
+  note dell'autore, sopra 2 «stai negoziando il movimento dell'argento con un contratto
+  sull'oro», col rischio di un long oro travestito. L'autore la dà per non validata e i
+  parametri stabili 2017‑2022 non si sono ripetuti nel 2023‑2026. Resta come materiale di
+  studio in `mc/protocollo/6. Code Templates/1. Strategies/17. …`.
+
+---
+
 ## Ramo B — prop su CFD (FTMO & simili). Rimandato
 
 Non ora, ma registrato per non ripensarci da capo:

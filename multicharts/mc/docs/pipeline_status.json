@@ -155,6 +155,24 @@
       "next": "Stage 1: chart @GC 15m, verifica meccanica + annotare i giorni di rollover."
     },
     {
+      "name": "NQ First5",
+      "family": "momentum · long+short",
+      "instrument": "NQ 5m",
+      "path": "mc/strategies/NQ_First5",
+      "stages": {
+        "0": "pass",
+        "1": "pending"
+      },
+      "note": "Codice pronto (`NQ_First5.txt`, base e filtrata in un solo signal). Direzione della prima barra NY (08:35 CT) vs EMA(12), tenuta fino alle 15:00. **L'unica candidata con lato short reale.** Senza stop non è deployabile per la prop: `StopPts` è la variante obbligatoria dello Stage 4. Da misurare presto la correlazione con l'ORB (stesso strumento e stessa ora).",
+      "log": [
+        {
+          "date": "2026-09-26",
+          "text": "Spec + codice dai template 18 del corso (dichiarati non validati dall'autore). BASE e FILTERED uniti con `UseFilters` per confrontarli nello stesso run; aggiunto `StopPts` (off di default) come variante prop pre‑registrata."
+        }
+      ],
+      "next": "Stage 1: chart @NQ 5m Globex, verifica meccanica; poi Stage 2 con base vs filtrata dalla stessa data."
+    },
+    {
       "name": "Evento macro",
       "family": "event driven",
       "instrument": "—",
@@ -170,6 +188,10 @@
     "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
   ],
   "log": [
+    {
+      "date": "2026-09-26",
+      "text": "Nuovo materiale del corso valutato. **NQ First5** entra in pipeline: porta il lato short che manca al basket (ORB e VaultBreak sono long‑only). **Gold/Silver Reversion scartata**: nessun flat di fine giornata, hold multi‑day che blocca gli ingressi per settimane, pochi trade — incompatibile col trailing Apex; l'autore stesso la dà per non validata."
+    },
     {
       "date": "2026-09-25",
       "text": "Bonifico SEPA €500 inviato al conto Futures; accredito atteso lunedì. Scritta la checklist di setup TradeStation → MultiCharts."

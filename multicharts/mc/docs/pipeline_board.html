@@ -116,8 +116,8 @@ footer { color:var(--muted); font-size:.8rem; }
   </header>
 
   <div class="status">
-    <span>strategie <b>5</b></span>
-    <span>avviate <b>4</b></span>
+    <span>strategie <b>6</b></span>
+    <span>avviate <b>5</b></span>
     <span>bloccate <b>1</b></span>
     <span>stage più avanzato superato <b>1</b> / 9</span>
   </div>
@@ -164,6 +164,15 @@ footer { color:var(--muted); font-size:.8rem; }
         <tr class="note"><td colspan="12"><div class="notetext">Codice pronto (<code>GoldAsianRange.txt</code>): range 20:00–00:00 CT con wrap, stop OCO ai bordi, stop = ampiezza range, TP_RR opzionale, flat 10:00 CT. Variante A (TP_RR 0) per il basket funded, B (TP_RR 1/0.5) per l&#x27;eval. Overnight per costruzione → annotare i giorni di rollover. In attesa dati.</div></td></tr>
         <tr class="strat">
           <th scope="row">
+            <div class="name">NQ First5</div>
+            <div class="meta">momentum · long+short · <span class="mono">NQ 5m</span></div>
+          </th>
+          <td><span class="chip pass" title="Spec: passato"><span class="sym">✓</span></span></td><td><span class="chip pending" title="Meccanica: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Backtest IS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Monte Carlo: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Migliorie: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="OOS: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Bootstrap: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Prop sim: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Basket: da fare"><span class="sym">·</span></span></td><td><span class="chip pending" title="Deploy: da fare"><span class="sym">·</span></span></td>
+          <td class="where"><span class="pill pass">Stage 0 · Spec</span></td>
+        </tr>
+        <tr class="note"><td colspan="12"><div class="notetext">Codice pronto (<code>NQ_First5.txt</code>, base e filtrata in un solo signal). Direzione della prima barra NY (08:35 CT) vs EMA(12), tenuta fino alle 15:00. <b>L&#x27;unica candidata con lato short reale.</b> Senza stop non è deployabile per la prop: <code>StopPts</code> è la variante obbligatoria dello Stage 4. Da misurare presto la correlazione con l&#x27;ORB (stesso strumento e stessa ora).</div></td></tr>
+        <tr class="strat">
+          <th scope="row">
             <div class="name">Evento macro</div>
             <div class="meta">event driven · <span class="mono">—</span></div>
           </th>
@@ -193,7 +202,7 @@ footer { color:var(--muted); font-size:.8rem; }
       </section>
       <section class="card">
         <h2>Decisioni e setup</h2>
-        <ul class="plain log"><li><span class="mono date">2026-09-25</span><span>Bonifico SEPA €500 inviato al conto Futures; accredito atteso lunedì. Scritta la checklist di setup TradeStation → MultiCharts.</span></li><li><span class="mono date">2026-09-25</span><span>Conto TradeStation approvato (Futures + Equities). Si finanzia il conto Futures: è quello che abilita le entitlement dati CME.</span></li><li><span class="mono date">2026-09-22</span><span>Codice pronto anche per Gold Asian Range: tutte e quattro le strategie sono scritte e aspettano solo i dati.</span></li><li><span class="mono date">2026-09-22</span><span>Codice PowerLanguage pronto anche per VaultBreak (rolling ATR 252, chart RTH) e VWAP Pullback (EOD flat obbligatorio, niente sizing per margine). Le tre strategie NQ partiranno insieme allo Stage 1 appena ci sono i dati.</span></li><li><span class="mono date">2026-09-22</span><span>Licenza: mensile MC quando arriva il conto TradeStation, lifetime a Black Friday. Da chiedere al supporto lo sconto crossgrade.</span></li><li><span class="mono date">2026-09-22</span><span>Decisione dati: TradeStation per lo storico (video del corso: NQ intraday dal 2015/16), Rithmic/Apex per il live. Verificato pricing TS: dati CME gratis 90 gg, inattività $10 waived con 10 trade/90 gg. dxFeed Volumetrica non usabile in MC (entitlement per‑vendor).</span></li><li><span class="mono date">2026-09-22</span><span>Verificato dxFeed via MC: 9 anni di minuti (IS 2020–24 + OOS coperti), futures non back‑adjusted (ok per strategie flat EOD; segnare i giorni di roll per Gold Asian), DOM storico assente (filtro delta solo su 2 anni di tick). Richiede licenza attiva → unico blocco rimasto.</span></li><li><span class="mono date">2026-09-17</span><span>Pipeline con gate definita. Spec Stage 0 per ORB, VaultBreak, VWAP Pullback, Gold Asian Range. Flag 0/1 nell&#x27;ORB per l&#x27;ottimizzatore; run SizingMode 1 identico al fisso (Risk_USD troppo basso per NQ) — sizing in $ rimandato al simulatore prop.</span></li><li><span class="mono date">2026-09-17</span><span>ORB Stage 1 passato su @ES e @NQ: 1 trade/giorno, EOD 14:00, SL/TP = range, fuso Chicago confermato dalle riaperture domenicali 17:00. Caso noto: half‑day → gap exit.</span></li><li><span class="mono date">2026-09-16</span><span>Corso Institutional Protocol letto per intero (PDF, codice, 18 video trascritti). Digest + protocollo MC in mc/docs. Porting ORB in PowerLanguage.</span></li><li><span class="mono date">2026-09-14</span><span>Decisa la migrazione da MetaTrader 5 a MultiCharts. Journal discrezionale creato (journal/).</span></li></ul>
+        <ul class="plain log"><li><span class="mono date">2026-09-26</span><span>Nuovo materiale del corso valutato. <b>NQ First5</b> entra in pipeline: porta il lato short che manca al basket (ORB e VaultBreak sono long‑only). <b>Gold/Silver Reversion scartata</b>: nessun flat di fine giornata, hold multi‑day che blocca gli ingressi per settimane, pochi trade — incompatibile col trailing Apex; l&#x27;autore stesso la dà per non validata.</span></li><li><span class="mono date">2026-09-25</span><span>Bonifico SEPA €500 inviato al conto Futures; accredito atteso lunedì. Scritta la checklist di setup TradeStation → MultiCharts.</span></li><li><span class="mono date">2026-09-25</span><span>Conto TradeStation approvato (Futures + Equities). Si finanzia il conto Futures: è quello che abilita le entitlement dati CME.</span></li><li><span class="mono date">2026-09-22</span><span>Codice pronto anche per Gold Asian Range: tutte e quattro le strategie sono scritte e aspettano solo i dati.</span></li><li><span class="mono date">2026-09-22</span><span>Codice PowerLanguage pronto anche per VaultBreak (rolling ATR 252, chart RTH) e VWAP Pullback (EOD flat obbligatorio, niente sizing per margine). Le tre strategie NQ partiranno insieme allo Stage 1 appena ci sono i dati.</span></li><li><span class="mono date">2026-09-22</span><span>Licenza: mensile MC quando arriva il conto TradeStation, lifetime a Black Friday. Da chiedere al supporto lo sconto crossgrade.</span></li><li><span class="mono date">2026-09-22</span><span>Decisione dati: TradeStation per lo storico (video del corso: NQ intraday dal 2015/16), Rithmic/Apex per il live. Verificato pricing TS: dati CME gratis 90 gg, inattività $10 waived con 10 trade/90 gg. dxFeed Volumetrica non usabile in MC (entitlement per‑vendor).</span></li><li><span class="mono date">2026-09-22</span><span>Verificato dxFeed via MC: 9 anni di minuti (IS 2020–24 + OOS coperti), futures non back‑adjusted (ok per strategie flat EOD; segnare i giorni di roll per Gold Asian), DOM storico assente (filtro delta solo su 2 anni di tick). Richiede licenza attiva → unico blocco rimasto.</span></li><li><span class="mono date">2026-09-17</span><span>Pipeline con gate definita. Spec Stage 0 per ORB, VaultBreak, VWAP Pullback, Gold Asian Range. Flag 0/1 nell&#x27;ORB per l&#x27;ottimizzatore; run SizingMode 1 identico al fisso (Risk_USD troppo basso per NQ) — sizing in $ rimandato al simulatore prop.</span></li><li><span class="mono date">2026-09-17</span><span>ORB Stage 1 passato su @ES e @NQ: 1 trade/giorno, EOD 14:00, SL/TP = range, fuso Chicago confermato dalle riaperture domenicali 17:00. Caso noto: half‑day → gap exit.</span></li><li><span class="mono date">2026-09-16</span><span>Corso Institutional Protocol letto per intero (PDF, codice, 18 video trascritti). Digest + protocollo MC in mc/docs. Porting ORB in PowerLanguage.</span></li><li><span class="mono date">2026-09-14</span><span>Decisa la migrazione da MetaTrader 5 a MultiCharts. Journal discrezionale creato (journal/).</span></li></ul>
       </section>
     </div>
   </div>
@@ -235,6 +244,15 @@ footer { color:var(--muted); font-size:.8rem; }
           <div class="meta mono">GC 15m</div>
           <div class="next"><span class="lbl">prossimo</span>Stage 1: chart @GC 15m, verifica meccanica + annotare i giorni di rollover.</div>
           <ul class="plain log"><li><span class="mono date">2026-09-22</span><span>Spec + codice. Range 20:00–00:00 CT con wrap sulla mezzanotte; stop OCO armati nell&#x27;istante in cui il range chiude (è il motivo per cui regge fill realistici). Variante A (no TP, WR 34%) fuori dal profilo eval → solo basket funded; variante B con TP 1R/0.5R per l&#x27;eval.</span></li></ul>
+        </section>
+        <section class="card diary">
+          <div class="dhead">
+            <h3>NQ First5</h3>
+            <span class="pill pass">Stage 0 · Spec</span>
+          </div>
+          <div class="meta mono">NQ 5m</div>
+          <div class="next"><span class="lbl">prossimo</span>Stage 1: chart @NQ 5m Globex, verifica meccanica; poi Stage 2 con base vs filtrata dalla stessa data.</div>
+          <ul class="plain log"><li><span class="mono date">2026-09-26</span><span>Spec + codice dai template 18 del corso (dichiarati non validati dall&#x27;autore). BASE e FILTERED uniti con <code>UseFilters</code> per confrontarli nello stesso run; aggiunto <code>StopPts</code> (off di default) come variante prop pre‑registrata.</span></li></ul>
         </section>
         <section class="card diary">
           <div class="dhead">
