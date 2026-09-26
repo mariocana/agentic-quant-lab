@@ -1,0 +1,725 @@
+# Quant VWAP (Andrea Burzichelli)
+# lang=en
+
+[00:00] Thank you.
+[00:30] Thank you.
+[01:00] Come vedete non siamo su Deepchart ma su Multicharts perché andiamo a fare un po' di backtest, andiamo a guardare un po' di analisi quantitative su alcune cose che abbiamo visto.
+[01:10] Finalmente ho capito il tuo modello, mi sono rivisto le live mille volte, ottimo, ottimo.
+[01:25] Allora, allora, allora ragazzi.
+[01:33] Vediamo se la salute della live regge perché in questo momento stiamo renderizzando moltissimissimissimi dati, ma la salute sembra non starne risentendo troppo.
+[01:49] Quindi iniziamo e oggi andiamo a vedere un po' di roba.
+[01:53] Quanti di voi ragazzi lasciate un bell'uno in chat?
+[01:56] Per quanti di voi hanno provato ad implementare un po' le questioni che abbiamo visto sul VWAP ancorato?
+[02:03] E quindi sul fatto che magari sulla rottura N5 cercare il punto massimo da cui far partire il VWAP per ottenere sostanzialmente delle zone di ingresso e delle zone di uscita.
+[02:17] Qualcuno di voi ha testato o ha fatto qualche test?
+[02:22] Fabrizio ha fatto qualche test?
+[02:23] Bene.
+[02:24] Vediamo se c'è qualcun altro.
+[02:27] Guarda, stanno entrando.
+[02:28] Vediamo un po'.
+[02:29] Ok, sì, ci siamo.
+[02:36] Quindi sostanzialmente quello che abbiamo visto ragazzi è stato, ma ha vantaggio o non ha vantaggio?
+[02:42] Acquistare qui.
+[02:43] Io lo stavo proprio backtestando sia su rotture che su assorbimenti, ottimo.
+[02:46] Quindi, ha senso aspettare per uno short di comprare qui?
+[02:51] Io pure top VWAP.
+[02:52] Perfetto ragazzi.
+[02:54] Andiamo a fare una cosa.
+[02:56] Andiamo a prendere noi usando esattamente lo stesso metodo.
+[03:00] Ok?
+[03:01] Quindi noi, come avete visto, io sono stato molto meccanico.
+[03:04] Prendiamo la prima mezz'ora.
+[03:07] Quindi andiamo su questa strategia che è ovviamente algoritmica.
+[03:11] Se consente.
+[03:17] Andiamo a togliere un attimo l'indicatore di VWAP che ragazzi mi consuma tutta la CPU perché ovviamente il VWAP non c'era, l'ho dovuto costruire.
+[03:25] Quindi andiamo a prendere la strategia e impostiamo un paio di robe.
+[03:33] Mettiamo come...
+[03:36] Togliamo la continuation, quindi si baserà soltanto sul filtro della prima mezz'ora ragazzi.
+[03:42] Ok?
+[03:43] E una volta identificato il breakout in M5, quindi prima mezz'ora dalle 8.30 alle 9 americane.
+[03:50] Settimana scorsa bene bene col VWAP, lo so.
+[03:52] Quindi che cosa succede?
+[03:53] Che si prende dall'8.30 alle 9, che sono 15.30, 16.
+[03:57] Prende quell'orario, smetti di tradare alle 15 che per noi sono le 22.
+[04:01] E dopodiché 8.8, la continuation e il flip, che sono due configurazioni.
+[04:05] Quindi guarderà solo il breakout della IVB, quello che conosciamo, no?
+[04:10] Dopodiché gli diamo come entry di entrare sulla prima deviazione standard, quindi quella più in basso.
+[04:18] Vi ricordate nello schema del VWAP?
+[04:21] E non mettiamo nessun filtro in ingresso.
+[04:23] Come stop loss possiamo dare un livello di ATR.
+[04:32] Che vabbè sì, lo terrei intorno a 2.5 oppure no?
+[04:36] Oppure no, sì.
+[04:38] Vediamo un 2.
+[04:40] Vediamo un 2.5 come stop.
+[04:43] Entri sulla prima deviazione, questo non mi interessa, non mi interessa, non mi interessa.
+[04:48] TP sigma non mi interessa.
+[04:51] No, invece questo mi interessa.
+[04:54] Sulla deviazione opposta, andiamo a prendere take profit sulla deviazione opposta.
+[04:58] Vi ricordate ragazzi, deviazione 1, deviazione 2.
+[05:01] Andiamo a provarla in maniera molto ignorante.
+[05:04] Vedete, non ho messo nessun trigger.
+[05:06] Quindi in teoria, seguendo questa logica, noi qui, esatto, dovremmo avere un entry.
+[05:12] Perché dovremmo avere un entry qua?
+[05:13] Beh, perché la prima mezz'ora viene rotta, probabilmente qui c'è un VWAP che viene tracciato, quindi entra lì e va a chiudere dall'altra parte.
+[05:21] Ora, questa stupidaggine senza nessun'altra forma di impostazione, se non prendere la prima mezz'ora, aspettare il ritracciamento del VWAP e poi andare a chiudere dall'altra parte con un pendente, senza fare nient'altro.
+[05:35] Ha un vantaggio statisticamente rilevante oppure è una cazzata?
+[05:39] Non è una cazzata, perché effettivamente vediamo che ha un drift medio positivo.
+[05:45] Qui non abbiamo messo trigger, non abbiamo messo nulla, però stiamo parlando di una serie di eseguiti che adesso vorrei vedere quanti sono.
+[05:55] Parliamo di un profit factor sui long anche molto importante.
+[05:59] Sui long abbiamo un profit factor molto importante, però più stabilità sugli short.
+[06:04] Andiamo a vedere comunque in generale che la strategia ha un risultato, uno sharp ratio positivo, vista così, ma stiamo facendo un test in sample.
+[06:13] Andiamo poi ad allungare questo tipo di discorso per verificare se ha senso e quanto ha senso aspettarsi che dopo un ritracciamento dalla rottura del filtro IVB abbiamo una reazione poi, utilizzando il VWAP.
+[06:31] Ora, potrei continuare qui all'infinito.
+[06:34] Quello che ho fatto io è stato poi trovare dei valori, dei valori diciamo standard, i migliori che potessero essere utili.
+[06:43] Quindi si è scoperto che ad avere il maggiore successo sono i valori di deviazione standard 1,5 per l'entrata.
+[06:52] Quindi mi correggo per tutte le live in cui ho detto che utilizzavo tra l'1 e le 2, adesso vi dico che utilizzo l'1,5, tra l'1 e l'1,5 perché è il punto più critico.
+[07:01] Poi ovviamente con l'ottimizzazione io che cosa ho visto?
+[07:06] Vi mostro subito.
+[07:08] Io ho visto questo.
+[07:13] Ecco qua.
+[07:14] E quindi sono andato a vedere quali erano i rapporti che c'erano e come si otteneva il profit factor maggiore.
+[07:22] E il profit factor maggiore si otteneva con un tp molto alto, quindi un tp di 3, ok?
+[07:32] Un tp di 3 volte quello che era lo stop loss, quindi funziona bene su grosse dimensioni, e con un atr multiple, uno stop loss di atr intorno a 2.
+[07:44] Quindi sostanzialmente facendo quest'analisi io ho visto dove spiccava il verde, quindi dove spiccava il profit factor maggiore.
+[07:54] E quindi sono andato a mettere poi dei valori specifici, che adesso andrò ad inserire, ma facciamo ok.
+[08:02] 1,5.
+[08:04] Mi chiedono che cos'è Multicharts?
+[08:06] È una piattaforma di backtest.
+[08:08] Niente di più per scrivere in codice.
+[08:10] Quindi tu scrivi in codice e poi vai a fare un test.
+[08:14] È un modo per fare analisi quantitative, ce ne sono mille.
+[08:18] Allora, andiamo adesso.
+[08:21] Possiamo dargli per esempio di continuare a farlo, perché io poi vi ho fatto vedere che lo faccio anche ad inversione e anche a continuazione strutturale.
+[08:30] Ha senso continuare a cercare setup?
+[08:33] Vediamo se ha senso.
+[08:35] Abbiamo l'entry che la miglioriamo sull'1,5.
+[08:38] No, però ora teniamola sull'1, non modifichiamo niente.
+[08:40] Adesso ho soltanto consentito di continuare a tradare pure dopo.
+[08:45] Quindi adesso mi aspetto che qui prenderà un trade, ma che qui su questo ritracciamento cercherà un altro trade.
+[08:51] Ok?
+[08:52] E che magari su questo, infatti, che cosa abbiamo?
+[08:55] Abbiamo questo long.
+[08:56] Abbiamo un altro long provato qui, che va male, ma uno short che va qui, che va bene.
+[09:01] Sta seguendo la struttura.
+[09:03] Struttura M5, R test, longa.
+[09:06] Ok?
+[09:07] Eccetera, eccetera, eccetera.
+[09:08] Come sono i risultati, visto che adesso continuo a farlo?
+[09:11] Vediamo se oggi sarebbe partito qualcosa, ma penso di no, con una deviazione così.
+[09:16] Sì, avrebbe appena appena preso uno short, ragazzi.
+[09:19] Guardate.
+[09:20] Avrebbe appena concluso questo sell.
+[09:22] Incredibile, bellissimo.
+[09:24] Ok?
+[09:25] Probabilmente chi di voi sta usando tutte le logiche che abbiamo visto, questo short se l'è preso, l'ha visto.
+[09:33] Perché sono esattamente le cose che ho spiegato.
+[09:35] Quindi questo qui è esattamente quello che abbiamo visto.
+[09:38] Ovviamente noi abbiamo un trigger, no?
+[09:40] Dietro a questa cosa qui.
+[09:41] Abbiamo un'esecuzione, uno stop loss.
+[09:45] Infatti l'ho appena preso.
+[09:46] Perfetto.
+[09:46] Ottimo, Fabrizio.
+[09:48] Guarda, guarda come spinge il cabron.
+[09:50] Che spettacolo.
+[09:51] Lo so che uno spettacolo.
+[09:51] Quattro minuti ATP.
+[09:53] Esatto, esatto.
+[09:54] Easy easy.
+[09:55] Questo perché c'è un vantaggio statistico dietro quello che stiamo vedendo, no?
+[09:59] Ora, vediamo com'è.
+[10:00] Perché potrebbe sorprendere in realtà un equity curve.
+[10:03] No, no, no.
+[10:04] Funziona.
+[10:05] Sì, ora vediamo che non è che sia chissà quanto profittevole.
+[10:08] Sicuramente non perde.
+[10:09] E sicuramente se dobbiamo identificare un drift, è un drift positivo.
+[10:14] Poi stiamo testando dal 5 agosto, ora qua non lo so da quando è.
+[10:18] Dal 25.04.2025 ad ora.
+[10:23] Quindi quasi più di un anno.
+[10:25] Andiamo a fargli magari un'analisi in Monte Carlo per vedere com'è la distribuzione.
+[10:29] Ci sono delle casistiche in cui uno si può aspettare drawdown molto forti.
+[10:33] Ma ripeto ragazzi, non stiamo usando né take profit né stop loss.
+[10:37] Non stiamo facendo nulla di attivo.
+[10:41] Questo è semplicemente un modo per misurare se c'è un vantaggio nel seguire queste logiche.
+[10:46] Sì, il vantaggio c'è, è quantificabile.
+[10:49] Lo abbiamo quantificato.
+[10:50] Ma nelle ottimizzazioni risulta essere un po' forse troppo poco prendere questo profit.
+[10:57] Ora io non so neanche come si torna in avanti qua.
+[11:01] Perché dovrei ritornare a oggi.
+[11:04] Quindi andiamo un attimo su.
+[11:09] Più.
+[11:12] Strategy report.
+[11:15] Teletrasportami qua.
+[11:20] Eccoci qua.
+[11:21] Siamo arrivati.
+[11:23] Cioè, per esempio, può essere limitativo.
+[11:25] Perché vedete, questo short è continuato per un bel po'.
+[11:28] Ora io non so se qua ha dato dei pattern specifici di order flow,
+[11:31] ma questo short è continuato per un po'.
+[11:32] Non è limitativo chiudere così prima?
+[11:35] Potrebbe esserlo.
+[11:36] Quindi potrebbe essere che noi stiamo strozzando la strategia.
+[11:39] In particolare, guardando qui questo short qua, beh, sarebbe potuto andare avanti.
+[11:45] Così come questo long qua.
+[11:46] Forse in qualche modo noi stiamo dando fastidio alla strategia con questo tipi.
+[11:50] Facendo i calcoli, effettivamente non è la scelta migliore.
+[11:54] Dare un calcolo così.
+[11:56] E mi sono sbagliato quando vi dicevo.
+[11:58] Io ovviamente poi quando faccio delle affermazioni cerco di avere dall'altra parte un po' di dati.
+[12:05] Quindi poi sono andato a verificare dopo aver detto alcune cose.
+[12:07] Ho detto, aspetta, andiamo a vedere che sia così.
+[12:09] E effettivamente una cosa che è interessante è che l'1 a 1 è interessante.
+[12:14] Bello, però in realtà con un tpi addirittura sulla terza deviazione standard, che è lontanissima.
+[12:21] No?
+[12:21] Cioè immaginate sul view up che si crea qui, non di prendere profitto sulla prima, non sulla seconda, ma sulla terza deviazione standard.
+[12:29] Quindi molto lontana.
+[12:31] E andiamo quindi a vedere se questa cosa funziona.
+[12:34] Ragazzi, ripeto, questi qua sono i processi madre per identificare un edge.
+[12:39] O intanto questo long impedisce l'esecuzione dell'altro in qualche modo, che non capisco.
+[12:46] Quindi adesso sarebbe da verificare.
+[12:48] Poi prende questo bello short molto più ampio.
+[12:52] Bene.
+[12:54] E ad oggi sarebbe ancora dentro a questo punto.
+[12:56] Quindi andiamo a verificare che cosa sta succedendo ad oggi.
+[13:00] Sarebbe no, l'avrebbe chiuso, ma perché è partita una bomba.
+[13:03] Benissimo, benissimo.
+[13:04] Vediamo che quindi così la strategia sembra lavorare bene.
+[13:07] Non solo, questo è un edge fresco.
+[13:10] Nel senso che se l'ho provato a testare prima di questi ultimi due anni, non era così.
+[13:17] È che l'aumento dell'attività algoritmica presuppone che ci sia un aumento delle risposte sul view up.
+[13:23] Questo adesso inizia ad essere un equity più stabile, più costante.
+[13:28] Che dimostra di avere un edge, sì, periodi in cui performa meno, ma un discrezionale si adatta.
+[13:33] Periodi in cui performa di più.
+[13:35] Periodi in cui c'è un po' di drawdown.
+[13:37] Magari no, non sto filtrando news, non sto filtrando sessioni vuote, non sto facendo filtri di trigger.
+[13:45] Vogliamo inserire un filtro di trigger, possiamo mettere un delta.
+[13:49] Puoi farci vedere il codice?
+[13:50] No.
+[13:50] Il codice non ve lo faccio vedere, vi ho spiegato la logica perfettamente.
+[13:53] Se volete ve lo deducete voi.
+[13:55] Nelle live vi ho spiegato come leggo la struttura e come traccio il view up.
+[13:59] Esattamente in quel modo sviluppato.
+[14:01] Il codice però non ve lo posso dare.
+[14:03] Comunque in ogni caso i long sembrano avere una performance migliore.
+[14:08] Ok?
+[14:09] Ragazzi è una scemenza scrivere in power language, veramente.
+[14:12] Non vi sottovalutate.
+[14:14] Sì, ci vuole un po' di impegno, devi spenderci due o tre settimane, ma strategie semplici come una orb,
+[14:20] open range breakout on AIVB, si scrivono in 20 minuti.
+[14:23] Vi vedete un attimo la guida e capite come fare.
+[14:26] Vi fate aiutare dall'intelligenza artificiale e ci arrivate.
+[14:28] Ok?
+[14:30] Quindi, che poi sono filtri, non è overfitting.
+[14:33] Oddio, attento, attento, perché questo è il rischio di fare queste cose.
+[14:38] Se io ricerco su un campione, per esempio adesso dove stiamo testando questa parte qua, vi faccio vedere una cosa.
+[14:44] Adesso io aumento il campione di set, di testi, non dal 14.04.2025, ma dal 2024.
+[14:56] Quindi un anno in più.
+[14:58] Al di fuori di quello che ho testato.
+[15:01] Ma nonna mia, guardate che bomba oggi il VWAP.
+[15:03] Oh mamma mia.
+[15:10] Bravo Gabri, con Cloud si vola.
+[15:12] Comunque adesso, per tutti quelli che cercano una certa affidabilità, una certa meccanicità, no?
+[15:22] E che vedono questi filtri che porto io, adesso potete avere un proxy, per esempio sul filtro del VWAP,
+[15:29] di quanto sia efficace.
+[15:31] Ok?
+[15:32] Perché è un modo meccanico.
+[15:33] Come lo faccio io, lo fai tu.
+[15:35] Come lo fai tu, lo faccio io.
+[15:36] Tutti nello stesso modo e tutti quantificabile, tutto quantificabile tramite un'analisi dati.
+[15:42] Chiaramente è un'analisi dati sul passato e non c'entra niente con quello che succede in futuro.
+[15:47] Però io preferisco mettere in pratica un concetto che ha funzionato nel passato, piuttosto che uno che non l'ha fatto, no?
+[15:53] Quindi, diciamo, questa è la base.
+[15:55] Ok, abbiamo preso qua questo short e andiamo a vedere come si è comportato aggiungendo un anno.
+[15:59] Magari c'è stata una de-performance.
+[16:01] Sarebbe normale.
+[16:04] Andiamo a vedere.
+[16:08] Effettivamente, sì, è sopravvissuto.
+[16:11] Qui ha subito degli shock.
+[16:12] È chiaro però che il vantaggio si sta manifestando in particolare da questo punto qui.
+[16:17] È successo qualcosa a livello di flusso d'ordine, a livello di prezzo, per cui questo vantaggio si è aperto.
+[16:24] La cosa bella è che anche quando questo vantaggio stava chiusa, non è che perdeva chissà quanto.
+[16:30] Quindi questo significa che questa è una strategia che uno può immaginare come, se non performa, sostiene, sopravvive.
+[16:38] Se performa va molto bene.
+[16:40] Infatti vediamo ora un picco.
+[16:42] Questo è l'ultimo trade che ha fatto.
+[16:43] Sembra essere proprio nella fase di accelerazione, nella fase di aumento.
+[16:48] C'è sicuramente una nascita di un edge.
+[16:50] Infatti nel Q1 di questo noi ne abbiamo parlato in maniera così dettagliata.
+[16:56] Adesso sì, perché è uscito fuori quest'edge.
+[16:59] Tu hai un metodo per identificare i regimi di mercato meccanicamente?
+[17:04] Beh, ce ne sono tanti.
+[17:06] Puoi utilizzare il VIX, puoi utilizzare un'analisi regressiva.
+[17:10] Prova a cercare il GARCH, scritto G-A-R-C-H.
+[17:15] È un ottimo modo per sapere come sarà la volatilità.
+[17:18] In maniera quantitativa.
+[17:20] Ma ovviamente io posso testare migliaia di queste cose, no?
+[17:24] Per esempio, se vogliamo, ragazzi, possiamo fare una cosa.
+[17:28] Avevo anche il piacere di farvi fare questo giochetto.
+[17:31] Cioè, andiamo a prendere un'altra strategia molto semplice di cui, se volete vi do il codice,
+[17:38] che è molto stupida.
+[17:39] È una cosa che nasce così in maniera didattica.
+[17:42] E che si chiama Franci, perché è stata fatta per una persona che si chiama Francesco.
+[17:50] Con una persona che si chiama Francesco.
+[17:52] Che non è però Francesco Agnello.
+[17:54] Che non è Francesco Agnello.
+[17:56] Allora.
+[17:56] Ora facciamo un gioco per cui siete voi che mi chiedete cosa vogliamo testare.
+[18:02] Quindi io vi dico che c'è questa configurazione.
+[18:06] E insieme vediamo cosa si vuole testare.
+[18:09] Quindi vediamo ora le proposte che ci sono.
+[18:12] Ma vi spiego prima come funziona.
+[18:14] Questa è una strategia che ti dice che può prendere il range dei primi 5 minuti,
+[18:21] dei primi 10 minuti, di tutti i minuti che volete voi,
+[18:24] a partire dall'orario che uno vuole.
+[18:27] Quindi a partire da qualsiasi ora.
+[18:29] Si prende un tot di minuti di range e si entra una deviazione standard
+[18:34] sopra al massimo o sotto al minimo.
+[18:38] Oppure se metti 0 direttamente sul massimo o sul minimo.
+[18:43] Oppure un po' più lontano, si può aspettare un po'.
+[18:46] Lo stop loss, questo lo lasciamo stare.
+[18:48] Si può mettere uno stop loss, un tp.
+[18:50] Quale sarebbe per esempio un valore che vogliamo provare?
+[18:53] Mettiamo per esempio la rottura di un massimo.
+[18:56] Di che range?
+[18:57] A partire da che ora?
+[18:59] Immaginiamo l'apertura a mercato.
+[19:02] Vogliamo vedere se già dopo i 15 minuti?
+[19:06] Se dopo i 15 minuti funziona una cosa del genere.
+[19:09] Quindi pensare a un breakout dopo i 15 minuti,
+[19:12] così di principio ha senso.
+[19:14] Mettiamo un tp con standard deviation a 2, per esempio.
+[19:21] Ok.
+[19:23] One trade per day mettiamo true, va bene per ora.
+[19:29] Quindi, ok.
+[19:31] Lo stop loss, ok.
+[19:33] Vai, proviamo.
+[19:35] Ovviamente questa è una strategia stupidissima che non ha nessun tipo di vantaggio.
+[19:39] Non è studiata, non è basata su nulla.
+[19:42] Però vediamo come si comporta.
+[19:44] E poi non è che noi dobbiamo trovare adesso qui un modello che lo mettiamo e ci siamo sistemati.
+[19:50] Noi stiamo andando a fare ricerca.
+[19:53] Bravo.
+[19:54] Tu faresti diverse analisi per vedere quello che performa meglio.
+[19:56] C'è la possibilità di fare questo, che si chiama optimize.
+[20:01] Per cui tu vai a fare un'ottimizzazione di tutto un range.
+[20:05] A parte che ci sono altre cose nuove.
+[20:07] Però tu gli dici, per esempio, provami il range minute da 5 minuti fino a 45 minuti.
+[20:17] Qual è quello che funziona meglio?
+[20:19] Lo vogliamo provare?
+[20:20] Vediamo qual è quello che performa meglio tra...
+[20:23] Aspettate ragazzi.
+[20:24] Ovviamente gli ho dato come obiettivo il maximal profit factor.
+[20:28] Gli potevo dare come obiettivo il massimo net profit.
+[20:34] Potevo dargli qualsiasi obiettivo e trovare il valore giusto.
+[20:37] Questo è overfitting, Gabriele.
+[20:39] Questo è overfittare su dei dati specifici.
+[20:42] Ma ci sta perché stiamo facendo una cosa.
+[20:44] Può essere utile.
+[20:46] Al momento è riuscito a trovare un profit factor di 1.17.
+[20:50] Ok?
+[20:52] E il best value che sta usando sono i 6 minuti.
+[20:55] Quindi al momento sui 6 minuti ha ottenuto il massimo vantaggio.
+[20:59] Avrà provato 5, 6 e 7.
+[21:00] Per ora funziona bene il 6.
+[21:02] Nel giro di 3 minuti dovrebbe aver finito.
+[21:05] Continua a performare meglio il 6.
+[21:07] Vedete ragazzi?
+[21:08] Così si fa un'analisi quantitativa.
+[21:10] Se tu hai dietro questo, ti senti molto più al sicuro, no?
+[21:14] Ad affrontare un drawdown.
+[21:15] Quando adesso vi mettete a usare il VWAP con molta relax, con molta calma, sapete che con la prima deviazione standard, tra la prima e la seconda, tra la prima e la prima e mezza, dell'altra parte da dove fai partire il VWAP, quindi rispetto al trend, no?
+[21:31] Se noi qua dovevamo vedere questo breakout, il VWAP era qui.
+[21:36] Poi c'era quest'altro breakout, il VWAP era qua.
+[21:39] Qui innescava.
+[21:41] Benissimo.
+[21:42] Da qui sapete che fino a qua avete un vantaggio.
+[21:45] Che si vede, a mercato esiste.
+[21:48] Che avete le vecchie lezioni da riprendere per guardare nel dettaglio.
+[21:51] Siamo arrivati, ragazzi, a un maximal profit factor di 1,48.
+[21:55] Con 31 minuti.
+[21:57] Guardate, caso, si è fermato sui 31.
+[22:00] Vede che i 32 funzionano un po' meglio.
+[22:03] Quindi è sui 32 che funziona bene il breakout.
+[22:06] Allora, vedete che Fabio e ragazzi non ci arrivano a caso i quanti e tutti quanti al fatto che...
+[22:13] Ancora squilla perché è arrivata l'ottimizzazione.
+[22:17] Ma ci risulta che il massimo net profit ce l'abbiamo qui.
+[22:22] Con...
+[22:25] Andiamo a vedere qua sullo spreadsheet sul profit factor.
+[22:30] Comunque vedete che cosa succede?
+[22:33] Che i minuti, all'aumentare dei minuti, proprio sui 30 abbiamo il picco di profitto.
+[22:41] Sui 45 inizia ad essercene molto di meno.
+[22:44] E molto poco anche qui.
+[22:45] Dai 10 ai 30 minuti il picco è sui 32.
+[22:48] È qualcosa.
+[22:50] Ok?
+[22:50] Quindi ora prendiamo lo spreadsheet.
+[22:53] Andiamo a cercare...
+[22:56] Questo è overfitting, ragazzi.
+[22:57] Questo è chiaramente overfitting.
+[22:59] Ma è solo per farvi capire la logica.
+[23:01] Vediamo quello più alto.
+[23:02] Eccolo qui.
+[23:03] Con 32 minuti.
+[23:05] Quindi il vero range ottimizzato non è di 30, ma di 32 minuti.
+[23:10] Vedete che scemenza.
+[23:11] Ora, è una scemenza se fatta così.
+[23:13] Su questo valore.
+[23:14] Noi questo qua lo possiamo fare su qualsiasi cosa.
+[23:17] Adesso andiamo a provarlo sui 32 minuti.
+[23:19] E vediamo come si comporta.
+[23:22] Che è chiaramente l'IVB.
+[23:23] Quindi ne viene fuori che è il valore ottimale.
+[23:26] Bello short.
+[23:27] Bel buy.
+[23:28] Sembra funzionare bene.
+[23:30] Andiamo a vedere la strategy performance report.
+[23:33] Ecco qui, ragazzi.
+[23:39] Eravamo partiti per giocare.
+[23:41] Eravamo partiti per giocare.
+[23:42] Ne è venuto fuori che...
+[23:44] Ops.
+[23:44] Con un po' di ottimizzazione.
+[23:46] È overfitting.
+[23:47] Ok?
+[23:48] È overfitting.
+[23:50] Perché?
+[23:50] Perché lo dovremmo provare out of sample.
+[23:52] Ma proviamo l'out of sample.
+[23:54] Che ci vuole?
+[23:54] Quindi assicuriamoci che questo non sia overfitting.
+[23:57] Sì, Andrea.
+[23:58] Lo so che non è overfitting.
+[23:59] E che...
+[23:59] Non so quanto tu sia, Andrea.
+[24:01] Precisamente competente in questo ambito.
+[24:04] Però è giusto che io ai ragazzi che sono così distanti magari da questo mondo.
+[24:08] Gli faccia capire che questo è sbagliato.
+[24:09] Cioè che overfittare o trovare parametri ottimizzati su un periodo di tempo così breve non è il massimo.
+[24:18] Quello è un risultato abbastanza buono, no?
+[24:20] Andiamo a fare un backtest più profondo.
+[24:23] Andando a vedere anche se ha una vita.
+[24:26] Sicuramente aumentando di due anni già facciamo un lavoro di uscita dall'overfitting.
+[24:32] Ma mettiamoci in mezzo il covid.
+[24:34] Mettiamoci in mezzo il covid e andiamo avanti.
+[24:39] Gabriele, quello è un problema per quanto riguarda...
+[24:44] La prima ti devi sviluppare l'indicatore.
+[24:46] Una volta sviluppato l'indicatore big trade allora hai capito che funziona bene, che sei riuscito a codificarlo.
+[24:53] Allora dopo provi a implementarlo.
+[24:56] Io per backtestare quella roba ti dico che su deep chart già stanno uscendo un sacco di funzionalità.
+[25:04] Per backtestare robe sul volume.
+[25:06] Ok?
+[25:07] Per contro qui è più facile backtestare un'esecuzione e lì è più facile backtestare un trigger.
+[25:13] Ti dico una scemenza.
+[25:14] Ma se ti prendi il CSV di questo per la bias e il CSV di quello per i trigger e ti prendi solo quelli che combaciano ti esce fuori...
+[25:25] Hai fatto fare il featuring alle due piattaforme.
+[25:29] Andiamo a vedere com'è andata questa strategia breakout.
+[25:33] Che ha ovviamente dei parametri casuali di TPE e di stop loss.
+[25:37] Out of sample però.
+[25:38] Così vediamo...
+[25:40] E no!
+[25:41] E no, no!
+[25:42] Ma anche out of sample.
+[25:43] Spinge.
+[25:44] Di spingere spinge.
+[25:46] Benissimo ragazzi.
+[25:47] Abbiamo trovato un edge definito.
+[25:48] Abbastanza solido.
+[25:50] Dove abbiamo praticamente una equity che sta molto spesso in profit.
+[25:56] Che nonostante l'ultimo periodo di performance continua a sembrare di star performando.
+[26:02] A periodi di lentezza.
+[26:05] Ma ecco abbiamo trovato un edge.
+[26:07] Abbiamo verificato insieme un edge.
+[26:08] E abbiamo verificato un edge riguardo al breakout dei primi 32 minuti.
+[26:13] Ok?
+[26:14] Quindi i primi 32 minuti.
+[26:15] Adesso andiamo a fare un'analisi in Monte Carlo.
+[26:19] E vediamo che è una buonissima equity.
+[26:21] E nel caso di true down peggiore abbiamo questo.
+[26:24] E questo è quello che ci dà la statistica.
+[26:27] Ok?
+[26:29] Questa è la base equity curve addirittura.
+[26:34] Sì, sì.
+[26:35] Possiamo fare una lezione sul deep pattern bid.
+[26:37] Quindi adesso che noi sappiamo che il breakout del primi 32 minuti ha questo vantaggio.
+[26:43] E che il view up ha quel vantaggio.
+[26:45] Se io li metto insieme queste due cose.
+[26:47] Cosa esce fuori?
+[26:50] Esce fuori una strategia che mi fa entrare a breakout.
+[26:54] Quindi per esempio possiamo aggiungere un ritracciamento.
+[26:57] Perché al momento entriamo proprio a breakout.
+[26:59] Senza nessuna forma di filtro.
+[27:01] Quindi andiamo a cambiare questa cosa.
+[27:07] E quindi proviamo a mescolare le due cose.
+[27:12] Tanto già il filtro della prima mezz'ora è inserito.
+[27:16] Ok?
+[27:19] Quindi, quindi, quindi.
+[27:21] Andiamo a prenderla.
+[27:22] Eccolo lì.
+[27:24] Ci mettiamo...
+[27:25] Con i suoi tempi.
+[27:30] Ok.
+[27:31] Abbiamo...
+[27:32] Ok.
+[27:33] Allora, togliamo la continuation.
+[27:35] Perché vogliamo tradare solo la prima mezz'ora.
+[27:39] Togliamo il flip.
+[27:40] Oddio no, il flip lo lasciamo.
+[27:42] Perché potremmo fare un trade al contrario.
+[27:44] Se la cosa gira.
+[27:47] Entri.
+[27:48] E stavolta l'entry la facciamo.
+[27:49] Qual è l'average trade?
+[27:51] Eh, adesso la vediamo.
+[27:52] Questi sono backstakes fatte un po' così.
+[27:53] Eh, entry sigma mult.
+[27:56] Io lo farei entrare precisamente sul view up centrale.
+[27:59] Cioè, visto che è trend following.
+[28:01] Entrami sul view up centrale.
+[28:03] Gli mettiamo un filtro di delta?
+[28:05] Vogliamo mettergli che ci dovessere un assorbimento di delta?
+[28:08] E mettiamo.
+[28:10] Mettiamo un atr period.
+[28:13] Ok.
+[28:13] Stop plus.
+[28:14] Ok.
+[28:15] Ok.
+[28:16] TP.
+[28:17] Lo mettiamo sulla terza banda.
+[28:18] Va benissimo.
+[28:20] Oppure sapete che facciamo?
+[28:22] Sì.
+[28:22] Ma lo mettiamo sulla terza banda che è più dinamico.
+[28:25] Ma no.
+[28:26] Usiamo un RR stupido.
+[28:29] No.
+[28:30] Facciamo così.
+[28:30] Intanto proviamo così.
+[28:31] Poi andiamo avanti.
+[28:32] Cambiato idea.
+[28:33] 12 volte.
+[28:33] Sono ciccio game.
+[28:35] Allora.
+[28:37] Ok.
+[28:38] Ok.
+[28:38] Contract size.
+[28:40] E...
+[28:40] Facciamo, vi ho detto, i primi 32 minuti.
+[28:43] Ok.
+[28:43] Allora scrivo.
+[28:43] 902.
+[28:45] Ovviamente questa è una scemenza.
+[28:46] Ok.
+[28:46] Direi che possiamo provare a vedere come va.
+[29:00] Con atr.
+[29:01] Cioè, beh, l'atr è il benchmark per la definizione di uno stop loss.
+[29:04] No?
+[29:04] Moltiplicare l'atr degli ultimi 60 minuti.
+[29:08] Degli ultimi 60 candele M1.
+[29:10] Se no, gli stop loss possono essere strategici.
+[29:13] Come sul massimo, sul minimo.
+[29:15] Queste sono cose che poi uno ci pensa dopo.
+[29:18] Intanto uno se ne accorge se esiste un edge, no?
+[29:21] Secondo me, per esempio, qui non è andata.
+[29:23] Qua c'è un bello short, però.
+[29:25] Secondo me qui c'è stata un po' di the performance.
+[29:27] Vediamo.
+[29:29] Vediamo se è frettoloso.
+[29:30] Come metodo di ingresso.
+[29:33] Eh, bene.
+[29:33] Nell'ultimo sì è andata benissimo.
+[29:35] Però diciamo che negli ultimi 300 trade.
+[29:39] Non è andata proprio molto bene.
+[29:41] Quindi c'è qualcosa che non va nel retracement.
+[29:44] È troppo poco profondo o forse è un problema di stop?
+[29:47] A queste domande si risponde con l'optimize.
+[29:50] Quindi vi faccio vedere, per esempio, che cosa andrei a fare.
+[29:53] È un esempio, eh.
+[29:56] Per esempio andrei qua su la questione dello stop loss.
+[30:00] Ma fai una cosa.
+[30:01] Ma testameli un po' tutti.
+[30:02] Testami dallo 1.
+[30:05] Anzi, dallo 0,5 dell'ATR fino al 4 dell'ATR.
+[30:14] A step di 0,5 ciascuno.
+[30:18] E dopodiché il TP.
+[30:21] TP, TP, TP, TP.
+[30:28] Sigma.
+[30:28] Me lo provi da 1 a 4.
+[30:34] Anche qui con 0,5.
+[30:36] Per un totale di 56 combinazioni.
+[30:38] Vai.
+[30:40] Delta filtro di breakout.
+[30:42] Lo metti in percentuale?
+[30:43] Sì.
+[30:45] Però sai che mi hai fatto venire un dubbio?
+[30:47] Ora vediamo intanto qua che dà.
+[30:53] Però vedete ragazzi, quando uno dice, no?
+[30:56] Avere un vantaggio quantitativo, il trading sistematico.
+[30:59] Sì, è chiaro che è figo, il trading sistematico ed è divertente, lo possiamo utilizzare.
+[31:03] Però riuscire a codificare e gestire un portafoglio è una cosa che richiede molto tempo.
+[31:11] All'inizio può essere impegnativo.
+[31:12] Quello che io penso sia meglio è invece che voi iniziate a pensare di, ma io ho l'idea che quando c'è un breakout M5, in realtà il prezzo ho visto che ogni volta mi dà torto.
+[31:29] E verifica.
+[31:30] Se tu hai visto che ogni volta che fai una cosa va male, prova ad entrare al contrario e a sfruttarla.
+[31:35] Scrivi un bel codice con cloud, lo carichi su Multicharts, non so usare Multicharts, usa cloud, chiedigli come si usa Multicharts.
+[31:44] Carica il codice backtest e verifica.
+[31:48] A dati alla mano prendi le decisioni.
+[31:50] Cioè, quando mai è esistito che tu ti puoi fare un backtest di un business?
+[31:56] Cioè, quando mai è stato possibile che tu puoi provare gratis o in demo addirittura con soldi finti ma irreale delle cose che potrebbero funzionare o no?
+[32:07] Cioè, gratuitamente.
+[32:09] Completamente gratuitamente.
+[32:11] Penso sia interessante da usare come mappa quanto tradi discrezionali.
+[32:15] Ma sì, capito, anche che ne so dire, mi sono messo in testa che quando brecca il massimo, dopo che ci ha fatto tanti tocchi, poi lo va a recuperare.
+[32:27] Backtestalo, vedrai che non è così, la prossima volta che lo vedi non ti fai trarre in inganno, no?
+[32:33] Ragazzi, nel frattempo qua abbiamo tre minuti di tempo che servono, quindi se avete domande fatele.
+[32:39] E come cambieranno le cose?
+[32:45] Marco, è una bella domanda.
+[32:50] È una bella domanda, la risposta io non ce l'ho, però ti posso dire che molto molto probabilmente la prima cosa che succederà sarà un overcrowd delle strategie tradizionali.
+[33:02] Quindi ragazzi, mettetevi in testa che tutto ciò che la gente sa inizierà ad essere arbitraggiato.
+[33:11] Ok?
+[33:12] Tutti riusciranno a starci al passo.
+[33:15] E poi in realtà, ragazzi, lo sai qual è la verità?
+[33:17] La verità è che io non ho competenze di coding tali per cui posso ritenermi un quant, no?
+[33:26] Né competenze matematiche.
+[33:27] Però ho la capacità di tradurre la mia ricerca ossessiva ed estremamente più produttiva di quella di un researcher, perché io cerco tutto il giorno, in codificazioni logiche.
+[33:41] Che non significa codice, però io sono in grado di fare molto bene questo lavoro.
+[33:46] E poi dovete impararlo pure.
+[33:47] Poi di descrivere in maniera inequivocabile un contesto.
+[33:50] Che è quello che ho cercato di fare in tutte le trincee, no?
+[33:54] Di portare una visione inequivocabile delle cose che sia...
+[33:57] Perché?
+[33:58] Perché quella meccanicità è misurabile.
+[34:01] Quando tu riesci a tradurre, poi a scrivere codice, a spiegarti come far partire il backtest,
+[34:06] certo, ci perderai delle ore.
+[34:08] Se non sei pratico, ma pensa quando ci avresti dovuto perdere anni per imparare a programmare.
+[34:14] Quindi non sottovalutate tutte queste funzionalità che abbiamo, perché sono veramente incredibili.
+[34:21] Sarebbe interessante anche integrare con la IT, ma penso serve una potenza di calcolo.
+[34:26] Ma che potenza di calcolo, Gabriel?
+[34:28] 64 giga di RAM o 128 giga di RAM?
+[34:34] Online?
+[34:35] Penso che costino 300-400 euro al mese, non di più.
+[34:39] E tu dici, sono tanti.
+[34:40] Capito, ma con 400 euro al mese, con tutta quella giga di RAM, ti metti a fare veramente tutto quello che vuoi.
+[34:50] Gli integri qualsiasi cosa, anche troppo.
+[34:53] Guarda, io programmi in PowerLens, ho provato con Cloud, ma non è riuscito a fare una strategia di centinaia.
+[34:57] Ad oggi la testa di un essere umano in questo è molto meglio di Cloud.
+[35:00] Ma sai una cosa, Andrea?
+[35:01] La questione è lo scoglio numero uno.
+[35:07] Quello che mi fa anche stare tranquillo da una parte riguardo al fatto che non tante persone riusciranno a fare questo.
+[35:14] Marco mi ha chiesto come cambieranno le cose con tutti che hanno accesso a Cloud.
+[35:18] Marco, come puoi vedere, no?
+[35:20] Avere accesso a Cloud non significa avere...
+[35:22] Marco, no, è al 20.
+[35:24] Non significa avere un...
+[35:27] Come dire...
+[35:30] Un vantaggio oggettivo.
+[35:31] Beh, di Andrea ci ha provato e non si è trovato.
+[35:35] Ma perché?
+[35:36] Perché la comunicazione con l'intelligenza artificiale è diversa.
+[35:40] Quindi, per esempio, presupporre di non capire niente, niente, niente, niente,
+[35:44] di continuare per tutto il tempo a non capire niente di codice,
+[35:47] non è un modo proficuo di lavorare con Cloud.
+[35:51] Perché io a Cloud non gli faccio scrivere l'intero codice,
+[35:54] gli faccio scrivere il pezzo di codice che mi serve,
+[35:57] se fa un errore lo so,
+[35:59] e poi sono molto bravo a controllare, ad imparare, no?
+[36:04] Quindi se c'è qualcosa che Cloud non sa fare,
+[36:07] so però cercare e poi imparare a risolverlo.
+[36:10] Quindi è normale che è un aiuto,
+[36:13] ma la maggior parte dei retailer pigro era e pigro rimarrà
+[36:17] e quindi continuerà a preferire in ogni caso l'analisi manuale.
+[36:29] Sì, esatto, Andrea.
+[36:30] No, no, l'idea deve essere tua per forza.
+[36:33] Cioè, questo se tu chiedi a Cloud un'idea di trading profittata non te ne dà.
+[36:37] Non riesce, ma manco...
+[36:39] Manco se gli dici overfittata ce la fa.
+[36:41] No, quello sì.
+[36:44] Tu, tu devi avere l'idea completamente.
+[36:45] Lui è solo il programmatore.
+[36:47] Ecco, alla fine si è rivelato che le intelligenze artificiali
+[36:50] hanno iniziato a scrivere poesie,
+[36:52] fare opere d'arte,
+[36:53] e sono finite ad essere dei programmatori e basta.
+[36:56] Che sono solo quello.
+[36:57] Ha quasi finito il calcolo.
+[36:59] Andiamo a vedere come è uscito.
+[37:00] Ha trovato un profit factor bassino.
+[37:02] 1.18.
+[37:04] No, bassissimo.
+[37:06] No, bassissimo.
+[37:07] Mi aspettavo un profit factor più carino
+[37:20] e l'ha trovato con...
+[37:22] L'ATR è bassissimo
+[37:26] e il TP è altissimo.
+[37:30] Veramente?
+[37:31] Cioè, quindi alla fine di tutto,
+[37:33] quello che funziona,
+[37:36] secondo questo studio molto molto didattico e basta,
+[37:39] è uno stop loss bassissimo.
+[37:42] Quindi questo qua, basso, basso, basso, 0.5.
+[37:52] È un TP enorme.
+[38:06] E proviamo.
+[38:07] Per esempio, potremmo scoprire
+[38:15] che le due strategie isolate funzionano meglio che insieme.
+[38:20] Ah, allora questo è già qualcosa.
+[38:22] Per esempio, vuol dire che la strategia VWAP
+[38:25] forse funziona meglio in un'ottica di momentum.
+[38:30] Vediamo.
+[38:44] Sì, qualcosa così,
+[38:46] ma funzionava meglio senza il VWAP.
+[38:48] Quindi evidentemente le due strategie non sono compatibili.
+[38:51] Bene, abbiamo già due strategie,
+[38:53] idee,
+[38:54] idee,
+[38:55] da mettere nel nostro portofoglio di vantaggi, no?
+[38:59] Sappiamo che il VWAP offre un buon retest.
+[39:03] Sappiamo che il breakout offre un buon edge.
+[39:08] Entrambe le possiamo testare poi come un portofoglio unico.
+[39:11] Ok?
+[39:13] Questo lo si può fare senza nessun problema.
+[39:16] Poi con la sezione portofoglio.
+[39:19] Benissimo, ragazzi.
+[39:19] Io spero che vi sia piaciuta questa deep dive.
+[39:22] Come sapete, noi queste qui sono lezioni teoriche.
+[39:25] Quindi non abbiamo visto il mercato,
+[39:26] anche se in diretta c'è stato un setup.
+[39:29] Che a quanto pare qualcuno si è portato a casa.
+[39:32] Ottimo.
+[39:33] E...
+[39:34] L'ho fatta questa qui con l'ottica di approfittarne,
+[39:38] per questa che è l'unica trincea,
+[39:39] per inziarvi a lasciare qualcosa di più quantitative,
+[39:43] di più analisi,
+[39:44] di più...
+[39:45] no?
+[39:46] Di più misurabile.
+[39:48] Un po' più institutional.
+[39:49] Ok?
+[39:51] Bravo Gabriele.
+[39:52] Prenditi i paper su ArcSive e backtestali.
+[39:58] Non sai capire il vantaggio che ha trovato l'Università di Chicago su quel paper?
+[40:01] Chiedi a Cloud.
+[40:03] Cloud sbaglia?
+[40:05] Se sei proprio scemo, scemo sì.
+[40:08] Ci stai tu dietro, no?
+[40:10] Va bene, ragazzi.
+[40:11] Io vi ringrazio.
+[40:12] Ora vi saluto che fra poco ho,
+[40:15] purtroppo, un impegno che mi è arrivato all'improvviso.
+[40:19] Oggi avrei dovuto fare la coach prima,
+[40:22] la coach, la live prima,
+[40:23] ma non ci sono riuscito.
+[40:25] Spero che abbiate apprezzato
+[40:26] la sorpresa,
+[40:28] un po' più quanta.
+[40:30] Detto questo,
+[40:31] noi ci vediamo lunedì prossimo.
+[40:33] Mi raccomando,
+[40:34] non vi ingamblate niente,
+[40:36] riguardatevi le live sul VWAP
+[40:38] e testatele.
+[40:39] E niente,
+[40:41] un abbraccio, ragazzi.
+[40:42] Lasciate un feedback,
+[40:43] mi raccomando.
+[40:44] Ciao, ciao.

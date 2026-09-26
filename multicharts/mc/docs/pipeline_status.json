@@ -86,6 +86,10 @@
       },
       "log": [
         {
+          "date": "2026-09-26",
+          "text": "Live *Quant VWAP* (Burzichelli) analizzata: ottimizzazione indipendente della durata del range con picco a **30–32 min** che tiene OOS → i nostri 30 min sono in un cluster, non su un picco fittato. Pre‑registrata una variante d'ingresso: ritracciamento su **VWAP ancorato al breakout** (1–1.5 SD, stop 2×ATR). Il suo TP 3× non si trasferisce: profilo da capitale proprio, non da prop."
+        },
+        {
           "date": "2026-09-17",
           "text": "Sizing: flag portati a 0/1 per l'ottimizzatore, aggiunto `MaxRisk_USD`. Il run `SizingMode 1` con Risk_USD 500 è risultato identico al fisso — su NQ 1 contratto a 1R rischia già $1.000–9.000, quindi la formula arrotondava sempre a 1. Sizing in $ rimandato allo Stage 7 (size in micro dal simulatore)."
         },
