@@ -232,6 +232,10 @@
  "log": [
   {
    "date": "2026-09-28",
+   "text": "**Palmquist, *Money-Making Candlestick Patterns* (2008): i pattern non si testano, due idee di processo tenute** (`mc/education/books/NOTES_palmquist_candlestick.md`). A differenza di Elder qui i backtest ci sono, ma l'universo è azionario con selezione cross‑sectional su migliaia di simboli, le barre sono daily con hold multi‑day, e la metrica è ROI annualizzato **senza costi** — non convertibile nel nostro avg trade netto. Il suo filtro migliore («NASDAQ in uptrend») fa più lavoro del pattern stesso: l'edge è il regime. Tenuti: (a) **test per regime** up/down/laterale, non solo per periodo — buco reale del nostro Gate 2, che intercetta la concentrazione temporale ma non quella di regime; (b) sizing dalla **striscia perdente attesa** come controllo analitico accanto al MC allo Stage 7."
+  },
+  {
+   "date": "2026-09-28",
    "text": "**Elder, *Trading for a Living* (1993): scartato come fonte di strategie**, tenute tre cose (`mc/education/books/NOTES_elder.md`). È discretionary, senza backtest né costi né disciplina IS/OOS: le regole come sono scritte non sono falsificabili. Tenuti: (a) il **Triple Screen** come conferma che l'architettura dual‑timeframe è vecchia e generale, non un adattamento al NQ recente; (b) Force Index ed Elder‑Ray come candidati filtro Stage 4, col prior contrario dichiarato del corso sui filtri; (c) la convergenza sulla semplicità (≤ 3 input). **Scartate esplicitamente le divergenze**: si definiscono a posteriori, il risultato dipende dalla definizione arbitraria di pivot."
   },
   {
