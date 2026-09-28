@@ -201,7 +201,7 @@
    "log": [
     {
      "date": "2026-09-28",
-     "text": "Nuova variante pre‑registrata (Stage 4) dal Triple Screen di Elder: **ingresso su stop oltre l'estremo della barra di pullback** invece che a mercato. Il drift deve riprendere prima di essere dentro → filtra i pullback che proseguono, e rende l'ingresso un livello noto in anticipo (risolve la barra d'ingresso scoperta). Costo da misurare: si perdono i rimbalzi che ripartono senza superare quel massimo."
+     "text": "Variante d'ingresso dal Triple Screen di Elder resa **configurabile nel codice**: `EntryMode` 0 = market (validato, default) / 1 = stop 1 tick oltre l'estremo della barra di pullback, valido `EntryStopBars` barre, livello fisso che non insegue. Così l'A/B si fa nello stesso run invece che in due versioni del file. Il drift deve riprendere prima di essere dentro → filtra i pullback che proseguono; in cambio i fill sono a un prezzo peggiore della chiusura del pullback e alcuni rimbalzi si perdono. Non protegge la barra d'ingresso: il bracket resta next‑bar come prima."
     },
     {
      "date": "2026-09-28",

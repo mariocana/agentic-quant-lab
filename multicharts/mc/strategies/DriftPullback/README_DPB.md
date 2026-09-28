@@ -66,6 +66,20 @@ Con `ShowLog 1`, su ~100 giorni, 1 contratto:
 - **Warm-up VWAP.** Con `AnchorType 2` non ci deve essere armamento sulla primissima
   barra segnale della giornata (non esiste ancora uno snapshot precedente): è voluto.
 
+### Se si prova anche `EntryMode 1` (variante Stage 4)
+
+Non serve allo Stage 1 — la configurazione da validare è `EntryMode 0` — ma se lo si
+accende per curiosità, i controlli sono:
+
+- ogni fill deve avvenire **sopra il massimo** (long) o **sotto il minimo** (short) della
+  barra di pullback, mai a un prezzo migliore;
+- con `EntryStopBars 1` un setup che non riempie sulla barra successiva deve sparire: nel
+  log compare `stop scaduto` e nessun trade;
+- il livello **non insegue**: se il prezzo continua a scendere, l'ordine resta dove era;
+- i cancelli valgono anche sull'ordine pendente: se scattano le 14:30, o il 4° trade, o la
+  2ª perdita mentre l'ordine è appeso, l'ordine va cancellato senza eseguire;
+- il numero di trade deve **scendere** rispetto a `EntryMode 0`: se sale, c'è un errore.
+
 ## Cosa NON toccare in questa fase
 
 `DriftThreshPct`, `MALen`, `DriftLen`, `PullbackWindow` e i bracket 80/40/50 sono

@@ -83,14 +83,21 @@ che confermarlo o abbassarlo.
    di averla scartata; i moltiplicatori spediti sono *seed*, non valori validati.
 4. **`MaxLossesPerDay` 1** — variante prop pura: dimezza il worst day a $161/micro e
    permette di raddoppiare la size. Da verificare che non tagli via i recuperi di giornata.
-5. **Ingresso su stop oltre l'estremo della barra di pullback** invece che *next bar at
-   market*: setup armato, barra contraria → buy‑stop sopra il massimo di quella barra
-   (mirror per gli short). Il drift deve **riprendere** prima che si sia dentro, quindi
+5. **`EntryMode` 1 — ingresso su stop** 1 tick oltre l'estremo della barra di pullback,
+   invece che *next bar at market*: setup armato, barra contraria → buy‑stop sopra il
+   massimo di quella barra (mirror per gli short), valido `EntryStopBars` barre, livello
+   fisso che non insegue. Il drift deve **riprendere** prima che si sia dentro, quindi
    filtra i pullback che proseguono. Idea dal Triple Screen di Elder (1993), stessa
    architettura dual‑timeframe di questa strategia — vedi `mc/education/books/NOTES_elder.md`.
    Costo noto da misurare, non da assumere: si perdono i trade in cui il rimbalzo riparte
-   subito senza superare quel massimo. Risolve anche, di fatto, la "barra d'ingresso
-   scoperta" (l'ingresso diventa un livello noto in anticipo).
+   subito senza superare quel massimo, e i fill sono per definizione a un prezzo peggiore
+   della chiusura del pullback.
+   **Non** risolve la barra d'ingresso scoperta: rende noto in anticipo il *prezzo*
+   d'ingresso, ma il bracket resta un ordine next‑bar emesso dalla posizione, esattamente
+   come in `EntryMode` 0.
+   Confronto da fare come A/B nello stesso run (`EntryMode` 0 vs 1), split‑sample sulle due
+   metà dell'IS; `EntryStopBars` 1 è il default, 2–3 solo se l'A/B è promettente e sempre
+   come cluster, mai come picco.
 
 `SizeMode 2` (cushion ladder: +1 contratto ogni $2.000 di profitto bancato, tetto 3) **non
 è una variante di edge**: è logica di deployment, si valuta allo **Stage 7**, non prima.

@@ -15,7 +15,16 @@
        direzione -> setup armato long (o short).
     2) TRIGGER (serie 5 min): la prima barra CONTRO il drift entro
        PullbackWindow barre (rossa per il long, verde per lo short) ->
-       ingresso "next bar at market". Un solo trade per armamento.
+       ingresso. Un solo trade per armamento.
+       EntryMode 0 (VALIDATO, default): "next bar at market".
+       EntryMode 1 (variante Stage 4, da Elder Triple Screen): ordine
+       STOP 1 tick oltre l'estremo della barra di pullback, valido
+       EntryStopBars barre. Il drift deve RIPRENDERE prima che si sia
+       dentro -> filtra i pullback che proseguono. Il livello e' fisso,
+       non insegue; scaduto, il setup muore ineseguito.
+       NOTA: EntryMode 1 rende noto in anticipo il PREZZO d'ingresso, ma
+       NON protegge la barra d'ingresso: il bracket resta un ordine
+       next-bar emesso dalla posizione, come in EntryMode 0.
     3) USCITE: bracket fisso in punti (stop largo 80, target piccolo
        40/50), flat incondizionato a FlatTime, SetExitOnClose dietro.
     Guardrail: max MaxTradesPerDay ingressi e MaxLossesPerDay perdite
@@ -56,6 +65,10 @@ Inputs:
     PullbackWindow(6),         { vita del setup armato, in barre 5m (~30 min) }
     TradeLongs(1),
     TradeShorts(1),
+    { --- modo d'ingresso --- }
+    EntryMode(0),              { 0 = market alla barra dopo (VALIDATO) }
+                               { 1 = stop 1 tick oltre l'estremo della barra di pullback }
+    EntryStopBars(1),          { EntryMode 1: per quante barre 5m resta valido lo stop }
     { --- uscite --- }
     ExitMode(0),               { 0 = punti fissi (validato) · 1 = ATR (solo seed) }
     LongSLpts(80), LongTPpts(40),
@@ -99,11 +112,15 @@ Variables:
     curCts(1), cushion(0),
     { uscite }
     atrEntry(0),
+    { ingresso su stop (EntryMode 1) }
+    oneTick(0),
+    pendingSide(0), pendingLevel(0), pendingBars(0),
     { lavoro }
     i1(0), pvSum(0), vSum(0), tp(0), v2(0), c2prev(0);
 
 { ===== BLOCCO 1 - CONVERSIONE TICK -> PUNTI ===== }
-slipPts = StopSlipTicks * MinMove / PriceScale;
+oneTick = MinMove / PriceScale;
+slipPts = StopSlipTicks * oneTick;
 
 { ===== BLOCCO 2 - RESET GIORNALIERO E SIZING ===== }
 if Date <> Date[1] then begin
@@ -112,6 +129,8 @@ if Date <> Date[1] then begin
     longArmed = false;
     shortArmed = false;
     armedBars = 0;
+    pendingSide = 0;
+    pendingBars = 0;
 
     if AnchorType = 2 then begin
         sPV = 0; sVol = 0; sVwap = 0; sVwapLast = 0; sVwapPrev = 0;
@@ -234,21 +253,66 @@ if MarketPosition = 0
     if TradeLongs = 1 and longArmed and Close < Open then begin
         atrEntry = AvgTrueRange(ATRExitLen);
         if atrEntry <= 0 then atrEntry = Range;
-        Buy ("DriftPB.L") curCts contracts next bar at market;
         longArmed = false;              { il flag si consuma comunque }
-        if ShowLog = 1 then
-            Print("DPB LONG ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
-                  " cts=", curCts:3:0, " #", tradesToday + 1:2:0);
+        if EntryMode = 0 then begin
+            Buy ("DriftPB.L") curCts contracts next bar at market;
+            if ShowLog = 1 then
+                Print("DPB LONG mkt ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
+                      " cts=", curCts:3:0);
+        end
+        else begin
+            pendingSide  = 1;
+            pendingLevel = High + oneTick;
+            pendingBars  = 0;
+            if ShowLog = 1 then
+                Print("DPB LONG stop armato ", Date:8:0, " ", Time:4:0,
+                      " livello=", pendingLevel:8:2);
+        end;
     end;
 
     if TradeShorts = 1 and shortArmed and Close > Open then begin
         atrEntry = AvgTrueRange(ATRExitLen);
         if atrEntry <= 0 then atrEntry = Range;
-        SellShort ("DriftPB.S") curCts contracts next bar at market;
         shortArmed = false;
-        if ShowLog = 1 then
-            Print("DPB SHORT ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
-                  " cts=", curCts:3:0, " #", tradesToday + 1:2:0);
+        if EntryMode = 0 then begin
+            SellShort ("DriftPB.S") curCts contracts next bar at market;
+            if ShowLog = 1 then
+                Print("DPB SHORT mkt ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
+                      " cts=", curCts:3:0);
+        end
+        else begin
+            pendingSide  = -1;
+            pendingLevel = Low - oneTick;
+            pendingBars  = 0;
+            if ShowLog = 1 then
+                Print("DPB SHORT stop armato ", Date:8:0, " ", Time:4:0,
+                      " livello=", pendingLevel:8:2);
+        end;
+    end;
+end;
+
+{ ===== BLOCCO 11b - ORDINE STOP PENDENTE (solo EntryMode 1) =====
+  Il livello e' fissato sulla barra di pullback e NON insegue: se il drift
+  non riprende entro EntryStopBars barre, il setup muore ineseguito.
+  Gli stessi cancelli dell'ingresso a mercato valgono anche qui. }
+if pendingSide <> 0 then begin
+    if MarketPosition <> 0
+       or Time < SessStart or Time >= SessEnd
+       or tradesToday >= MaxTradesPerDay
+       or lossesToday >= MaxLossesPerDay then begin
+        pendingSide = 0;
+    end
+    else begin
+        pendingBars = pendingBars + 1;
+        if pendingBars > EntryStopBars then begin
+            pendingSide = 0;
+            if ShowLog = 1 then
+                Print("DPB stop scaduto ", Date:8:0, " ", Time:4:0);
+        end
+        else if pendingSide = 1 then
+            Buy ("DriftPB.LS") curCts contracts next bar at pendingLevel stop
+        else
+            SellShort ("DriftPB.SS") curCts contracts next bar at pendingLevel stop;
     end;
 end;
 
