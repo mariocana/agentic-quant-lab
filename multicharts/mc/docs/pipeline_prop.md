@@ -73,11 +73,57 @@ giorni in cui 1 micro rischia troppo).
 
 **Gate 4**: regole semplici e spiegabili; ≤ 3 input ottimizzati; rifare Gate 2 e 3.
 
+### Stage 4b — Walk‑forward: come lo usiamo (diagnostico, opzionale, **solo IS**)
+
+Il walk‑forward è nativo in MC (Optimize strategy → Walk Forward Optimization) e il corso
+gli dedica l'Extra 3. **Da noi non è un gate e non è una modalità operativa.** È uno
+strumento con un solo compito: dire se un parametro che abbiamo scelto allo Stage 4 è
+**stabile fra i regimi** o se l'ottimo si sposta a ogni finestra.
+
+**Come si lancia** (parametri fissati, non negoziabili dopo):
+- finestre **rolling** IS 252 sessioni / OOS 63 (anchored solo se il regime è stabile);
+- **interamente dentro il nostro IS** (2020‑01‑01 → 2024‑12‑31 ≈ 16 finestre). L'OOS della
+  pipeline non si tocca: vale la regola dello Stage 5, una volta sola;
+- fitness = **profit factor**, non net profit (è comparabile fra finestre di lunghezza e
+  volatilità diverse);
+- criteri di robustezza **scritti prima di premere Start**: avg OOS net profit > 0 · avg
+  OOS PF > 1.1 · ≥ 60% finestre OOS positive · nessuna finestra > 50% del profitto ·
+  ≥ 30 trade per finestra · **walk‑forward efficiency ≥ 60%** (sotto 50% = fit sul rumore).
+
+**Come si legge il risultato** — e qui sta la differenza rispetto al corso:
+- **passa** → il parametro è stabile: lo si congela al valore scelto e si va avanti. Non
+  si adotta il "forecast", cioè la riottimizzazione ogni 63 giorni;
+- **non passa** → il parametro è rumore: **si toglie l'input** e si torna al default del
+  base case. Il walk‑forward serve a *scartare* un parametro, mai ad *adottare* un
+  calendario di riottimizzazione.
+
+**Perché non lo usiamo come modalità operativa** (il corso lo presenta anche così):
+1. Il vantaggio vero del WFO è avere **pochi dati** — con tre anni dà più finestre OOS di
+   uno split. Noi ne avremo 9 di storico a 1 minuto: il vantaggio non si applica.
+2. Le nostre strategie hanno parametri **congelati per scelta** (DriftPullback, ORB dal
+   Fabio Model). Una strategia che per restare viva va riottimizzata ogni trimestre
+   fallisce comunque lo Stage 5.
+3. È **più facile auto‑ingannarsi**, non meno: parole dell'autore, «basta pochissimo per
+   cambiare i parametri e ottenere un pass quando la strategia non è abbastanza forte».
+   Con lo split, un IS e un OOS entrambi buoni sono difficili da falsificare.
+4. **Incompatibile col contesto prop.** Cambiare parametri ogni 63 giorni significa
+   cambiarli dentro un'eval (21 giorni) o su un funded, sotto trailing drawdown. Le
+   nostre regole di sospensione e ripresa (gate 8) sono definite sull'**equity**, non sui
+   parametri; mescolare le due cose rende il pass rate simulato privo di significato.
+5. **Costo operativo**: per dare i risultati WFO al simulatore prop bisogna esportare la
+   lista trade di **ogni singola finestra OOS** una per una, con i suoi input, e
+   ricucirle a mano in un unico file. Su 16 finestre × 6 strategie non regge.
+
+**Quando invece il WFO sostituirebbe lo split**: strumento con storico corto (< 3 anni) o
+dichiaratamente regime‑dipendente (es. crypto). Non è il caso di nessuna delle attuali.
+
 ## Stage 5 — Out‑of‑sample (una volta)
 Parametri congelati sull'OOS.
 
 **Gate 5**: avg trade, WR, PF nello stesso ordine di grandezza dell'IS (WR non sotto
 50%); DD OOS ≤ DD IS × 1.5; equity con drift. Fail → **cimitero**, non si torna indietro.
+Un walk‑forward che "passa" **non** riapre un fail dello Stage 5: non esiste un secondo
+tentativo sull'OOS, in nessuna forma.
 
 > **Notebook Colab da usare** (i link nei .txt delle lezioni sono superati; questi sono
 > quelli aggiornati, citati nel PDF della Lezione 10 e usati nella Live 003):
@@ -186,6 +232,41 @@ davvero mancante, quello short.
   sull'oro», col rischio di un long oro travestito. L'autore la dà per non validata e i
   parametri stabili 2017‑2022 non si sono ripetuti nel 2023‑2026. Resta come materiale di
   studio in `mc/protocollo/6. Code Templates/1. Strategies/17. …`.
+
+## Strumenti valutati — The Bridge (order flow L2/L3). Fuori pipeline
+
+**Nessuna delle 6 strategie lo usa**: girano tutte su OHLC + volume e funzioni native
+PowerLanguage. L'unico punto di contatto è il filtro delta opzionale dell'ORB
+(`UpTicks − DownTicks`, `UseDeltaFilter` **0 = spento**), dove `UpTicks`/`DownTicks` sono
+parole riservate **native di MC** alimentate dai dati tick del feed — non dal Bridge. Se
+servisse, basta storico tick.
+
+**Come funzionerebbe se un giorno ci servisse** (Extra 2, dettaglio completo nel digest §7):
+MC non vede mai il book. Il Bridge calcola le feature nel suo processo («they cannot live
+within MultiCharts») e 16 funzioni PowerLanguage fanno da interfaccia; lo storico entra in
+MC come CSV importato da QuoteManager (ASCII mapping), e in live si danno al Bridge le
+credenziali di un **feed proprio** (Databento, Rithmic, IQFeed, Continuum, Kanna) — il
+Bridge non distribuisce dati, il feed L3 lo si paga a parte.
+
+**Perché resta fuori**, in ordine di peso:
+1. L'autore stesso, dopo due settimane di test: per il retail il valore dell'L3 «non è
+   enorme», serve al più come **filtro** su una strategia che funziona già. Un filtro va
+   validato con lo split‑sample come ogni altro → prima servono strategie che passino i
+   gate **senza**.
+2. La parte live è descritta **al condizionale e mai mostrata in funzione**: architettura
+   dichiarata, non dimostrata.
+3. **Simmetria storico/live** da verificare prima di scriverci sopra: ricerca sui dati
+   campione del Bridge, live su un feed di un altro vendor → se la feature non è identica
+   barra per barra, il backtest misura un'altra strategia.
+4. **Entitlement**: DOM 10 livelli (L2) e MBO order‑by‑order (L3) sono due cose diverse e
+   la seconda costa molto di più; da verificare anche cosa comprende l'entitlement
+   Apex/Rithmic che useremmo in esecuzione.
+5. Al momento è comunque **chiuso** (nessuna licenza acquistabile). Non blocca niente.
+
+**Da rivalutare se riapre**, per un motivo che non c'entra con l'order flow: il suo
+downloader dà **5+ anni di NQ a 1 minuto** (OHLCV + up/down volume) importabili in MC via
+ASCII, buoni per backtestare qualsiasi strategia — cioè esattamente il blocco 1 di questa
+pipeline.
 
 ---
 

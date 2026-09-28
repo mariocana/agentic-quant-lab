@@ -228,6 +228,14 @@
  "log": [
   {
    "date": "2026-09-28",
+   "text": "**Walk‑forward: deciso come lo usiamo.** Non è un gate e non è una modalità operativa, è un diagnostico opzionale (Stage 4b) **interamente dentro l'IS**: rolling 252/63, fitness PF, criteri scritti prima del run (WFE ≥ 60%, ≥ 60% finestre positive, ≥ 30 trade/finestra). Serve a **scartare** un parametro instabile, mai ad adottare la riottimizzazione ogni 63 giorni: il vantaggio del WFO è avere pochi dati (noi ne avremo 9 anni), è più facile auto‑ingannarsi che con lo split, e cambiare parametri dentro un'eval di 21 giorni sotto trailing drawdown rende il pass rate simulato privo di senso. Un WFO che passa non riapre un fail dello Stage 5."
+  },
+  {
+   "date": "2026-09-28",
+   "text": "**The Bridge (order flow L2/L3) valutato e tenuto fuori pipeline.** Nessuna delle 6 strategie lo usa; l'`UpTicks−DownTicks` dell'ORB è nativo MC e il filtro è spento di default. Architettura registrata nel digest §7: MC non vede mai il book, le feature sono calcolate nel processo del Bridge e lette da 16 funzioni PowerLanguage, in live servono le credenziali di un feed proprio (Databento/Rithmic/IQFeed) pagato a parte. Motivi dell'esclusione: l'autore stesso lo dà di valore scarso per il retail se non come filtro; la parte live è al condizionale e mai mostrata; la simmetria storico/live delle feature è da dimostrare. Da rivalutare se riapre, ma solo perché il suo downloader regala 5+ anni di NQ 1 min."
+  },
+  {
+   "date": "2026-09-28",
    "text": "**DriftPullback (Agnello v2.1) entra in pipeline.** Il tutorial in `11. Strategy Feedbacks` è la spec completa: mechanism, architettura dual-timeframe, ogni input con lo stato di evidenza (validato / seed) e il walkthrough del codice. È l'unica candidata del corso col profilo prop già nativo — WR 65%, R:R 0.5, flat EOD e guardrail giornalieri scelti dalle regole del conto invece che dall'equity curve. Nota metodologica ripresa nella pipeline: i guardrail si scelgono **prima** del backtest, dalle regole del conto; la strategia si adatta al conto, mai il contrario."
   },
   {
