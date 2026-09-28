@@ -16,6 +16,11 @@
     2) TRIGGER (serie 5 min): la prima barra CONTRO il drift entro
        PullbackWindow barre (rossa per il long, verde per lo short) ->
        ingresso. Un solo trade per armamento.
+       TriggerMode 0 (VALIDATO, default): basta il segno di Close-Open.
+       TriggerMode 1 (variante Stage 4): si chiede anche che la chiusura
+       sia lontana almeno RejShadowFrac del range dall'estremo del
+       pullback -> il movimento contrario e' stato RIFIUTATO dentro la
+       barra, non e' stata solo una pausa.
        EntryMode 0 (VALIDATO, default): "next bar at market".
        EntryMode 1 (variante Stage 4, da Elder Triple Screen): ordine
        STOP 1 tick oltre l'estremo della barra di pullback, valido
@@ -65,6 +70,12 @@ Inputs:
     PullbackWindow(6),         { vita del setup armato, in barre 5m (~30 min) }
     TradeLongs(1),
     TradeShorts(1),
+    { --- forma della barra di trigger --- }
+    TriggerMode(0),            { 0 = qualsiasi barra contraria (VALIDATO) }
+                               { 1 = barra contraria CON RIFIUTO (chiusura lontana
+                                     dall'estremo del pullback) }
+    RejShadowFrac(0.5),        { TriggerMode 1: quota minima del range della barra fra
+                                 la chiusura e l'estremo del pullback (0.5 = meta') }
     { --- modo d'ingresso --- }
     EntryMode(0),              { 0 = market alla barra dopo (VALIDATO) }
                                { 1 = stop 1 tick oltre l'estremo della barra di pullback }
@@ -112,6 +123,8 @@ Variables:
     curCts(1), cushion(0),
     { uscite }
     atrEntry(0),
+    { forma della barra di trigger }
+    barRange(0), longTrig(false), shortTrig(false),
     { ingresso su stop (EntryMode 1) }
     oneTick(0),
     pendingSide(0), pendingLevel(0), pendingBars(0),
@@ -244,13 +257,32 @@ end;
 if MarketPosition <> 0 and prevMP = 0 then tradesToday = tradesToday + 1;
 prevMP = MarketPosition;
 
+{ ===== BLOCCO 10b - FORMA DELLA BARRA DI TRIGGER =====
+  TriggerMode 0: basta il segno di Close-Open (versione validata).
+  TriggerMode 1: si chiede anche che la chiusura sia lontana dall'estremo
+  del pullback, cioe' che il movimento contrario sia stato RIFIUTATO
+  dentro la barra invece di limitarsi a una pausa. Misura robusta a un
+  solo parametro: posizione della chiusura nel range della barra. }
+barRange = High - Low;
+longTrig  = Close < Open;
+shortTrig = Close > Open;
+if TriggerMode = 1 then begin
+    if barRange > 0 then begin
+        longTrig  = longTrig  and (Close - Low)  >= RejShadowFrac * barRange;
+        shortTrig = shortTrig and (High - Close) >= RejShadowFrac * barRange;
+    end
+    else begin
+        longTrig = false;  shortTrig = false;
+    end;
+end;
+
 { ===== BLOCCO 11 - INGRESSI ===== }
 if MarketPosition = 0
    and Time >= SessStart and Time < SessEnd
    and tradesToday < MaxTradesPerDay
    and lossesToday < MaxLossesPerDay then begin
 
-    if TradeLongs = 1 and longArmed and Close < Open then begin
+    if TradeLongs = 1 and longArmed and longTrig then begin
         atrEntry = AvgTrueRange(ATRExitLen);
         if atrEntry <= 0 then atrEntry = Range;
         longArmed = false;              { il flag si consuma comunque }
@@ -270,7 +302,7 @@ if MarketPosition = 0
         end;
     end;
 
-    if TradeShorts = 1 and shortArmed and Close > Open then begin
+    if TradeShorts = 1 and shortArmed and shortTrig then begin
         atrEntry = AvgTrueRange(ATRExitLen);
         if atrEntry <= 0 then atrEntry = Range;
         shortArmed = false;

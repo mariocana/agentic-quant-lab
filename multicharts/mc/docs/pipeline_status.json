@@ -201,6 +201,10 @@
    "log": [
     {
      "date": "2026-09-28",
+     "text": "Seconda variante configurabile: `TriggerMode` 0 = qualsiasi barra contraria (validato, default) / 1 = barra contraria **con rifiuto**, cioè chiusura lontana almeno `RejShadowFrac` del range dall'estremo del pullback. Il trigger validato è una candela sola e solo il segno di Close−Open: questa chiede che il movimento contrario sia stato respinto dentro la barra, non solo una pausa. Atteso meno trade e WR più alto; con R:R 0.5, perdere trade senza guadagnare win rate peggiora tutto. Compone con `EntryMode`: prima da sole, poi insieme."
+    },
+    {
+     "date": "2026-09-28",
      "text": "Variante d'ingresso dal Triple Screen di Elder resa **configurabile nel codice**: `EntryMode` 0 = market (validato, default) / 1 = stop 1 tick oltre l'estremo della barra di pullback, valido `EntryStopBars` barre, livello fisso che non insegue. Così l'A/B si fa nello stesso run invece che in due versioni del file. Il drift deve riprendere prima di essere dentro → filtra i pullback che proseguono; in cambio i fill sono a un prezzo peggiore della chiusura del pullback e alcuni rimbalzi si perdono. Non protegge la barra d'ingresso: il bracket resta next‑bar come prima."
     },
     {

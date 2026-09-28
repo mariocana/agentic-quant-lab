@@ -80,6 +80,15 @@ accende per curiosità, i controlli sono:
   2ª perdita mentre l'ordine è appeso, l'ordine va cancellato senza eseguire;
 - il numero di trade deve **scendere** rispetto a `EntryMode 0`: se sale, c'è un errore.
 
+### Se si prova anche `TriggerMode 1` (variante Stage 4)
+
+- ogni barra di trigger deve avere la chiusura **nella metà alta** del proprio range per i
+  long (metà bassa per gli short), con `RejShadowFrac 0.5`;
+- restano barre contrarie: rossa per il long, verde per lo short. La variante **aggiunge**
+  una condizione, non la sostituisce;
+- anche qui il numero di trade deve **scendere**. Se sale, c'è un errore;
+- una barra con `High = Low` (nessun range) non deve mai generare un trigger.
+
 ## Cosa NON toccare in questa fase
 
 `DriftThreshPct`, `MALen`, `DriftLen`, `PullbackWindow` e i bracket 80/40/50 sono

@@ -98,6 +98,18 @@ che confermarlo o abbassarlo.
    Confronto da fare come A/B nello stesso run (`EntryMode` 0 vs 1), split‑sample sulle due
    metà dell'IS; `EntryStopBars` 1 è il default, 2–3 solo se l'A/B è promettente e sempre
    come cluster, mai come picco.
+6. **`TriggerMode` 1 — barra di pullback con rifiuto.** Il trigger validato è molto grezzo:
+   una candela sola, solo il segno di `Close − Open`. La variante chiede in più che la
+   chiusura sia lontana almeno `RejShadowFrac` (0.5) del range dall'estremo del pullback —
+   cioè che il movimento contrario sia stato **rifiutato dentro la barra** invece di essere
+   solo una pausa. Meccanismo dichiarabile, un parametro, misurato con la posizione della
+   chiusura nel range (robusta, niente definizioni di ombre e corpi da inventare).
+   Spunto da Palmquist, *Money‑Making Candlestick Patterns* — vedi
+   `mc/education/books/NOTES_palmquist_candlestick.md`: è anche l'unico uso dei pattern
+   che quel libro sostiene, timing dentro un contesto e mai strategia autonoma.
+   Atteso: meno trade e WR più alto. Se il WR non sale, la variante non serve — e con un
+   R:R 0.5 perdere trade senza guadagnare win rate peggiora tutto.
+   Compone con `EntryMode`: le due si testano prima da sole, poi insieme.
 
 `SizeMode 2` (cushion ladder: +1 contratto ogni $2.000 di profitto bancato, tetto 3) **non
 è una variante di edge**: è logica di deployment, si valuta allo **Stage 7**, non prima.
