@@ -201,6 +201,10 @@
    "log": [
     {
      "date": "2026-09-28",
+     "text": "Nuova variante pre‑registrata (Stage 4) dal Triple Screen di Elder: **ingresso su stop oltre l'estremo della barra di pullback** invece che a mercato. Il drift deve riprendere prima di essere dentro → filtra i pullback che proseguono, e rende l'ingresso un livello noto in anticipo (risolve la barra d'ingresso scoperta). Costo da misurare: si perdono i rimbalzi che ripartono senza superare quel massimo."
+    },
+    {
+     "date": "2026-09-28",
      "text": "Letto il tutorial completo di Agnello (18 pp., `11. Strategy Feedbacks`): è di fatto la spec integrale, con il walkthrough di tutti i blocchi. Scritti SPEC, codice PowerLanguage e README Stage 1. Congelati: DriftThreshPct 0.10, MALen 20, DriftLen 4, PullbackWindow 6, bracket 80/40/50 — sono i numeri fissati in-sample prima dell'OOS dell'autore."
     },
     {
@@ -226,6 +230,10 @@
   "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
  ],
  "log": [
+  {
+   "date": "2026-09-28",
+   "text": "**Elder, *Trading for a Living* (1993): scartato come fonte di strategie**, tenute tre cose (`mc/education/books/NOTES_elder.md`). È discretionary, senza backtest né costi né disciplina IS/OOS: le regole come sono scritte non sono falsificabili. Tenuti: (a) il **Triple Screen** come conferma che l'architettura dual‑timeframe è vecchia e generale, non un adattamento al NQ recente; (b) Force Index ed Elder‑Ray come candidati filtro Stage 4, col prior contrario dichiarato del corso sui filtri; (c) la convergenza sulla semplicità (≤ 3 input). **Scartate esplicitamente le divergenze**: si definiscono a posteriori, il risultato dipende dalla definizione arbitraria di pivot."
+  },
   {
    "date": "2026-09-28",
    "text": "**Walk‑forward: deciso come lo usiamo.** Non è un gate e non è una modalità operativa, è un diagnostico opzionale (Stage 4b) **interamente dentro l'IS**: rolling 252/63, fitness PF, criteri scritti prima del run (WFE ≥ 60%, ≥ 60% finestre positive, ≥ 30 trade/finestra). Serve a **scartare** un parametro instabile, mai ad adottare la riottimizzazione ogni 63 giorni: il vantaggio del WFO è avere pochi dati (noi ne avremo 9 anni), è più facile auto‑ingannarsi che con lo split, e cambiare parametri dentro un'eval di 21 giorni sotto trailing drawdown rende il pass rate simulato privo di senso. Un WFO che passa non riapre un fail dello Stage 5."

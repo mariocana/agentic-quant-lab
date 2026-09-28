@@ -83,6 +83,14 @@ che confermarlo o abbassarlo.
    di averla scartata; i moltiplicatori spediti sono *seed*, non valori validati.
 4. **`MaxLossesPerDay` 1** — variante prop pura: dimezza il worst day a $161/micro e
    permette di raddoppiare la size. Da verificare che non tagli via i recuperi di giornata.
+5. **Ingresso su stop oltre l'estremo della barra di pullback** invece che *next bar at
+   market*: setup armato, barra contraria → buy‑stop sopra il massimo di quella barra
+   (mirror per gli short). Il drift deve **riprendere** prima che si sia dentro, quindi
+   filtra i pullback che proseguono. Idea dal Triple Screen di Elder (1993), stessa
+   architettura dual‑timeframe di questa strategia — vedi `mc/education/books/NOTES_elder.md`.
+   Costo noto da misurare, non da assumere: si perdono i trade in cui il rimbalzo riparte
+   subito senza superare quel massimo. Risolve anche, di fatto, la "barra d'ingresso
+   scoperta" (l'ingresso diventa un livello noto in anticipo).
 
 `SizeMode 2` (cushion ladder: +1 contratto ogni $2.000 di profitto bancato, tetto 3) **non
 è una variante di edge**: è logica di deployment, si valuta allo **Stage 7**, non prima.
