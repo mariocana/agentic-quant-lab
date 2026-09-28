@@ -24,7 +24,16 @@ Scrivi in `mc/strategies/<nome>/SPEC.md`:
 - entry, exit (TP/SL fissi o in R, time exit), un trade/giorno o max N;
 - **date IS e OOS** (80/20) e criteri di kill, **decisi ora**.
 
+- **worst day strutturale** in $: quanto può perdere la strategia nella sua giornata
+  peggiore *per costruzione*, non nel backtest. Se la risposta è "dipende", mancano i
+  guardrail (cap ingressi/giorno e cap perdite/giorno) e vanno aggiunti **ora**.
+
 **Gate 0**: tutto scritto. Nessuna spec = nessun codice.
+
+> **I guardrail si scelgono prima del backtest, dalle regole del conto — non dopo, dalla
+> curva di equity.** La strategia si adatta al conto, mai il contrario. Un worst day noto
+> in anticipo è ciò che rende una strategia deployabile su un trailing drawdown; un worst
+> day scoperto nell'equity curve è solo una statistica. (Da DriftPullback, sez. 08.)
 
 ## Stage 1 — Codice e meccanica
 Signal PowerLanguage, flag 0/1, 1 contratto, ~100 giorni di dati, `ShowLog`.
@@ -140,9 +149,11 @@ randomizzazioni per non essere identici agli altri account.
 | Strategia | Famiglia | Stage | Note |
 |---|---|---|---|
 | ORB_Breakout (NQ 5m) | trend | **1 ✔ → 2 bloccato** | serve storico ≥ 5 anni (dati free = 4 mesi) |
-| VaultBreak (NQ 5m) | trend | 0 | template del corso, da spec |
-| VWAP‑ADX (NQ 1m) | mean rev | 0 | template Agnello, da spec |
-| Gold Asian Range (GC 15m) | trend, altro asset | 0 | winner Strategy of the Month |
+| VaultBreak (NQ 5m) | trend | 0 ✔ → 1 | template del corso, codice pronto |
+| VWAP Pullback (NQ 1m) | mean rev | 0 ✔ → 1 | template Agnello, codice pronto |
+| Gold Asian Range (GC 15m) | trend, altro asset | 0 ✔ → 1 | winner Strategy of the Month |
+| NQ First5 (NQ 5m) | momentum, **short** | 0 ✔ → 1 | template 18, non validato dall'autore |
+| DriftPullback (NQ 5m + 15m) | momentum, long+short | 0 ✔ → 1 | Agnello v2.1, l'unica col profilo prop nativo |
 | Evento macro (CPI/FOMC) | evento | — | dopo i primi tre |
 
 **Blocco attuale**: la licenza MultiCharts (la trial non abilita dxFeed). Con dxFeed:

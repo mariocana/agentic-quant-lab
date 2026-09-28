@@ -61,9 +61,14 @@ def build(d):
         m = s.get("metrics")
         metrics = ""
         if m:
-            metrics = ('<div class="metrics mono">'
-                       f'{m["trade"]} trade · WR {m["wr"]} · avg {m["avg"]} · DD {m["dd"]}'
-                       f' <span class="muted">({esc(m["period"])})</span></div>')
+            if "trade" in m:
+                body = (f'{m["trade"]} trade · WR {m["wr"]} · avg {m["avg"]} · DD {m["dd"]}'
+                        f' <span class="muted">({esc(m["period"])})</span>')
+            else:
+                # schema libero: coppie chiave/valore (metriche dichiarate, vincoli, ecc.)
+                body = " · ".join(f'<span class="muted">{esc(k)}</span> {md(str(v))}'
+                                  for k, v in m.items())
+            metrics = f'<div class="metrics mono">{body}</div>'
         rows.append(f"""
         <tr class="strat">
           <th scope="row">

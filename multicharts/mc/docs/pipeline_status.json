@@ -1,256 +1,286 @@
 {
-  "updated": "2026-09-26",
-  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
-  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
-  "prop": "Apex 50k EOD trailing · target $3.000 · max DD $2.500 · daily loss $1.000 · 21 giorni",
-  "stages": [
+ "updated": "2026-09-28",
+ "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
+ "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
+ "prop": "Apex 50k EOD trailing · target $3.000 · max DD $2.500 · daily loss $1.000 · 21 giorni",
+ "stages": [
+  {
+   "id": 0,
+   "name": "Spec",
+   "short": "Spec",
+   "gate": "Ipotesi + perché, famiglia, entry/exit, date IS/OOS e kill scritti in SPEC.md"
+  },
+  {
+   "id": 1,
+   "name": "Meccanica",
+   "short": "Mecc.",
+   "gate": "1 contratto, 100 gg: trade dove previsto, 1/giorno, flat, P&L ×10 con 10 contratti"
+  },
+  {
+   "id": 2,
+   "name": "Backtest IS",
+   "short": "IS",
+   "gate": "n ≥ 200 · avg trade ≥ $70 (NQ) · PF ≥ 1.2 · WR ≥ 55% · R:R 0.5–1 · DD÷10 ≤ $1.250 · peggior trade÷10 ≤ $500 · nessun anno > 50%"
+  },
+  {
+   "id": 3,
+   "name": "Monte Carlo",
+   "short": "MC",
+   "gate": "Reshuffle 1000: mediana > 0 · < 10% sim negative · DD 95°÷10 ≤ $2.500"
+  },
+  {
+   "id": 4,
+   "name": "Migliorie",
+   "short": "Migl.",
+   "gate": "Solo IS, split‑sample, ≤ 3 input, cluster; ripetere gate 2 e 3"
+  },
+  {
+   "id": 5,
+   "name": "OOS",
+   "short": "OOS",
+   "gate": "Una volta: avg trade/WR/PF stesso ordine · WR ≥ 50% · DD ≤ 1.5× IS · fail = cimitero"
+  },
+  {
+   "id": 6,
+   "name": "Bootstrap",
+   "short": "Boot.",
+   "gate": "EV > 0 in $ e R · P(EV≤0) < 5% IS, < 10% OOS · CI sovrapposti · percentili DD salvati"
+  },
+  {
+   "id": 7,
+   "name": "Prop sim",
+   "short": "Prop",
+   "gate": "Eval: pass ≥ 40% al 1°, ≥ 85% in 4, ≤ 15 gg · Funded: qualification ≥ 50%, payout > 4× fee"
+  },
+  {
+   "id": 8,
+   "name": "Basket",
+   "short": "Basket",
+   "gate": "corr ≤ 0.2 · giorni attivi ≥ 90% · basket > migliore singola · funded ≥ 70% · cap 2 mini"
+  },
+  {
+   "id": 9,
+   "name": "Deploy",
+   "short": "Deploy",
+   "gate": "Paper ≥ 1 sett. · eval con budget dichiarato · VPS · 75° riduci / 95° stop"
+  }
+ ],
+ "strategies": [
+  {
+   "name": "ORB Breakout",
+   "family": "trend / breakout",
+   "instrument": "NQ 5m",
+   "path": "mc/strategies/ORB_Breakout",
+   "stages": {
+    "0": "pass",
+    "1": "pass",
+    "2": "blocked"
+   },
+   "note": "Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.",
+   "metrics": {
+    "trade": 61,
+    "wr": "47.5%",
+    "avg": "−$169",
+    "dd": "$40.3k",
+    "period": "4 mesi, 0 costi — non valido"
+   },
+   "log": [
     {
-      "id": 0,
-      "name": "Spec",
-      "short": "Spec",
-      "gate": "Ipotesi + perché, famiglia, entry/exit, date IS/OOS e kill scritti in SPEC.md"
+     "date": "2026-09-26",
+     "text": "Live *Quant VWAP* (Burzichelli) analizzata: ottimizzazione indipendente della durata del range con picco a **30–32 min** che tiene OOS → i nostri 30 min sono in un cluster, non su un picco fittato. Pre‑registrata una variante d'ingresso: ritracciamento su **VWAP ancorato al breakout** (1–1.5 SD, stop 2×ATR). Il suo TP 3× non si trasferisce: profilo da capitale proprio, non da prop."
     },
     {
-      "id": 1,
-      "name": "Meccanica",
-      "short": "Mecc.",
-      "gate": "1 contratto, 100 gg: trade dove previsto, 1/giorno, flat, P&L ×10 con 10 contratti"
+     "date": "2026-09-17",
+     "text": "Sizing: flag portati a 0/1 per l'ottimizzatore, aggiunto `MaxRisk_USD`. Il run `SizingMode 1` con Risk_USD 500 è risultato identico al fisso — su NQ 1 contratto a 1R rischia già $1.000–9.000, quindi la formula arrotondava sempre a 1. Sizing in $ rimandato allo Stage 7 (size in micro dal simulatore)."
     },
     {
-      "id": 2,
-      "name": "Backtest IS",
-      "short": "IS",
-      "gate": "n ≥ 200 · avg trade ≥ $70 (NQ) · PF ≥ 1.2 · WR ≥ 55% · R:R 0.5–1 · DD÷10 ≤ $1.250 · peggior trade÷10 ≤ $500 · nessun anno > 50%"
+     "date": "2026-09-17",
+     "text": "**Gate 1 passato** su @ES (64 trade) e @NQ (61): un trade al giorno, EOD alle 14:00 esatte, SL/TP pari agli estremi del range, bracket attivo dalla prima barra. Fuso Chicago confermato dalle riaperture domenicali alle 17:05. Caso noto: nelle vigilie di festa (3 lug, 19 giu) manca la barra delle 14:00 → uscita alla riapertura."
     },
     {
-      "id": 3,
-      "name": "Monte Carlo",
-      "short": "MC",
-      "gate": "Reshuffle 1000: mediana > 0 · < 10% sim negative · DD 95°÷10 ≤ $2.500"
-    },
-    {
-      "id": 4,
-      "name": "Migliorie",
-      "short": "Migl.",
-      "gate": "Solo IS, split‑sample, ≤ 3 input, cluster; ripetere gate 2 e 3"
-    },
-    {
-      "id": 5,
-      "name": "OOS",
-      "short": "OOS",
-      "gate": "Una volta: avg trade/WR/PF stesso ordine · WR ≥ 50% · DD ≤ 1.5× IS · fail = cimitero"
-    },
-    {
-      "id": 6,
-      "name": "Bootstrap",
-      "short": "Boot.",
-      "gate": "EV > 0 in $ e R · P(EV≤0) < 5% IS, < 10% OOS · CI sovrapposti · percentili DD salvati"
-    },
-    {
-      "id": 7,
-      "name": "Prop sim",
-      "short": "Prop",
-      "gate": "Eval: pass ≥ 40% al 1°, ≥ 85% in 4, ≤ 15 gg · Funded: qualification ≥ 50%, payout > 4× fee"
-    },
-    {
-      "id": 8,
-      "name": "Basket",
-      "short": "Basket",
-      "gate": "corr ≤ 0.2 · giorni attivi ≥ 90% · basket > migliore singola · funded ≥ 70% · cap 2 mini"
-    },
-    {
-      "id": 9,
-      "name": "Deploy",
-      "short": "Deploy",
-      "gate": "Paper ≥ 1 sett. · eval con budget dichiarato · VPS · 75° riduci / 95° stop"
+     "date": "2026-09-16",
+     "text": "Porting da `OrbBreakout_EA` (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2."
     }
-  ],
-  "strategies": [
+   ],
+   "next": "Stage 2: backtest IS 2020‑01‑01 → 2024‑12‑31 su @NQ 5m, 1 contratto, costi on."
+  },
+  {
+   "name": "VaultBreak",
+   "family": "trend / vol breakout",
+   "instrument": "NQ 5m RTH",
+   "path": "mc/strategies/VaultBreak",
+   "stages": {
+    "0": "pass",
+    "1": "active"
+   },
+   "note": "Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati.",
+   "log": [
     {
-      "name": "ORB Breakout",
-      "family": "trend / breakout",
-      "instrument": "NQ 5m",
-      "path": "mc/strategies/ORB_Breakout",
-      "stages": {
-        "0": "pass",
-        "1": "pass",
-        "2": "blocked"
-      },
-      "note": "Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.",
-      "metrics": {
-        "trade": 61,
-        "wr": "47.5%",
-        "avg": "−$169",
-        "dd": "$40.3k",
-        "period": "4 mesi, 0 costi — non valido"
-      },
-      "log": [
-        {
-          "date": "2026-09-26",
-          "text": "Live *Quant VWAP* (Burzichelli) analizzata: ottimizzazione indipendente della durata del range con picco a **30–32 min** che tiene OOS → i nostri 30 min sono in un cluster, non su un picco fittato. Pre‑registrata una variante d'ingresso: ritracciamento su **VWAP ancorato al breakout** (1–1.5 SD, stop 2×ATR). Il suo TP 3× non si trasferisce: profilo da capitale proprio, non da prop."
-        },
-        {
-          "date": "2026-09-17",
-          "text": "Sizing: flag portati a 0/1 per l'ottimizzatore, aggiunto `MaxRisk_USD`. Il run `SizingMode 1` con Risk_USD 500 è risultato identico al fisso — su NQ 1 contratto a 1R rischia già $1.000–9.000, quindi la formula arrotondava sempre a 1. Sizing in $ rimandato allo Stage 7 (size in micro dal simulatore)."
-        },
-        {
-          "date": "2026-09-17",
-          "text": "**Gate 1 passato** su @ES (64 trade) e @NQ (61): un trade al giorno, EOD alle 14:00 esatte, SL/TP pari agli estremi del range, bracket attivo dalla prima barra. Fuso Chicago confermato dalle riaperture domenicali alle 17:05. Caso noto: nelle vigilie di festa (3 lug, 19 giu) manca la barra delle 14:00 → uscita alla riapertura."
-        },
-        {
-          "date": "2026-09-16",
-          "text": "Porting da `OrbBreakout_EA` (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2."
-        }
-      ],
-      "next": "Stage 2: backtest IS 2020‑01‑01 → 2024‑12‑31 su @NQ 5m, 1 contratto, costi on."
-    },
-    {
-      "name": "VaultBreak",
-      "family": "trend / vol breakout",
-      "instrument": "NQ 5m RTH",
-      "path": "mc/strategies/VaultBreak",
-      "stages": {
-        "0": "pass",
-        "1": "active"
-      },
-      "note": "Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati.",
-      "log": [
-        {
-          "date": "2026-09-22",
-          "text": "Spec + codice. Scelta: ATR **rolling 252** invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti."
-        }
-      ],
-      "next": "Stage 1: chart @NQ 5m **RTH**, `DailyATRLen 20` per il lead‑in, verifica meccanica."
-    },
-    {
-      "name": "VWAP Pullback",
-      "family": "mean reverting",
-      "instrument": "NQ 1m",
-      "path": "mc/strategies/VWAP_Pullback",
-      "stages": {
-        "0": "pass",
-        "1": "pending"
-      },
-      "note": "Codice pronto (`VWAP_Pullback.txt`): bias ORB + retest VWAP, stop/target sui pivot, EOD flat obbligatorio, 1 contratto. Chart Globex 24h, MaxBarsBack ≥ 42. In attesa dati.",
-      "log": [
-        {
-          "date": "2026-09-26",
-          "text": "Live 005: hanno testato 100+ mean reversion intraday con uscita EOD e **nessuna** era adatta alla prop. Questa resta in lista (è più continuation-su-pullback che mean reversion pura) ma con un sospetto a carico: se fallisce i gate, non è sfortuna."
-        },
-        {
-          "date": "2026-09-22",
-          "text": "Spec + codice dal template 1 min. Tolto il sizing per margine/rischio %. **EOD flat reso obbligatorio** (l'originale teneva overnight fino alla risoluzione del bracket): cambia il profilo rispetto all'avg ~$80 del corso, va rivalidato. La variante ADX di Agnello (WR 82%) non è nel materiale: da ricostruire, non verificata."
-        }
-      ],
-      "next": "Stage 1: chart @NQ 1m Globex, MaxBarsBack ≥ 300, verifica meccanica e numero di trade."
-    },
-    {
-      "name": "Gold Asian Range",
-      "family": "trend / altro asset",
-      "instrument": "GC 15m",
-      "path": "mc/strategies/GoldAsianRange",
-      "stages": {
-        "0": "pass",
-        "1": "pending"
-      },
-      "note": "Codice pronto (`GoldAsianRange.txt`): range 20:00–00:00 CT con wrap, stop OCO ai bordi, stop = ampiezza range, TP_RR opzionale, flat 10:00 CT. Variante A (TP_RR 0) per il basket funded, B (TP_RR 1/0.5) per l'eval. Overnight per costruzione → annotare i giorni di rollover. In attesa dati.",
-      "log": [
-        {
-          "date": "2026-09-22",
-          "text": "Spec + codice. Range 20:00–00:00 CT con wrap sulla mezzanotte; stop OCO armati nell'istante in cui il range chiude (è il motivo per cui regge fill realistici). Variante A (no TP, WR 34%) fuori dal profilo eval → solo basket funded; variante B con TP 1R/0.5R per l'eval."
-        }
-      ],
-      "next": "Stage 1: chart @GC 15m, verifica meccanica + annotare i giorni di rollover."
-    },
-    {
-      "name": "NQ First5",
-      "family": "momentum · long+short",
-      "instrument": "NQ 5m",
-      "path": "mc/strategies/NQ_First5",
-      "stages": {
-        "0": "pass",
-        "1": "pending"
-      },
-      "note": "Codice pronto (`NQ_First5.txt`, base e filtrata in un solo signal). Direzione della prima barra NY (08:35 CT) vs EMA(12), tenuta fino alle 15:00. **L'unica candidata con lato short reale.** Senza stop non è deployabile per la prop: `StopPts` è la variante obbligatoria dello Stage 4. Da misurare presto la correlazione con l'ORB (stesso strumento e stessa ora).",
-      "log": [
-        {
-          "date": "2026-09-26",
-          "text": "Live 005 conferma la scelta: in un basket long‑only l'aggiunta che alza davvero il pass rate è una long‑short o short‑only."
-        },
-        {
-          "date": "2026-09-26",
-          "text": "Spec + codice dai template 18 del corso (dichiarati non validati dall'autore). BASE e FILTERED uniti con `UseFilters` per confrontarli nello stesso run; aggiunto `StopPts` (off di default) come variante prop pre‑registrata."
-        }
-      ],
-      "next": "Stage 1: chart @NQ 5m Globex, verifica meccanica; poi Stage 2 con base vs filtrata dalla stessa data."
-    },
-    {
-      "name": "Evento macro",
-      "family": "event driven",
-      "instrument": "—",
-      "path": "",
-      "stages": {},
-      "note": "Dopo i primi tre.",
-      "log": [],
-      "next": "Dopo i primi tre."
+     "date": "2026-09-22",
+     "text": "Spec + codice. Scelta: ATR **rolling 252** invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti."
     }
-  ],
-  "blockers": [
-    "Storico: bonifico SEPA €500 inviato, accredito atteso lunedì 28/09 sul conto Futures TradeStation. Al funding: checklist in `mc/docs/setup_tradestation.md` (entitlement NON‑PRO, wizard MC, misura profondità storico @NQ 5m/1m e @GC 15m, costi e session template, test di coerenza sui 100 giorni già fatti).",
-    "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
-  ],
-  "log": [
+   ],
+   "next": "Stage 1: chart @NQ 5m **RTH**, `DailyATRLen 20` per il lead‑in, verifica meccanica."
+  },
+  {
+   "name": "VWAP Pullback",
+   "family": "mean reverting",
+   "instrument": "NQ 1m",
+   "path": "mc/strategies/VWAP_Pullback",
+   "stages": {
+    "0": "pass",
+    "1": "pending"
+   },
+   "note": "Codice pronto (`VWAP_Pullback.txt`): bias ORB + retest VWAP, stop/target sui pivot, EOD flat obbligatorio, 1 contratto. Chart Globex 24h, MaxBarsBack ≥ 42. In attesa dati.",
+   "log": [
     {
-      "date": "2026-09-26",
-      "text": "Live 005 + Q&A. Gate aggiornati: correlazione target ~0 e **non negativa** (rischio hedging, vietato dalle prop); expiry < 5%; bench al **90° percentile** MC e ripresa solo a nuovo massimo; mai più conti che strategie; una sola posizione aperta per volta fra i conti. Nuovo concetto: massimizzare il pass rate ≠ massimizzare i conti funded/anno — «la size compra la velocità, non le probabilità». Riferimento del corso: basket a 3 strategie = 52,5% al primo tentativo, 5 giorni, $191 per funded."
+     "date": "2026-09-26",
+     "text": "Live 005: hanno testato 100+ mean reversion intraday con uscita EOD e **nessuna** era adatta alla prop. Questa resta in lista (è più continuation-su-pullback che mean reversion pura) ma con un sospetto a carico: se fallisce i gate, non è sfortuna."
     },
     {
-      "date": "2026-09-26",
-      "text": "Nuovo materiale del corso valutato. **NQ First5** entra in pipeline: porta il lato short che manca al basket (ORB e VaultBreak sono long‑only). **Gold/Silver Reversion scartata**: nessun flat di fine giornata, hold multi‑day che blocca gli ingressi per settimane, pochi trade — incompatibile col trailing Apex; l'autore stesso la dà per non validata."
-    },
-    {
-      "date": "2026-09-25",
-      "text": "Bonifico SEPA €500 inviato al conto Futures; accredito atteso lunedì. Scritta la checklist di setup TradeStation → MultiCharts."
-    },
-    {
-      "date": "2026-09-25",
-      "text": "Conto TradeStation approvato (Futures + Equities). Si finanzia il conto Futures: è quello che abilita le entitlement dati CME."
-    },
-    {
-      "date": "2026-09-22",
-      "text": "Codice pronto anche per Gold Asian Range: tutte e quattro le strategie sono scritte e aspettano solo i dati."
-    },
-    {
-      "date": "2026-09-22",
-      "text": "Codice PowerLanguage pronto anche per VaultBreak (rolling ATR 252, chart RTH) e VWAP Pullback (EOD flat obbligatorio, niente sizing per margine). Le tre strategie NQ partiranno insieme allo Stage 1 appena ci sono i dati."
-    },
-    {
-      "date": "2026-09-22",
-      "text": "Licenza: mensile MC quando arriva il conto TradeStation, lifetime a Black Friday. Da chiedere al supporto lo sconto crossgrade."
-    },
-    {
-      "date": "2026-09-22",
-      "text": "Decisione dati: TradeStation per lo storico (video del corso: NQ intraday dal 2015/16), Rithmic/Apex per il live. Verificato pricing TS: dati CME gratis 90 gg, inattività $10 waived con 10 trade/90 gg. dxFeed Volumetrica non usabile in MC (entitlement per‑vendor)."
-    },
-    {
-      "date": "2026-09-22",
-      "text": "Verificato dxFeed via MC: 9 anni di minuti (IS 2020–24 + OOS coperti), futures non back‑adjusted (ok per strategie flat EOD; segnare i giorni di roll per Gold Asian), DOM storico assente (filtro delta solo su 2 anni di tick). Richiede licenza attiva → unico blocco rimasto."
-    },
-    {
-      "date": "2026-09-17",
-      "text": "Pipeline con gate definita. Spec Stage 0 per ORB, VaultBreak, VWAP Pullback, Gold Asian Range. Flag 0/1 nell'ORB per l'ottimizzatore; run SizingMode 1 identico al fisso (Risk_USD troppo basso per NQ) — sizing in $ rimandato al simulatore prop."
-    },
-    {
-      "date": "2026-09-17",
-      "text": "ORB Stage 1 passato su @ES e @NQ: 1 trade/giorno, EOD 14:00, SL/TP = range, fuso Chicago confermato dalle riaperture domenicali 17:00. Caso noto: half‑day → gap exit."
-    },
-    {
-      "date": "2026-09-16",
-      "text": "Corso Institutional Protocol letto per intero (PDF, codice, 18 video trascritti). Digest + protocollo MC in mc/docs. Porting ORB in PowerLanguage."
-    },
-    {
-      "date": "2026-09-14",
-      "text": "Decisa la migrazione da MetaTrader 5 a MultiCharts. Journal discrezionale creato (journal/)."
+     "date": "2026-09-22",
+     "text": "Spec + codice dal template 1 min. Tolto il sizing per margine/rischio %. **EOD flat reso obbligatorio** (l'originale teneva overnight fino alla risoluzione del bracket): cambia il profilo rispetto all'avg ~$80 del corso, va rivalidato. La variante ADX di Agnello (WR 82%) non è nel materiale: da ricostruire, non verificata."
     }
-  ]
+   ],
+   "next": "Stage 1: chart @NQ 1m Globex, MaxBarsBack ≥ 300, verifica meccanica e numero di trade."
+  },
+  {
+   "name": "Gold Asian Range",
+   "family": "trend / altro asset",
+   "instrument": "GC 15m",
+   "path": "mc/strategies/GoldAsianRange",
+   "stages": {
+    "0": "pass",
+    "1": "pending"
+   },
+   "note": "Codice pronto (`GoldAsianRange.txt`): range 20:00–00:00 CT con wrap, stop OCO ai bordi, stop = ampiezza range, TP_RR opzionale, flat 10:00 CT. Variante A (TP_RR 0) per il basket funded, B (TP_RR 1/0.5) per l'eval. Overnight per costruzione → annotare i giorni di rollover. In attesa dati.",
+   "log": [
+    {
+     "date": "2026-09-22",
+     "text": "Spec + codice. Range 20:00–00:00 CT con wrap sulla mezzanotte; stop OCO armati nell'istante in cui il range chiude (è il motivo per cui regge fill realistici). Variante A (no TP, WR 34%) fuori dal profilo eval → solo basket funded; variante B con TP 1R/0.5R per l'eval."
+    }
+   ],
+   "next": "Stage 1: chart @GC 15m, verifica meccanica + annotare i giorni di rollover."
+  },
+  {
+   "name": "NQ First5",
+   "family": "momentum · long+short",
+   "instrument": "NQ 5m",
+   "path": "mc/strategies/NQ_First5",
+   "stages": {
+    "0": "pass",
+    "1": "pending"
+   },
+   "note": "Codice pronto (`NQ_First5.txt`, base e filtrata in un solo signal). Direzione della prima barra NY (08:35 CT) vs EMA(12), tenuta fino alle 15:00. **L'unica candidata con lato short reale.** Senza stop non è deployabile per la prop: `StopPts` è la variante obbligatoria dello Stage 4. Da misurare presto la correlazione con l'ORB (stesso strumento e stessa ora).",
+   "log": [
+    {
+     "date": "2026-09-26",
+     "text": "Live 005 conferma la scelta: in un basket long‑only l'aggiunta che alza davvero il pass rate è una long‑short o short‑only."
+    },
+    {
+     "date": "2026-09-26",
+     "text": "Spec + codice dai template 18 del corso (dichiarati non validati dall'autore). BASE e FILTERED uniti con `UseFilters` per confrontarli nello stesso run; aggiunto `StopPts` (off di default) come variante prop pre‑registrata."
+    }
+   ],
+   "next": "Stage 1: chart @NQ 5m Globex, verifica meccanica; poi Stage 2 con base vs filtrata dalla stessa data."
+  },
+  {
+   "name": "DriftPullback",
+   "family": "momentum · pullback · long+short",
+   "instrument": "NQ 5m + 15m",
+   "path": "mc/strategies/DriftPullback",
+   "stages": {
+    "0": "pass",
+    "1": "pending"
+   },
+   "note": "Codice pronto (`DriftPullback.txt`, due serie dati: 5m esecuzione + 15m segnale). Drift 1h ≥ 0.10% + ancora inclinata → si compra la prima barra 5m **contro** il drift entro 30 min. **L'unica candidata che nasce già col profilo prop**: WR 65%, R:R 0.5 (stop 80 / target 40–50), flat 14:55 CT e cap di perdita giornaliera scritto nella strategia (max 2 loss/giorno = $322 per micro). Sorgente non fornito dal corso: il porting viene dal walkthrough del PDF → lo Stage 1 verifica anche la fedeltà.",
+   "metrics": {
+    "dichiarate dall'autore": "avg $77 · WR 65% · t-stat OOS 2.2 · live su funded",
+    "worst day strutturale": "2 stop = $3.220 su NQ, $322 su MNQ → max 3 micro sotto il daily loss Apex"
+   },
+   "log": [
+    {
+     "date": "2026-09-28",
+     "text": "Letto il tutorial completo di Agnello (18 pp., `11. Strategy Feedbacks`): è di fatto la spec integrale, con il walkthrough di tutti i blocchi. Scritti SPEC, codice PowerLanguage e README Stage 1. Congelati: DriftThreshPct 0.10, MALen 20, DriftLen 4, PullbackWindow 6, bracket 80/40/50 — sono i numeri fissati in-sample prima dell'OOS dell'autore."
+    },
+    {
+     "date": "2026-09-28",
+     "text": "Entra in pipeline. Motivo: porta il lato short e soprattutto il **cap di perdita giornaliera strutturale** (MaxLossesPerDay 2), l'unica del corso in cui il worst day è noto prima del backtest invece di essere scoperto nell'equity curve. Rischio principale: è la quinta strategia su NQ e la terza momentum → correlazione da misurare subito dopo lo Stage 2, non al gate 8."
+    }
+   ],
+   "next": "Stage 1: chart @NQ 5m Globex + Data2 15m dello stesso simbolo, ShowLog 1, ~100 giorni. Controlli chiave: ARM solo su multipli di 15 min, un trade per armamento, scadenza a 6 barre, stop 2 tick peggiori del livello, guardrail 4 trade / 2 loss."
+  },
+  {
+   "name": "Evento macro",
+   "family": "event driven",
+   "instrument": "—",
+   "path": "",
+   "stages": {},
+   "note": "Dopo i primi tre.",
+   "log": [],
+   "next": "Dopo i primi tre."
+  }
+ ],
+ "blockers": [
+  "Storico: bonifico SEPA €500 inviato, accredito atteso lunedì 28/09 sul conto Futures TradeStation. Al funding: checklist in `mc/docs/setup_tradestation.md` (entitlement NON‑PRO, wizard MC, misura profondità storico @NQ 5m/1m e @GC 15m, costi e session template, test di coerenza sui 100 giorni già fatti).",
+  "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
+ ],
+ "log": [
+  {
+   "date": "2026-09-28",
+   "text": "**DriftPullback (Agnello v2.1) entra in pipeline.** Il tutorial in `11. Strategy Feedbacks` è la spec completa: mechanism, architettura dual-timeframe, ogni input con lo stato di evidenza (validato / seed) e il walkthrough del codice. È l'unica candidata del corso col profilo prop già nativo — WR 65%, R:R 0.5, flat EOD e guardrail giornalieri scelti dalle regole del conto invece che dall'equity curve. Nota metodologica ripresa nella pipeline: i guardrail si scelgono **prima** del backtest, dalle regole del conto; la strategia si adatta al conto, mai il contrario."
+  },
+  {
+   "date": "2026-09-26",
+   "text": "Live 005 + Q&A. Gate aggiornati: correlazione target ~0 e **non negativa** (rischio hedging, vietato dalle prop); expiry < 5%; bench al **90° percentile** MC e ripresa solo a nuovo massimo; mai più conti che strategie; una sola posizione aperta per volta fra i conti. Nuovo concetto: massimizzare il pass rate ≠ massimizzare i conti funded/anno — «la size compra la velocità, non le probabilità». Riferimento del corso: basket a 3 strategie = 52,5% al primo tentativo, 5 giorni, $191 per funded."
+  },
+  {
+   "date": "2026-09-26",
+   "text": "Nuovo materiale del corso valutato. **NQ First5** entra in pipeline: porta il lato short che manca al basket (ORB e VaultBreak sono long‑only). **Gold/Silver Reversion scartata**: nessun flat di fine giornata, hold multi‑day che blocca gli ingressi per settimane, pochi trade — incompatibile col trailing Apex; l'autore stesso la dà per non validata."
+  },
+  {
+   "date": "2026-09-25",
+   "text": "Bonifico SEPA €500 inviato al conto Futures; accredito atteso lunedì. Scritta la checklist di setup TradeStation → MultiCharts."
+  },
+  {
+   "date": "2026-09-25",
+   "text": "Conto TradeStation approvato (Futures + Equities). Si finanzia il conto Futures: è quello che abilita le entitlement dati CME."
+  },
+  {
+   "date": "2026-09-22",
+   "text": "Codice pronto anche per Gold Asian Range: tutte e quattro le strategie sono scritte e aspettano solo i dati."
+  },
+  {
+   "date": "2026-09-22",
+   "text": "Codice PowerLanguage pronto anche per VaultBreak (rolling ATR 252, chart RTH) e VWAP Pullback (EOD flat obbligatorio, niente sizing per margine). Le tre strategie NQ partiranno insieme allo Stage 1 appena ci sono i dati."
+  },
+  {
+   "date": "2026-09-22",
+   "text": "Licenza: mensile MC quando arriva il conto TradeStation, lifetime a Black Friday. Da chiedere al supporto lo sconto crossgrade."
+  },
+  {
+   "date": "2026-09-22",
+   "text": "Decisione dati: TradeStation per lo storico (video del corso: NQ intraday dal 2015/16), Rithmic/Apex per il live. Verificato pricing TS: dati CME gratis 90 gg, inattività $10 waived con 10 trade/90 gg. dxFeed Volumetrica non usabile in MC (entitlement per‑vendor)."
+  },
+  {
+   "date": "2026-09-22",
+   "text": "Verificato dxFeed via MC: 9 anni di minuti (IS 2020–24 + OOS coperti), futures non back‑adjusted (ok per strategie flat EOD; segnare i giorni di roll per Gold Asian), DOM storico assente (filtro delta solo su 2 anni di tick). Richiede licenza attiva → unico blocco rimasto."
+  },
+  {
+   "date": "2026-09-17",
+   "text": "Pipeline con gate definita. Spec Stage 0 per ORB, VaultBreak, VWAP Pullback, Gold Asian Range. Flag 0/1 nell'ORB per l'ottimizzatore; run SizingMode 1 identico al fisso (Risk_USD troppo basso per NQ) — sizing in $ rimandato al simulatore prop."
+  },
+  {
+   "date": "2026-09-17",
+   "text": "ORB Stage 1 passato su @ES e @NQ: 1 trade/giorno, EOD 14:00, SL/TP = range, fuso Chicago confermato dalle riaperture domenicali 17:00. Caso noto: half‑day → gap exit."
+  },
+  {
+   "date": "2026-09-16",
+   "text": "Corso Institutional Protocol letto per intero (PDF, codice, 18 video trascritti). Digest + protocollo MC in mc/docs. Porting ORB in PowerLanguage."
+  },
+  {
+   "date": "2026-09-14",
+   "text": "Decisa la migrazione da MetaTrader 5 a MultiCharts. Journal discrezionale creato (journal/)."
+  }
+ ]
 }
