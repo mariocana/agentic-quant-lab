@@ -1,7 +1,8 @@
 # The Institutional Protocol (Matteo Conti) — digest del materiale
 
-Sintesi di tutto il materiale in `mc/protocollo/`: 10 lezioni + 3 extra + 4 live
-(trascritte in `mc/protocollo/transcripts/`), PDF, template di codice, glossario.
+Sintesi di tutto il materiale in `mc/education/protocollo/`: 10 lezioni + 3 extra + 5 live
+(19 video trascritti in `mc/education/protocollo/transcripts/`), PDF, template di codice,
+glossario, Strategy of the Month e Strategy Feedbacks.
 Serve come riferimento per la migrazione su MultiCharts e per il protocollo di test
 (`mc/docs/protocollo_test_mc.md`).
 
@@ -74,8 +75,19 @@ Riavvio quando 5 mesi positivi, 12 mesi positivi, ultimi 3 mesi sopra il passo s
   non elimina il DD di regime (è il premio al rischio), ma rende ogni trade a rischio
   costante e stringe la dispersione MC. Con cap margine e tetto contratti
   (template `Gold Reversal Target Vol Margin`, `Overnight … Volatility Scaled`).
-- Cushion ladder (DriftPullback): size base finché non hai profitto bancato, +1 contratto
-  ogni $2000 di cushion, tetto 3. Ha battuto il vol‑sizing a parità di esposizione.
+- **Cushion ladder** (DriftPullback, sez. 08 del tutorial): `cushion = max(0, NetProfit +
+  CushionAdj)`; `contratti = base + int(cushion / $2000)`, tetto 3, mai sotto 1. Scala col
+  denaro che il mercato ti ha **già** pagato, non con la fiducia: finché la strategia non
+  si è guadagnata il primo gradino tradi size minima contro il DD dell'eval, e ogni
+  contratto in più è finanziato interamente da profitto bancato. Ricalcolata **una volta
+  al giorno**, al reset, mai dentro la sessione. Il vol‑sizing è stato testato contro
+  questa ladder e non l'ha battuta a parità di esposizione (Sharpe piatto fra i regimi di
+  ATR): è rimasta la ladder, più semplice.
+- **I guardrail si scelgono prima del backtest, dalle regole del conto — non dopo, dalla
+  curva di equity.** La strategia si adatta al conto, mai il contrario. Corollario
+  operativo: cap di ingressi/giorno **e** cap di perdite/giorno, così il worst day è noto
+  in anticipo (es. 2 stop × 80 pt) invece di essere scoperto nell'equity curve. Recepito
+  nel Gate 0 della pipeline.
 
 ---
 
@@ -151,7 +163,7 @@ Riavvio quando 5 mesi positivi, 12 mesi positivi, ultimi 3 mesi sopra il passo s
 |---|---|---|---|---|
 | **Fabio Valentini ORB** (`6. Fabio Model`) | breakout ORB | NQ 5m + 30m delta | **Validato**: 823 trade 2021–26, WR 58%, avg $183 netto, PF 1.28, DD $25k, P(EV≤0)=0.001 | È il nostro `OrbBreakout_EA`: range 30 min da apertura, close > high, SL = range low, TP 1R, flat 14:00 CT, filtro delta `Upticks−Downticks ≥ 200`. **Prima strategia da portare.** |
 | **VaultBreak NQ** (`5.`, `10.`, `11.`) | vol breakout (noise boundary = open + 0.6×ATR daily) + VWAP | NQ 5m RTH | Long only; WR ~70% ultimi 40 gg; shelved come candidato Apex ma usato nel basket delle live | Trend following n. 2 per il basket. Attenzione: DailyATR "seeded" (expanding) vs "rolling 252" sono due strategie diverse. |
-| **DriftPullback v2.1** (Agnello) | momentum + pullback | NQ 5m exec / 15m segnale | Validato, live su funded; avg $77, WR 65%, t‑stat OOS 2.2 | Ottimo per prop, troppo piccolo per capitale proprio. Da portare come template dual‑TF. |
+| **DriftPullback v2.1** (Agnello) | momentum + pullback | NQ 5m exec / 15m segnale | Validato, live su funded; avg $77, WR 65%, t‑stat OOS 2.2. **Tutorial completo** in `11. Strategy Feedbacks` (18 pp.) | **Portata**: `mc/strategies/DriftPullback/`. L'unica del corso col profilo prop nativo (WR 65%, R:R 0.5, flat EOD, cap perdite/giorno). Vedi sotto. |
 | **VWAP Pullback / VWAP ADX** | mean reverting intraday | NQ 1m, 24h session | Avg $80, PF 1.2, WR 58% (ADX: WR 82%, avg $300 OOS secondo Agnello) | Il **mean reverting** che manca al basket. |
 | **VWAP Signal from Paper** | long/short vs VWAP, reverse on cross | NQ 1m | Esempio paper→codice | Solo didattico. |
 | **LW Breakout (Donchian 96 + LWTI + volume)** | breakout | NQ 5m | Fallisce: avg $20, DD $60k; con filtro vol 288/20 → avg $71 | Caso di studio del processo. Non tradare. |
@@ -161,7 +173,7 @@ Riavvio quando 5 mesi positivi, 12 mesi positivi, ultimi 3 mesi sopra il passo s
 | **Gold 3‑candle Reversal** | pattern | GC 4h | "Funziona ma senza ipotesi" | No (ma il modulo di sizing con cap margine è riusabile). |
 | **Volatility Break (z‑score)** | trend continuation vol‑normalized | BTC 15m | Fallisce il WFO (56% finestre positive, WFE bassa) | Solo esempio WFO. |
 | **PEAD** | event‑driven | azioni daily | Calmar ~0.68, long only | Fuori scope. |
-| **OFB Big Trade / Bridge** | order flow L3 | NQ 1m | Delta/whale poco valore standalone, ok come filtro; hold ottimale 15–20 min | Il Bridge è un exe Windows + licenza; da vedere solo dopo. |
+| **OFB Big Trade / Bridge** | order flow L3 | NQ 1m | Delta/whale poco valore standalone, ok come filtro; hold ottimale 15–20 min | **Fuori dalla pipeline.** Vedi §7: nessuna delle nostre 6 strategie lo usa. |
 | N‑Bar / N‑Day breakout | scaffolding | intraday | Template | Utile per imparare `Buy next bar at X stop`. |
 | Trend Following Regime Check | diagnostica | 1m | "Compra dopo barra verde, vendi dopo rossa": equity su = regime trend | **Da girare su ogni strumento** prima di scegliere la famiglia. |
 | NQ Session Tester | diagnostica | 30m Globex | overnight vs intraday vs B&H | Utile per capire dove sta il rendimento. |
@@ -181,6 +193,43 @@ Concetti utili emersi:
 - Competizione mensile: 80% ritorno risk‑adjusted (media/dev.st ritorni giornalieri),
   20% giorni profittevoli/giorni totali; min 3 trade; codice PowerLanguage.
 
+### DriftPullback — cosa si porta via dal tutorial (oltre alla strategia)
+
+Il documento in `11. Strategy Feedbacks` è l'unico del corso che spiega una strategia
+*intera*: meccanismo, architettura, ogni input col suo stato di evidenza, walkthrough di
+tutti i blocchi di codice, e i limiti onesti dell'implementazione. Cose riusabili ovunque:
+
+- **Chi sta dall'altra parte.** «Se non sai chi sta perdendo soldi contro una strategia,
+  non hai una strategia: hai un pattern.» Qui la risposta è esplicita — chi insegue tardi
+  paga lo spread al momentum, chi vende la prima discesa restituisce il pullback.
+- **Architettura a due orologi.** Il TF lento decide *se* e *in che direzione*, il veloce
+  decide *quando*. I valori del TF lento vanno **congelati** dentro la barra (flag di
+  confine tipo `newBar2`): un'implementazione ingenua li ricalcola a ogni barra veloce, il
+  segnale oscilla tre volte per barra lenta e il backtest sbircia una barra non chiusa.
+- **Il fuso orario è il modo più silenzioso di rompere una strategia.** Gli orari sono in
+  ora del chart: se sono sbagliati non c'è errore, si trada semplicemente un'ora diversa
+  da quella validata e ogni confronto diventa privo di senso. Tabella di conversione ET/CT
+  **nel documento della strategia**, non nella testa.
+- **Slippage esplicita solo sugli stop.** Gli stop riempiono in mercati veloci e spesso
+  peggio del loro prezzo; i limit riempiono al prezzo o non riempiono. Mettere la penalità
+  nel backtest, sull'unico tipo di ordine che se la merita (`StopSlipTicks`, convertito con
+  `MinMove/PriceScale` così resta portabile), costa meno che scoprirla live. «Il pessimismo
+  che scegli batte l'ottimismo che scopri.»
+- **Un bracket asimmetrico non è un errore se il meccanismo lo giustifica.** Stop largo e
+  target piccolo (R:R 0.5) è coerente con «i pullback dentro un drift si risolvono poco
+  profondi e in fretta»: si compra un WR alto su un tragitto corto. È anche esattamente il
+  profilo che vogliono le prop.
+- **Mappa dell'evidenza.** Non tutti gli switch di una strategia hanno lo stesso supporto:
+  il tutorial distingue *validato* (SMA + punti fissi; VWAP di sessione + punti fissi),
+  *seed* (i moltiplicatori ATR: valori di partenza per esperimenti tuoi, mai per il live) e
+  *logica di deployment* (la cushion ladder: non è edge). Da imitare in ogni nostra SPEC.
+- **Limiti dichiarati invece che nascosti**: ingresso valutato alla chiusura della barra di
+  pullback e fill all'apertura della successiva; **barra d'ingresso scoperta** (i bracket
+  sono ordini next‑bar emessi dalla posizione); contatori esatti solo perché tutte le
+  uscite sono next‑bar — se si passa a `SetStopLoss` & co. l'assunzione salta.
+- **Non copiarla.** L'autore lo scrive: è uno scheletro da smontare (cambia l'ancora, il
+  trigger, lo strumento), non un prodotto finito.
+
 ---
 
 ## 6. Cosa cambia per noi
@@ -191,7 +240,41 @@ Concetti utili emersi:
 2. Il processo Fase 2 diventa: backtest 1 contratto NQ → MC reshuffle (built‑in) →
    split IS/OOS una volta → Colab bootstrap (EV, CI, percentili DD) → WFO dove ha senso
    → prop simulator → size. Vedi `protocollo_test_mc.md`.
-3. Il basket obiettivo per la prop: ORB (trend) + VaultBreak o Gold Asian (trend su
-   altro asset) + VWAP‑ADX (mean reverting). Poi eventi macro.
+3. Il basket obiettivo per la prop: ORB e VaultBreak (trend NQ) + Gold Asian (altro
+   asset) + un lato short reale (NQ First5 o DriftPullback). Stato aggiornato in
+   `pipeline_prop.md` / `pipeline_status.json`, non qui.
 4. `PropGuard` va riscritto in PowerLanguage; le regole Apex sono note (sopra).
 5. Il journal discrezionale non cambia.
+
+---
+
+## 7. Dipendenze — cosa serve davvero per far girare le nostre strategie
+
+| Componente | A cosa serve | Ci serve? |
+|---|---|---|
+| **MultiCharts** (licenza) | piattaforma, backtest, ottimizzatore, Monte Carlo built‑in, WFO | **Sì.** Il piano free è solo simulazione: non collega feed esterni. |
+| **Feed storico** (TradeStation, o dxFeed via MC) | barre 1/5/15 min su @NQ e @GC per IS 2020‑24 + OOS | **Sì.** È il blocco attuale. |
+| **Colab** (bootstrap, prop single, prop multiple) | Stage 6, 7, 8 — gratis, si carica il file trade esportato da MC | Sì, già linkati in `pipeline_prop.md`. |
+| **The Bridge / OrderFlowBridge** (`9. The Bridge`) | installer Windows che aggiunge a MC una DLL, **16 funzioni PowerLanguage** e un downloader proprio per dati **order flow L3/MBO**; si verifica con `ofb diagnose` | **No.** Vedi sotto. |
+
+### The Bridge: cosa è e perché non ci riguarda (per ora)
+
+È un prodotto a parte (v2.0.9, exe Windows + licenza propria): serve a portare in
+PowerLanguage il **flusso ordini a livello 3** — big trade, whale, delta cumulato vero —
+che MultiCharts da solo non espone. Ha un suo scaricatore dati e le sue funzioni da
+ricompilare nell'editor.
+
+**Nessuna delle nostre 6 strategie lo usa.** Girano tutte su OHLC + volume e su funzioni
+native PowerLanguage (`Average`, `AvgTrueRange`, `Volume`/`Ticks`, `MinMove`/`PriceScale`,
+`NetProfit`, `PositionProfit`, `TotalTrades`, …). Quello che serve sono **i dati**, e i
+dati arrivano da TradeStation o da dxFeed dentro MultiCharts.
+
+L'unico punto di contatto è il **filtro delta opzionale dell'ORB**
+(`UpTicks − DownTicks ≥ 200`, `UseDeltaFilter` **0 = spento di default**): `UpTicks` e
+`DownTicks` sono parole riservate **native** di MultiCharts, alimentate dai dati tick del
+feed — non dal Bridge. Se un giorno servisse, basta storico tick, non l'installer.
+
+Dal corso, inoltre, il verdetto sull'order flow è tiepido: delta e whale hanno **poco
+valore standalone**, vanno al più come filtro. Un filtro va comunque validato con lo
+split‑sample come ogni altro — e prima di allora servono sei strategie che passino i gate
+senza. Il Bridge resta materiale di studio in `mc/education/protocollo/OrderFlowBridge/`.
