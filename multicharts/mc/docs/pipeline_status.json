@@ -230,10 +230,14 @@
   }
  ],
  "blockers": [
-  "Storico: bonifico SEPA €500 inviato, accredito atteso lunedì 28/09 sul conto Futures TradeStation. Al funding: checklist in `mc/docs/setup_tradestation.md` (entitlement NON‑PRO, wizard MC, misura profondità storico @NQ 5m/1m e @GC 15m, costi e session template, test di coerenza sui 100 giorni già fatti).",
-  "Licenza MultiCharts: piano free = solo simulazione (nessun feed esterno). Decisione: mensile appena il conto TradeStation è attivo, lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Prima: chiedere al supporto MC il crossgrade da MT5/Volumetrica."
+  "Storico: **conto TradeStation aperto** (email del 28/09). Domani il setup: checklist in `mc/docs/setup_tradestation.md`. Primo dato che serve alla pipeline: la **data della prima barra** di @NQ 5 min caricata partendo dal 2016.",
+  "Licenza MultiCharts: il piano free è **solo simulazione**, non collega feed esterni → senza licenza il conto TradeStation non serve a niente. Domani serve il piano **Standard mensile**; lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Se si vuole lo sconto **crossgrade** da MT5/Volumetrica, la mail al supporto MC va mandata **oggi**: è l'unica cosa che può far slittare domani."
  ],
  "log": [
+  {
+   "date": "2026-09-28",
+   "text": "**Conto TradeStation aperto.** Setup domani. Checklist aggiornata per sei strategie: un solo download di @NQ 1 min copre ORB, VaultBreak, NQ First5 (compressione 5 min), DriftPullback (5 e 15 min) e VWAP Pullback (1 min nativo); @GC 1 min per Gold Asian. Ordine di lavoro: ORB va dritta allo Stage 2 (è l'unica col Gate 1 passato), le altre cinque prima allo Stage 1. Tutte le varianti (`EntryMode`, `TriggerMode`, `UseFilters`, `StopPts`, `SizingMode`) restano a 0: sono Stage 4."
+  },
   {
    "date": "2026-09-28",
    "text": "**Palmquist, *Money-Making Candlestick Patterns* (2008): i pattern non si testano, due idee di processo tenute** (`mc/education/books/NOTES_palmquist_candlestick.md`). A differenza di Elder qui i backtest ci sono, ma l'universo è azionario con selezione cross‑sectional su migliaia di simboli, le barre sono daily con hold multi‑day, e la metrica è ROI annualizzato **senza costi** — non convertibile nel nostro avg trade netto. Il suo filtro migliore («NASDAQ in uptrend») fa più lavoro del pattern stesso: l'edge è il regime. Tenuti: (a) **test per regime** up/down/laterale, non solo per periodo — buco reale del nostro Gate 2, che intercetta la concentrazione temporale ma non quella di regime; (b) sizing dalla **striscia perdente attesa** come controllo analitico accanto al MC allo Stage 7."

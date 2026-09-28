@@ -26,8 +26,9 @@ Da fare nell'ordine, appena i fondi sono accreditati sul conto **Futures**.
 Regola: **barre da 1 minuto, non tick**. Da 1 min MC comprime 5 e 15 min, quindi un solo
 download per strumento copre tutte le strategie; lo storico a tick è più corto, pesa
 centinaia di milioni di righe e rende lente ottimizzazioni e backtest.
-- [ ] @NQ **1 min**, range dal 2016 (o dalla prima barra disponibile) a oggi → serve a
-      ORB e VaultBreak (per compressione a 5 min) e a VWAP Pullback (nativo).
+- [ ] @NQ **1 min**, range dal 2016 (o dalla prima barra disponibile) a oggi. Un solo
+      download copre **cinque** strategie: ORB, VaultBreak e NQ First5 (compressione a
+      5 min), DriftPullback (5 **e** 15 min), VWAP Pullback (1 min nativo).
 - [ ] @GC **1 min**, stesso range → Gold Asian per compressione a 15 min.
 - [ ] Lascia completare il backfill; i dati restano nel database locale anche quando
       scadono i 90 giorni di real‑time.
@@ -42,10 +43,14 @@ centinaia di milioni di righe e rende lente ottimizzazioni e backtest.
 ## 4. Impostazioni comuni prima dei test
 - [ ] Format Instrument → Settings → Time zone **Exchange** (CT). Verifica che l'apertura
       cash cada alle **08:30**.
-- [ ] Session template: RTH 08:30–15:00 CT per VaultBreak; Globex 24h per ORB, VWAP, GC.
+- [ ] Session template: RTH 08:30–15:00 CT per VaultBreak; Globex 24h per ORB, VWAP, GC,
+      NQ First5 e DriftPullback.
+- [ ] **DriftPullback** vuole due serie sullo stesso chart: @NQ 5 min come Data1, poi
+      Insert → Instrument → stesso simbolo a **15 min** come Data2. L'ordine conta.
 - [ ] Strategy Properties → Properties → commissione **$2.50/contratto per lato**,
       slippage **1 tick**; salvale come regola riutilizzabile.
-- [ ] Max bars back: 100 (ORB, VaultBreak, GC), **≥ 300** per VWAP Pullback su 1 min.
+- [ ] Max bars back: 100 (ORB, VaultBreak, GC, NQ First5, DriftPullback), **≥ 300** per
+      VWAP Pullback su 1 min.
 - [ ] Salva workspace e desktop.
 
 ## 5. Coerenza dei dati (prima di fidarsi dei 5 anni)
@@ -53,5 +58,16 @@ centinaia di milioni di righe e rende lente ottimizzazioni e backtest.
       P&L devono coincidere a meno di pochi punti percentuali. Se divergono molto,
       controlla session template e timezone prima di proseguire.
 
-Poi si parte con lo **Stage 2** (`pipeline_prop.md`): backtest IS 2020‑01‑01 → 2024‑12‑31,
-1 contratto, costi on, per ORB → VaultBreak → VWAP → GC.
+## Ordine di lavoro dopo il setup
+
+1. **ORB** → è l'unica già a Gate 1 passato: va direttamente allo **Stage 2**
+   (IS 2020‑01‑01 → 2024‑12‑31, 1 contratto, costi on).
+2. Le altre cinque devono prima passare lo **Stage 1** (meccanica, ~100 giorni, `ShowLog`):
+   VaultBreak (chart RTH, `DailyATRLen 20` per il lead‑in) → NQ First5 → DriftPullback
+   (due serie) → VWAP Pullback → Gold Asian.
+3. Subito dopo lo Stage 2 di ORB e First5: **misurare la correlazione** fra le due, senza
+   aspettare il gate 8. Stesso strumento, stessa ora, stessa idea di drift.
+
+Configurazioni da usare allo Stage 1 e 2: quelle **validate**, cioè tutti i default.
+`EntryMode`, `TriggerMode`, `UseFilters`, `StopPts`, `SizingMode` restano a 0 — sono
+varianti dello Stage 4, non si accendono prima.
