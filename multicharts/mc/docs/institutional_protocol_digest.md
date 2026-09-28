@@ -257,12 +257,48 @@ tutti i blocchi di codice, e i limiti onesti dell'implementazione. Cose riusabil
 | **Colab** (bootstrap, prop single, prop multiple) | Stage 6, 7, 8 — gratis, si carica il file trade esportato da MC | Sì, già linkati in `pipeline_prop.md`. |
 | **The Bridge / OrderFlowBridge** (`9. The Bridge`) | installer Windows che aggiunge a MC una DLL, **16 funzioni PowerLanguage** e un downloader proprio per dati **order flow L3/MBO**; si verifica con `ofb diagnose` | **No.** Vedi sotto. |
 
-### The Bridge: cosa è e perché non ci riguarda (per ora)
+### The Bridge: cosa è, come funziona in live, e perché non ci riguarda (per ora)
 
 È un prodotto a parte (v2.0.9, exe Windows + licenza propria): serve a portare in
-PowerLanguage il **flusso ordini a livello 3** — big trade, whale, delta cumulato vero —
-che MultiCharts da solo non espone. Ha un suo scaricatore dati e le sue funzioni da
-ricompilare nell'editor.
+PowerLanguage il **flusso ordini a livello 2/3** — big trade, liquidità a book, value
+area, POC veri — che MultiCharts da solo non espone. Ha un suo scaricatore dati e 16
+funzioni da ricompilare nell'editor (14 nel video, 16 nella 2.0.9).
+
+**Come arrivano i dati a MultiCharts — le due strade sono diverse** (Extra 2):
+
+1. **Storico / backtest**: il downloader del Bridge scrive file CSV locali
+   (`OFB_bars_NQ`: data, ora, OHLC, volume, up volume, down volume, a 1 minuto). Si
+   importano in MC da **QuoteManager → Add symbol manually → ASCII mapping**, creando uno
+   strumento custom con sessione Globex, `MinMove` 25/100 e big point value 20. Da lì è
+   un normale simbolo: il backtest non sa che venga dal Bridge.
+2. **Feature order flow**: le metriche L2/L3 **non** passano da MC. «All the calculation
+   are inside the bridge because they cannot live within MultiCharts.» Il Bridge le
+   calcola nel suo processo, e le 16 funzioni PowerLanguage sono l'interfaccia che le
+   legge. MC non vede mai il book grezzo.
+3. **Live**: nella sezione *Live* del Bridge si inseriscono le **credenziali di un feed
+   proprio** — Databento (API key), Rithmic, IQFeed, Continuum, Kanna. Il Bridge ingerisce
+   il book in tempo reale, ricalcola le stesse feature, e le funzioni PowerLanguage le
+   leggono mentre MC esegue. Il Bridge **non distribuisce dati**: «we are not data
+   distributors» — i dati L3 li paghi tu (nel video cita ~$3.000 come costo storico di
+   quella via, Databento è a consumo e costa molto meno).
+
+**Tre avvertenze oneste su quel punto 3**, perché il corso lo tratta in un minuto finale:
+
+- L'autore lo descrive al **condizionale** («you could get your live feed and… automate
+  that strategy»). Tutta la demo è su storico. È un'architettura dichiarata, **non
+  mostrata in funzione**.
+- **Simmetria storico/live**: la ricerca si fa sui dati NQ campione del Bridge, il live su
+  un feed tuo. Se le due pipeline non producono la stessa feature bar per bar (venue,
+  aggregazione, clock diversi), il backtest sta misurando un'altra strategia. Va
+  verificato prima di scriverci sopra, non dopo.
+- **Entitlement**: il DOM a 10 livelli (L2) è una cosa, il **MBO order‑by‑order** (L3) è
+  un'entitlement CME separata e più cara. Prima di progettare una feature bisogna sapere
+  quale dei due serve — e se il feed che si userà in live ce l'ha davvero.
+
+**Nota per dopo**: indipendentemente dall'order flow, il downloader del Bridge regala
+**5+ anni di NQ a 1 minuto** (OHLCV + up/down volume) importabili in MC via ASCII, buoni
+per backtestare qualsiasi strategia. Se il Bridge riapre, vale la pena prenderlo anche
+solo per quello.
 
 **Nessuna delle nostre 6 strategie lo usa.** Girano tutte su OHLC + volume e su funzioni
 native PowerLanguage (`Average`, `AvgTrueRange`, `Volume`/`Ticks`, `MinMove`/`PriceScale`,
