@@ -21,3 +21,6 @@ mc/**/*.mp4
 mc/**/*.zip
 mc/**/*.exe
 mc/*.zip
+
+# Video dei corsi (troppo grandi per GitHub)
+*.mp4
