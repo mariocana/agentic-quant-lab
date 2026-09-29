@@ -236,6 +236,10 @@
  "log": [
   {
    "date": "2026-09-29",
+   "text": "**GEX/GEXBot (*Class summary Freddy*) → playbook, non pipeline algo.** Nuovo verdetto `playbook` nel journal degli ingest, per il materiale valido a mano ma non codificabile: ricorrerà con l'order flow di Stucchi. Fuori dalla pipeline perché servono dati opzioni **e** order flow, la regola è dichiaratamente discrezionale, e il payoff cercato (asimmetrico, upside lasciato correre, incrementi dopo conferma) è l'opposto del profilo prop. Sintesi scritta per il playbook in `mc/ideas/NOTES_gex_freddy.md`. Unico pezzo che potrebbe attraversare: il **calendario** OPEX / triple witching / VIXperation / JHEQX, oggettivo e senza dati opzioni — annotato come possibile filtro di giornata, non pre‑registrato."
+  },
+  {
+   "date": "2026-09-29",
    "text": "**Aperto il journal degli ingest** (`mc/docs/ingest_journal.md`): una riga per ogni documento che entra in `books/` o `ideas/`, col verdetto (`scartato` / `idee estratte` / `in pipeline` / `in coda` / `da valutare`) e cosa ne è uscito. Serve soprattutto a sapere **cosa abbiamo già guardato**. Backfill di Elder e Palmquist. I due documenti nuovi in `ideas/` (GEX/GEXBot e *Liquidity Gate* v5.0) vanno **in coda con blocco dati**: il primo richiede flusso opzioni e livelli di gamma, il secondo profondità del book e identificatori **Market‑by‑Order** — cioè l'L3 che richiede il Bridge (chiuso) e un'entitlement separata. Regola scritta: il materiale esterno produce strategie e varianti, mai modifiche ai gate."
   },
   {
