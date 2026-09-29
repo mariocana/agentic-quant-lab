@@ -236,6 +236,10 @@
  "log": [
   {
    "date": "2026-09-29",
+   "text": "**Aperto il journal degli ingest** (`mc/docs/ingest_journal.md`): una riga per ogni documento che entra in `books/` o `ideas/`, col verdetto (`scartato` / `idee estratte` / `in pipeline` / `in coda` / `da valutare`) e cosa ne è uscito. Serve soprattutto a sapere **cosa abbiamo già guardato**. Backfill di Elder e Palmquist. I due documenti nuovi in `ideas/` (GEX/GEXBot e *Liquidity Gate* v5.0) vanno **in coda con blocco dati**: il primo richiede flusso opzioni e livelli di gamma, il secondo profondità del book e identificatori **Market‑by‑Order** — cioè l'L3 che richiede il Bridge (chiuso) e un'entitlement separata. Regola scritta: il materiale esterno produce strategie e varianti, mai modifiche ai gate."
+  },
+  {
+   "date": "2026-09-29",
    "text": "**Licenza MultiCharts risolta**: il supporto ha concesso il crossgrade — **un mese gratis + un mese a $90**, cioè copertura fino al **29/11**, con il Black Friday (27/11) dentro la finestra. Costo del ponte $90 invece di due mensili pieni. Cade l'ultimo blocco esterno: conto TradeStation aperto + piattaforma attiva = si parte con lo Stage 1/2 sui dati veri."
   },
   {
