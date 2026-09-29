@@ -74,14 +74,20 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "active"
+    "2": "blocked",
+    "4": "active"
    },
    "note": "Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.",
    "metrics": {
-    "primo giro IS (SENZA costi, non valido)": "827 trade · WR 55,6% · avg $86 · PF 1,135 · DD $36,2k · peggior trade $6,7k",
-    "per anno": "2020 **−19.690** · 2021 +30.245 · 2022 +10.025 · 2023 +28.770 · 2024 +22.100"
+    "Stage 2 IS 2020‑2024, costi on, 1 contratto": "827 trade · WR 55,6% · avg **$81,04** · PF **1,126** · R:R 0,90 · DD **$36,3k** · peggior trade **$6.685**",
+    "Gate 2": "**non superato**: PF 1,126 < 1,2 · DD÷10 $3.629 > $1.250 · peggior trade÷10 $669 > $500",
+    "per anno": "2020 **−20.656** · 2021 +29.392 · 2022 +9.204 · 2023 +27.900 · 2024 +21.182 — senza il 2020, avg trade $135"
    },
    "log": [
+    {
+     "date": "2026-09-29",
+     "text": "**Stage 2 rifatto con costi e Bar Magnifier: Gate 2 NON superato.** 827 trade, avg $81,04, PF 1,126, WR 55,6%, R:R 0,90, DD $36,3k, peggior trade $6.685. Passano n, avg trade, WR, R:R e la concentrazione annuale; **cadono PF, drawdown e peggior trade**. Il costo applicato risulta però solo ~$5,35 a trade tondo (net da $71.450 a $67.022): più basso dei ~$10–15 attesi con $2.50/lato + 1 tick → **da verificare se commissione e slippage sono per lato o per trade**, perché l'avg trade è vicino alla soglia. Diagnosi invariata e ora quantificata: **il 2020 vale −20.656**, il max DD è del 25 marzo 2020, e senza quell'anno gli altri quattro danno $135 di avg trade. Si passa allo **Stage 4** con le varianti già pre‑registrate."
+    },
     {
      "date": "2026-09-29",
      "text": "**Primo giro Stage 2 su dati veri — non valido per il gate**: nelle Settings risultano `No Commission`, slippage 0 e **Bar Magnifier Disabled**. Range e input corretti, quindi basta rilanciare. Numeri lordi: 827 trade, PF 1,135, WR 55,6%, avg $86, DD $36,2k, peggior trade $6,7k → fallirebbe comunque **PF, DD e peggior trade** anche così. Il risultato vero è la ripartizione annuale: **il 2020 vale −19.690** e il max DD è datato 25 marzo 2020 (Covid); senza il 2020 gli altri quattro anni fanno $141 di avg trade. Spiega la distanza dal Fabio Model del corso (avg $183, PF 1,28), **validato sul 2021‑2026, cioè senza il Covid**. La finestra IS non si tocca: era dichiarata nella SPEC prima del test. Legittimo invece provare le varianti già pre‑registrate, e `MaxRisk_USD` (salta i giorni con range troppo largo) punta dritto al problema osservato."
@@ -103,7 +109,7 @@
      "text": "Porting da `OrbBreakout_EA` (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2."
     }
    ],
-   "next": "Rilanciare lo Stage 2 con **costi accesi** ($2.50/lato + 1 tick) e **Bar Magnifier a 1 min**. Poi leggere il gate sui numeri veri."
+   "next": "Stage 4 sull'IS, una variante per volta, ognuna da superare lo **split‑sample** sulle due metà (2020‑01→2022‑06 e 2022‑07→2024‑12). Ordine: `MaxRisk_USD` (attacca peggior trade e DD), `TP_RR 0.5` (alza il WR, porta R:R a 0,5), filtro delta, cutoff ingressi. Poi si rifanno Gate 2 e 3."
   },
   {
    "name": "VaultBreak",
@@ -239,6 +245,10 @@
   "Promemoria, non un blocco: la copertura della licenza mensile finisce il **29/11**, il Black Friday è il **27/11**. Due giorni di margine per comprare la lifetime: se slitta, si resta senza piattaforma."
  ],
  "log": [
+  {
+   "date": "2026-09-29",
+   "text": "**Primo verdetto di gate su dati veri: l'ORB non supera il Gate 2.** Con costi e Bar Magnifier: PF 1,126 (soglia 1,2), DD÷10 $3.629 (soglia $1.250), peggior trade÷10 $669 (soglia $500). Avg trade $81 e WR 55,6% invece passano. La causa è concentrata: il **2020 vale −20.656** e contiene il max drawdown (25 marzo). Il Fabio Model del corso è validato sul 2021‑2026, cioè **senza il Covid** — da lì la distanza dai suoi numeri. La finestra IS non si tocca. Si va allo Stage 4 con le varianti pre‑registrate, che si chiude rifacendo Gate 2 e 3. **Scoperta utile**: i dati TradeStation portano Up/Down volume per barra (visibile nella data window), quindi il **filtro delta è testabile su tutto lo storico** — non serve lo storico tick che pensavamo mancasse."
+  },
   {
    "date": "2026-09-29",
    "text": "**Dati TradeStation verificati contro dxFeed: coincidono al tick.** Barra @NQ 5 min del 16/09/2026 10:00 → Close **29.499,50**, identico al prezzo d'ingresso che l'ORB aveva registrato su quella barra coi dati dxFeed (l'ORB entra *this bar on close*, quindi doveva essere il Close e non l'Open). Coincidono prezzo, confine di barra e fuso orario insieme. `Bar # 753.635` conferma che il grafico ha tutto lo storico da gennaio 2016, non una finestra parziale. **Confermato anche il quadro back‑adjustment**: presente esatto, passato traslato di un aggiustamento che cresce andando indietro (~3.900 punti a gennaio 2016). Le metriche in dollari non sono toccate, perché il P&L viene da differenze di prezzo. Via libera allo Stage 2 dell'ORB."
