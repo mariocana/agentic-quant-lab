@@ -1,0 +1,66 @@
+<div style="padding: 1rem 0;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 1.5rem;">
+    <div style="background: var(--surface-1); border-radius: var(--radius); padding: 1rem;">
+      <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 4px;">P&L mese</p>
+      <p style="font-size: 24px; font-weight: 500; margin: 0; color: var(--text-danger);">-2.178 $</p>
+    </div>
+    <div style="background: var(--surface-1); border-radius: var(--radius); padding: 1rem;">
+      <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 4px;">Trade</p>
+      <p style="font-size: 24px; font-weight: 500; margin: 0;">180</p>
+    </div>
+    <div style="background: var(--surface-1); border-radius: var(--radius); padding: 1rem;">
+      <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 4px;">Winrate</p>
+      <p style="font-size: 24px; font-weight: 500; margin: 0;">56 %</p>
+    </div>
+    <div style="background: var(--surface-1); border-radius: var(--radius); padding: 1rem;">
+      <p style="font-size: 13px; color: var(--text-secondary); margin: 0 0 4px;">Profit factor</p>
+      <p style="font-size: 24px; font-weight: 500; margin: 0; color: var(--text-danger);">0,73</p>
+    </div>
+  </div>
+
+  <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 8px;">P&L per giornata ($)</p>
+  <div style="position: relative; width: 100%; height: 240px; margin-bottom: 2rem;">
+    <canvas id="dayChart" role="img" aria-label="P&L giornaliero di giugno: 16 giu -387, 17 giu +75, 18 giu -1570, 22 giu -533, 23 giu +85, 25 giu +152">P&L giornaliero: 16 giu -387, 17 giu +75, 18 giu -1570, 22 giu -533, 23 giu +85, 25 giu +152.</canvas>
+  </div>
+
+  <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 8px;">Equity curve cumulativa ($)</p>
+  <div style="position: relative; width: 100%; height: 240px;">
+    <canvas id="equityChart" role="img" aria-label="Equity curve cumulativa di giugno, che chiude a -2178 dollari">Equity cumulativa che scende fino a -2178 dollari a fine mese.</canvas>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const labels = ['16 giu','17 giu','18 giu','22 giu','23 giu','25 giu'];
+const daily = [-387, 75, -1570, -533.5, 85, 152.5];
+const equity = [];
+let run = 0;
+daily.forEach(v => { run += v; equity.push(Math.round(run)); });
+const green = '#199e70', red = '#e34948';
+
+new Chart(document.getElementById('dayChart'), {
+  type: 'bar',
+  data: { labels, datasets: [{ label: 'P&L giornaliero', data: daily,
+    backgroundColor: daily.map(v => v >= 0 ? green : red),
+    borderRadius: 4, maxBarThickness: 40 }] },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false },
+      tooltip: { callbacks: { label: c => (c.raw < 0 ? '-' : '') + '$' + Math.abs(c.raw).toLocaleString() } } },
+    scales: {
+      x: { ticks: { autoSkip: false, color: '#898781' }, grid: { display: false } },
+      y: { ticks: { color: '#898781', callback: v => (v < 0 ? '-' : '') + '$' + Math.abs(v) }, grid: { color: '#e1e0d9' } } } }
+});
+
+new Chart(document.getElementById('equityChart'), {
+  type: 'line',
+  data: { labels, datasets: [{ label: 'Equity cumulativa', data: equity,
+    borderColor: red, backgroundColor: 'rgba(227,73,72,0.10)', fill: true,
+    borderWidth: 2, tension: 0.15,
+    pointRadius: 4, pointBackgroundColor: red, pointBorderColor: '#fcfcfb', pointBorderWidth: 2 }] },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false },
+      tooltip: { callbacks: { label: c => (c.raw < 0 ? '-' : '') + '$' + Math.abs(c.raw).toLocaleString() } } },
+    scales: {
+      x: { ticks: { color: '#898781' }, grid: { display: false } },
+      y: { ticks: { color: '#898781', callback: v => (v < 0 ? '-' : '') + '$' + Math.abs(v) }, grid: { color: '#e1e0d9' } } } }
+});
+</script>

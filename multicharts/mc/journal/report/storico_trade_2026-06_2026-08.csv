@@ -1,0 +1,1149 @@
+data,ora,n_giorno,sessione,strumento,direzione,setup,ingresso,esito,pnl_usd,pnl_r,gex,ibv,dopo_loss_3min,regole,note,file_origine
+2026-06-16,15:48,1,NY,NQ,Long,n.d.,,Gain,12.0,0,,None,0,,,2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,15:53,2,NY,NQ,Short,altro,flip value area (L->S) sul top livello gex,Loss,-120.0,-1,,None,0,,l'assorbimento dopo il mio stop sarebbe stata entrata perfetta,2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:03,3,NY,NQ,Short,altro,short recupero big trade,Gain,16.0,0,,None,0,,"partito, assorbimento sotto e tornato a be",2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:08,4,NY,NQ,Long,altro,test big trade,Gain,8.0,0,,None,0,,,2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:17,5,NY,NQ,Short,altro,recupero big trade + test value area,Gain,10.5,0,,Short,0,,"Sono andato in panico perche mi stava toccando lo stop e ho chiuso a mano, scelta piu sbagliata perché era l'orgine del movimento short",2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:24,6,NY,NQ,Short,altro,sell sul bottom,Loss,-141.0,-1,,Short,0,,mi sa piu fomo ,2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:32,7,NY,NQ,Short,altro,altro sell sul bottom,Gain,6.0,0,,Short,0,,"a freddo posso dire che da qui abbiamo compromesso la giornata, attivatà la modalità distruzione",2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:35,8,NY,NQ,Short,altro,"test delle zone, pensavo che riprendesse il sell",Loss,-130.0,-1,,Short,0,,,2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:39,9,NY,NQ,Short,n.d.,,Loss,-124.0,-1,,Short,0,,"Trade senza senso nessuna conferma, delta long, no shift value area, boh",2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:40,10,NY,NQ,Short,n.d.,,Loss,-124.0,-1,,Short,1,"No, non ti sei fermato","Trade senza senso nessuna conferma, delta long, no shift value area, boh",2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:41,11,NY,NQ,Long,n.d.,,Loss,-68.0,-0.5,,Short,1,"No, non ti sei fermato","Long su impulso short sul nulla, almeno il primo trade era da livello gex ma qui niente, nemmeno c'è da commentare",2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:43,12,NY,NQ,Long,n.d.,,Loss,-125.0,-1,,Short,1,"No, non ti sei fermato","Long su impulso short sul nulla, almeno il primo trade era da livello gex ma qui niente, nemmeno c'è da commentare",2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-16,16:44,13,NY,NQ,Short,n.d.,,Gain,392.5,3.14,,Short,1,"No, non ti sei fermato. Bello hai recuperato le extra perdite. Se chiudevi prima che male ti faceva idiota",Unico trade sensato che alla fine ha toppato il mio non rispetto del money managemt. Ti è andata bene,2026-06/2026-06-16/2026-06-16.xlsx
+2026-06-17,16:00,1,NY,MNQ,Short,n.d.,,Loss,-36.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:01,2,NY,NQ,Long,n.d.,,Loss,-125.0,,,,1,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:01,3,NY,NQ,Long,n.d.,,Loss,-101.0,,,,1,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:04,4,NY,NQ,Long,n.d.,,Gain,12.0,,,,1,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:04,5,NY,NQ,Long,n.d.,,Loss,-67.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:06,6,NY,NQ,Long,n.d.,,Loss,-124.0,,,,1,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:08,7,NY,NQ,Long,n.d.,,Gain,20.0,,,,1,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:10,8,NY,NQ,Short,n.d.,,Gain,10.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:12,9,NY,NQ,Long,n.d.,,Gain,124.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:15,10,NY,NQ,Long,n.d.,,Gain,10.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:17,11,NY,NQ,Short,n.d.,,Loss,-98.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:19,12,NY,NQ,Short,n.d.,,Loss,-134.0,,,,1,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:20,13,NY,NQ,Short,n.d.,,Loss,-216.0,,,,1,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:26,14,NY,NQ,Short,n.d.,,Gain,155.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:28,15,NY,NQ,Long,n.d.,,Loss,-70.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:34,16,NY,NQ,Short,n.d.,,Loss,-480.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:35,17,NY,NQ,Long,n.d.,,Gain,15.0,,,,1,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:36,18,NY,NQ,Short,n.d.,,Gain,1015.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:44,19,NY,NQ,Long,n.d.,,Gain,25.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:50,20,NY,NQ,Short,n.d.,,Loss,-390.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:54,21,NY,NQ,Long,n.d.,,Loss,-595.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,16:56,22,NY,NQ,Short,n.d.,,Gain,680.0,,,,1,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,17:02,23,NY,NQ,Long,n.d.,,Gain,70.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,17:07,24,NY,NQ,Short,n.d.,,Gain,10.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,17:08,25,NY,NQ,Short,n.d.,,Gain,365.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-17,17:12,26,NY,NQ,Long,n.d.,,Breakeven,0.0,,,,0,,,2026-06/2026-06-17/2026-06-17.xlsx
+2026-06-18,15:38,1,NY,MNQ,Long,n.d.,,Gain,6.5,,,,0,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,15:43,2,NY,MNQ,Long,n.d.,,Loss,-50.5,,,,0,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,15:46,3,NY,MNQ,Long,n.d.,,Gain,1.0,,,,1,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,15:50,4,NY,MNQ,Long,n.d.,,Loss,-120.0,,,,0,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,15:51,5,NY,MNQ,Short,n.d.,,Loss,-141.0,,,,1,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,15:58,6,NY,MNQ,Short,n.d.,,Loss,-76.0,,,,0,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,16:00,7,NY,MNQ,Long,n.d.,,Loss,-120.0,,,,1,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,16:02,8,NY,MNQ,Short,n.d.,,Loss,-126.0,,,,1,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,16:03,9,NY,MNQ,Long,n.d.,,Loss,-124.0,,,,1,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,16:03,10,NY,MNQ,Long,n.d.,,Gain,18.0,,,,1,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,16:05,11,NY,NQ,Short,n.d.,,Loss,-125.0,,,,0,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,16:05,12,NY,NQ,Short,n.d.,,Loss,-775.0,,,,1,,,2026-06/2026-06-18/2026-06-18.xlsx
+2026-06-18,16:15,13,NY,MNQ,Short,n.d.,,Gain,3.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:17,14,NY,MNQ,Long,n.d.,,Gain,12.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:22,15,NY,MNQ,Long,n.d.,,Gain,2.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:24,16,NY,MNQ,Long,n.d.,,Loss,-65.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:34,17,NY,MNQ,Long,n.d.,,Gain,51.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:39,18,NY,MNQ,Long,n.d.,,Loss,-4.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:39,19,NY,MNQ,Short,n.d.,,Gain,5.0,,,,1,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:45,20,NY,MNQ,Short,n.d.,,Loss,-66.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:46,21,NY,MNQ,Long,n.d.,,Gain,64.0,,,,1,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:47,22,NY,MNQ,Long,n.d.,,Gain,82.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:53,23,NY,MNQ,Short,n.d.,,Gain,1.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:55,24,NY,MNQ,Long,n.d.,,Gain,5.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:56,25,NY,MNQ,Short,n.d.,,Gain,65.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,16:59,26,NY,MNQ,Long,n.d.,,Loss,-66.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:02,27,NY,MNQ,Short,n.d.,,Gain,64.0,,,,1,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:05,28,NY,MNQ,Long,n.d.,,Gain,3.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:08,29,NY,MNQ,Long,n.d.,,Gain,1.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:10,30,NY,MNQ,Short,n.d.,,Loss,-64.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:12,31,NY,MNQ,Long,n.d.,,Gain,4.0,,,,1,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:15,32,NY,MNQ,Short,n.d.,,Gain,10.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:16,33,NY,MNQ,Long,n.d.,,Loss,-64.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:18,34,NY,MNQ,Short,n.d.,,Loss,-68.0,,,,1,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:20,35,NY,MNQ,Long,n.d.,,Gain,75.0,,,,1,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:24,36,NY,MNQ,Long,n.d.,,Gain,4.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:28,37,NY,MNQ,Long,n.d.,,Loss,-63.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:29,38,NY,MNQ,Short,n.d.,,Gain,67.0,,,,1,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-18,17:31,39,NY,MNQ,Long,n.d.,,Gain,4.0,,,,0,,,2026-06/2026-06-18/2026-06-18 (1).xlsx
+2026-06-22,15:30,1,NY,,Long,n.d.,,Gain,8.5,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,15:35,2,NY,,Short,n.d.,,Gain,50.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,15:44,3,NY,,Long,n.d.,,Loss,-5.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,15:44,4,NY,,Long,n.d.,,Gain,8.5,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,15:45,5,NY,,Short,n.d.,,Loss,-30.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,15:47,6,NY,,Long,n.d.,,Gain,4.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,15:49,7,NY,,Long,n.d.,,Gain,35.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,15:56,8,NY,,Short,n.d.,,Gain,25.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,15:56,9,NY,,Long,n.d.,,Loss,-95.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:02,10,NY,,Long,n.d.,,Gain,75.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:11,11,NY,,Long,n.d.,,Gain,8.5,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:14,12,NY,,Short,n.d.,,Loss,-45.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:14,13,NY,,Short,n.d.,,Loss,-65.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:16,14,NY,,Long,n.d.,,Gain,35.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:31,15,NY,,Short,n.d.,,Gain,75.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:32,16,NY,,Short,n.d.,,Gain,75.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:44,17,NY,,Short,n.d.,,Gain,15.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:44,18,NY,,Short,n.d.,,Gain,75.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:48,19,NY,,Short,n.d.,,Gain,8.5,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:50,20,NY,,Short,n.d.,,Loss,-95.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:52,21,NY,,Long,n.d.,,Loss,-95.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:54,22,NY,,Short,n.d.,,Gain,8.5,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,16:55,23,NY,,Short,n.d.,,Loss,-5.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:01,24,NY,,Long,n.d.,,Loss,-120.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:08,25,NY,,Short,n.d.,,Gain,4.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:09,26,NY,,Short,n.d.,,Loss,-45.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:11,27,NY,,Short,n.d.,,Gain,25.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:12,28,NY,,Long,n.d.,,Gain,8.5,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:14,29,NY,,Short,n.d.,,Loss,-5.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:24,30,NY,,Short,n.d.,,Loss,-95.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:25,31,NY,,Short,n.d.,,Loss,-5.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:26,32,NY,,Short,n.d.,,Gain,8.5,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:30,33,NY,,Short,n.d.,,Loss,-150.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:30,34,NY,,Long,n.d.,,Loss,-120.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:32,35,NY,,Short,n.d.,,Gain,110.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:34,36,NY,,Short,n.d.,,Loss,-30.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:38,37,NY,,Long,n.d.,,Gain,50.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:42,38,NY,,Short,n.d.,,Gain,25.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:44,39,NY,,Short,n.d.,,Gain,35.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:45,40,NY,,Short,n.d.,,Loss,-65.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:49,41,NY,,Short,n.d.,,Gain,50.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,17:59,42,NY,,Short,n.d.,,Gain,15.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:00,43,NY,,Long,n.d.,,Loss,-120.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:02,44,NY,,Long,n.d.,,Loss,-95.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:08,45,NY,,Short,n.d.,,Gain,75.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:15,46,NY,,Short,n.d.,,Loss,-5.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:16,47,NY,,Long,n.d.,,Gain,110.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:28,48,NY,,Short,n.d.,,Loss,-150.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:30,49,NY,,Short,n.d.,,Gain,110.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:34,50,NY,,Long,n.d.,,Gain,50.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:38,51,NY,,Long,n.d.,,Loss,-15.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:38,52,NY,,Long,n.d.,,Loss,-30.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:43,53,NY,,Long,n.d.,,Loss,-30.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:48,54,NY,,Short,n.d.,,Loss,-45.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:51,55,NY,,Short,n.d.,,Gain,35.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:52,56,NY,,Long,n.d.,,Gain,15.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,18:55,57,NY,,Short,n.d.,,Loss,-150.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,19:00,58,NY,,Long,n.d.,,Gain,75.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,19:05,59,NY,,Short,n.d.,,Gain,50.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,19:07,60,NY,,Long,n.d.,,Loss,-30.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,19:14,61,NY,,Long,n.d.,,Gain,4.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,19:23,62,NY,,Short,n.d.,,Loss,-150.0,,,,0,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-22,19:24,63,NY,,Short,n.d.,,Loss,-5.0,,,,1,,,2026-06/2026-06-22/2026_06_22.xlsx
+2026-06-23,15:59,1,NY,MNQ,Long,n.d.,,Gain,13.0,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,16:06,2,NY,MNQ,Short,n.d.,,Loss,-3.5,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,16:11,3,NY,MNQ,Short,n.d.,,Loss,-62.0,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,16:17,4,NY,MNQ,Long,n.d.,,Gain,2.0,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,16:18,5,NY,MNQ,Short,n.d.,,Loss,-53.5,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,16:25,6,NY,MNQ,Short,n.d.,,Gain,130.0,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,16:46,7,NY,MNQ,Short,n.d.,,Gain,7.0,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,16:54,8,NY,MNQ,Short,n.d.,,Loss,-64.0,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,16:57,9,NY,MNQ,Short,n.d.,,Loss,-63.0,,,,1,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,16:59,10,NY,MNQ,Short,n.d.,,Loss,-36.0,,,,1,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,17:04,11,NY,MNQ,Short,n.d.,,Gain,108.5,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,17:12,12,NY,MNQ,Short,n.d.,,Loss,-31.0,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,17:14,13,NY,MNQ,Short,n.d.,,Gain,2.5,,,,1,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,17:16,14,NY,MNQ,Short,n.d.,,Gain,3.5,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,17:52,15,NY,MNQ,Long,n.d.,,Gain,4.5,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,17:58,16,NY,MNQ,Long,n.d.,,Gain,63.5,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-23,17:58,17,NY,MNQ,Long,n.d.,,Gain,63.5,,,,0,,,2026-06/2026-06-23/2026-06-23.xlsx
+2026-06-25,15:41,1,NY,MNQ,Short,altro,E,Loss,-11.0,,,,0,,"Nessun setup, ho aperto per la piattaforma trade di test",2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:14,2,NY,MNQ,Short,altro,E,Gain,5.0,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:15,3,NY,MNQ,Short,altro,E,Gain,1.5,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:23,4,NY,MNQ,Short,altro,E,Gain,9.0,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:28,5,NY,MNQ,Short,altro,E,Loss,-66.0,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:29,6,NY,MNQ,Long,altro,E,Gain,7.0,,,,1,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:32,7,NY,MNQ,Short,altro,E,Loss,-63.5,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:34,8,NY,MNQ,Short,altro,E,Gain,5.0,,,,1,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:35,9,NY,MNQ,Short,altro,E,Gain,8.0,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:41,10,NY,MNQ,Long,altro,D,Loss,-63.5,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:42,11,NY,MNQ,Short,altro,D,Gain,3.0,,,,1,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:43,12,NY,MNQ,Short,altro,D,Gain,7.0,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:52,13,NY,MNQ,Long,altro,D,Gain,5.5,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,16:58,14,NY,MNQ,Short,altro,E,Loss,-63.0,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,17:00,15,NY,MNQ,Short,altro,E,Gain,3.5,,,,1,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,17:02,16,NY,MNQ,Short,altro,E,Loss,-64.0,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,17:02,17,NY,MNQ,Long,altro,D,Gain,7.0,,,,1,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,17:06,18,NY,MNQ,Short,altro,A+,Gain,3.5,,,,0,,messo a be troppo presto,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,17:09,19,NY,MNQ,Short,altro,A+,Gain,311.0,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,17:47,20,NY,MNQ,Short,altro,A,Gain,92.0,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,18:10,21,NY,MNQ,Long,altro,D,Gain,9.0,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-06-25,18:16,22,NY,MNQ,Long,altro,D,Gain,6.5,,,,0,,,2026-06/2026-06-25/25-06.xlsx
+2026-07-02,16:58,1,NY,MNQ,Short,E,Setup E,Loss,-166.0,,NEGATIVO,SHORT,0,,"pura fomo, ",2026-07/02.xlsx
+2026-07-02,17:04,2,NY,MNQ,Short,C,Setup C,Gain,23.5,,NEGATIVO,SHORT,0,,,2026-07/02.xlsx
+2026-07-02,17:13,3,NY,MNQ,Short,A,Setup A,Gain,291.0,,NEGATIVO,SHORT,0,,"si poteva trailare di piu, pazienza",2026-07/02.xlsx
+2026-07-02,17:22,4,NY,MNQ,Long,D,Setup D,Gain,132.0,,NEGATIVO,SHORT,0,,setup 1:1 mean reverting su livello gex ,2026-07/02.xlsx
+2026-07-02,17:40,5,NY,MNQ,Short,A,Setup A,Loss,-113.0,,NEGATIVO,SHORT,0,,mannaggia mi ha buttato fuori e poi è partito,2026-07/02.xlsx
+2026-07-02,17:50,6,NY,MNQ,Short,D,Setup D,Gain,14.0,,NEGATIVO,SHORT,0,,"dal miss sono conseguiti questi trade che non erano male ma mettendoli subito a be non ""respivano"" ",2026-07/02.xlsx
+2026-07-02,17:56,7,NY,MNQ,Short,E,Setup E,Gain,4.0,,NEGATIVO,SHORT,0,,,2026-07/02.xlsx
+2026-07-02,18:07,8,NY,MNQ,Short,E,Setup E,Gain,5.0,,NEGATIVO,SHORT,0,,,2026-07/02.xlsx
+2026-07-02,18:26,9,NY,MNQ,Short,E,Setup E,Loss,-127.0,,NEGATIVO,SHORT,0,,"entro su assorbimento, missile in culo diretto",2026-07/02.xlsx
+2026-07-02,18:29,10,NY,MNQ,Short,A,Setup A,Gain,253.0,,NEGATIVO,SHORT,1,,,2026-07/02.xlsx
+2026-07-06,15:56,1,NY,MNQ,Long,E,Setup E,Loss,-126.0,,LONG,LONG 16:10,0,,,2026-07/06.xlsx
+2026-07-06,15:58,2,NY,MNQ,Short,E,Setup E,Gain,12.0,,LONG,LONG 16:10,1,,,2026-07/06.xlsx
+2026-07-06,16:04,3,NY,MNQ,Short,E,Setup E,Gain,37.0,,LONG,LONG 16:10,0,,,2026-07/06.xlsx
+2026-07-06,16:07,4,NY,MNQ,Long,C,Setup C,Gain,6.5,,LONG,LONG 16:10,0,,"Unico trade sensato messo a be troppo presto, peccato",2026-07/06.xlsx
+2026-07-06,16:07,5,NY,MNQ,Long,C,Setup C,Gain,6.5,,LONG,LONG 16:10,0,,"Unico trade sensato messo a be troppo presto, peccato",2026-07/06.xlsx
+2026-07-06,16:13,6,NY,MNQ,Long,C,Setup C,Gain,19.0,,LONG,LONG 16:10,0,,,2026-07/06.xlsx
+2026-07-06,16:24,7,NY,MNQ,Long,E,Setup E,Loss,-91.0,,LONG,LONG 16:10,0,,,2026-07/06.xlsx
+2026-07-06,16:27,8,NY,MNQ,Short,E,Setup E,Gain,5.0,,LONG,LONG 16:10,1,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,16:28,9,NY,MNQ,Short,E,Setup E,Gain,7.0,,LONG,LONG 16:10,0,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,16:31,10,NY,MNQ,Long,E,Setup E,Gain,12.0,,LONG,LONG 16:10,0,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,16:57,11,NY,MNQ,Long,E,Setup E,Loss,-120.0,,LONG,LONG 16:10,0,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,16:59,12,NY,MNQ,Long,E,Setup E,Loss,-99.0,,LONG,LONG 16:10,1,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,16:59,13,NY,MNQ,Long,E,Setup E,Loss,-33.0,,LONG,LONG 16:10,1,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,17:04,14,NY,MNQ,Short,E,Setup E,Gain,7.5,,LONG,LONG 16:10,0,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,17:06,15,NY,MNQ,Long,E,Setup E,Loss,-62.0,,LONG,LONG 16:10,0,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,17:09,16,NY,MNQ,Long,E,Setup E,Loss,-53.0,,LONG,LONG 16:10,1,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,17:13,17,NY,MNQ,Long,E,Setup E,Loss,-65.0,,LONG,LONG 16:10,0,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,17:15,18,NY,MNQ,Long,E,Setup E,Loss,-47.5,,LONG,LONG 16:10,1,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,17:15,19,NY,MNQ,Long,E,Setup E,Loss,-47.5,,LONG,LONG 16:10,1,,"trade nei range, tutti superflui",2026-07/06.xlsx
+2026-07-06,17:18,20,NY,MNQ,Long,A,Setup A,Gain,311.0,,LONG,LONG 16:10,1,,"unico trade sensato che si poteva fare, invece di rincorrere le perdite potevo chiudere qui la giornata",2026-07/06.xlsx
+2026-07-06,17:38,21,NY,MNQ,Long,A,Setup A,Gain,1.5,,LONG,LONG 16:10,0,,"trade a continuazione, preso be",2026-07/06.xlsx
+2026-07-06,18:45,22,NY,MNQ,Long,A,Setup A,Gain,-30.0,,LONG,LONG 16:10,0,,"trade su zona, chiudo perché non ho il caricatore e mi si sta scaricando il pc. Tanto andava a stop.",2026-07/06.xlsx
+2026-07-07,15:35,1,NY,MNQ,Short,B,Setup B,Gain,34.0,,NEGATIVO,SHORT 16.10,0,,,2026-07/07.xlsx
+2026-07-07,15:42,2,NY,MNQ,Short,B,Setup B,Loss,-69.0,,NEGATIVO,SHORT 16.10,0,,"entrate non proprio nel top, fuori il cluster quindi ho preso stop",2026-07/07.xlsx
+2026-07-07,15:44,3,NY,MNQ,Short,B,Setup B,Loss,-65.5,,NEGATIVO,SHORT 16.10,1,,"entrate non proprio nel top, fuori il cluster quindi ho preso stop",2026-07/07.xlsx
+2026-07-07,15:46,4,NY,MNQ,Short,B,Setup B,Gain,80.0,,NEGATIVO,SHORT 16.10,1,,,2026-07/07.xlsx
+2026-07-07,16:01,5,NY,MNQ,Short,E,Setup E,Gain,8.5,,NEGATIVO,SHORT 16.10,0,,,2026-07/07.xlsx
+2026-07-07,16:16,6,NY,MNQ,Short,C,Setup C,Loss,-1.5,,NEGATIVO,SHORT 16.10,0,,,2026-07/07.xlsx
+2026-07-07,16:19,7,NY,MNQ,Short,B,Setup B,Loss,-75.0,,NEGATIVO,SHORT 16.10,1,,,2026-07/07.xlsx
+2026-07-07,16:19,8,NY,MNQ,Short,B,Setup B,Loss,-37.5,,NEGATIVO,SHORT 16.10,1,,,2026-07/07.xlsx
+2026-07-07,16:24,9,NY,MNQ,Short,M,Setup M,Gain,7.0,,NEGATIVO,SHORT 16.10,0,,,2026-07/07.xlsx
+2026-07-07,16:30,10,NY,MNQ,Short,C,Setup C,Loss,-33.0,,NEGATIVO,SHORT 16.10,0,,,2026-07/07.xlsx
+2026-07-07,16:38,11,NY,MNQ,Long,E,Setup E,Loss,-100.0,,NEGATIVO,SHORT 16.10,0,,long senza senso,2026-07/07.xlsx
+2026-07-07,16:40,12,NY,MNQ,Short,C,Setup C,Loss,-15.0,,NEGATIVO,SHORT 16.10,1,,Entrate troppo in ritardo,2026-07/07.xlsx
+2026-07-07,16:41,13,NY,MNQ,Short,C,Setup C,Gain,21.0,,NEGATIVO,SHORT 16.10,1,,Entrate troppo in ritardo,2026-07/07.xlsx
+2026-07-07,16:44,14,NY,MNQ,Short,C,Setup C,Gain,5.0,,NEGATIVO,SHORT 16.10,0,,Entrate troppo in ritardo,2026-07/07.xlsx
+2026-07-07,16:49,15,NY,MNQ,Short,E,Setup E,Loss,-123.0,,NEGATIVO,SHORT 16.10,0,,"Il mercato ha evidentemente cambiato bias, ma per le mie loss",2026-07/07.xlsx
+2026-07-07,16:57,16,NY,MNQ,Short,E,Setup E,Loss,-50.0,,NEGATIVO,SHORT 16.10,0,,e dei miss dei trade belli di una giornata direzionale,2026-07/07.xlsx
+2026-07-07,16:57,17,NY,MNQ,Short,E,Setup E,Loss,-50.5,,NEGATIVO,SHORT 16.10,1,,mi ha portato all'esasperazione e ho fatto da qui in poi in 10minuti ,2026-07/07.xlsx
+2026-07-07,17:00,18,NY,MNQ,Short,E,Setup E,Gain,9.0,,NEGATIVO,SHORT 16.10,1,,piu danno che altro,2026-07/07.xlsx
+2026-07-07,17:02,19,NY,MNQ,Long,E,Setup E,Loss,-15.0,,NEGATIVO,SHORT 16.10,0,,,2026-07/07.xlsx
+2026-07-07,17:03,20,NY,MNQ,Short,E,Setup E,Loss,-50.0,,NEGATIVO,SHORT 16.10,1,,,2026-07/07.xlsx
+2026-07-07,17:03,21,NY,MNQ,Short,E,Setup E,Loss,-50.0,,NEGATIVO,SHORT 16.10,1,,,2026-07/07.xlsx
+2026-07-07,17:06,22,NY,MNQ,Short,E,Setup E,Gain,7.5,,NEGATIVO,SHORT 16.10,1,,,2026-07/07.xlsx
+2026-07-07,17:07,23,NY,NQ,Long,E,Setup E,Gain,10.0,,NEGATIVO,SHORT 16.10,0,,"la cosa piu sbagliata che ho potuto fare, passare a nq per recuperare. Mi è andata bene",2026-07/07.xlsx
+2026-07-07,17:09,24,NY,MNQ,Short,E,Setup E,Loss,-111.0,,NEGATIVO,SHORT 16.10,0,,,2026-07/07.xlsx
+2026-07-07,17:12,25,NY,MNQ,Short,E,Setup E,Loss,-96.0,,NEGATIVO,SHORT 16.10,1,,,2026-07/07.xlsx
+2026-07-07,17:12,26,NY,MNQ,Short,E,Setup E,Loss,-48.0,,NEGATIVO,SHORT 16.10,1,,,2026-07/07.xlsx
+2026-07-07,18:21,27,NY,MNQ,Long,M,Setup M,Gain,415.0,,POSITIVO,SHORT 16.10,0,,setup a momentum che ha ,2026-07/07.xlsx
+2026-07-07,18:55,28,NY,MNQ,Long,A++,Setup A++,Gain,82.0,,POSITIVO,SHORT 16.10,0,,era a +200 dollari ma non ho capito che è successo mi ha chiuso a 80 boh. Bello ma contrarian quindi si è girato subito,2026-07/07.xlsx
+2026-07-07,19:10,29,NY,MNQ,Short,A,Setup A,Gain,4.5,,POSITIVO,SHORT 16.10,0,,"Mi sono cacato in mano e ho chiuso dopo le batoste che ho preso, 1:5 che andava a casa. Per i troppi trade chiudo la giornata qua",2026-07/07.xlsx
+2026-07-08,17:53,1,NY,MNQ,Short,n.d.,,Loss,-64.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,17:56,2,NY,MNQ,Short,n.d.,,Gain,10.5,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:01,3,NY,MNQ,Short,n.d.,,Gain,4.5,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:03,4,NY,MNQ,Short,n.d.,,Loss,-54.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:03,5,NY,MNQ,Short,n.d.,,Loss,-27.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:05,6,NY,MNQ,Long,n.d.,,Gain,4.5,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:07,7,NY,MNQ,Short,n.d.,,Loss,-88.5,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:11,8,NY,MNQ,Long,n.d.,,Loss,-84.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:12,9,NY,MNQ,Short,n.d.,,Loss,-27.5,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:12,10,NY,MNQ,Short,n.d.,,Loss,-55.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:13,11,NY,MNQ,Long,n.d.,,Gain,7.5,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:16,12,NY,MNQ,Short,n.d.,,Loss,-97.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:16,13,NY,MNQ,Short,n.d.,,Loss,-48.5,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:16,14,NY,MNQ,Short,n.d.,,Loss,-156.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:18,15,NY,NQ,Long,n.d.,,Loss,-195.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:20,16,NY,NQ,Long,n.d.,,Gain,280.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:24,17,NY,NQ,Short,n.d.,,Gain,360.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:25,18,NY,NQ,Short,n.d.,,Loss,-170.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:26,19,NY,NQ,Long,n.d.,,Gain,45.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:29,20,NY,NQ,Short,n.d.,,Gain,20.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:31,21,NY,NQ,Long,n.d.,,Gain,20.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:32,22,NY,NQ,Short,n.d.,,Gain,35.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:39,23,NY,NQ,Long,n.d.,,Loss,-160.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:39,24,NY,NQ,Long,n.d.,,Loss,-110.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:40,25,NY,NQ,Long,n.d.,,Gain,20.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:41,26,NY,NQ,Long,n.d.,,Loss,-270.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:43,27,NY,NQ,Short,n.d.,,Loss,-345.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:43,28,NY,NQ,Short,n.d.,,Loss,-427.5,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:44,29,NY,NQ,Long,n.d.,,Loss,-315.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:44,30,NY,NQ,Long,n.d.,,Loss,-315.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:44,31,NY,NQ,Long,n.d.,,Loss,-316.67,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:44,32,NY,NQ,Long,n.d.,,Loss,-350.83,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:44,33,NY,NQ,Long,n.d.,,Loss,-370.83,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:44,34,NY,NQ,Long,n.d.,,Loss,-370.83,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:44,35,NY,NQ,Short,n.d.,,Gain,150.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,18:46,36,NY,NQ,Long,n.d.,,Gain,450.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:51,37,NY,NQ,Long,n.d.,,Gain,75.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:55,38,NY,NQ,Short,n.d.,,Gain,50.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:55,39,NY,NQ,Short,n.d.,,Gain,175.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,18:57,40,NY,NQ,Long,n.d.,,Gain,450.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,19:02,41,NY,NQ,Short,n.d.,,Loss,-500.0,,,,0,,,2026-07/08.xlsx
+2026-07-08,19:03,42,NY,NQ,Long,n.d.,,Loss,-1125.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,19:04,43,NY,NQ,Long,n.d.,,Loss,-925.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,19:05,44,NY,NQ,Long,n.d.,,Gain,25.0,,,,1,,,2026-07/08.xlsx
+2026-07-08,19:05,45,NY,NQ,Long,n.d.,,Loss,-128.57,,,,0,,,2026-07/08.xlsx
+2026-07-13,16:35,1,NY,MNQ,Short,B,Setup B,Gain,249.0,,positivo,neutra,0,,zona su delta cluster,2026-07/13.xlsx
+2026-07-13,16:54,2,NY,MNQ,Short,E,Setup E,Gain,4.0,,positivo,,0,,,2026-07/13.xlsx
+2026-07-13,17:11,3,NY,MNQ,Long,B,Setup B,Loss,-126.0,,positivo,LONG 17.00,0,,"zona su delta cluster, rottura a rialzo della struttura",2026-07/13.xlsx
+2026-07-13,17:20,4,NY,MNQ,Long,B,Setup B,Gain,1.0,,positivo,LONG 17.00,0,,,2026-07/13.xlsx
+2026-07-13,17:32,5,NY,MNQ,Long,B,Setup B,Gain,6.0,,positivo,LONG 17.00,0,,"da qui mi sono accorto che stavo nel range, aspetto",2026-07/13.xlsx
+2026-07-13,17:35,6,NY,MNQ,Short,D,Setup D,Gain,2.0,,positivo,LONG 17.00,0,,fuoriscita short,2026-07/13.xlsx
+2026-07-13,17:51,7,NY,MNQ,Short,D,Setup D,Gain,6.0,,NEGATIVO,LONG 17.00,0,,,2026-07/13.xlsx
+2026-07-13,18:02,8,NY,MNQ,Long,B,Setup B,Gain,1.5,,NEGATIVO,LONG 17.00,0,,,2026-07/13.xlsx
+2026-07-13,18:05,9,NY,MNQ,Short,D,Setup D,Loss,-122.0,,NEGATIVO,LONG 17.00,0,,"ho provato la continuation short, nulla da fare ",2026-07/13.xlsx
+2026-07-13,18:09,10,NY,MNQ,Long,M,Setup M,Gain,8.0,,NEGATIVO,LONG 17.00,0,,,2026-07/13.xlsx
+2026-07-13,18:14,11,NY,MNQ,Long,E,Setup E,Gain,18.0,,NEGATIVO,LONG 17.00,0,,"me ne sono andato col net gex, positivo ma lo zero gamma era nettamente negativo, quindi mi riaccodo alla bias",2026-07/13.xlsx
+2026-07-13,18:17,12,NY,MNQ,Short,E,Setup E,Gain,1.5,,NEGATIVO,LONG 17.00,0,,piu fomo che altro perché non avevo intuito da dove partiva ma non sono entrato,2026-07/13.xlsx
+2026-07-13,18:22,13,NY,MNQ,Short,E,Setup E,Gain,10.5,,NEGATIVO,LONG 17.00,0,,piu fomo che altro perché non avevo intuito da dove partiva ma non sono entrato,2026-07/13.xlsx
+2026-07-13,18:33,14,NY,MNQ,Short,A,Setup A,Gain,380.0,,NEGATIVO,LONG 17.00,0,,"setup da manuale, gex negativo, assorbimento buy + aggressione sell  e si chiude la gioranta",2026-07/13.xlsx
+2026-07-15,16:05,1,NY,MNQ,Short,C,Setup C,Loss,-154.0,,positivo,Neutra,0,,,2026-07/15.xlsx
+2026-07-15,16:08,2,NY,MNQ,Long,E,Setup E,Loss,-124.0,,positivo,Neutra,1,,,2026-07/15.xlsx
+2026-07-15,16:10,3,NY,MNQ,Short,C,Setup C,Gain,4.0,,positivo,Neutra,1,bello short pmesso a be troppo presto,,2026-07/15.xlsx
+2026-07-15,16:15,4,NY,MNQ,Short,E,Setup E,Gain,30.0,,positivo,Neutra,0,,,2026-07/15.xlsx
+2026-07-15,16:25,5,NY,MNQ,Short,E,Setup E,Gain,10.0,,negativo,Short 16.22,0,"bottom temporaneo, inutile trade",,2026-07/15.xlsx
+2026-07-15,16:29,6,NY,MNQ,Short,B,Setup B,Loss,-108.0, ,negativo,Short 16.22,0,"assorbimento con big trade, ",,2026-07/15.xlsx
+2026-07-15,16:31,7,NY,MNQ,Short,A,Setup A,Gain,10.0,,negativo,Short 16.22,1,"messo a be troppo presto, running +300$ chiuso a zero. La rabbia mi stava mangiando",,2026-07/15.xlsx
+2026-07-15,16:37,8,NY,MNQ,Short,E,Setup E,Gain,4.0,,negativo,Short 16.22,0,,,2026-07/15.xlsx
+2026-07-15,16:40,9,NY,MNQ,Short,E,Setup E,Loss,-114.0,,negativo,Short 16.22,0,"entrato sul successivo bottom, inutile trade",,2026-07/15.xlsx
+2026-07-15,16:41,10,NY,MNQ,Short,B,Setup B,Gain,4.5,,negativo,Short 16.22,1,"messo a be troppo presto, secondo running +300$ chiuso a zero. L'ira alle stelle",,2026-07/15.xlsx
+2026-07-15,16:54,11,NY,MNQ,Short,B,Setup B,Loss,-106.0,,negativo,Short 16.22,0,"assorbimento buyer ma era già troppo basso il prezzo, evitabile",,2026-07/15.xlsx
+2026-07-15,17:10,12,NY,MNQ,Short,A,Setup A,Gain,337.5,,negativo,Short 16.22,0,"Trade top, potevo spingere piu giu. Riaccumulo fiducia",,2026-07/15.xlsx
+2026-07-15,17:31,13,NY,MNQ,Short,B,Setup B,Loss,-4.5,,negativo,Short 16.22,0,,,2026-07/15.xlsx
+2026-07-15,17:32,14,NY,MNQ,Short,B,Setup B,Loss,-112.5,,negativo,Short 16.22,1,"riprovo lo stesso trade, dopo il primo be potevo farmi 2 domande",,2026-07/15.xlsx
+2026-07-15,17:34,15,NY,MNQ,Short,B,Setup B,Breakeven,0.0,,negativo,Short 16.22,1,sostanzialemnte è lo stesso trade ripetuto 3 volte,,2026-07/15.xlsx
+2026-07-15,17:34,16,NY,MNQ,Short,B,Setup B,Gain,20.0,,negativo,Short 16.22,0,,,2026-07/15.xlsx
+2026-07-15,17:38,17,NY,MNQ,Short,B,Setup B,Gain,4.0,,negativo,Short 16.22,0,,,2026-07/15.xlsx
+2026-07-15,17:41,18,NY,MNQ,Short,B,Setup B,Gain,283.5,,negativo,Short 16.22,0,finalmente sei partito,,2026-07/15.xlsx
+2026-07-16,15:45,1,NY,MNQ,Short,M,Setup M,Gain,8.0,,Positivo,Neutro,0,,recupero big trade short,2026-07/16.xlsx
+2026-07-16,16:02,2,NY,MNQ,Long,M,Setup M,Loss,-9.0,,Positivo,Neutro,0,,"buyer ricaricano sui top , test short candela che chiude assorbita e si entra",2026-07/16.xlsx
+2026-07-16,16:05,3,NY,MNQ,Long,M,Setup M,Gain,438.0,,Positivo,Neutro,1,,stesso trade del precedente,2026-07/16.xlsx
+2026-07-16,16:17,4,NY,MNQ,Long,E,Setup E,Loss,-150.0,,Positivo,Neutro,0,,buy sul top evitabile,2026-07/16.xlsx
+2026-07-16,16:20,5,NY,MNQ,Long,E,Setup E,Loss,-119.0,,Positivo,Neutro,1,,"buy a candela in formazione , evitabile",2026-07/16.xlsx
+2026-07-16,16:23,6,NY,MNQ,Long,B,Setup B,Gain,7.0,,Positivo,Neutro,1,,"test zona precedente , ma chiuso a be",2026-07/16.xlsx
+2026-07-16,16:27,7,NY,MNQ,Long,B,Setup B,Gain,8.0,,Positivo,Neutro,0,,"qui non ho nemmeno parzializzato, max run a 200$",2026-07/16.xlsx
+2026-07-16,16:36,8,NY,MNQ,Long,M,Setup M,Loss,-97.0,,Positivo,Neutro,0,,Volevo puntare sullo squeeze ma come uno scemo non mi sono messo subito a be dopo l'assorbimento buy,2026-07/16.xlsx
+2026-07-16,16:47,9,NY,MNQ,Long,E,Setup E,Loss,-110.0,,Positivo,Neutro,0,,"a cazzo di cane completo, ridato tutto il profit indietro. ",2026-07/16.xlsx
+2026-07-16,16:57,10,NY,MNQ,Long,A++,Setup A++,Gain,22.0,,Positivo,Neutro,0,,Altro trade con runner a 250$ non chiuso o parzializzato. ,2026-07/16.xlsx
+2026-07-16,17:16,11,NY,MNQ,Short,E,Setup E,Loss,-107.0,,Positivo,Neutro,0,,"a cazzo di cane completo, ridato tutto il profit indietro. ",2026-07/16.xlsx
+2026-07-16,17:18,12,NY,MNQ,Short,E,Setup E,Loss,-120.0,,Positivo,Neutro,1,,"a cazzo di cane completo, ridato tutto il profit indietro. ",2026-07/16.xlsx
+2026-07-16,17:19,13,NY,MNQ,Long,A,Setup A,Loss,-4.0,,Positivo,Neutro,1,,seller assorbiti ma prezzo che non parte,2026-07/16.xlsx
+2026-07-16,17:21,14,NY,MNQ,Long,A,Setup A,Loss,-138.0,,Positivo,Neutro,1,,"112 contratti buy che non fanno nulla, dovevo aspettare di piu",2026-07/16.xlsx
+2026-07-16,17:23,15,NY,MNQ,Long,A,Setup A,Gain,8.0,,Positivo,Neutro,1,,"Qui viene il bello, trade perfetto assorbiti e aggressione con runup max di 600$ chiuso a zero. Sparati",2026-07/16.xlsx
+2026-07-16,17:34,16,NY,MNQ,Long,B,Setup B,Breakeven,0.0,,Positivo,Neutro,0,,,2026-07/16.xlsx
+2026-07-16,17:36,17,NY,MNQ,Short,E,Setup E,Loss,-2.0,,Positivo,Neutro,0,,cazzo di cane,2026-07/16.xlsx
+2026-07-16,17:37,18,NY,MNQ,Long,B,Setup B,Gain,4.5,,Positivo,Neutro,1,,,2026-07/16.xlsx
+2026-07-16,17:37,19,NY,MNQ,Long,B,Setup B,Gain,3.0,,Positivo,Neutro,0,,,2026-07/16.xlsx
+2026-07-16,17:41,20,NY,MNQ,Short,A,Setup A,Gain,170.0,,Positivo,Neutro,0,,"bellissimo assorbimento buyer  e aggressione sell, anche se contrario alla bias che avevo non potevo perderlo.",2026-07/16.xlsx
+2026-07-16,17:58,21,NY,MNQ,Long,E,Setup E,Loss,-138.0,,Positivo,Neutro,0,,"a cazzo di cane, entrare sulla candela con la wick non mi fa di persona furba",2026-07/16.xlsx
+2026-07-16,18:03,22,NY,MNQ,Short,A,Setup A,Gain,90.0,,Negativo,Neutro,0,,"Altra perla di giornata, trade messo a be troppo presto, chiuso a 90 con un possibile runup di almeno 700$. furbo tu",2026-07/16.xlsx
+2026-07-16,18:15,23,NY,MNQ,Short,E,Setup E,Gain,1.5,,Negativo,Neutro,0,,trade in mezzo al range non tanto furbi,2026-07/16.xlsx
+2026-07-16,18:22,24,NY,MNQ,Short,E,Setup E,Gain,12.0,,Negativo,Neutro,0,,trade in mezzo al range non tanto furbi,2026-07/16.xlsx
+2026-07-16,18:27,25,NY,MNQ,Short,E,Setup E,Loss,-136.0,,Negativo,Neutro,0,,trade in mezzo al range non tanto furbi,2026-07/16.xlsx
+2026-07-16,18:29,26,NY,MNQ,Short,E,Setup E,Loss,-122.0,,Negativo,Neutro,1,,trade in mezzo al range non tanto furbi,2026-07/16.xlsx
+2026-07-16,18:34,27,NY,MNQ,Short,E,Setup E,Loss,-2.0,,Negativo,Neutro,0,,,2026-07/16.xlsx
+2026-07-16,18:34,28,NY,MNQ,Short,E,Setup E,Gain,8.0,,Negativo,Neutro,1,,,2026-07/16.xlsx
+2026-07-16,18:40,29,NY,MNQ,Short,E,Setup E,Loss,-124.5,,Negativo,Neutro,0,,,2026-07/16.xlsx
+2026-07-16,18:43,30,NY,MNQ,Short,E,Setup E,Loss,-4.0,,Negativo,Neutro,1,,,2026-07/16.xlsx
+2026-07-16,18:57,31,NY,MNQ,Short,A,Setup A,Loss,-7.5,,Negativo,Neutro,0,,"gli unici due trade che avevano senso, uno a be",2026-07/16.xlsx
+2026-07-16,18:59,32,NY,MNQ,Short,A,Setup A,Gain,400.0,,Negativo,Neutro,1,,l'altro a full tp,2026-07/16.xlsx
+2026-07-17,15:55,1,NY,MNQ,Long,M,Setup M,Gain,5.0,,Positivo,Neutro,0,,,2026-07/17.xlsx
+2026-07-17,16:02,2,NY,MNQ,Short,E,Setup E,Loss,-111.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,16:03,3,NY,MNQ,Long,E,Setup E,Loss,-127.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,16:05,4,NY,MNQ,Long,A,Setup A,Gain,293.0,,Positivo,Long 16.00,1,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:17,5,NY,MNQ,Long,E,Setup E,Loss,-100.0,,Positivo,Long 16.00,0,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:20,6,NY,MNQ,Short,E,Setup E,Gain,3.5,,Positivo,Long 16.00,1,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:22,7,NY,MNQ,Long,E,Setup E,Loss,-136.0,,Positivo,Long 16.00,0,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:22,8,NY,MNQ,Long,E,Setup E,Gain,4.0,,Positivo,Long 16.00,1,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:23,9,NY,MNQ,Short,E,Setup E,Loss,-141.0,,Positivo,Long 16.00,0,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:23,10,NY,MNQ,Short,E,Setup E,Loss,-139.5,,Positivo,Long 16.00,1,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:24,11,NY,MNQ,Long,E,Setup E,Loss,-7.5,,Positivo,Long 16.00,1,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:25,12,NY,MNQ,Long,E,Setup E,Loss,-114.0,,Positivo,Long 16.00,1,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:27,13,NY,MNQ,Short,E,Setup E,Loss,-120.0,,Positivo,Long 16.00,1,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:31,14,NY,MNQ,Long,E,Setup E,Loss,-134.0,,Positivo,Long 16.00,0,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:33,15,NY,MNQ,Short,E,Setup E,Loss,-5.0,,Positivo,Long 16.00,1,,"nel range, evitabili",2026-07/17.xlsx
+2026-07-17,16:34,16,NY,MNQ,Long,B,Setup B ,Gain,324.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,16:38,17,NY,MNQ,Long,E,Setup E,Loss,-10.5,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,16:40,18,NY,MNQ,Long,M,Setup M,Loss,-128.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,16:42,19,NY,MNQ,Short,E,Setup E,Loss,-17.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,16:42,20,NY,MNQ,Long,E,Setup E,Loss,-9.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,16:42,21,NY,MNQ,Short,E,Setup E,Loss,-6.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,16:44,22,NY,MNQ,Short,E,Setup E,Loss,-152.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,16:45,23,NY,MNQ,Long,E,Setup E,Loss,-150.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,16:48,24,NY,MNQ,Short,A,Setup A,Gain,16.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,16:49,25,NY,MNQ,Short,B,Setup B ,Gain,1.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,16:55,26,NY,MNQ,Long,E,Setup E,Gain,16.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,16:57,27,NY,MNQ,Long,E,Setup E,Gain,18.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,16:59,28,NY,MNQ,Short,E,Setup E,Gain,14.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,17:00,29,NY,MNQ,Short,E,Setup E,Gain,4.5,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,17:03,30,NY,MNQ,Long,E,Setup E,Loss,-126.0,,Positivo,Long 16.00,0,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:04,31,NY,MNQ,Short,E,Setup E,Gain,2.0,,Positivo,Long 16.00,1,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:05,32,NY,MNQ,Short,E,Setup E,Loss,-22.0,,Positivo,Long 16.00,0,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:05,33,NY,MNQ,Short,E,Setup E,Gain,12.0,,Positivo,Long 16.00,1,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:06,34,NY,MNQ,Short,E,Setup E,Loss,-140.0,,Positivo,Long 16.00,0,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:06,35,NY,MNQ,Long,E,Setup E,Loss,-136.0,,Positivo,Long 16.00,1,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:07,36,NY,MNQ,Short,E,Setup E,Loss,-56.0,,Positivo,Long 16.00,1,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:21,37,NY,MNQ,Long,E,Setup E,Gain,8.0,,Positivo,Long 16.00,0,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:23,38,NY,MNQ,Short,E,Setup E,Loss,-4.5,,Positivo,Long 16.00,0,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:24,39,NY,MNQ,Short,E,Setup E,Loss,-135.0,,Positivo,Long 16.00,1,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:25,40,NY,MNQ,Short,E,Setup E,Loss,-153.0,,Positivo,Long 16.00,1,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:26,41,NY,MNQ,Short,E,Setup E,Loss,-133.5,,Positivo,Long 16.00,1,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:32,42,NY,MNQ,Long,E,Setup E,Loss,-121.5,,Positivo,Long 16.00,0,,nel range evitabile,2026-07/17.xlsx
+2026-07-17,17:36,43,NY,MNQ,Long,E,Setup E,Loss,-7.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,17:36,44,NY,MNQ,Long,E,Setup E,Gain,40.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,17:36,45,NY,MNQ,Long,E,Setup E,Gain,28.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,17:44,46,NY,MNQ,Long,E,Setup E,Gain,12.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,17:45,47,NY,MNQ,Long,A,Setup A,Gain,411.0,,Positivo,Long 16.00,0,,"assorbimento e ricarica buy, peccato che ho over lottato per recuperare la perdita. Mi è andata bene",2026-07/17.xlsx
+2026-07-17,17:45,48,NY,MNQ,Long,E,Setup E,Gain,386.0,,Positivo,Long 16.00,0,,quella volta 1 su 100 che ti va bene,2026-07/17.xlsx
+2026-07-17,17:45,49,NY,MNQ,Long,E,Setup E,Gain,648.0,,Positivo,Long 16.00,0,,le altre 99 sono già pronte ad aspettarti,2026-07/17.xlsx
+2026-07-17,17:46,50,NY,MNQ,Long,E,Setup E,Gain,424.0,,Positivo,Long 16.00,0,,idiota,2026-07/17.xlsx
+2026-07-17,18:09,51,NY,MNQ,Long,B,Setup B ,Gain,312.0,,Positivo,Long 16.00,0,,"trade fatto con un minimo di testa dopo la mattanza, tutto il resto mania del ticchettio e del click. Vai a vendere banane",2026-07/17.xlsx
+2026-07-17,18:15,52,NY,MNQ,Long,E,Setup E,Loss,-120.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,18:16,53,NY,MNQ,Long,E,Setup E,Loss,-128.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,18:17,54,NY,MNQ,Short,E,Setup E,Loss,-147.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,18:17,55,NY,MNQ,Long,E,Setup E,Loss,-109.5,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,18:21,56,NY,MNQ,Long,E,Setup E,Loss,-654.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,18:22,57,NY,MNQ,Long,E,Setup E,Loss,-90.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,18:22,58,NY,MNQ,Long,E,Setup E,Loss,-84.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,18:23,59,NY,MNQ,Long,E,Setup E,Gain,102.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,18:24,60,NY,MNQ,Long,E,Setup E,Gain,54.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,18:24,61,NY,MNQ,Long,E,Setup E,Gain,84.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,18:25,62,NY,MNQ,Long,E,Setup E,Loss,-144.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,18:25,63,NY,MNQ,Long,E,Setup E,Gain,312.0,,Positivo,Long 16.00,1,,,2026-07/17.xlsx
+2026-07-17,18:25,64,NY,MNQ,Long,E,Setup E,Gain,258.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,18:25,65,NY,MNQ,Long,E,Setup E,Gain,174.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,18:25,66,NY,MNQ,Long,E,Setup E,Gain,120.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,18:25,67,NY,MNQ,Long,E,Setup E,Gain,36.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-17,18:26,68,NY,MNQ,Long,E,Setup E,Gain,738.0,,Positivo,Long 16.00,0,,,2026-07/17.xlsx
+2026-07-20,15:48,1,NY,MNQ,Short,B,Setup B,Gain,10.0,,Negativo,Neutro,0,,,2026-07/20.xlsx
+2026-07-20,15:50,2,NY,MNQ,Short,A,Setup A,Gain,369.0,,Negativo,Neutro,0,,"che bello, tutto allineato livello gex + patter assorbimento e aggressione",2026-07/20.xlsx
+2026-07-20,15:50,3,NY,MNQ,Short,A,Setup A,Gain,246.0,,Negativo,Neutro,0,,"che bello, tutto allineato livello gex + patter assorbimento e aggressione",2026-07/20.xlsx
+2026-07-20,16:05,4,NY,MNQ,Short,B,Setup B,Gain,2.0,,Negativo,Neutro,0,,,2026-07/20.xlsx
+2026-07-20,16:15,5,NY,MNQ,Short,B,Setup B,Loss,-105.0,,Negativo,Short 16.10,0,,"c'è un ""assorbimento"" buy senza aggressione sell, pero recuperati subito dopo",2026-07/20.xlsx
+2026-07-20,16:28,6,NY,MNQ,Short,B,Setup B,Gain,3.0,,Negativo,Short 16.10,0,,,2026-07/20.xlsx
+2026-07-20,16:32,7,NY,MNQ,Short,A,Setup A + ,Gain,418.0,,Negativo,Short 16.10,0,,l'apoteosi per chiudere giornata,2026-07/20.xlsx
+2026-07-20,17:25,8,NY,MNQ,Short,B,Setup B,Gain,4.5,,Negativo,Short 16.10,0,,,2026-07/20.xlsx
+2026-07-20,17:35,9,NY,MNQ,Short,B,Setup B,Gain,11.0,,Negativo,Short 16.10,0,,,2026-07/20.xlsx
+2026-07-20,18:00,10,NY,MNQ,Short,altro,Setub B,Loss,-29.0,,Positivo,Short 16.10,0,"Gex che pompava long, evitabili",,2026-07/20.xlsx
+2026-07-20,18:03,11,NY,MNQ,Short,altro,Setub B,Loss,-52.0,,Positivo,Short 16.10,1,"Gex che pompava long, evitabili",,2026-07/20.xlsx
+2026-07-21,16:10,1,NY,MNQ,Short,M,Setup M,Gain,7.5,,Negativo,Short 16.10,0,,"recupero big trade, subito rientrato ",2026-07/21.xlsx
+2026-07-21,16:59,2,NY,MNQ,Long,B,Setup B,Loss,-97.5,,Negativo,Short 16.10,0,,,2026-07/21.xlsx
+2026-07-21,17:21,3,NY,MNQ,Short,E,Setup E,Loss,-23.0,,Positivo,Long 17.17,0,,"senza senso, si vedeva che tutto pompava su",2026-07/21.xlsx
+2026-07-21,17:21,4,NY,MNQ,Short,E,Setup E,Loss,-73.5,,Positivo,,1,,"senza senso, si vedeva che tutto pompava su",2026-07/21.xlsx
+2026-07-21,17:22,5,NY,MNQ,Long,B,Setup B,Gain,5.5,,Positivo,,1,,,2026-07/21.xlsx
+2026-07-21,17:37,6,NY,MNQ,Long,A,Setup A,Loss,-60.0,,Positivo,,0,,"Setup A ma big trades tutti di news, non affidabili",2026-07/21.xlsx
+2026-07-21,17:41,7,NY,MNQ,Long,B,Setup B,Loss,-15.0,,Positivo,,0,,,2026-07/21.xlsx
+2026-07-21,17:41,8,NY,MNQ,Long,B,Setup B,Loss,-15.0,,Positivo,,1,,,2026-07/21.xlsx
+2026-07-21,17:41,9,NY,MNQ,Long,B,Setup B,Loss,-15.0,,Positivo,,1,,"zona dei big trades che non ha tenuto, il ritraccio e la partenza buy portava a profit",2026-07/21.xlsx
+2026-07-21,17:53,10,NY,MNQ,Short,E,Setup E,Gain,3.0,,Positivo,,0,,,2026-07/21.xlsx
+2026-07-21,17:53,11,NY,MNQ,Short,E,Setup E,Gain,1.5,,Positivo,,0,,,2026-07/21.xlsx
+2026-07-21,17:57,12,NY,MNQ,Long,E,Setup E,Loss,-28.5,,Positivo,,0,,,2026-07/21.xlsx
+2026-07-21,17:57,13,NY,MNQ,Long,E,Setup E,Loss,-28.5,,Positivo,,1,,,2026-07/21.xlsx
+2026-07-21,18:08,14,NY,MNQ,Long,M,Setup M,Gain,1.0,,Positivo,,0,,,2026-07/21.xlsx
+2026-07-21,18:09,15,NY,MNQ,Short,A,Setup A,Breakeven,0.0,,Positivo,,0,,assorbimento buy ma contro bias,2026-07/21.xlsx
+2026-07-21,18:18,16,NY,MNQ,Long,A,Setup A,Gain,1.0,,Positivo,,0,,,2026-07/21.xlsx
+2026-07-21,18:20,17,NY,MNQ,Long,A,Setup A,Gain,1.0,,Positivo,,0,,,2026-07/21.xlsx
+2026-07-21,18:21,18,NY,MNQ,Long,A,Setup A,Gain,15.0,,Positivo,,0,,"ottimo trade ma troppo in alto il tp, ritornato a be",2026-07/21.xlsx
+2026-07-21,18:28,19,NY,MNQ,Long,B,Setup B,Loss,-3.0,,Positivo,,0,,,2026-07/21.xlsx
+2026-07-21,18:28,20,NY,MNQ,Long,B,Setup B,Gain,4.0,,Positivo,,1,,,2026-07/21.xlsx
+2026-07-21,18:28,21,NY,MNQ,Long,B,Setup B,Loss,-19.0,,Positivo,,0,,,2026-07/21.xlsx
+2026-07-21,18:36,22,NY,MNQ,Long,B,Setup B,Gain,16.5,,Positivo,,0,,,2026-07/21.xlsx
+2026-07-21,18:36,23,NY,MNQ,Long,B,Setup B,Gain,33.0,,Positivo,,0,,"zona di big trades, oggi bisognava puntare basso",2026-07/21.xlsx
+2026-07-22,15:34,1,NY,MNQ,Short,B,Setup B,Gain,57.0,,Positivo,Neutro,0,,short su cluster + livello gex. Puntavo a 1:1 ma chiuso perchè in formazione di apertura,2026-07/22.xlsx
+2026-07-22,15:43,2,NY,MNQ,Long,M,Setup M,Loss,-0.5,,Positivo,Neutro,0,,,2026-07/22.xlsx
+2026-07-22,15:43,3,NY,MNQ,Long,M,Setup M,Loss,-0.5,,Positivo,Neutro,1,,,2026-07/22.xlsx
+2026-07-22,15:43,4,NY,MNQ,Long,M,Setup M,Loss,-0.5,,Positivo,Neutro,1,,,2026-07/22.xlsx
+2026-07-22,15:43,5,NY,MNQ,Long,M,Setup M,Loss,-0.5,,Positivo,Neutro,1,,,2026-07/22.xlsx
+2026-07-22,16:05,6,NY,MNQ,Long,A,Setup A,Gain,9.0,,Positivo,Neutro,0,,Solo assorbimento seller,2026-07/22.xlsx
+2026-07-22,16:19,7,NY,MNQ,Long,A,Setup A,Gain,53.0,,Positivo,Neutro,0,,,2026-07/22.xlsx
+2026-07-22,16:19,8,NY,MNQ,Long,A,Setup A,Gain,53.0,,Positivo,Neutro,0,,,2026-07/22.xlsx
+2026-07-22,16:19,9,NY,MNQ,Long,A,Setup A,Gain,53.0,,Positivo,Neutro,0,,,2026-07/22.xlsx
+2026-07-22,16:19,10,NY,MNQ,Long,A,Setup A,Gain,53.0,,Negativo,Neutro,0,,"Puntavo a un tp molto piu ampio, arrivato su mac di +400$ ma chiuso a 2.5r",2026-07/22.xlsx
+2026-07-22,16:26,11,NY,MNQ,Long,A,Setup A,Loss,-7.5,,Negativo,Neutro,0,,,2026-07/22.xlsx
+2026-07-22,16:40,12,NY,MNQ,Long,E,Setup E,Loss,-105.0,,Negativo,Neutro,0,,"entrato a candela ancora da chiudere, orribile",2026-07/22.xlsx
+2026-07-22,16:46,13,NY,MNQ,Long,A,Setup A,Gain,10.0,,Negativo,Neutro,0,,Solo assorbimento seller,2026-07/22.xlsx
+2026-07-22,17:15,14,NY,MNQ,Long,M,Setup M,Gain,3.0,,Positivo,Long 17.05,0,,,2026-07/22.xlsx
+2026-07-22,17:36,15,NY,MNQ,Long,E,Setup E,Loss,-102.0,,Positivo,Long 17.05,0,,"Nessuna conferma , il solito engulfing che ti incula",2026-07/22.xlsx
+2026-07-22,17:38,16,NY,MNQ,Long,B,Setup B,Loss,-31.0,,Positivo,Long 17.05,1,,Solo assorbimento seller,2026-07/22.xlsx
+2026-07-22,17:38,17,NY,MNQ,Long,B,Setup B,Loss,-62.0,,Positivo,Long 17.05,1,,Messo stop loss a cazzo di cane,2026-07/22.xlsx
+2026-07-22,17:41,18,NY,MNQ,Long,E,Setup E,Loss,-62.0,,Positivo,Long 17.05,1,,Chiusa a mano ma la direzione era giusta,2026-07/22.xlsx
+2026-07-22,17:46,19,NY,MNQ,Long,E,Setup E,Loss,-60.0,,Positivo,Long 17.05,0,,Messo stop loss a cazzo di cane,2026-07/22.xlsx
+2026-07-22,17:49,20,NY,MNQ,Long,B,Setup B,Gain,228.0,,Positivo,Long 17.05,1,,"Il trade che aspettavo, 4 operazioni tra cio ho lasciato tutto e recuperato la perdita. Mi rendo conto che non ne vuole sapere di fare movimenti ampi e conviene qua chiuderla dopo aver recuperato la giornata",2026-07/22.xlsx
+2026-07-23,15:53,1,NY,MNQ,Short,B,Setup B,Loss,-97.0,,Negativo,Neutro,0,,Troppo basso,2026-07/23.xlsx
+2026-07-23,16:06,2,NY,MNQ,Long,E,Setup E,Loss,-94.0,,Negativo,Neutro,0,,a cazzo di cane proprio,2026-07/23.xlsx
+2026-07-23,16:07,3,NY,MNQ,Short,A,Setup A,Gain,395.0,,Negativo,Neutro,1,,Solita combo top ass + agg,2026-07/23.xlsx
+2026-07-23,19:06,4,NY,MNQ,Short,B,Setup B,Gain,6.0,,Negativo,Neutro,0,,trade dopo il rientro ma decido di chiudere,2026-07/23.xlsx
+2026-07-24,15:45,1,NY,MNQ,Short,A,Setup A,Gain,22.5,,Negativo,,0,,trade sfortunato. mi butta fuori e spara una cannonata da 5r. pazienza,2026-07/24.xlsx
+2026-07-24,16:06,2,NY,MNQ,Short,B,Setup B,Gain,1.5,,Negativo,,0,,,2026-07/24.xlsx
+2026-07-24,16:06,3,NY,MNQ,Short,B,Setup B,Gain,1.5,,Negativo,,0,,,2026-07/24.xlsx
+2026-07-24,16:12,4,NY,MNQ,Short,B,Setup B,Gain,2.0,,Negativo,,0,,,2026-07/24.xlsx
+2026-07-24,16:12,5,NY,MNQ,Short,B,Setup B,Gain,2.0,,Negativo,,0,,,2026-07/24.xlsx
+2026-07-24,16:25,6,NY,MNQ,Short,B,Setup B,Gain,6.0,,Negativo,,0,,,2026-07/24.xlsx
+2026-07-24,16:31,7,NY,MNQ,Short,E,Setup E,Loss,-105.0,,Negativo,,0,,"a cazzo, troppo basso",2026-07/24.xlsx
+2026-07-24,16:34,8,NY,MNQ,Short,B,Setup B,Gain,3.0,,Negativo,,1,,,2026-07/24.xlsx
+2026-07-24,16:34,9,NY,MNQ,Short,B,Setup B,Gain,3.0,,Negativo,,0,,,2026-07/24.xlsx
+2026-07-24,16:37,10,NY,MNQ,Short,B,Setup B,Gain,111.0,,Negativo,,0,,,2026-07/24.xlsx
+2026-07-24,16:45,11,NY,MNQ,Short,A,Setup A,Gain,6.0,,Negativo,,0,,da questo momento in poi c'è stato un aumento gex che mi poteva far capire il cambio bias,2026-07/24.xlsx
+2026-07-24,16:52,12,NY,MNQ,Short,A,Setup A,Gain,214.5,,Positivo,,0,,"ok, ma era solo un ritraccio. meno male che ho puntato a rr basso, 2r",2026-07/24.xlsx
+2026-07-24,17:02,13,NY,MNQ,Short,B,Setup B,Gain,4.0,,Positivo,,0,,,2026-07/24.xlsx
+2026-07-24,17:02,14,NY,MNQ,Short,B,Setup B,Gain,2.0,,Positivo,,0,,,2026-07/24.xlsx
+2026-07-24,17:04,15,NY,MNQ,Short,B,Setup B,Gain,4.0,,Positivo,,0,,qua vorrei cercare qualche long ma decido che basta. Settimana chiusa a +1000$. Cambio evidente nella mia testa,2026-07/24.xlsx
+2026-07-27,15:56,1,NY,MNQ,Short,A,Setup A,Gain,147.0,,Negativo,Neutro,0,,"Questo è il trade che ha causato tutti i mali, perchè 1) posizione fillata a metà, 2) full tp dove avevo messo io erano 700$, 3) stop in profit gestito male quindi possiamo bene capire che qui c'è stata una destabilizzazione iniziale ",2026-07/27.xlsx
+2026-07-27,16:14,2,NY,MNQ,Short,E,Setup E,Loss,-100.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,16:18,3,NY,MNQ,Short,E,Setup E,Loss,-117.0,,Negativo,Short 16.10,0,,nessuna conferma non avevano proprio senso,2026-07/27.xlsx
+2026-07-27,16:20,4,NY,MNQ,Short,B,Setup B,Gain,7.5,,Negativo,Short 16.10,1,,,2026-07/27.xlsx
+2026-07-27,16:20,5,NY,MNQ,Short,B,Setup B,Breakeven,0.0,,Negativo,Short 16.10,0,,"questi due era un bel trade ma mi ha mandato a be prima di fare altri 100 punti a ribasso, tensione che sale",2026-07/27.xlsx
+2026-07-27,16:30,6,NY,MNQ,Short,M,Setup M,Gain,40.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,16:30,7,NY,MNQ,Short,M,Setup M,Gain,162.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,16:36,8,NY,MNQ,Short,M,Setup M,Gain,82.5,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,16:52,9,NY,MNQ,Short,M,Setup M,Gain,2.5,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,16:54,10,NY,MNQ,Short,E,Setup E,Loss,-100.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,16:55,11,NY,MNQ,Short,E,Setup E,Loss,-218.0,,Negativo,Short 16.10,1,,"da qui è iniziato il buio, overlottare per cominciare a recuperare dopo la perdita -218 che non rientra nel nostro mm",2026-07/27.xlsx
+2026-07-27,16:55,12,NY,MNQ,Short,E,Setup E,Loss,-54.5,,Negativo,Short 16.10,1,,,2026-07/27.xlsx
+2026-07-27,17:02,13,NY,MNQ,Short,E,Setup E,Gain,1.5,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:02,14,NY,MNQ,Short,E,Setup E,Gain,3.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:02,15,NY,MNQ,Short,E,Setup E,Gain,3.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:07,16,NY,MNQ,Short,E,Setup E,Loss,-100.5,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:09,17,NY,MNQ,Short,E,Setup E,Gain,7.5,,Negativo,Short 16.10,1,,,2026-07/27.xlsx
+2026-07-27,17:12,18,NY,MNQ,Short,E,Setup E,Loss,-6.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:16,19,NY,MNQ,Short,E,Setup E,Loss,-40.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:16,20,NY,MNQ,Short,E,Setup E,Loss,-70.0,,Negativo,Short 16.10,1,,,2026-07/27.xlsx
+2026-07-27,17:16,21,NY,MNQ,Short,E,Setup E,Gain,2.5,,Negativo,Short 16.10,1,,,2026-07/27.xlsx
+2026-07-27,17:17,22,NY,MNQ,Long,E,Setup E,Loss,-62.5,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:19,23,NY,MNQ,Short,E,Setup E,Loss,-100.0,,Negativo,Short 16.10,1,,,2026-07/27.xlsx
+2026-07-27,17:20,24,NY,MNQ,Long,E,Setup E,Gain,137.5,,Negativo,Short 16.10,1,,,2026-07/27.xlsx
+2026-07-27,17:20,25,NY,MNQ,Long,E,Setup E,Gain,166.07,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:27,26,NY,MNQ,Long,E,Setup E,Loss,-230.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:29,27,NY,MNQ,Long,E,Setup E,Gain,29.5,,Negativo,Short 16.10,1,,,2026-07/27.xlsx
+2026-07-27,17:29,28,NY,MNQ,Long,E,Setup E,Gain,59.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:29,29,NY,MNQ,Long,E,Setup E,Gain,147.5,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:29,30,NY,MNQ,Long,E,Setup E,Gain,59.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:29,31,NY,MNQ,Long,E,Setup E,Gain,142.5,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,17:29,32,NY,MNQ,Long,E,Setup E,Gain,142.5,,Negativo,Short 16.10,0,,"Da qui ho messo in pausa la piattaforma perché veramente orribile, mi sono salvato per mezzo tick a colpo di culo",2026-07/27.xlsx
+2026-07-27,17:53,33,NY,MNQ,Short,E,Setup E,Loss,-94.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,18:06,34,NY,MNQ,Short,B,Setup B,Gain,4.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,18:12,35,NY,MNQ,Short,A,Setup A,Gain,484.5,,Negativo,Short 16.10,0,,quando si rispetta il piano e si aspettano le conferme questo c'è si fa profitto. Chiudiamo la giornata,2026-07/27.xlsx
+2026-07-27,,36,,MNQ,Short,E,Setup E,Gain,5.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-27,,37,,MNQ,Short,E,Setup E,Gain,5.0,,Negativo,Short 16.10,0,,,2026-07/27.xlsx
+2026-07-28,15:55,1,NY,MNQ,Short,E,Setup E,Gain,6.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:03,2,NY,MNQ,Short,E,Setup E,Gain,4.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:03,3,NY,MNQ,Short,E,Setup E,Gain,4.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:11,4,NY,MNQ,Short,A,Setup A,Loss,-90.0,,,,0,stoppato ma rientrato di nuvov,,2026-07/28.xlsx
+2026-07-28,16:12,5,NY,MNQ,Short,A,Setup A,Gain,117.5,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:12,6,NY,MNQ,Short,A,Setup A,Gain,117.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:17,7,NY,MNQ,Short,E,Setup E,Loss,-61.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:17,8,NY,MNQ,Short,E,Setup E,Loss,-41.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:18,9,NY,MNQ,Short,E,Setup E,Loss,-65.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:18,10,NY,MNQ,Short,E,Setup E,Loss,-32.5,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:20,11,NY,MNQ,Short,E,Setup E,Loss,-70.5,,,,1,qui si è spento il cervello,,2026-07/28.xlsx
+2026-07-28,16:25,12,NY,MNQ,Short,E,Setup E,Gain,42.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:25,13,NY,MNQ,Short,E,Setup E,Loss,-45.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:25,14,NY,MNQ,Short,E,Setup E,Loss,-50.5,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:28,15,NY,MNQ,Short,E,Setup E,Loss,-93.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:31,16,NY,MNQ,Short,E,Setup E,Loss,-100.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:31,17,NY,MNQ,Short,E,Setup E,Loss,-82.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:33,18,NY,MNQ,Short,E,Setup E,Loss,-420.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:34,19,NY,MNQ,Short,E,Setup E,Gain,26.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:36,20,NY,MNQ,Long,E,Setup E,Gain,60.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:36,21,NY,MNQ,Long,E,Setup E,Gain,143.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:38,22,NY,MNQ,Short,E,Setup E,Gain,60.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:38,23,NY,MNQ,Short,E,Setup E,Gain,102.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:38,24,NY,MNQ,Short,E,Setup E,Gain,42.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:42,25,NY,MNQ,Short,E,Setup E,Loss,-52.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:42,26,NY,MNQ,Short,E,Setup E,Loss,-31.5,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:42,27,NY,MNQ,Short,E,Setup E,Loss,-21.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:42,28,NY,MNQ,Short,E,Setup E,Loss,-5.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:45,29,NY,MNQ,Short,E,Setup E,Gain,60.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:45,30,NY,MNQ,Short,E,Setup E,Gain,82.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:45,31,NY,MNQ,Short,E,Setup E,Gain,63.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:46,32,NY,MNQ,Short,E,Setup E,Loss,-48.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:46,33,NY,MNQ,Short,E,Setup E,Loss,-48.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:47,34,NY,MNQ,Long,E,Setup E,Gain,64.5,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:47,35,NY,MNQ,Long,E,Setup E,Gain,63.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:47,36,NY,MNQ,Long,E,Setup E,Gain,22.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:47,37,NY,MNQ,Long,E,Setup E,Gain,40.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:47,38,NY,MNQ,Long,E,Setup E,Gain,20.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:47,39,NY,MNQ,Long,E,Setup E,Gain,18.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:47,40,NY,MNQ,Long,E,Setup E,Loss,-27.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:48,41,NY,MNQ,Long,E,Setup E,Gain,20.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:48,42,NY,MNQ,Long,E,Setup E,Gain,102.5,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:48,43,NY,MNQ,Long,E,Setup E,Gain,84.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:48,44,NY,MNQ,Long,E,Setup E,Gain,20.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:49,45,NY,MNQ,Short,E,Setup E,Loss,-290.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:50,46,NY,MNQ,Long,E,Setup E,Gain,125.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:50,47,NY,MNQ,Long,E,Setup E,Gain,204.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:50,48,NY,MNQ,Long,E,Setup E,Gain,182.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:52,49,NY,MNQ,Short,E,Setup E,Loss,-1210.0,,,,0,,,2026-07/28.xlsx
+2026-07-28,16:53,50,NY,MNQ,Long,E,Setup E,Loss,-110.0,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:53,51,NY,MNQ,Long,E,Setup E,Loss,-189.57,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:53,52,NY,MNQ,Long,E,Setup E,Loss,-221.4,,,,1,,,2026-07/28.xlsx
+2026-07-28,16:56,53,NY,MNQ,Short,A,Setup A,Loss,150.0,,,,1,l'ultimo trade della serata con mente mezza lucida. La lettura c'è manca la parte operativa che va in tilt in un non nulla. Non risco a capire perché,,2026-07/28.xlsx
+2026-07-28,20:05,54,NY,MNQ,Long,n.d.,,Loss,-33.74,,,,0,,,2026-07/29.xlsx
+2026-07-28,20:10,55,NY,MNQ,Long,n.d.,,Loss,-21.24,,,,0,,,2026-07/29.xlsx
+2026-07-28,20:11,56,NY,MNQ,Short,n.d.,,Gain,0.76,,,,1,,,2026-07/29.xlsx
+2026-07-29,15:20,1,pre-NY,MNQ,Long,n.d.,,Loss,-12.74,,,,0,,,2026-07/29.xlsx
+2026-07-29,15:31,2,NY,MNQ,Short,n.d.,,Gain,19.52,,,,0,,,2026-07/29.xlsx
+2026-07-29,15:38,3,NY,MNQ,Short,n.d.,,Loss,-102.72,,,,0,,,2026-07/29.xlsx
+2026-07-29,15:40,4,NY,MNQ,Short,n.d.,,Gain,38.28,,,,1,,,2026-07/29.xlsx
+2026-07-29,15:45,5,NY,MNQ,Short,n.d.,,Gain,323.52,,,,0,,,2026-07/29.xlsx
+2026-07-29,15:51,6,NY,MNQ,Short,n.d.,,Gain,2.52,,,,0,,,2026-07/29.xlsx
+2026-07-29,15:56,7,NY,MNQ,Short,n.d.,,Gain,83.28,,,,0,,,2026-07/29.xlsx
+2026-07-29,16:01,8,NY,MNQ,Short,n.d.,,Loss,-92.48,,,,0,,,2026-07/29.xlsx
+2026-07-29,16:02,9,NY,MNQ,Short,n.d.,,Loss,-97.48,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:06,10,NY,MNQ,Short,n.d.,,Gain,324.78,499.2199999999999,,,0,,,2026-07/29.xlsx
+2026-07-29,16:16,11,NY,MNQ,Short,n.d.,,Loss,-36.72,,,,0,,,2026-07/29.xlsx
+2026-07-29,16:20,12,NY,MNQ,Short,n.d.,,Gain,7.04,,,,0,,,2026-07/29.xlsx
+2026-07-29,16:23,13,NY,MNQ,Short,n.d.,,Gain,3.78,,,,0,,,2026-07/29.xlsx
+2026-07-29,16:31,14,NY,MNQ,Short,n.d.,,Loss,-105.72,,,,0,,,2026-07/29.xlsx
+2026-07-29,16:33,15,NY,MNQ,Short,n.d.,,Gain,2.28,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:36,16,NY,MNQ,Short,n.d.,,Loss,-2.96,,,,0,,,2026-07/29.xlsx
+2026-07-29,16:38,17,NY,MNQ,Short,n.d.,,Loss,-104.22,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:40,18,NY,MNQ,Short,n.d.,,Loss,-93.72,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:43,19,NY,MNQ,Short,n.d.,,Loss,-108.72,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:46,20,NY,MNQ,Short,n.d.,,Loss,-96.72,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:47,21,NY,MNQ,Long,n.d.,,Loss,-111.2,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:47,22,NY,MNQ,Short,n.d.,,Gain,6.78,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:49,23,NY,MNQ,Short,n.d.,,Loss,-106.96,,,,0,,,2026-07/29.xlsx
+2026-07-29,16:51,24,NY,MNQ,Short,n.d.,,Loss,-72.96,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:52,25,NY,MNQ,Short,n.d.,,Loss,-104.96,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:53,26,NY,MNQ,Short,n.d.,,Loss,-2.22,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:56,27,NY,MNQ,Short,n.d.,,Loss,-50.96,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:57,28,NY,MNQ,Short,n.d.,,Loss,-96.96,,,,1,,,2026-07/29.xlsx
+2026-07-29,16:59,29,NY,MNQ,Short,n.d.,,Loss,-93.72,,,,1,,,2026-07/29.xlsx
+2026-07-29,17:02,30,NY,MNQ,Short,n.d.,,Loss,-114.96,,,,1,,,2026-07/29.xlsx
+2026-07-29,17:03,31,NY,MNQ,Long,n.d.,,Loss,-84.72,,,,1,,,2026-07/29.xlsx
+2026-07-29,17:04,32,NY,MNQ,Short,n.d.,,Loss,-235.62,-857.08,,,1,,,2026-07/29.xlsx
+2026-07-30,15:34,1,NY,MNQ,Short,E,Setup E,Loss,-88.5,,Positivo,Da formare,0,,,2026-07/30.xlsx
+2026-07-30,15:37,2,NY,MNQ,Short,E,Setup E,Loss,-90.0,,Positivo,Da formare,1,,,2026-07/30.xlsx
+2026-07-30,15:38,3,NY,MNQ,Short,E,Setup E,Loss,-100.5,,Positivo,Da formare,1,,,2026-07/30.xlsx
+2026-07-30,15:39,4,NY,MNQ,Long,E,Setup E,Loss,-14.0,,Positivo,Da formare,1,"Prop Bruciata, presa un altra",,2026-07/30.xlsx
+2026-07-30,15:45,5,NY,MNQ,Long,M,Setup M,Gain,304.5,,Positivo,Da formare,0,Target potevo portare piu avanti,,2026-07/30.xlsx
+2026-07-30,15:54,6,NY,MNQ,Short,E,Setup E,Loss,-108.0,,Positivo,Da formare,0,"Short senza senso, tutto era long",,2026-07/30.xlsx
+2026-07-30,15:55,7,NY,MNQ,Short,E,Setup E,Loss,-117.0,,Positivo,Da formare,1,"Short senza senso, tutto era long",,2026-07/30.xlsx
+2026-07-30,15:56,8,NY,MNQ,Long,E,Setup E,Loss,-22.0,,Positivo,Da formare,1,Posizionato troppo alto,,2026-07/30.xlsx
+2026-07-30,15:56,9,NY,MNQ,Long,E,Setup E,Loss,-88.0,,Positivo,Da formare,1,Posizionato troppo alto,,2026-07/30.xlsx
+2026-07-30,15:56,10,NY,MNQ,Short,E,Setup E,Gain,7.5,,Positivo,Da formare,1,,,2026-07/30.xlsx
+2026-07-30,15:56,11,NY,MNQ,Short,E,Setup E,Gain,7.5,,Positivo,Da formare,0,,,2026-07/30.xlsx
+2026-07-30,15:56,12,NY,MNQ,Short,E,Setup E,Gain,7.5,,Positivo,Da formare,0,,,2026-07/30.xlsx
+2026-07-30,15:56,13,NY,MNQ,Short,E,Setup E,Gain,7.5,,Positivo,Da formare,0,,,2026-07/30.xlsx
+2026-07-30,16:00,14,NY,MNQ,Long,E,Setup E,Loss,-21.5,,Positivo,"Long 16,01",0,ho visto aggressione sul top ma non è andato,,2026-07/30.xlsx
+2026-07-30,16:00,15,NY,MNQ,Long,E,Setup E,Loss,-86.0,,Positivo,"Long 16,02",1,,,2026-07/30.xlsx
+2026-07-30,16:00,16,NY,MNQ,Long,A+,Setup A+,Gain,63.0,,Positivo,"Long 16,03",1,,,2026-07/30.xlsx
+2026-07-30,16:00,17,NY,MNQ,Long,A+,Setup A+,Gain,31.5,,Positivo,"Long 16,04",0,Eravamo già troppo in alto,,2026-07/30.xlsx
+2026-07-30,16:06,18,NY,MNQ,Long,E,Setup E,Loss,-99.0,,Positivo,"Long 16,05",0,a cazzo perchè stava riotracciando,,2026-07/30.xlsx
+2026-07-30,16:08,19,NY,MNQ,Short,B,Setup B,Gain,97.5,,Positivo,"Long 16,06",1,Short contro bias ma ci stava fino a livello di reazione long,,2026-07/30.xlsx
+2026-07-30,16:08,20,NY,MNQ,Short,B,Setup B,Gain,65.0,,Positivo,"Long 16,07",0,,,2026-07/30.xlsx
+2026-07-30,16:10,21,NY,MNQ,Long,E,Setup E,Loss,-44.0,,Positivo,"Long 16,08",0,,,2026-07/30.xlsx
+2026-07-30,16:10,22,NY,MNQ,Long,E,Setup E,Loss,-44.0,,Positivo,"Long 16,09",1,Troppo presto su livello,,2026-07/30.xlsx
+2026-07-30,16:13,23,NY,MNQ,Long,E,Setup E,Loss,-20.5,,Positivo,"Long 16,10",1,,,2026-07/30.xlsx
+2026-07-30,16:13,24,NY,MNQ,Long,E,Setup E,Loss,-82.0,,Positivo,"Long 16,11",1,,,2026-07/30.xlsx
+2026-07-30,16:13,25,NY,MNQ,Long,E,Setup E,Gain,27.0,,Positivo,"Long 16,12",1,,,2026-07/30.xlsx
+2026-07-30,16:18,26,NY,MNQ,Short,E,Setup E,Gain,4.0,,Positivo,"Long 16,13",0,,,2026-07/30.xlsx
+2026-07-30,16:20,27,NY,MNQ,Short,E,Setup E,Loss,-29.5,,Positivo,"Long 16,14",0,,,2026-07/30.xlsx
+2026-07-30,16:20,28,NY,MNQ,Short,E,Setup E,Loss,-29.5,,Positivo,"Long 16,15",1,,,2026-07/30.xlsx
+2026-07-30,16:20,29,NY,MNQ,Short,E,Setup E,Loss,-59.0,,Positivo,"Long 16,16",1,Ho sbarellato tra long e short,,2026-07/30.xlsx
+2026-07-30,16:24,30,NY,MNQ,Short,E,Setup E,Gain,0.5,,Positivo,"Long 16,17",0,,,2026-07/30.xlsx
+2026-07-30,16:24,31,NY,MNQ,Short,E,Setup E,Gain,1.0,,Positivo,"Long 16,18",0,,,2026-07/30.xlsx
+2026-07-30,16:24,32,NY,MNQ,Short,E,Setup E,Gain,0.5,,Positivo,"Long 16,19",0,,,2026-07/30.xlsx
+2026-07-30,16:25,33,NY,MNQ,Short,E,Setup E,Loss,-61.5,,Positivo,"Long 16,20",0,,,2026-07/30.xlsx
+2026-07-30,16:26,34,NY,MNQ,Short,E,Setup E,Loss,-105.0,,Positivo,"Long 16,21",1,Contro bias ma non c'era motivo di questi short,,2026-07/30.xlsx
+2026-07-30,16:29,35,NY,MNQ,Short,B,Setup B,Gain,20.0,,Positivo,"Long 16,22",1,,,2026-07/30.xlsx
+2026-07-30,16:29,36,NY,MNQ,Short,B,Setup B,Gain,20.0,,Positivo,"Long 16,23",0,,,2026-07/30.xlsx
+2026-07-30,16:29,37,NY,MNQ,Short,B,Setup B,Gain,60.0,,Positivo,"Long 16,24",0,,,2026-07/30.xlsx
+2026-07-30,16:33,38,NY,MNQ,Long,E,Setup E,Gain,6.0,,Positivo,"Long 16,25",0,,,2026-07/30.xlsx
+2026-07-30,16:36,39,NY,MNQ,Short,E,Setup E,Loss,-32.5,,Positivo,"Long 16,26",0,,,2026-07/30.xlsx
+2026-07-30,16:36,40,NY,MNQ,Short,E,Setup E,Loss,-65.0,,Positivo,"Long 16,27",1,,,2026-07/30.xlsx
+2026-07-30,16:37,41,NY,MNQ,Long,E,Setup E,Gain,6.0,,Positivo,"Long 16,28",1,,,2026-07/30.xlsx
+2026-07-30,16:39,42,NY,MNQ,Long,E,Setup E,Gain,7.5,,Positivo,"Long 16,29",0,,,2026-07/30.xlsx
+2026-07-30,16:39,43,NY,MNQ,Long,E,Setup E,Gain,2.5,,Positivo,"Long 16,30",0,Evitabili,,2026-07/30.xlsx
+2026-07-30,16:44,44,NY,MNQ,Short,M,Setup M,Gain,112.0,,Negativo,"Long 16,31",0,,,2026-07/30.xlsx
+2026-07-30,16:46,45,NY,MNQ,Long,A,Setup A,Loss,-45.0,,Negativo,"Long 16,32",0,,,2026-07/30.xlsx
+2026-07-30,16:46,46,NY,MNQ,Long,A,Setup A,Loss,-45.0,,Negativo,"Long 16,33",1,,,2026-07/30.xlsx
+2026-07-30,16:47,47,NY,MNQ,Long,A,Setup A,Loss,-102.0,,Negativo,"Long 16,34",1,,,2026-07/30.xlsx
+2026-07-30,16:49,48,NY,MNQ,Long,A,Setup A,Loss,-94.5,,Negativo,"Long 16,35",1,"cambio baias del gex, evitabili",,2026-07/30.xlsx
+2026-07-30,16:51,49,NY,MNQ,Short,M,Setup M,Gain,4.5,,Negativo,"Long 16,36",1,,,2026-07/30.xlsx
+2026-07-30,16:51,50,NY,MNQ,Short,M,Setup M,Gain,3.0,,Negativo,"Long 16,37",0,,,2026-07/30.xlsx
+2026-07-30,16:52,51,NY,MNQ,Short,M,Setup M,Gain,277.5,,Negativo,"Long 16,38",0,,,2026-07/30.xlsx
+2026-07-30,16:52,52,NY,MNQ,Short,M,Setup M,Gain,92.5,,Negativo,"Long 16,39",0,,,2026-07/30.xlsx
+2026-07-30,16:52,53,NY,MNQ,Short,M,Setup M,Gain,92.5,,Negativo,"Long 16,40",0,,,2026-07/30.xlsx
+2026-07-30,16:56,54,NY,MNQ,Short,M,Setup M,Gain,3.0,,Negativo,"Long 16,41",0,,,2026-07/30.xlsx
+2026-07-30,16:56,55,NY,MNQ,Short,M,Setup M,Gain,1.5,,Negativo,"Long 16,42",0,,,2026-07/30.xlsx
+2026-07-30,17:00,56,NY,MNQ,Short,B,Setup B,Gain,40.0,,Negativo,"Long 16,43",0,,,2026-07/30.xlsx
+2026-07-30,17:00,57,NY,MNQ,Short,B,Setup B,Gain,120.0,,Negativo,"Long 16,44",0,,,2026-07/30.xlsx
+2026-07-30,17:00,58,NY,MNQ,Short,B,Setup B,Gain,40.0,,Negativo,"Long 16,45",0,"recupero dei big trade, non ha dato continuità",,2026-07/30.xlsx
+2026-07-30,17:04,59,NY,MNQ,Long,E,Setup E,Loss,-111.0,,Negativo,"Long 16,46",0,,,2026-07/30.xlsx
+2026-07-30,17:05,60,NY,MNQ,Long,E,Setup E,Gain,6.0,,Negativo,"Long 16,47",1,,,2026-07/30.xlsx
+2026-07-30,17:07,61,NY,MNQ,Short,E,Setup E,Gain,1.5,,Negativo,"Long 16,48",0,,,2026-07/30.xlsx
+2026-07-30,17:15,62,NY,MNQ,Short,E,Setup E,Gain,2.0,,Negativo,"Long 16,49",0,,,2026-07/30.xlsx
+2026-07-30,17:43,63,NY,MNQ,Short,E,Setup E,Loss,-43.0,,Negativo,"Long 16,50",0,,,2026-07/30.xlsx
+2026-07-30,17:43,64,NY,MNQ,Short,E,Setup E,Loss,-43.0,,Negativo,"Long 16,51",1,,,2026-07/30.xlsx
+2026-07-30,17:43,65,NY,MNQ,Short,E,Setup E,Loss,-21.5,,Negativo,"Long 16,52",1,,,2026-07/30.xlsx
+2026-07-30,17:46,66,NY,MNQ,Long,E,Setup E,Breakeven,0.0,,Positivo,"Long 16,53",1,,,2026-07/30.xlsx
+2026-07-30,17:46,67,NY,MNQ,Long,E,Setup E,Breakeven,0.0,,Positivo,"Long 16,54",0,Tutti evitabili,,2026-07/30.xlsx
+2026-07-30,17:54,68,NY,MNQ,Long,A,Setup A,Gain,250.0,,Positivo,"Long 16,55",0,Abbiamo seguito il flip del gex e abbiamo preso l'ultimo trade che ci ha portati a 0,,2026-07/30.xlsx
+2026-07-31,15:58,1,NY,MNQ,Short,n.d.,,Gain,9.0,Setup A,Negativo,In formazione,0,,,2026-07/31.xlsx
+2026-07-31,16:01,2,NY,MNQ,Short,n.d.,,Gain,146.0,Setup A,Negativo,Neutra,0,,,2026-07/31.xlsx
+2026-07-31,16:03,3,NY,MNQ,Short,n.d.,,Gain,557.5,Setup A,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:08,4,NY,MNQ,Short,n.d.,,Gain,104.0,Setup B,Negativo,Short 16.02,0,Qua doveva finire la mia giornata. Non prolungare 2 ore ulteriori di agonia,,2026-07/31.xlsx
+2026-07-31,16:10,5,NY,MNQ,Short,n.d.,,Loss,-88.5,Setup C,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:13,6,NY,MNQ,Short,n.d.,,Gain,1.0,Setup C,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:15,7,NY,MNQ,Short,n.d.,,Loss,-35.5,Setup C,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:15,8,NY,MNQ,Short,n.d.,,Loss,-35.5,Setup C,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:15,9,NY,MNQ,Short,n.d.,,Loss,-35.5,Setup C,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:16,10,NY,MNQ,Short,n.d.,,Loss,-4.5,Setup B,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:16,11,NY,MNQ,Short,n.d.,,Loss,-4.5,Setup B,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:20,12,NY,MNQ,Short,n.d.,,Loss,-80.0,Setup A,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:21,13,NY,MNQ,Short,n.d.,,Loss,-134.0,Setup A,Negativo,Short 16.02,1,"Qui dovevo capire che il mercato stava girando, e cominciare a pensare di chiudere la giornata senza tutta questa sfilza",,2026-07/31.xlsx
+2026-07-31,16:25,14,NY,MNQ,Short,n.d.,,Gain,3.0,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:25,15,NY,MNQ,Short,n.d.,,Gain,1.5,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:28,16,NY,MNQ,Long,n.d.,,Gain,1.0,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:28,17,NY,MNQ,Long,n.d.,,Gain,1.0,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:32,18,NY,MNQ,Short,n.d.,,Loss,-115.5,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:34,19,NY,MNQ,Short,n.d.,,Loss,-31.5,Setup E,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:34,20,NY,MNQ,Short,n.d.,,Loss,-31.5,Setup E,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:34,21,NY,MNQ,Short,n.d.,,Loss,-63.0,Setup E,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:39,22,NY,MNQ,Short,n.d.,,Gain,1.0,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:39,23,NY,MNQ,Short,n.d.,,Gain,3.0,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:41,24,NY,MNQ,Short,n.d.,,Gain,40.0,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:41,25,NY,MNQ,Short,n.d.,,Gain,40.0,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:41,26,NY,MNQ,Short,n.d.,,Gain,40.0,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:47,27,NY,MNQ,Short,n.d.,,Loss,-34.0,Setup E,Positivo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:47,28,NY,MNQ,Short,n.d.,,Loss,-34.0,Setup E,Positivo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:47,29,NY,MNQ,Short,n.d.,,Loss,-34.0,Setup E,Positivo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:56,30,NY,MNQ,Short,n.d.,,Loss,-78.0,Setup E,Positivo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,16:56,31,NY,MNQ,Short,n.d.,,Loss,-26.0,Setup E,Positivo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:57,32,NY,MNQ,Long,n.d.,,Loss,-32.0,Setup E,Positivo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:57,33,NY,MNQ,Long,n.d.,,Loss,-64.0,Setup E,Positivo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:58,34,NY,MNQ,Long,n.d.,,Gain,3.0,Setup E,Positivo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,16:59,35,NY,MNQ,Long,n.d.,,Loss,-116.0,Setup E,Positivo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:00,36,NY,MNQ,Long,n.d.,,Loss,-34.5,Setup E,Positivo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,17:00,37,NY,MNQ,Long,n.d.,,Loss,-34.5,Setup E,Positivo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,17:00,38,NY,MNQ,Long,n.d.,,Loss,-34.5,Setup E,Positivo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,17:00,39,NY,MNQ,Short,n.d.,,Gain,12.5,Setup E,Positivo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,17:00,40,NY,MNQ,Short,n.d.,,Gain,2.5,Setup E,Positivo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:02,41,NY,MNQ,Long,n.d.,,Loss,-106.0,Setup E,Positivo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:03,42,NY,MNQ,Short,n.d.,,Gain,1.5,Setup E,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,17:03,43,NY,MNQ,Short,n.d.,,Gain,1.5,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:03,44,NY,MNQ,Short,n.d.,,Gain,1.5,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:03,45,NY,MNQ,Short,n.d.,,Gain,1.5,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:03,46,NY,MNQ,Short,n.d.,,Gain,1.5,Setup E,Negativo,Short 16.02,0,"fino a qui trade evitabili, ma la rabbia di aver perso 700$ di profit e non aver chiuso la giornata primagià è viva e lucida ",,2026-07/31.xlsx
+2026-07-31,17:06,47,NY,MNQ,Short,n.d.,,Gain,6.0,Setup C,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:08,48,NY,MNQ,Short,n.d.,,Gain,194.0,Setup C,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:12,49,NY,MNQ,Short,n.d.,,Loss,-24.0,Setup E,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:12,50,NY,MNQ,Short,n.d.,,Loss,-24.0,Setup E,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,17:12,51,NY,MNQ,Short,n.d.,,Loss,-24.0,Setup E,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,17:12,52,NY,MNQ,Short,n.d.,,Loss,-24.0,Setup E,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,17:13,53,NY,MNQ,Long,n.d.,,Gain,108.0,Setup A+,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,17:13,54,NY,MNQ,Long,n.d.,,Gain,108.0,Setup A+,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:13,55,NY,MNQ,Long,n.d.,,Gain,108.0,Setup A+,Negativo,Short 16.02,0,long su cluster + nq effort + aggressione buy,,2026-07/31.xlsx
+2026-07-31,17:22,56,NY,MNQ,Short,n.d.,,Gain,1.0,Setup A,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:22,57,NY,MNQ,Short,n.d.,,Gain,0.5,Setup A,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:24,58,NY,MNQ,Short,n.d.,,Gain,1.0,Setup A,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:24,59,NY,MNQ,Short,n.d.,,Loss,-26.0,Setup A,Negativo,Short 16.02,0,,,2026-07/31.xlsx
+2026-07-31,17:25,60,NY,MNQ,Long,n.d.,,Loss,-4.0,Setup A,Negativo,Short 16.02,1,,,2026-07/31.xlsx
+2026-07-31,17:26,61,NY,MNQ,Short,n.d.,,Gain,340.0,Setup A,Negativo,Short 16.02,1,"recupero mezzo profit e decido di staccare. Il mio trading funziona se ce momentum, appena finisce la sprint dell'apertura non ho piu edge. ",,2026-07/31.xlsx
+2026-08-04,15:55,1,NY,MNQ,Long,A,Setup A,Loss,-34.5,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,15:55,2,NY,MNQ,Long,A,Setup A,Loss,-34.5,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,15:55,3,NY,MNQ,Long,A,Setup A,Loss,-34.5,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,15:57,4,NY,MNQ,Long,A,Setup A,Gain,19.5,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:03,5,NY,MNQ,Short,C,Setup C,Loss,-25.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:03,6,NY,MNQ,Short,C,Setup C,Loss,-50.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:03,7,NY,MNQ,Short,C,Setup C,Loss,-26.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:03,8,NY,MNQ,Long,C,Setup C,Gain,40.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:04,9,NY,MNQ,Long,C,Setup C,Gain,48.5,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:04,10,NY,MNQ,Long,C,Setup C,Gain,48.5,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:10,11,NY,MNQ,Short,C,Setup C,Gain,2.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:16,12,NY,MNQ,Short,C,Setup C,Gain,3.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:16,13,NY,MNQ,Short,E,Setup E,Gain,1.0,,Positivo,,0,,evitabile contro bias,2026-08/04.xlsx
+2026-08-04,16:18,14,NY,MNQ,Long,E,Setup E,Loss,-108.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:20,15,NY,MNQ,Long,E,Setup E,Loss,-36.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:20,16,NY,MNQ,Long,E,Setup E,Loss,-72.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:20,17,NY,MNQ,Short,E,Setup E,Loss,-100.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:20,18,NY,MNQ,Long,E,Setup E,Loss,-92.5,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:21,19,NY,MNQ,Short,E,Setup E,Loss,-108.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:22,20,NY,MNQ,Long,E,Setup E,Loss,-22.5,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:22,21,NY,MNQ,Long,E,Setup E,Loss,-22.5,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:22,22,NY,MNQ,Long,E,Setup E,Loss,-45.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:22,23,NY,MNQ,Long,E,Setup E,Loss,-22.5,,Positivo,,1,,"Sbarellato nel range, buttato nel mercato soldi",2026-08/04.xlsx
+2026-08-04,16:30,24,NY,MNQ,Short,B,Setup B,Gain,70.5,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:30,25,NY,MNQ,Short,B,Setup B,Gain,47.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:33,26,NY,MNQ,Long,E,Setup E,Loss,-49.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:33,27,NY,MNQ,Long,E,Setup E,Loss,-49.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:38,28,NY,MNQ,Long,B,Setup B,Gain,133.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:38,29,NY,MNQ,Long,B,Setup B,Gain,67.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:38,30,NY,MNQ,Short,C,Setup C,Gain,12.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:40,31,NY,MNQ,Long,E,Setup E,Loss,-46.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:40,32,NY,MNQ,Long,E,Setup E,Loss,-46.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:40,33,NY,MNQ,Long,E,Setup E,Loss,-23.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:43,34,NY,MNQ,Long,C,Setup C,Gain,17.5,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,16:54,35,NY,MNQ,Long,C,Setup C,Gain,1.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:54,36,NY,MNQ,Long,C,Setup C,Gain,1.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:54,37,NY,MNQ,Long,C,Setup C,Gain,1.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:54,38,NY,MNQ,Long,C,Setup C,Gain,1.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:54,39,NY,MNQ,Long,C,Setup C,Gain,1.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:56,40,NY,MNQ,Long,C,Setup C,Gain,2.5,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,16:58,41,NY,MNQ,Long,B,Setup B,Gain,452.5,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,17:14,42,NY,MNQ,Short,E,Setup E,Loss,-16.5,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,17:14,43,NY,MNQ,Short,E,Setup E,Loss,-38.5,,Positivo,,1,,"mi è partito il tasto sell, vabbe limitato i danni",2026-08/04.xlsx
+2026-08-04,17:16,44,NY,MNQ,Long,M,Setup M,Gain,1.0,,Positivo,,1,,,2026-08/04.xlsx
+2026-08-04,17:16,45,NY,MNQ,Long,M,Setup M,Gain,4.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,17:39,46,NY,MNQ,Long,M,Setup M,Breakeven,0.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,17:42,47,NY,MNQ,Short,C,Setup C,Loss,-4.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,17:42,48,NY,MNQ,Short,C,Setup C,Loss,-34.0,,Positivo,,1,,"short che nemmeno mia nonna li apriva per quanto il gex sparava long, 400$ bn positivo mai visto",2026-08/04.xlsx
+2026-08-04,17:47,49,NY,MNQ,Long,M,Setup M,Gain,2.5,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,17:51,50,NY,MNQ,Long,M,Setup M,Gain,2.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,17:51,51,NY,MNQ,Long,M,Setup M,Gain,2.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,17:51,52,NY,MNQ,Long,M,Setup M,Gain,6.0,,Positivo,,0,,ho provato a prendere qualchbe momentum sul tip niente da fare,2026-08/04.xlsx
+2026-08-04,17:54,53,NY,MNQ,Short,E,Setup E,Gain,2.5,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,17:56,54,NY,MNQ,Long,E,Setup E,Loss,-72.5,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,18:00,55,NY,MNQ,Long,B,Setup B,Gain,105.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,18:07,56,NY,MNQ,Short,E,Setup E,Gain,1.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,18:07,57,NY,MNQ,Short,E,Setup E,Gain,1.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,18:07,58,NY,MNQ,Short,E,Setup E,Gain,2.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,18:16,59,NY,MNQ,Long,B,Setup B,Gain,4.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,18:16,60,NY,MNQ,Long,B,Setup B,Gain,1.0,,Positivo,,0,,,2026-08/04.xlsx
+2026-08-04,19:22,61,NY,MNQ,Long,B,Setup B,Gain,200.0,,Positivo,,0,,"e qui riportaimo il conto a -70$ , chiudiamo",2026-08/04.xlsx
+2026-08-05,15:30,1,NY,MNQ,Short,E,Setup E,Loss,-120.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,15:31,2,NY,MNQ,Short,E,Setup E,Loss,-102.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:31,3,NY,MNQ,Long,E,Setup E,Loss,-104.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:32,4,NY,MNQ,Short,E,Setup E,Gain,118.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:32,5,NY,MNQ,Short,E,Setup E,Gain,80.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,15:34,6,NY,MNQ,Long,E,Setup E,Gain,6.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,15:40,7,NY,MNQ,Long,E,Setup E,Loss,-42.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,15:40,8,NY,MNQ,Long,E,Setup E,Loss,-21.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:40,9,NY,MNQ,Long,E,Setup E,Loss,-21.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:40,10,NY,MNQ,Long,E,Setup E,Loss,-21.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:41,11,NY,MNQ,Short,E,Setup E,Gain,2.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:42,12,NY,MNQ,Short,E,Setup E,Loss,-100.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,15:43,13,NY,MNQ,Long,E,Setup E,Loss,-4.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:44,14,NY,MNQ,Long,E,Setup E,Loss,-24.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:44,15,NY,MNQ,Long,E,Setup E,Loss,-49.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:44,16,NY,MNQ,Long,E,Setup E,Loss,-24.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:45,17,NY,MNQ,Short,E,Setup E,Gain,7.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:46,18,NY,MNQ,Short,E,Setup E,Loss,-32.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,15:47,19,NY,MNQ,Short,E,Setup E,Loss,-23.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:47,20,NY,MNQ,Short,E,Setup E,Loss,-69.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:50,21,NY,MNQ,Short,E,Setup E,Gain,49.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:52,22,NY,MNQ,Long,E,Setup E,Loss,-44.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,15:52,23,NY,MNQ,Long,E,Setup E,Loss,-22.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:52,24,NY,MNQ,Long,E,Setup E,Loss,-45.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:52,25,NY,MNQ,Long,E,Setup E,Loss,-42.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:52,26,NY,MNQ,Long,E,Setup E,Loss,-42.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:52,27,NY,MNQ,Long,E,Setup E,Loss,-22.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:53,28,NY,MNQ,Long,E,Setup E,Loss,-98.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:56,29,NY,MNQ,Short,E,Setup E,Gain,2.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,15:57,30,NY,MNQ,Long,E,Setup E,Loss,-108.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,15:57,31,NY,MNQ,Long,E,Setup E,Loss,-36.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:01,32,NY,MNQ,Short,E,Setup E,Loss,-97.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:02,33,NY,MNQ,Short,E,Setup E,Gain,70.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:02,34,NY,MNQ,Short,E,Setup E,Gain,141.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:02,35,NY,MNQ,Short,E,Setup E,Gain,3.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:04,36,NY,MNQ,Short,E,Setup E,Loss,-57.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:04,37,NY,MNQ,Short,E,Setup E,Loss,-28.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:04,38,NY,MNQ,Short,E,Setup E,Loss,-28.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:05,39,NY,MNQ,Long,E,Setup E,Gain,232.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:06,40,NY,MNQ,Short,E,Setup E,Loss,-105.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:09,41,NY,MNQ,Short,E,Setup E,Loss,-92.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:09,42,NY,MNQ,Long,E,Setup E,Loss,-45.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:09,43,NY,MNQ,Long,E,Setup E,Loss,-45.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:09,44,NY,MNQ,Long,E,Setup E,Loss,-22.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:09,45,NY,MNQ,Short,E,Setup E,Breakeven,0.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:11,46,NY,MNQ,Short,E,Setup E,Gain,4.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:11,47,NY,MNQ,Short,E,Setup E,Gain,1.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:11,48,NY,MNQ,Short,E,Setup E,Gain,1.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:19,49,NY,MNQ,Long,E,Setup E,Loss,-73.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:19,50,NY,MNQ,Long,E,Setup E,Loss,-24.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:20,51,NY,MNQ,Short,E,Setup E,Loss,-41.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:20,52,NY,MNQ,Short,E,Setup E,Loss,-41.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:20,53,NY,MNQ,Short,E,Setup E,Loss,-20.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:22,54,NY,MNQ,Short,E,Setup E,Gain,5.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:25,55,NY,MNQ,Long,E,Setup E,Gain,7.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:27,56,NY,MNQ,Short,E,Setup E,Gain,2.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:27,57,NY,MNQ,Short,E,Setup E,Gain,5.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:28,58,NY,MNQ,Short,E,Setup E,Gain,80.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:28,59,NY,MNQ,Short,E,Setup E,Gain,322.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:30,60,NY,MNQ,Short,E,Setup E,Loss,-54.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:30,61,NY,MNQ,Short,E,Setup E,Loss,-18.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:30,62,NY,MNQ,Short,E,Setup E,Loss,-18.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:32,63,NY,MNQ,Short,E,Setup E,Loss,-115.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:32,64,NY,MNQ,Short,E,Setup E,Loss,-20.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:32,65,NY,MNQ,Short,E,Setup E,Loss,-80.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:34,66,NY,MNQ,Short,E,Setup E,Loss,-21.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:34,67,NY,MNQ,Short,E,Setup E,Loss,-21.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:34,68,NY,MNQ,Short,E,Setup E,Loss,-63.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:35,69,NY,MNQ,Short,E,Setup E,Gain,12.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:35,70,NY,MNQ,Long,E,Setup E,Loss,-40.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:35,71,NY,MNQ,Long,E,Setup E,Loss,-61.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:36,72,NY,MNQ,Short,E,Setup E,Gain,12.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:36,73,NY,MNQ,Short,E,Setup E,Loss,-21.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:36,74,NY,MNQ,Short,E,Setup E,Loss,-42.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:36,75,NY,MNQ,Short,E,Setup E,Loss,-42.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:37,76,NY,MNQ,Short,E,Setup E,Gain,2.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:37,77,NY,MNQ,Short,E,Setup E,Gain,1.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:37,78,NY,MNQ,Short,E,Setup E,Gain,1.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:37,79,NY,MNQ,Short,E,Setup E,Gain,1.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:38,80,NY,MNQ,Short,E,Setup E,Loss,-21.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:38,81,NY,MNQ,Short,E,Setup E,Loss,-86.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:39,82,NY,MNQ,Short,E,Setup E,Gain,92.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:42,83,NY,MNQ,Long,E,Setup E,Gain,5.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:43,84,NY,MNQ,Short,E,Setup E,Loss,-41.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:43,85,NY,MNQ,Short,E,Setup E,Loss,-20.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:43,86,NY,MNQ,Short,E,Setup E,Loss,-41.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:45,87,NY,MNQ,Short,E,Setup E,Gain,2.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,16:45,88,NY,MNQ,Short,E,Setup E,Gain,2.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:45,89,NY,MNQ,Short,E,Setup E,Gain,6.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:47,90,NY,MNQ,Short,E,Setup E,Gain,7.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:48,91,NY,MNQ,Long,E,Setup E,Gain,40.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:48,92,NY,MNQ,Long,E,Setup E,Gain,40.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:48,93,NY,MNQ,Long,E,Setup E,Gain,40.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:48,94,NY,MNQ,Long,E,Setup E,Gain,40.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:48,95,NY,MNQ,Long,E,Setup E,Gain,40.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:51,96,NY,MNQ,Short,E,Setup E,Gain,422.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:56,97,NY,MNQ,Short,E,Setup E,Loss,-20.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,16:56,98,NY,MNQ,Short,E,Setup E,Loss,-82.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:00,99,NY,MNQ,Long,E,Setup E,Gain,200.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:01,100,NY,MNQ,Short,E,Setup E,Gain,2.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:04,101,NY,MNQ,Long,E,Setup E,Gain,7.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:05,102,NY,MNQ,Long,E,Setup E,Loss,-61.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:05,103,NY,MNQ,Long,E,Setup E,Loss,-20.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:05,104,NY,MNQ,Long,E,Setup E,Loss,-20.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:08,105,NY,MNQ,Short,E,Setup E,Gain,2.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:09,106,NY,MNQ,Short,E,Setup E,Gain,2.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:14,107,NY,MNQ,Short,E,Setup E,Loss,-20.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:14,108,NY,MNQ,Short,E,Setup E,Loss,-20.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:14,109,NY,MNQ,Short,E,Setup E,Loss,-40.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:14,110,NY,MNQ,Short,E,Setup E,Loss,-21.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:17,111,NY,MNQ,Short,E,Setup E,Gain,80.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:17,112,NY,MNQ,Short,E,Setup E,Gain,80.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:17,113,NY,MNQ,Short,E,Setup E,Gain,80.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:17,114,NY,MNQ,Short,E,Setup E,Gain,80.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:17,115,NY,MNQ,Short,E,Setup E,Gain,80.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:21,116,NY,MNQ,Long,E,Setup E,Loss,-97.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:23,117,NY,MNQ,Long,E,Setup E,Loss,-61.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:23,118,NY,MNQ,Long,E,Setup E,Loss,-41.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:24,119,NY,MNQ,Short,E,Setup E,Loss,-102.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:24,120,NY,MNQ,Long,E,Setup E,Loss,-40.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:24,121,NY,MNQ,Long,E,Setup E,Loss,-20.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:24,122,NY,MNQ,Long,E,Setup E,Loss,-20.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:24,123,NY,MNQ,Long,E,Setup E,Loss,-20.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:25,124,NY,MNQ,Short,E,Setup E,Loss,-86.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:25,125,NY,MNQ,Short,E,Setup E,Loss,-21.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:26,126,NY,MNQ,Short,E,Setup E,Loss,-21.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:26,127,NY,MNQ,Short,E,Setup E,Loss,-86.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:27,128,NY,MNQ,Short,E,Setup E,Loss,-100.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:28,129,NY,MNQ,Short,E,Setup E,Loss,-15.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:29,130,NY,MNQ,Short,E,Setup E,Loss,-80.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:29,131,NY,MNQ,Short,E,Setup E,Loss,-20.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:30,132,NY,MNQ,Long,E,Setup E,Loss,-47.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:30,133,NY,MNQ,Long,E,Setup E,Gain,27.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:30,134,NY,MNQ,Long,E,Setup E,Gain,110.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:33,135,NY,MNQ,Short,E,Setup E,Loss,-84.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:33,136,NY,MNQ,Short,E,Setup E,Loss,-21.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:34,137,NY,MNQ,Short,E,Setup E,Gain,39.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:34,138,NY,MNQ,Short,E,Setup E,Gain,39.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:34,139,NY,MNQ,Short,E,Setup E,Gain,117.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:36,140,NY,MNQ,Long,E,Setup E,Gain,200.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:39,141,NY,MNQ,Long,E,Setup E,Loss,-100.0,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:41,142,NY,MNQ,Short,E,Setup E,Gain,5.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:42,143,NY,MNQ,Short,E,Setup E,Loss,-102.5,,,,0,,,2026-08/05.xlsx
+2026-08-05,17:44,144,NY,MNQ,Long,E,Setup E,Loss,-76.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:44,145,NY,MNQ,Long,E,Setup E,Loss,-19.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:44,146,NY,MNQ,Long,E,Setup E,Loss,-107.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:45,147,NY,MNQ,Short,E,Setup E,Loss,-32.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:45,148,NY,MNQ,Short,E,Setup E,Loss,-47.5,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:45,149,NY,MNQ,Long,E,Setup E,Loss,-135.0,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:46,150,NY,MNQ,Long,E,Setup E,Loss,-131.25,,,,1,,,2026-08/05.xlsx
+2026-08-05,17:46,151,NY,MNQ,Long,E,Setup E,Loss,-96.25,,,,1,,,2026-08/05.xlsx
+2026-08-06,16:07,1,NY,MNQ,Long,B,Setup B,Gain,208.5,,Positivo,long 16.07,0,,,2026-08/06.xlsx
+2026-08-06,16:24,2,NY,MNQ,Long,B,Setup B,Loss,-93.0,,Positivo,long 16.07,0,,troppo in alto,2026-08/06.xlsx
+2026-08-06,16:28,3,NY,MNQ,Long,A,Setup A,Loss,-118.5,,Positivo,long 16.07,0,,,2026-08/06.xlsx
+2026-08-06,16:31,4,NY,MNQ,Long,A,Setup A,Loss,-100.0,,Positivo,long 16.07,1,,,2026-08/06.xlsx
+2026-08-06,16:31,5,NY,MNQ,Long,A,Setup A,Gain,206.0,,Positivo,long 16.07,1,,mi hai spaikato 2 volte ma alla fine sei partito,2026-08/06.xlsx
+2026-08-06,16:48,6,NY,MNQ,Short,B,Setup B,Gain,6.0,,Negativo,long 16.07,0,,,2026-08/06.xlsx
+2026-08-06,16:52,7,NY,MNQ,Short,B,Setup B,Loss,-67.5,,Negativo,long 16.07,0,,potevo metterlo a be ma ho solo ridotto il rischio,2026-08/06.xlsx
+2026-08-06,17:05,8,NY,MNQ,Long,B,Setup B,Gain,285.0,,Negativo,long 16.07,0,,,2026-08/06.xlsx
+2026-08-06,17:25,9,NY,MNQ,Short,B,Setup B,Loss,-121.5,,Negativo,long 16.07,0,,,2026-08/06.xlsx
+2026-08-06,17:27,10,NY,MNQ,Short,A,Setup A,Loss,-109.5,,Negativo,long 16.07,1,,il bastardo mi ha spiakato con entrambi i setup ,2026-08/06.xlsx
+2026-08-06,17:32,11,NY,MNQ,Short,B,Setup B,Gain,60.0,,Negativo,long 16.07,0,,poi appena parte la gestisco a merda invece di chiudere 1:3 chiudo lo stop in profit perche volevo di piu,2026-08/06.xlsx
+2026-08-06,17:44,12,NY,MNQ,Short,B,Setup B,Loss,-110.0,,Negativo,long 16.07,0,,non messa a be quando di dovere e me la prendo in culo ,2026-08/06.xlsx
+2026-08-06,17:50,13,NY,MNQ,Short,E,Setup E,Loss,-99.0,,Negativo,long 16.07,0,,il ticchettio è entrato ma fatto uscire subito,2026-08/06.xlsx
+2026-08-06,17:52,14,NY,MNQ,Short,B,Setup B,Gain,388.5,,Negativo,long 16.07,1,,,2026-08/06.xlsx
+2026-08-06,18:13,15,NY,MNQ,Short,B,Setup B,Gain,130.5,,Negativo,long 16.07,0,,raggiunto i quasi 5r di giornata stacco perche mi sono rotto le palle. Solo io sto tradando ad agosto per prendere piu dati possibili,2026-08/06.xlsx
+2026-08-07,15:35,1,NY,MNQ,Long,B,Setup B,Loss,-157.5,,Positivo,Neutro,0,,la zona già testata ti aveva fallito ma poi sei rientrato che ti aspettavi? Beccati pure lo slippage,2026-08/07.xlsx
+2026-08-07,15:36,2,NY,MNQ,Long,E,Setup E,Loss,-71.0,,Positivo,Neutro,1,,cosi a cazzo,2026-08/07.xlsx
+2026-08-07,15:37,3,NY,MNQ,Long,B,Setup B,Gain,12.0,,Positivo,Neutro,1,,300$ di profit in faccia bello tanto per far stressare il mio povero cervello che tilta poi,2026-08/07.xlsx
+2026-08-07,15:45,4,NY,MNQ,Long,B,Setup B,Loss,-108.0,,Positivo,Neutro,0,,,2026-08/07.xlsx
+2026-08-07,15:46,5,NY,MNQ,Long,B,Setup B,Gain,205.5,,Positivo,Neutro,1,,,2026-08/07.xlsx
+2026-08-07,15:51,6,NY,MNQ,Long,B,Setup B,Gain,4.0,,Positivo,Neutro,0,,,2026-08/07.xlsx
+2026-08-07,16:01,7,NY,MNQ,Short,B,Setup B,Gain,26.0,,Negativo,Neutro,0,,,2026-08/07.xlsx
+2026-08-07,16:02,8,NY,MNQ,Short,B,Setup B,Loss,-97.5,,Negativo,Neutro,0,,"mi ha spaikato, pazienza",2026-08/07.xlsx
+2026-08-07,16:04,9,NY,MNQ,Short,E,Setup E,Breakeven,0.0,,Negativo,Neutro,1,,"fomo sul bottom, menomale mi sono protetto subito capendo la cazzata",2026-08/07.xlsx
+2026-08-07,16:06,10,NY,MNQ,Short,B,Setup B,Loss,-140.0,,Negativo,Neutro,0,,,2026-08/07.xlsx
+2026-08-07,16:07,11,NY,MNQ,Short,B,Setup B,Loss,-92.0,,Negativo,Short 16.07,1,,"spike su spike, eravamo sul bottom potevo aspettare ",2026-08/07.xlsx
+2026-08-07,16:09,12,NY,MNQ,Short,E,Setup E,Gain,5.5,,Negativo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,16:10,13,NY,MNQ,Short,E,Setup E,Loss,-133.5,,Negativo,Short 16.07,0,,qui mi sa che già i paletti li ho belli che saltati,2026-08/07.xlsx
+2026-08-07,16:11,14,NY,MNQ,Short,E,Setup E,Gain,16.5,,Negativo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,16:12,15,NY,MNQ,Long,A,Setup A,Gain,305.0,,Negativo,Short 16.07,0,,"Assorbimento sul bottom, però sul range non era bello chiaro. Poi contro bias anche se segnato A mi è andata bene",2026-08/07.xlsx
+2026-08-07,16:15,16,NY,MNQ,Short,B,Setup B,Loss,-109.5,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,16:16,17,NY,MNQ,Short,E,Setup E,Gain,8.0,,Positivo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,16:16,18,NY,MNQ,Short,E,Setup E,Gain,4.0,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,16:18,19,NY,MNQ,Short,A,Setup A,Loss,-91.0,,Positivo,Short 16.07,0,,qua la bias stava cambiando,2026-08/07.xlsx
+2026-08-07,16:20,20,NY,MNQ,Long,E,Setup E,Gain,1.0,,Positivo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,16:21,21,NY,MNQ,Long,E,Setup E,Gain,10.0,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,16:24,22,NY,MNQ,Long,B,Setup B,Gain,140.0,,Positivo,Short 16.07,0,,belle zone long,2026-08/07.xlsx
+2026-08-07,16:33,23,NY,MNQ,Short,B,Setup B,Gain,252.5,,Positivo,Short 16.07,0,,B in reverse di trend,2026-08/07.xlsx
+2026-08-07,16:41,24,NY,MNQ,Long,B,Setup B,Loss,-9.0,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,16:43,25,NY,MNQ,Short,E,Setup E,Gain,10.0,,Positivo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,16:48,26,NY,MNQ,Long,B,Setup B,Loss,-94.0,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,16:49,27,NY,MNQ,Long,E,Setup E,Loss,-87.5,,Positivo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,16:49,28,NY,MNQ,Long,E,Setup E,Breakeven,0.0,,Positivo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,16:51,29,NY,MNQ,Long,E,Setup E,Loss,-120.0,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,16:52,30,NY,MNQ,Long,E,Setup E,Loss,-107.5,,Positivo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,16:52,31,NY,MNQ,Long,E,Setup E,Loss,-32.0,,Positivo,Short 16.07,1,,perché insitere se già ho avuto una prima risposta negativa dal prezzo?,2026-08/07.xlsx
+2026-08-07,16:53,32,NY,MNQ,Long,E,Setup E,Gain,49.5,,Positivo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,16:56,33,NY,MNQ,Long,B,Setup B,Gain,127.5,,Positivo,Short 16.07,0,,Bel long gestito male zio porco,2026-08/07.xlsx
+2026-08-07,16:59,34,NY,MNQ,Long,E,Setup E,Loss,-114.0,,Positivo,Short 16.07,0,,e infatti poi faccio la cazzata,2026-08/07.xlsx
+2026-08-07,17:02,35,NY,MNQ,Short,E,Setup E,Gain,5.0,,Positivo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,17:02,36,NY,MNQ,Short,E,Setup E,Loss,-92.5,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,17:05,37,NY,MNQ,Long,E,Setup E,Gain,7.0,,Positivo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,17:08,38,NY,MNQ,Short,E,Setup E,Gain,5.0,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,17:09,39,NY,MNQ,Long,E,Setup E,Loss,-102.5,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,17:09,40,NY,MNQ,Short,E,Setup E,Breakeven,0.0,,Positivo,Short 16.07,1,,,2026-08/07.xlsx
+2026-08-07,17:12,41,NY,MNQ,Short,E,Setup E,Loss,-2.0,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,17:15,42,NY,MNQ,Long,A,Setup A,Gain,2.5,,Positivo,Short 16.07,1,,Mi ha giocato sulla zona troppe volte e niente be preso ma sparava dopo 10 minuti di su e giù,2026-08/07.xlsx
+2026-08-07,17:16,43,NY,MNQ,Short,E,Setup E,Gain,7.5,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,17:17,44,NY,MNQ,Long,E,Setup E,Gain,3.0,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,17:18,45,NY,MNQ,Long,E,Setup E,Gain,9.0,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,17:25,46,NY,MNQ,Long,M,Setup M,Gain,16.5,,Positivo,Short 16.07,0,,,2026-08/07.xlsx
+2026-08-07,17:25,47,NY,MNQ,Long,M,Setup M,Gain,7.0,,Positivo,Short 16.07,0,,provare i momentum in un mercato compresso ce ne vuole. ,2026-08/07.xlsx
+2026-08-07,17:27,48,NY,MNQ,Long,M,Setup M,Gain,4.0,,Positivo,Long 17.27,0,,,2026-08/07.xlsx
+2026-08-07,17:28,49,NY,MNQ,Long,M,Setup M,Gain,5.0,,Positivo,Long 17.27,0,,sarebbe partito ma ha giocato sporco mr NQ,2026-08/07.xlsx
+2026-08-07,17:45,50,NY,MNQ,Long,B,Setup B,Gain,250.0,,Positivo,Long 17.27,0,,ultimo trade sensato che potevo fare,2026-08/07.xlsx
+2026-08-12,15:33,1,NY,MNQ,Short,E,Setup E,Loss,-102.0,,Negativo,Neutra,0,"Lontano dalla zona, male male",,2026-08/12.xlsx
+2026-08-12,15:34,2,NY,MNQ,Short,B,Setup B,Gain,52.0,,Negativo,Neutra,1,,,2026-08/12.xlsx
+2026-08-12,15:36,3,NY,MNQ,Short,B,Setup B,Loss,-102.5,,Negativo,Neutra,0,Zona già testata evitabile,,2026-08/12.xlsx
+2026-08-12,15:38,4,NY,MNQ,Short,E,Setup E,Loss,-115.0,,Negativo,Neutra,1,a cazzo,,2026-08/12.xlsx
+2026-08-12,15:39,5,NY,MNQ,Short,B,Setup B,Gain,250.0,,Negativo,Neutra,1,assorbimento da footprint,,2026-08/12.xlsx
+2026-08-12,15:41,6,NY,MNQ,Short,B,Setup B,Gain,2.5,,Negativo,Neutra,0,,,2026-08/12.xlsx
+2026-08-12,15:41,7,NY,MNQ,Short,B,Setup B,Loss,-97.5,,Negativo,Neutra,0,,,2026-08/12.xlsx
+2026-08-12,15:43,8,NY,MNQ,Short,E,Setup E,Loss,20.0,,Negativo,Neutra,1,,,2026-08/12.xlsx
+2026-08-12,15:48,9,NY,MNQ,Short,A,Setup A,Loss,-105.0,,Negativo,Neutra,0,Sull'assorbimento buy che non è stato assorbimento,,2026-08/12.xlsx
+2026-08-12,15:50,10,NY,MNQ,Short,B,Setup B,Gain,255.0,,Negativo,Neutra,1,,,2026-08/12.xlsx
+2026-08-12,16:10,11,NY,MNQ,Short,E,Setup E,Gain,5.0,,Negativo,Neutra,0,,,2026-08/12.xlsx
+2026-08-12,16:16,12,NY,MNQ,Short,B,Setup B,Gain,9.0,,Negativo,Neutra,0,,,2026-08/12.xlsx
+2026-08-12,16:17,13,NY,MNQ,Short,B,Setup B,Loss,-86.0,,Negativo,Neutra,0,,,2026-08/12.xlsx
+2026-08-12,16:18,14,NY,MNQ,Short,B,Setup B,Loss,-100.0,,Negativo,Neutra,1,se la zona non funziona perche continui a rompere il cazzo?,,2026-08/12.xlsx
+2026-08-12,16:34,15,NY,MNQ,Short,B,Setup B,Gain,7.5,,Negativo,Short 16.31,0,,,2026-08/12.xlsx
+2026-08-12,16:46,16,NY,MNQ,Short,B,Setup B,Gain,259.0,,Negativo,Short 16.31,0,Assorbimento da footprint,,2026-08/12.xlsx
+2026-08-12,16:53,17,NY,MNQ,Short,B,Setup B,Gain,257.5,,Negativo,Short 16.31,0,,,2026-08/12.xlsx
+2026-08-12,16:58,18,NY,MNQ,Short,B,Setup B,Gain,15.0,,Negativo,Short 16.31,0,,,2026-08/12.xlsx
+2026-08-12,17:02,19,NY,MNQ,Short,B,Setup B,Gain,250.0,,Negativo,Short 16.31,0,,,2026-08/12.xlsx
+2026-08-13,15:32,1,NY,MNQ,Short,B,Setup B,Loss,-129.0,,Positivo,Neutro,0,a cazzo,,2026-08/13.xlsx
+2026-08-13,15:44,2,NY,MNQ,Long,B,Setup B,Loss,-75.0,,Positivo,Neutro,0,,,2026-08/13.xlsx
+2026-08-13,15:46,3,NY,MNQ,Long,M,Setup M,Gain,202.5,,Positivo,Neutro,1,,,2026-08/13.xlsx
+2026-08-13,15:54,4,NY,MNQ,Long,M,Setup M,Gain,10.0,,Positivo,Neutro,0,,,2026-08/13.xlsx
+2026-08-13,16:04,5,NY,MNQ,Long,B,Setup B,Gain,190.0,,Positivo,Neutro,0,,,2026-08/13.xlsx
+2026-08-13,16:09,6,NY,MNQ,Long,B,Setup B,Gain,252.5,,Positivo,Neutro,0,,,2026-08/13.xlsx
+2026-08-13,16:44,7,NY,MNQ,Long,B,Setup B,Loss,-2.5,,Positivo,"Long 16,10",0,"a cazzo chiusa subito, da qui mi dovevo fermare ed invece ho buttato profitto , stressato la vita per andare a recupero. Quindi li considero tutti E",,2026-08/13.xlsx
+2026-08-13,16:55,8,NY,MNQ,Long,E,Setup E,Loss,-102.5,,Positivo,"Long 16,10",0,,,2026-08/13.xlsx
+2026-08-13,16:58,9,NY,MNQ,Long,E,Setup E,Loss,-110.0,,Positivo,"Long 16,10",1,,,2026-08/13.xlsx
+2026-08-13,16:58,10,NY,MNQ,Long,E,Setup E,Loss,-100.0,,Positivo,"Long 16,10",1,,,2026-08/13.xlsx
+2026-08-13,17:00,11,NY,MNQ,Long,E,Setup E,Gain,7.5,,Positivo,"Long 16,10",1,,,2026-08/13.xlsx
+2026-08-13,17:03,12,NY,MNQ,Long,E,Setup E,Loss,-105.0,,Positivo,"Long 16,10",0,,,2026-08/13.xlsx
+2026-08-13,17:05,13,NY,MNQ,Long,E,Setup E,Gain,5.0,,Positivo,"Long 16,10",1,,,2026-08/13.xlsx
+2026-08-13,17:22,14,NY,MNQ,Short,E,Setup E,Loss,-100.0,,Positivo,"Long 16,10",0,,,2026-08/13.xlsx
+2026-08-13,18:06,15,NY,MNQ,Long,E,Setup E,Gain,7.5,,Negativo,"Long 16,10",0,,,2026-08/13.xlsx
+2026-08-13,18:08,16,NY,MNQ,Short,E,Setup E,Gain,2.5,,Negativo,"Long 16,10",0,,,2026-08/13.xlsx
+2026-08-13,18:15,17,NY,MNQ,Short,E,Setup E,Gain,122.5,,Negativo,"Long 16,10",0,come al solito hai allungato a 5r il profit e ti attacchi al cazzo. Se ci siamo detti che per il momento ci fermiamo a 2.5r perche allungare? perche sei entrato ion modalità recupero quindi si punta a recuperare tutto con un solo trade,,2026-08/13.xlsx
+2026-08-13,18:17,18,NY,MNQ,Short,E,Setup E,Gain,5.0,,Negativo,"Long 16,10",0,,,2026-08/13.xlsx
+2026-08-13,18:19,19,NY,MNQ,Short,E,Setup E,Gain,2.5,,Negativo,"Long 16,10",0,evitabile dopo il primo,,2026-08/13.xlsx
+2026-08-13,18:20,20,NY,MNQ,Short,E,Setup E,Loss,-100.0,,Negativo,"Long 16,10",0,evitabile dopo il secondo e aggiungerei stupido,,2026-08/13.xlsx
+2026-08-13,18:25,21,NY,MNQ,Long,E,Setup E,Gain,251.0,,Negativo,"Long 16,10",0,,,2026-08/13.xlsx
+2026-08-13,18:52,22,NY,MNQ,Long,E,Setup E,Loss,-97.5,,Positivo,"Long 16,10",0,sul top discutibile,,2026-08/13.xlsx
+2026-08-13,19:00,23,NY,MNQ,Long,E,Setup E,Gain,232.5,,Positivo,"Long 16,10",0,,,2026-08/13.xlsx
+2026-08-14,15:35,1,NY,MNQ,Short,B,Setup B,Loss,-100.0,,Positivo,,0,,troppo basso,2026-08/14.xlsx
+2026-08-14,15:36,2,NY,MNQ,Short,B,Setup B,Gain,250.0,,Positivo,,1,,,2026-08/14.xlsx
+2026-08-14,15:38,3,NY,MNQ,Short,B,Setup B,Gain,7.5,,Positivo,,0,,,2026-08/14.xlsx
+2026-08-14,15:39,4,NY,MNQ,Short,B,Setup B,Loss,-100.0,,Positivo,,0,,cambio bias in corso,2026-08/14.xlsx
+2026-08-14,15:43,5,NY,MNQ,Long,M,Setup M,Gain,240.0,,Positivo,,0,,"qua è stato trittico perchè il prossimo trade che aveva la zona e tutto quanto non l'ho fatto, ed è stata nel subconscio quel trigger che mi ha fatto scattare oggi perche dovevo fare 500$ di target",2026-08/14.xlsx
+2026-08-14,15:48,6,NY,MNQ,Long,M,Setup M,Loss,-7.5,,Positivo,,0,,,2026-08/14.xlsx
+2026-08-14,15:51,7,NY,MNQ,Long,E,Setup E,Loss,-135.0,,Positivo,,1,,,2026-08/14.xlsx
+2026-08-14,15:53,8,NY,MNQ,Long,E,Setup E,Gain,7.5,,Positivo,,1,,,2026-08/14.xlsx
+2026-08-14,15:56,9,NY,MNQ,Long,E,Setup E,Loss,-27.5,,Positivo,,0,,,2026-08/14.xlsx
+2026-08-14,15:56,10,NY,MNQ,Long,E,Setup E,Loss,-102.5,,Positivo,,1,,trade totalmente a cazzo senza zone. Gex che indicata 100 positivo invece era impallato,2026-08/14.xlsx
+2026-08-14,15:58,11,NY,MNQ,Short,E,Setup E,Gain,5.0,,Positivo,,1,,,2026-08/14.xlsx
+2026-08-14,16:01,12,NY,MNQ,Short,E,Setup E,Loss,-107.5,,Positivo,,0,,,2026-08/14.xlsx
+2026-08-14,16:02,13,NY,MNQ,Long,E,Setup E,Gain,7.5,,Positivo,,1,,,2026-08/14.xlsx
+2026-08-14,16:03,14,NY,MNQ,Short,E,Setup E,Loss,-105.0,,Positivo,,0,,,2026-08/14.xlsx
+2026-08-14,16:04,15,NY,MNQ,Long,B,Setup B,Gain,230.0,,Positivo,,1,,Potevo benissimo stare calmo e aspettare,2026-08/14.xlsx
+2026-08-14,16:09,16,NY,MNQ,Long,B,Setup B,Loss,-100.0,,Positivo,,0,,,2026-08/14.xlsx
+2026-08-14,16:10,17,NY,MNQ,Long,E,Setup E,Loss,-102.5,,Positivo,,1,,,2026-08/14.xlsx
+2026-08-14,16:12,18,NY,MNQ,Long,E,Setup E,Gain,12.5,,Negativo,,1,,se la zona non da reazione perche continuare?,2026-08/14.xlsx
+2026-08-14,16:16,19,NY,MNQ,Long,E,Setup E,Loss,-102.5,,Negativo,,0,,Cambio bias in corso non l'ho notato ora che il gex tool si era impallato,2026-08/14.xlsx
+2026-08-14,16:18,20,NY,MNQ,Short,B,Setup B,Gain,210.0,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,16:24,21,NY,MNQ,Short,E,Setup E,Gain,7.5,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:26,22,NY,MNQ,Short,E,Setup E,Gain,5.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:28,23,NY,MNQ,Short,E,Setup E,Loss,-100.0,,Negativo,,0,,"sul bottom, pff",2026-08/14.xlsx
+2026-08-14,16:32,24,NY,MNQ,Short,B,Setup B,Gain,12.5,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:34,25,NY,MNQ,Short,B,Setup B,Loss,-100.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:34,26,NY,MNQ,Short,E,Setup E,Loss,-102.5,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,16:36,27,NY,MNQ,Long,E,Setup E,Loss,-55.0,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,16:38,28,NY,MNQ,Short,E,Setup E,Gain,7.5,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,16:40,29,NY,MNQ,Short,E,Setup E,Gain,25.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:43,30,NY,MNQ,Short,E,Setup E,Gain,2.5,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:45,31,NY,MNQ,Short,E,Setup E,Loss,-107.5,,Negativo,,0,,da qui mi dovevo fermare ma non l'ho fatto,2026-08/14.xlsx
+2026-08-14,16:47,32,NY,MNQ,Short,E,Setup E,Loss,-100.0,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,16:48,33,NY,MNQ,Long,E,Setup E,Loss,-100.0,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,16:49,34,NY,MNQ,Short,E,Setup E,Gain,5.0,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,16:50,35,NY,MNQ,Long,E,Setup E,Gain,2.5,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:52,36,NY,MNQ,Long,E,Setup E,Breakeven,0.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:53,37,NY,MNQ,Short,E,Setup E,Loss,-100.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:54,38,NY,MNQ,Long,E,Setup E,Loss,-107.5,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,16:54,39,NY,MNQ,Long,E,Setup E,Loss,-12.5,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,16:56,40,NY,MNQ,Long,E,Setup E,Gain,35.0,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,16:56,41,NY,MNQ,Long,E,Setup E,Gain,37.5,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:56,42,NY,MNQ,Long,E,Setup E,Gain,40.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:56,43,NY,MNQ,Long,E,Setup E,Gain,37.5,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,16:58,44,NY,MNQ,Short,E,Setup E,Gain,5.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,17:01,45,NY,MNQ,Short,E,Setup E,Loss,-35.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,17:02,46,NY,MNQ,Short,E,Setup E,Gain,45.0,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,17:08,47,NY,MNQ,Short,E,Setup E,Gain,5.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,17:10,48,NY,MNQ,Long,E,Setup E,Gain,5.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,17:12,49,NY,MNQ,Long,E,Setup E,Loss,-110.0,,Negativo,,0,,,2026-08/14.xlsx
+2026-08-14,17:14,50,NY,MNQ,Short,E,Setup E,Loss,-40.0,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,17:16,51,NY,MNQ,Short,E,Setup E,Loss,-102.5,,Negativo,,1,,,2026-08/14.xlsx
+2026-08-14,17:50,52,NY,MNQ,Short,A,Setup A,Gain,162.5,,Negativo,,0,,Il trade di quando stacco mezz oretta e mi rimetto a mente lucida. Mi devo fare dei bototni per bloccare il pc per 15 minuti quando comincio a stressarmi,2026-08/14.xlsx
+2026-08-18,15:30,1,NY,MNQ,Short,HeatMap,HeatMap,Gain,127.5,,Short,Neutro,0,,,2026-08/18.xlsx
+2026-08-18,15:36,2,NY,MNQ,Short,HeatMap,HeatMap,Loss,-125.0,,Short,Neutro,0,,,2026-08/18.xlsx
+2026-08-18,15:45,3,NY,MNQ,Short,HeatMap,HeatMap,Loss,-100.0,,Short,Neutro,0,,,2026-08/18.xlsx
+2026-08-18,15:47,4,NY,MNQ,Long,HeatMap,HeatMap,Gain,2.5,,Short,Neutro,1,,,2026-08/18.xlsx
+2026-08-18,15:49,5,NY,MNQ,Short,HeatMap,HeatMap,Loss,-107.5,,Short,Neutro,0,,,2026-08/18.xlsx
+2026-08-18,15:51,6,NY,MNQ,Short,HeatMap,HeatMap,Gain,37.5,,Short,Neutro,1,,,2026-08/18.xlsx
+2026-08-18,15:53,7,NY,MNQ,Short,HeatMap,HeatMap,Gain,285.0,,Short,Neutro,0,,,2026-08/18.xlsx
+2026-08-18,15:59,8,NY,MNQ,Short,HeatMap,HeatMap,Loss,-2.5,,Short,Neutro,0,,,2026-08/18.xlsx
+2026-08-18,16:00,9,NY,MNQ,Long,HeatMap,HeatMap,Loss,-95.0,,Short,Neutro,1,,,2026-08/18.xlsx
+2026-08-18,16:00,10,NY,MNQ,Short,A,M5 Setup A Assorbimento,Gain,322.0,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,16:02,11,NY,MNQ,Long,HeatMap,HeatMap,Gain,50.0,,Short,Neutro,0,,,2026-08/18.xlsx
+2026-08-18,16:03,12,NY,MNQ,Short,HeatMap,HeatMap,Gain,5.0,,Short,Neutro,0,,,2026-08/18.xlsx
+2026-08-18,16:09,13,NY,MNQ,Short,HeatMap,HeatMap,Gain,120.0,,Short,Neutro,0,,,2026-08/18.xlsx
+2026-08-18,16:17,14,NY,MNQ,Long,HeatMap,HeatMap,Loss,-102.5,,Short,Short 16.10,0,,,2026-08/18.xlsx
+2026-08-18,16:17,15,NY,MNQ,Long,HeatMap,HeatMap,Loss,-107.5,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,16:18,16,NY,MNQ,Long,HeatMap,HeatMap,Gain,155.0,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,16:23,17,NY,MNQ,Long,HeatMap,HeatMap,Loss,-100.0,,Short,Short 16.10,0,,,2026-08/18.xlsx
+2026-08-18,16:24,18,NY,MNQ,Long,HeatMap,HeatMap,Gain,312.5,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,16:26,19,NY,MNQ,Short,HeatMap,HeatMap,Loss,-110.0,,Short,Short 16.10,0,,,2026-08/18.xlsx
+2026-08-18,16:28,20,NY,MNQ,Short,HeatMap,HeatMap,Loss,-100.0,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,16:29,21,NY,MNQ,Short,HeatMap,HeatMap,Loss,-145.0,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,16:32,22,NY,MNQ,Long,HeatMap,HeatMap,Loss,-100.0,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,16:32,23,NY,MNQ,Long,HeatMap,HeatMap,Loss,-100.0,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,16:33,24,NY,MNQ,Short,HeatMap,HeatMap,Gain,60.0,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,16:35,25,NY,MNQ,Short,HeatMap,HeatMap,Loss,-105.0,,Short,Short 16.10,0,,,2026-08/18.xlsx
+2026-08-18,16:37,26,NY,MNQ,Short,HeatMap,HeatMap,Gain,560.0,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,16:45,27,NY,MNQ,Short,HeatMap,HeatMap,Gain,30.0,,Short,Short 16.10,0,,,2026-08/18.xlsx
+2026-08-18,16:49,28,NY,MNQ,Short,A,M5 Setup A Assorbimento,Gain,238.0,,Short,Short 16.10,0,,,2026-08/18.xlsx
+2026-08-18,16:55,29,NY,MNQ,Short,HeatMap,HeatMap,Loss,-102.5,,Short,Short 16.10,0,,,2026-08/18.xlsx
+2026-08-18,16:55,30,NY,MNQ,Short,HeatMap,HeatMap,Gain,195.0,,Short,Short 16.10,1,,,2026-08/18.xlsx
+2026-08-18,17:30,31,NY,MNQ,Short,HeatMap,"HeatMap, Patter l'elefante. + ricarica",Gain,350.0,,Short,Short 16.10,0,,,2026-08/18.xlsx
+2026-08-18,17:30,32,NY,MNQ,Short,A,M5 Setup A Assorbimento,Breakeven,0.0,,Short,Short 16.10,0,,,2026-08/18.xlsx

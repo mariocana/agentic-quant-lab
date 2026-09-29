@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resoconto giugno–agosto 2026</title>
+<style>
+:root{
+  color-scheme:light;
+  --page:#f6f6f3; --surface:#fcfcfb; --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --gain:#2a78d6; --loss:#e34948;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+  --accent:#1c5cab; --accent-soft:#e6eefa; --mark:#fff4d6;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+    --gain:#3987e5; --loss:#e66767; --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+    --accent:#86b6ef; --accent-soft:#16263b; --mark:#3a3218;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+  --gain:#3987e5; --loss:#e66767; --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+  --accent:#86b6ef; --accent-soft:#16263b; --mark:#3a3218;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;padding-inline:16px;padding-block:32px 64px}
+main{max-width:960px;margin:0 auto;display:grid;gap:40px}
+h1{font-size:30px;line-height:1.15;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:20px;margin:0 0 6px;text-wrap:balance}
+h3{font-size:15px;margin:0 0 6px}
+p{margin:0;max-width:68ch}
+.lead{color:var(--ink-2);font-size:16px}
+.eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+section{display:grid;gap:14px}
+.card{background:var(--surface);border:1px solid var(--ring);border-radius:8px;padding:18px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--ring);border-radius:8px;padding:14px 16px;display:grid;gap:2px}
+.tile .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.tile .l{font-size:13px;color:var(--ink-2)}
+.neg{color:var(--loss)} .pos{color:var(--gain)}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.split .tile{padding:18px}
+.split .tile .v{font-size:34px}
+.chart{width:100%;position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--ring);box-shadow:0 4px 16px rgba(0,0,0,.12);border-radius:6px;padding:8px 10px;font-size:13px;line-height:1.4;z-index:10;max-width:260px}
+.tip b{font-variant-numeric:tabular-nums}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.03em;text-transform:uppercase}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.schema td:first-child{color:var(--ink-2)}
+.schema td:last-child{font-weight:600}
+blockquote{margin:0;padding:10px 14px;border-left:3px solid var(--axis);background:var(--surface);border-radius:0 6px 6px 0}
+blockquote p{font-size:15px}
+blockquote cite{display:block;margin-top:4px;font-style:normal;font-size:12px;color:var(--muted)}
+.quotes{display:grid;gap:10px}
+.turn{background:var(--accent-soft);border:1px solid var(--ring);border-radius:10px;padding:22px;display:grid;gap:12px}
+.turn .date{font-size:13px;font-weight:600;color:var(--accent);letter-spacing:.04em;text-transform:uppercase}
+.turn ul{margin:0;padding-left:20px;display:grid;gap:4px}
+details summary{cursor:pointer;color:var(--accent);font-size:13px}
+details ul{margin:6px 0 0;padding-left:18px;color:var(--ink-2);font-size:13px;display:grid;gap:3px}
+.note{font-size:13px;color:var(--ink-2)}
+.note li{margin-bottom:4px}
+mark{background:var(--mark);color:inherit;padding:0 2px;border-radius:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+
+<header style="display:grid;gap:10px">
+  <div class="eyebrow">Diario di trading · 16 giugno – 18 agosto 2026 · 32 giornate</div>
+  <h1>Resoconto giugno–agosto 2026</h1>
+  <p class="lead">Tutti i trade dei tuoi file Excel, puliti e messi insieme. Serve a vedere con i numeri cosa è successo in questi tre mesi e a segnare il punto da cui si cambia: <b>29 settembre 2026</b>.</p>
+</header>
+
+<section>
+  <div class="tiles" id="hero"></div>
+</section>
+
+<section>
+  <div class="eyebrow">La scoperta principale</div>
+  <h2>Il problema non è la strategia: sono i trade dopo una perdita</h2>
+  <p>Ho separato i trade aperti <b>entro 3 minuti da un trade chiuso in perdita</b> da tutti gli altri. Sono due trader diversi.</p>
+  <div class="split" id="split"></div>
+  <p class="note">I trade "dopo una perdita" sono il 40% del totale e sono cresciuti mese dopo mese: 29% a giugno, 39% a luglio, 46% ad agosto.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Andamento</div>
+  <h2>Equity cumulativa</h2>
+  <p class="note">Somma del P&amp;L giornaliero registrato, prop e demo insieme. Passa il mouse sui punti per il dettaglio.</p>
+  <div class="card"><div class="chart" id="equity"></div></div>
+  <h3 style="margin-top:6px">P&amp;L per giornata</h3>
+  <div class="card"><div class="chart" id="daily"></div></div>
+</section>
+
+<section>
+  <div class="eyebrow">Overtrading</div>
+  <h2>Più trade fai, più perdi</h2>
+  <p>Giornate raggruppate per numero di trade. Sotto i 20 trade la somma è positiva; sopra i 40 hai perso da solo più di quanto hai perso in totale.</p>
+  <div class="card"><div class="chart" id="buckets"></div></div>
+  <div class="card tbl">
+    <h3>P&amp;L per posizione del trade nella giornata</h3>
+    <table id="idx"><thead><tr><th>Trade n°</th><th class="n">Trade</th><th class="n">P&amp;L totale</th><th class="n">Media per trade</th></tr></thead><tbody></tbody></table>
+    <p class="note" style="margin-top:8px">I primi 3 trade della giornata sono quasi in pareggio. Il danno si fa dal 4° al 40°.</p>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Setup</div>
+  <h2>I tuoi setup funzionano. La FOMO no.</h2>
+  <p>Da luglio hai etichettato ogni trade. I setup con regole (A, B, M) sono in forte guadagno; i trade "E" (fuori regole, FOMO) si mangiano tutto e anche di più. A giugno le etichette non c'erano: sono in "non indicato".</p>
+  <div class="card"><div class="chart" id="setups"></div></div>
+</section>
+
+<section>
+  <div class="eyebrow">E se avessi avuto le regole nuove?</div>
+  <h2>Stessi trade, regole diverse</h2>
+  <p>Ho rigiocato ogni giornata con due regole, usando i trade nell'ordine in cui li hai fatti:</p>
+  <ul class="note" style="margin:0;padding-left:20px">
+    <li><b>Max 3 trade, stop dopo 2 perdite</b>: la regola del playbook. Si tengono solo i trade fino al primo limite raggiunto.</li>
+    <li><b>Solo stop a −500 $ al giorno</b>: ci si ferma quando la giornata tocca −500 $, ma senza limite al numero di trade.</li>
+  </ul>
+  <div class="card">
+    <div class="legend" id="simlegend"></div>
+    <div class="chart" id="sim"></div>
+  </div>
+  <p class="note">Il limite di perdita da solo non basta: fermarsi a −500 $ lascia comunque spazio per ridare indietro i guadagni con decine di trade. Il limite sul <b>numero</b> di trade riduce la perdita del 95%. Non rende profittevole il vecchio modo di operare, ma lo rende sopravvivibile mentre costruisci quello nuovo.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Mese per mese</div>
+  <h2>Riepilogo mensile</h2>
+  <div class="card tbl"><table id="months"><thead><tr><th>Mese</th><th class="n">Giorni</th><th class="n">Trade</th><th class="n">Trade/giorno</th><th class="n">P&amp;L</th><th class="n">Win rate</th><th class="n">Profit factor</th><th class="n">Media gain</th><th class="n">Media loss</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">Il profit factor migliora (0,73 → 0,82 → 1,01) mentre il numero di trade al giorno sale a 50. La lettura del mercato sta migliorando; il comportamento no.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Schema</div>
+  <h2>Prima e dopo</h2>
+  <div class="card tbl">
+    <table class="schema">
+      <thead><tr><th>Cosa dicono i dati</th><th>Regola da adesso</th></tr></thead>
+      <tbody>
+        <tr><td>36 trade al giorno in media, 50 ad agosto</td><td>Max 3 trade a Londra, 2 a NY, 4 al giorno</td></tr>
+        <tr><td>454 trade entro 3 minuti da una perdita: −12.473 $</td><td>Dopo uno stop: 15 minuti fuori dal DOM, analisi da zero</td></tr>
+        <tr><td>Giornate oltre 40 trade: −8.574 $ in 10 giorni</td><td>2 perdite chiudono la sessione, limiti impostati sulla piattaforma</td></tr>
+        <tr><td>Trade E (FOMO) sono il 65% ad agosto</td><td>Solo livelli scritti prima nella scheda pre-sessione</td></tr>
+        <tr><td>Stop giornaliero −500 $ non basta da solo</td><td>Limite sul numero di trade, non solo sui dollari</td></tr>
+        <tr><td>Scalping M1 dalle 15:30 alle 18:00, "ticchettio"</td><td>Londra 09:00–13:30, contesto su 1–5 min, DOM solo per entrare</td></tr>
+        <tr><td>Setup A e B in guadagno quando rispettati</td><td>Tenere solo setup scritti (A/B del playbook), niente trade fuori setup</td></tr>
+        <tr><td>Colonne del diario cambiate ogni mese</td><td>Un solo diario: <code>journal_template.csv</code> + scheda di sessione</td></tr>
+        <tr><td>Prop comprate e bruciate in serie</td><td>Demo finché non passa il gate: ≥90% regole rispettate, 0 sessioni oltre i limiti</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">Le tue parole</div>
+  <h2>Lo avevi già capito</h2>
+  <div class="quotes">
+    <blockquote><p>«Oggi chiudiamo in gain, siamo stati in sintonia col mercato e abbiamo chiuso nel momento in cui abbiamo visto la choppines.»</p><cite>23 giugno · voto 6</cite></blockquote>
+    <blockquote><p>«Lezione importante, con gex contrario o in generale bias contraria, non cercare allungamenti o inversioni di tendenza.»</p><cite>7 luglio · voto 4</cite></blockquote>
+    <blockquote><p>«Obiettivo della prossima settimana: cap trade, ovvero cap dei loss; a due stop consecutivi si riduce lo stop, a −4R ti fermi.»</p><cite>17 luglio · voto 2</cite></blockquote>
+    <blockquote><p>«Oggi ci siamo superati. Pochi trade, con bias e con le conferme giuste.» (+878 $ in 11 trade)</p><cite>20 luglio · voto 8, il più alto del periodo</cite></blockquote>
+    <blockquote><p>«La pressione psicologica di riuscire a vivere di questo mi mette di fronte il mio limite. L'ansia che si presenta della fretta che deve far funzionare tutto mi ha portato al disastro.»</p><cite>28 luglio</cite></blockquote>
+    <blockquote><p>«Non vedi che se ti attieni al piano e fai quei 4 trade precisi chiudi verde e non hai stress?»</p><cite>13 agosto · voto 5</cite></blockquote>
+    <blockquote><p>«Più clicchi più danni fai, i lockout sui prossimi conti saranno obbligatori.»</p><cite>14 agosto · voto 2</cite></blockquote>
+    <blockquote><p>«Bisogna fare i seri e non continuare a vivere di illusioni. Dati e realtà alla mano.»</p><cite>18 agosto · voto 6</cite></blockquote>
+  </div>
+</section>
+
+<section class="turn">
+  <div class="date">Punto di svolta · 29 settembre 2026</div>
+  <h2 style="margin:0">Da qui si riparte</h2>
+  <p>Le prop hanno limitato il danno ai costi delle valutazioni, ma quei costi sono soldi veri e il comportamento è lo stesso che avresti su un conto tuo. Da questa data il diario riparte da zero e questo resoconto resta come riferimento del "prima".</p>
+  <ul>
+    <li>Scheda pre-sessione compilata tutta, altrimenti non si entra.</li>
+    <li>Max 3 trade a Londra, 2 a NY. Due perdite chiudono la sessione.</li>
+    <li>Dopo ogni stop: 15 minuti fuori dal DOM.</li>
+    <li>Solo setup A e B del playbook, solo su livelli scritti prima.</li>
+    <li>Demo finché il gate non è superato: ≥90% dei trade con regole rispettate, nessuna sessione oltre i limiti, expectancy positiva.</li>
+    <li>Tra un mese si rifà questo resoconto e si confronta con questo.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="eyebrow">Dettaglio</div>
+  <h2>Tutte le giornate</h2>
+  <div class="card tbl"><table id="days"><thead><tr><th>Data</th><th class="n">Trade</th><th class="n">P&amp;L</th><th class="n">Con max 3 trade</th><th class="n">Win rate</th><th class="n">Trade E</th><th class="n">Dopo perdita</th><th class="n">Voto</th><th>Commento</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section>
+  <div class="eyebrow">Come sono stati letti i dati</div>
+  <ul class="note" style="margin:0;padding-left:20px">
+    <li>Fonte: 33 file Excel in <code>mc/journal/2026-06</code>, <code>2026-07</code>, <code>2026-08</code>. Totale giugno verificato con il tuo recap: −2.178 $ in 180 trade.</li>
+    <li>Tolte le righe di totale e 2 trade del 27/07 copiati anche nel file del 28/07. I 3 trade serali datati 28/07 nel file del 29/07 sono tenuti al 28/07.</li>
+    <li>I due file del 18/06 sono sommati (due conti lo stesso giorno).</li>
+    <li>P&amp;L in dollari come registrato, NQ e MNQ insieme, prop e demo insieme: nei file non c'è un campo che li distingua.</li>
+    <li>"Dopo una perdita" = trade con orario entro 3 minuti dal trade precedente chiuso in perdita, nella stessa giornata.</li>
+    <li>Il voto di giugno 16 è la media di "trade" e "gestione". Alcune giornate non hanno voto.</li>
+    <li>Tutti i trade sono tra le 15:00 e le 20:00: non ci sono dati storici sulla sessione di Londra.</li>
+    <li>Dati completi, uno per riga: <code>storico_trade_2026-06_2026-08.csv</code> nella stessa cartella.</li>
+  </ul>
+</section>
+
+</main>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+const DATA = {"days": [{"d": "2026-06-16", "n": 13, "pnl": -387.0, "sim3": -92.0, "cap": -586.5, "wr": 46, "e": 0, "rv": 4, "voto": 3.0, "c": []}, {"d": "2026-06-17", "n": 26, "pnl": 75.0, "sim3": -161.0, "cap": -509.0, "wr": 50, "e": 0, "rv": 9, "voto": null, "c": ["Non hai rispettato il money management e siamo a 2 giorni di fila. Sei avvisato"]}, {"d": "2026-06-18", "n": 39, "pnl": -1570.0, "sim3": -43.0, "cap": -500.0, "wr": 56, "e": 0, "rv": 14, "voto": null, "c": ["Abbiamo fatto 27 per fare 0, abbiamo rispettato il money management ma ricordiamoci che abbiamo bruciato una prop e ripreso un'altra.", "Altra giornata negativa, non abbiamo rispettato il piano. 3 giorni di fila, complimenti", "Non hai rispettato nulla del tuo piano e hai bruciato la prop, sii orgoglioso."]}, {"d": "2026-06-22", "n": 63, "pnl": -533.5, "sim3": 53.5, "cap": -528.5, "wr": 54, "e": 0, "rv": 17, "voto": null, "c": []}, {"d": "2026-06-23", "n": 17, "pnl": 85.0, "sim3": -52.5, "cap": 85.0, "wr": 59, "e": 0, "rv": 3, "voto": 6.0, "c": ["oggi chiudiamo in gain, siamo stati in sintonia col mercato e abbiamo chiuso nel momento in cui  abbiamo visto la choppines, allineati con gex e presi trade sugli assorbimenti. Ottima accoppiata m5/m1 che aiuta nell'intraday. Avanti cosi piano rispettato finalmente solo per questo un bel 10 ma rimaniamo unmili 6"]}, {"d": "2026-06-25", "n": 22, "pnl": 152.5, "sim3": -4.5, "cap": 152.5, "wr": 73, "e": 0, "rv": 5, "voto": null, "c": []}, {"d": "2026-07-02", "n": 10, "pnl": 316.5, "sim3": 148.5, "cap": 316.5, "wr": 70, "e": 4, "rv": 1, "voto": 7.0, "c": ["Poteva andare meglio, setup E devono piano piano sparire. Gestione ok mm, gestione ok dei trade. Ricordiamoci che siamo sui rr com risk=125."]}, {"d": "2026-07-06", "n": 22, "pnl": -349.0, "sim3": -77.0, "cap": -536.5, "wr": 50, "e": 16, "rv": 8, "voto": 5.0, "c": ["Giornata poco volatile, trade troppo superflui. Unico trade senzato che ha riparato la giornata. Non presenza di escalation delle size anzi diminuzione del rischio da 125 a 65 per preservare nuova prop. Ci accontentiamo di aver rispettato in minima parte money management"]}, {"d": "2026-07-07", "n": 29, "pnl": -306.5, "sim3": -100.5, "cap": -520.5, "wr": 41, "e": 14, "rv": 13, "voto": 4.0, "c": ["nonostante un po di lucidità post finale, non abbiamo rispettato le regole, non ci siamo fermati e siamo andati avanti ad oltranza. I trade mancati ti hanno fatto entrare in modalità fomo e siamo sempre nella situazione di rincorrere le perdite", "Se il prezzo non è nelle tue zone e se il trade parte, basta fomo. Non dobbiamo fare inculare dal mercato perché siamo troppo scemi. Dobbiamo cercare l'edge, non rincorrere le perdite ogni volta per le cazzate", "Cosi non andiamo avanti. Capisco la consapevolezza degli errori ma basta sempre rincorrere le zappate sui piedi che ci diamo", "Quando una sessione da 8? Non tanto per i profitti ma per il non sgarramento sul mio comportamento", "Posso capire che tutta questa situazione di stess di tutte queste spese ti mettono pressione, ma dobbiamo essere freddi e costruire sotirco e vedere soprattutto l edhe!!!", "e soprattutto non si fa piu trading da divano, si sta in postazione , stiamo lavorando non stiamo giocando", "Lezione importante, con gex contrario o in generale bias contraria, non cercare allungamenti o inversioni di tendenza , cerca corto massimo 1:2"]}, {"d": "2026-07-08", "n": 45, "pnl": -4914.7, "sim3": -49.0, "cap": -518.5, "wr": 40, "e": 0, "rv": 25, "voto": 2.0, "c": ["IL GIORno si commenta da solo, siamo entrati nel tilt piu totale, non siamo in grado di gestire le emozioni, prendi due stop e facciamo saltare il conto in aria? Per quale cazzo di motivo? Da oggi solo demo, vuoi passare le prop? Attacchi al cazzo e tradi", "solo conti demo con solo setup A+ delta cluster + big trade. Non sei grado, bruci i conti e sei povero come la merda. Che cazzo di risolvi? Idiota ameba senza personalità. La frustazione della vita portala altrove quando ti siedi", "idiota di idiota,"]}, {"d": "2026-07-13", "n": 14, "pnl": 439.5, "sim3": 127.0, "cap": 439.5, "wr": 86, "e": 4, "rv": 0, "voto": 7.0, "c": ["SHORT 18.34", "Giornata di tanti breakeven ma giornata letta correttamente con lo zero gamma, stare fuori due giorni e pensare alle cose che hai fatto ti ha fatto bene povero scemo", "quando sei tranquillo qualche cosa di buono la fai, testa alta e continuamo cosi."]}, {"d": "2026-07-15", "n": 18, "pnl": -15.5, "sim3": -278.0, "cap": -543.5, "wr": 56, "e": 5, "rv": 6, "voto": 6.0, "c": ["Queste è una di quelle giornate in cui tra mille distrazioni e gli stop dopo aver intuito la direzionalità mi andava a bruciare prop sicuro. Oggi siamo stati un po sul limite. Giortnata short ma che all'ninizio non avendo le conferme giuste ci ha affossato per bene.", "Giornata allinseguimento delle perdite, non siamo andati in tilt e abbiamo costruito riportando a zero la giornata. Si puo definire quasi vincente."]}, {"d": "2026-07-16", "n": 32, "pnl": -210.0, "sim3": 437.0, "cap": -598.5, "wr": 44, "e": 15, "rv": 12, "voto": null, "c": []}, {"d": "2026-07-17", "n": 68, "pnl": 741.5, "sim3": -233.0, "cap": -570.5, "wr": 46, "e": 60, "rv": 32, "voto": 2.0, "c": ["troppi trade, management non rispettato. Ti è andata bene oggi ma che senso ha cosi?", "obiettivo della prossima settimana 1) cap trade, ovvero cap dei loss, 2) a due stop consecutivi si riduce lo stop, a -4r ti fermi.", "3) solo trade con la nostra bias 4) accendi il cervello se vogliamo uscire da sta situazione di satllo"]}, {"d": "2026-07-20", "n": 11, "pnl": 877.5, "sim3": 625.0, "cap": 877.5, "wr": 73, "e": 0, "rv": 1, "voto": 8.0, "c": ["Che c'è? Oggi ci siamo superati. Pochi trade, con bias e con le conferme giuste e che hai fatto +855$. Quindi ? Ci siamo svegliati o no?"]}, {"d": "2026-07-21", "n": 23, "pnl": -289.0, "sim3": -113.0, "cap": -289.0, "wr": 48, "e": 6, "rv": 6, "voto": 6.0, "c": ["doppia rottura", "il limit del max -4r del profit di ieri lo abbiamo rispettato. Tante opportunità mancate, giornata che si poteva gestire meglio . MM rispettato"]}, {"d": "2026-07-22", "n": 20, "pnl": 87.5, "sim3": 56.0, "cap": 87.5, "wr": 45, "e": 4, "rv": 7, "voto": null, "c": []}, {"d": "2026-07-23", "n": 4, "pnl": 210.0, "sim3": -191.0, "cap": 210.0, "wr": 50, "e": 1, "rv": 1, "voto": 6.0, "c": ["Giornata di impegni quindi pochi trade ma non mi sono fatto prendere dalla fomo di entrare appena rientrato. Un trade fatto a cazzo quindi potevo avere un profit maggiore ma vabbe. MM rispettato", "Noto uno switch comunque , la fomo e la fretta le prop bruciate ad inizio mese sembrano essere un ricordo lontano. Speriamo bene"]}, {"d": "2026-07-24", "n": 15, "pnl": 278.0, "sim3": 25.5, "cap": 278.0, "wr": 93, "e": 1, "rv": 1, "voto": 6.0, "c": ["Giornata un po sfigata, qualche setup che mi ha sfuggito potevo fare x3 del profitto ma va bene  uguale. dopo l'ennesimo tp chiudo la giornata visto che è venerdi e sono le 18 mi sono rotto il cazzo", "MM Rispettato e andiamo avanti"]}, {"d": "2026-07-27", "n": 37, "pnl": 548.6, "sim3": -70.0, "cap": -509.5, "wr": 62, "e": 28, "rv": 9, "voto": 4.0, "c": ["MM management non rispettato, sta cazzo di piattaforma funziona una volta si e 4 no. Hai capito dopo le cazzate che hai fatto se ti attieni al piano portiamo lo stesso il pane a casa?", "Sta vocina che all'inizio di passare la prop e quella fomo del primo trade ha rovinato la giornata ma cosi non va bene. Oggi giornata che poteva finire meglio, togleindo una ventina di trade a cazzo di cane"]}, {"d": "2026-07-28", "n": 56, "pnl": -1411.7, "sim3": 15.0, "cap": -858.5, "wr": 54, "e": 49, "rv": 24, "voto": null, "c": ["perche non riesco a controllarmi? La pressione psicologica di riuscire a vivere di questo mi mette di fronte il mio limite. L'ansia che si presenta della fretta che deve far funzionare  tutto mi ha portato al disastro"]}, {"d": "2026-07-29", "n": 32, "pnl": -1117.7, "sim3": -95.9, "cap": -588.6, "wr": 31, "e": 0, "rv": 18, "voto": 4.0, "c": ["Altro giorno altre emozioni in ballo e fanno sballare il piano . Dopo aver raggiunto 5r di profit dovrei chiudere e invece continuo come un coglione"]}, {"d": "2026-07-30", "n": 68, "pnl": -119.5, "sim3": -178.5, "cap": -520.5, "wr": 53, "e": 44, "rv": 28, "voto": 5.0, "c": ["Troppo trade inutili che hanno fatto eliminare una prop già fuori dai giochi dal comportamento di ieri e ne abbiamo presa un altra e portata a zero.", "Troppi trade E, ancora non ci siamo. MM non rispettato perchè non mi sono fermato a -4r"]}, {"d": "2026-07-31", "n": 61, "pnl": 427.0, "sim3": 712.5, "cap": 427.0, "wr": 51, "e": 0, "rv": 26, "voto": 5.0, "c": ["facciamo in 3 trade 800$ e li perdiamo tutti andiamo in dd recuperiamo e lasciamo la giornata a 300$. Stress inutile solo perché sei un coglione"]}, {"d": "2026-08-04", "n": 61, "pnl": 91.5, "sim3": -69.0, "cap": -558.5, "wr": 56, "e": 23, "rv": 22, "voto": null, "c": []}, {"d": "2026-08-05", "n": 151, "pnl": -1839.5, "sim3": -222.5, "cap": -544.0, "wr": 36, "e": 151, "rv": 92, "voto": 2.0, "c": ["Il parkinson mi è venuto col mouse. Fino a quando ricado sempre nei miei stessi errori non si muoverà mezza foglia", "Saluti"]}, {"d": "2026-08-06", "n": 15, "pnl": 465.5, "sim3": -3.0, "cap": 465.5, "wr": 47, "e": 1, "rv": 4, "voto": null, "c": []}, {"d": "2026-08-07", "n": 50, "pnl": -262.5, "sim3": -228.5, "cap": -546.5, "wr": 56, "e": 27, "rv": 19, "voto": null, "c": []}, {"d": "2026-08-12", "n": 19, "pnl": 674.5, "sim3": -152.5, "cap": 674.5, "wr": 63, "e": 4, "rv": 6, "voto": 6.0, "c": ["dopo giorno 10 e 11 di meditazione ritorniamo qua, qualche e di troppo, poero gioranta portata a casa"]}, {"d": "2026-08-13", "n": 23, "pnl": 369.5, "sim3": -204.0, "cap": 369.5, "wr": 57, "e": 16, "rv": 5, "voto": null, "c": []}, {"d": "2026-08-14", "n": 52, "pnl": -752.5, "sim3": 157.5, "cap": -525.0, "wr": 50, "e": 40, "rv": 22, "voto": 2.0, "c": ["Ecco i limite del mio io, e siamo sul demo. La non accettazione delle perdite dopo qualche cazzata e voler a tutti i costi recuperare aumentando il ticchettio", "Piu clicchi piu danni fai, i lockout sui prossimi conti saranno obbligatori. Non riesco a dai dei limiti, devo accettare le perdite che sia il mercato che sia io che faccio le cazzate", "Troppi E, non riesco ad avere quella disciplina del non cliccare. Da migliorare"]}, {"d": "2026-08-18", "n": 32, "pnl": 1347.5, "sim3": -97.5, "cap": 1347.5, "wr": 50, "e": 0, "rv": 14, "voto": 6.0, "c": ["Dopo giorno 17 preso come meditazione, Ho deciso da staccare dalla vecchia operatività, anzi di lasciare per adesso perdere m1 e 40 range. Dedicarmi principalmente all M5 e allo studio dell'heatmap", "Questo non perché la mia strategia non funziona o altro, 1) mi rendo conto che il troppo ticchettio mi rende frenetico, mettendo ogni volta da parte money management , risk management , budget giornaliero e cominciare  a bruciare i profit che faccio nei giorni precedenti", "2) la fretta dall'esterno accellera il ticchettio e la voglia di click con una velocità esagerata, vedasi oggi con l'heatmap , invece oggi 2 trade e abbiamo fatto la giornata", "3) mi rendo conto che ok bello lo scalping ma mi fa entrare sempre nei loop. Faccio i profit, poi li ributto di nuovo, mi sale la fomo, mi sale l'overtrading e non voglio finire le giornate con 20 30 trade, over the ruin e sempre con il morale a terra", "4) mi troverete un contrasto, ma come lasci m1 e guardi la heatmap che è ancora peggio? Ragionevole come risposta ma sto studiando pattern e come funziona la liquidità. L'obiettivo e poi tradare quei pattern di manipolazione book che si vedono spesso e quindi siamo sempre li", "diminuire i trade, però per adesso si hai ragione oggi ho dimostrato che i max 10 trade li ho over superati. Riconosco il mio limite, il tickettio continuo che mi fa cliccare di continuo che puo produrre 1 giornata ok e 99 disastri.", "5) da domani in poi sarà un po ballerina la settimana anche perche vado in vacanza. Mi sa che mi ci vuole.", "6) mi rendo conto adesso che da inizio anno è un continuo comprare prop arrivare a 1000$ d profit e dare tutto con gli interessi , solo 1 prop ho passato quest'anno perché sempre ero in revenge e per quella volta mi è andata bene, non ha senso continuare cosi", "7) bisogna fare i seri e non continuare a vivere di illusioni. Dati e realtà alla mano. Questo è quello che mi tiene fermo, la poca disciplina del resto l'orderflow da poco meno di un anno lo sto iniziando a masticare", "8) poi boh giudicate voi, saluti"]}], "setups": [{"k": "n.d.", "n": 292, "pnl": -7640, "wr": 48}, {"k": "altro", "n": 31, "pnl": -279, "wr": 65}, {"k": "E", "n": 513, "pnl": -12964, "wr": 41}, {"k": "C", "n": 29, "pnl": -78, "wr": 69}, {"k": "A", "n": 70, "pnl": 6252, "wr": 69}, {"k": "D", "n": 5, "pnl": 32, "wr": 80}, {"k": "B", "n": 135, "pnl": 4668, "wr": 67}, {"k": "M", "n": 44, "pnl": 2330, "wr": 80}, {"k": "HeatMap", "n": 29, "pnl": 788, "wr": 48}], "agg": {"rv_n": 454, "rv_pnl": -12473, "rv_wr": 35, "ot_n": 694, "ot_pnl": 5581, "ot_wr": 61}};
+const IDX = [["1–3",96,-85],["4–10",218,-803],["11–20",262,-2576],["21–40",297,-2906],["41 e oltre",275,-522]];
+const MONTHS = [
+ ["Giugno",6,180,-2178,56,0.73,57,-102],
+ ["Luglio",18,565,-4808,51,0.82,77,-100],
+ ["Agosto",8,403,94,47,1.01,74,-68]];
+const grp = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const fmt = v => (v<0?'−':'') + grp(Math.round(Math.abs(v))) + ' $';
+const fmtS = v => (v>0?'+':'') + fmt(v);
+const dLab = d => { const [y,m,g]=d.split('-'); return +g+' '+['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'][+m-1]; };
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const tip = document.getElementById('tip');
+function showTip(e, html){ tip.innerHTML=html; tip.hidden=false; const x=Math.min(e.clientX+14, innerWidth-tip.offsetWidth-8); tip.style.left=x+'px'; tip.style.top=(e.clientY+14)+'px'; }
+function hideTip(){ tip.hidden=true; }
+const NS='http://www.w3.org/2000/svg';
+function el(tag, attrs, parent){ const n=document.createElementNS(NS,tag); for(const k in attrs) n.setAttribute(k,attrs[k]); if(parent) parent.appendChild(n); return n; }
+function niceTicks(min,max,count=5){ const span=max-min; const step0=span/count; const mag=Math.pow(10,Math.floor(Math.log10(step0))); const step=[1,2,2.5,5,10].map(s=>s*mag).find(s=>span/s<=count)||mag*10; const lo=Math.floor(min/step)*step, hi=Math.ceil(max/step)*step; const t=[]; for(let v=lo; v<=hi+1e-9; v+=step) t.push(Math.round(v)); return t; }
+
+const days = DATA.days;
+
+// hero
+(function(){
+  const tot=days.reduce((s,d)=>s+d.pnl,0), n=days.reduce((s,d)=>s+d.n,0);
+  const tiles=[[fmt(tot),'P&L registrato',tot<0],[grp(n),'trade in 32 giornate'],[(n/days.length).toFixed(0),'trade al giorno in media'],['0,73 → 1,01','profit factor giugno → agosto']];
+  document.getElementById('hero').innerHTML=tiles.map(t=>`<div class="tile"><div class="v ${t[2]?'neg':''}">${t[0]}</div><div class="l">${t[1]}</div></div>`).join('');
+  const a=DATA.agg;
+  document.getElementById('split').innerHTML=`
+   <div class="tile"><div class="l">Entro 3 minuti da una perdita</div><div class="v neg">${fmt(a.rv_pnl)}</div><div class="l">${a.rv_n} trade · win rate ${a.rv_wr}%</div></div>
+   <div class="tile"><div class="l">Tutti gli altri trade</div><div class="v pos">${fmtS(a.ot_pnl)}</div><div class="l">${a.ot_n} trade · win rate ${a.ot_wr}%</div></div>`;
+})();
+
+// line chart (one or more series, same $ axis)
+function lineChart(id, series, labels, opts={}){
+  const box=document.getElementById(id); box.innerHTML='';
+  const W=900,H=opts.h||300,m={l:64,r:opts.r||20,t:16,b:34};
+  const all=series.flatMap(s=>s.values).concat([0]); const ticks=niceTicks(Math.min(...all),Math.max(...all));
+  const y0=ticks[0], y1=ticks[ticks.length-1];
+  const X=i=>m.l+(W-m.l-m.r)*(labels.length===1?0.5:i/(labels.length-1)), Y=v=>m.t+(H-m.t-m.b)*(1-(v-y0)/(y1-y0));
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':opts.aria||''},box);
+  ticks.forEach(t=>{ el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),stroke:t===0?css('--axis'):css('--grid'),'stroke-width':1},svg);
+    const tx=el('text',{x:m.l-8,y:Y(t)+4,'text-anchor':'end','font-size':12,fill:css('--muted'),'font-variant-numeric':'tabular-nums'},svg); tx.textContent=fmt(t); });
+  const step=Math.ceil(labels.length/8);
+  labels.forEach((l,i)=>{ if(i%step && i!==labels.length-1) return; const tx=el('text',{x:X(i),y:H-10,'text-anchor':'middle','font-size':12,fill:css('--muted')},svg); tx.textContent=dLab(l); });
+  (opts.marks||[]).forEach(mk=>{ const i=labels.indexOf(mk.d); if(i<0) return; el('line',{x1:X(i),x2:X(i),y1:m.t,y2:H-m.b,stroke:css('--axis'),'stroke-width':1},svg);
+    const tx=el('text',{x:X(i)+(mk.anchor==='end'?-6:6),y:m.t+12,'text-anchor':mk.anchor||'start','font-size':12,fill:css('--ink-2')},svg); tx.textContent=mk.t; });
+  series.forEach(s=>{
+    el('path',{d:s.values.map((v,i)=>(i?'L':'M')+X(i).toFixed(1)+','+Y(v).toFixed(1)).join(''),fill:'none',stroke:s.color,'stroke-width':2,'stroke-linejoin':'round'},svg);
+    const last=s.values.length-1;
+    el('circle',{cx:X(last),cy:Y(s.values[last]),r:4,fill:s.color,stroke:css('--surface'),'stroke-width':2},svg);
+    if(opts.endLabels){ const tx=el('text',{x:X(last)+8,y:Y(s.values[last])+4,'font-size':12,fill:css('--ink-2')},svg); tx.textContent=fmt(s.values[last]); }
+  });
+  const cross=el('line',{y1:m.t,y2:H-m.b,stroke:css('--axis'),'stroke-width':1,visibility:'hidden'},svg);
+  const dots=series.map(s=>el('circle',{r:4,fill:s.color,stroke:css('--surface'),'stroke-width':2,visibility:'hidden'},svg));
+  const hit=el('rect',{x:m.l,y:m.t,width:W-m.l-m.r,height:H-m.t-m.b,fill:'transparent'},svg);
+  hit.addEventListener('mousemove',e=>{ const r=svg.getBoundingClientRect(); const px=(e.clientX-r.left)*W/r.width;
+    const i=Math.max(0,Math.min(labels.length-1,Math.round((px-m.l)/(W-m.l-m.r)*(labels.length-1))));
+    cross.setAttribute('x1',X(i)); cross.setAttribute('x2',X(i)); cross.setAttribute('visibility','visible');
+    series.forEach((s,k)=>{ dots[k].setAttribute('cx',X(i)); dots[k].setAttribute('cy',Y(s.values[i])); dots[k].setAttribute('visibility','visible'); });
+    showTip(e, `<div>${dLab(labels[i])} 2026</div>`+series.map(s=>`<div>${s.name}: <b>${fmt(s.values[i])}</b></div>`).join('')+(opts.extra?opts.extra(i):'')); });
+  hit.addEventListener('mouseleave',()=>{ hideTip(); cross.setAttribute('visibility','hidden'); dots.forEach(d=>d.setAttribute('visibility','hidden')); });
+}
+function cum(a){ let s=0; return a.map(v=>s+=v); }
+const labels=days.map(d=>d.d);
+function drawAll(){
+lineChart('equity',[{name:'Equity',color:css('--loss'),values:cum(days.map(d=>d.pnl))}],labels,{aria:'Equity cumulativa',
+  marks:[{d:'2026-06-18',t:'prop bruciata'},{d:'2026-07-08',t:'8 lug: −4.915 $, tilt'},{d:'2026-08-18',t:'decisione',anchor:'end'}],
+  extra:i=>`<div>Giornata: <b>${fmtS(days[i].pnl)}</b> in ${days[i].n} trade</div>`});
+
+// daily bars
+(function(){
+  const box=document.getElementById('daily'); box.innerHTML='';
+  const W=900,H=260,m={l:64,r:12,t:12,b:34}; const vals=days.map(d=>d.pnl);
+  const ticks=niceTicks(Math.min(...vals,0),Math.max(...vals,0)); const y0=ticks[0],y1=ticks[ticks.length-1];
+  const Y=v=>m.t+(H-m.t-m.b)*(1-(v-y0)/(y1-y0)); const bw=(W-m.l-m.r)/days.length;
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'P&L per giornata'},box);
+  ticks.forEach(t=>{ el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),stroke:t===0?css('--axis'):css('--grid')},svg);
+    const tx=el('text',{x:m.l-8,y:Y(t)+4,'text-anchor':'end','font-size':12,fill:css('--muted')},svg); tx.textContent=fmt(t); });
+  days.forEach((d,i)=>{ const x=m.l+i*bw+1, w=Math.max(2,bw-2), top=Y(Math.max(d.pnl,0)), h=Math.max(1,Math.abs(Y(d.pnl)-Y(0)));
+    el('rect',{x,y:top,width:w,height:h,rx:Math.min(3,w/2),fill:d.pnl>=0?css('--gain'):css('--loss')},svg);
+    const hit=el('rect',{x:m.l+i*bw,y:m.t,width:bw,height:H-m.t-m.b,fill:'transparent'},svg);
+    hit.addEventListener('mousemove',e=>showTip(e,`<div>${dLab(d.d)} 2026</div><div>P&L: <b>${fmtS(d.pnl)}</b></div><div>${d.n} trade · win rate ${d.wr}%</div>${d.voto!=null?`<div>Voto: <b>${d.voto}</b></div>`:''}`));
+    hit.addEventListener('mouseleave',hideTip);
+    if(i%4===0){ const tx=el('text',{x:m.l+i*bw+bw/2,y:H-10,'text-anchor':'middle','font-size':12,fill:css('--muted')},svg); tx.textContent=dLab(d.d); } });
+})();
+
+// horizontal bars helper
+function hbars(id, items, opts={}){
+  const box=document.getElementById(id); box.innerHTML='';
+  const W=900,row=40,m={l:opts.l||170,r:110,t:8,b:8},H=m.t+m.b+row*items.length;
+  const vals=items.map(i=>i.v); const lo=Math.min(0,...vals), hi=Math.max(0,...vals);
+  const X=v=>m.l+(W-m.l-m.r)*(v-lo)/(hi-lo);
+  const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':opts.aria||''},box);
+  el('line',{x1:X(0),x2:X(0),y1:m.t,y2:H-m.b,stroke:css('--axis')},svg);
+  items.forEach((it,k)=>{ const y=m.t+k*row+8, h=row-16, x=Math.min(X(0),X(it.v)), w=Math.max(2,Math.abs(X(it.v)-X(0)));
+    el('rect',{x,y,width:w,height:h,rx:3,fill:it.v>=0?css('--gain'):css('--loss')},svg);
+    const lb=el('text',{x:m.l-12,y:y+h/2+4,'text-anchor':'end','font-size':13,fill:css('--ink')},svg); lb.textContent=it.label;
+    const vx=it.v>=0?X(it.v)+8:X(0)+8; const vt=el('text',{x:it.v>=0?vx:X(it.v)-8,y:y+h/2+4,'text-anchor':it.v>=0?'start':'end','font-size':13,fill:css('--ink-2'),'font-variant-numeric':'tabular-nums'},svg); vt.textContent=fmtS(it.v);
+    if(it.v<0 && X(it.v)-8 < 40){ vt.setAttribute('x',X(0)+8); vt.setAttribute('text-anchor','start'); }
+    const hit=el('rect',{x:0,y:m.t+k*row,width:W,height:row,fill:'transparent'},svg);
+    hit.addEventListener('mousemove',e=>showTip(e,it.tip)); hit.addEventListener('mouseleave',hideTip); });
+}
+// buckets
+(function(){
+  const B=[['fino a 10 trade',0,10],['11–20 trade',11,20],['21–40 trade',21,40],['oltre 40 trade',41,1e9]];
+  hbars('buckets',B.map(([l,a,b])=>{ const ds=days.filter(d=>d.n>=a&&d.n<=b); const v=ds.reduce((s,d)=>s+d.pnl,0);
+    return {label:l,v,tip:`<div>${l}</div><div>${ds.length} giornate</div><div>Totale: <b>${fmtS(v)}</b></div><div>Media: <b>${fmtS(v/ds.length)}</b> al giorno</div>`}; }),{aria:'P&L per numero di trade al giorno'});
+})();
+// setups
+(function(){
+  const name={A:'A (incl. A+, A++)',B:'B',M:'M momentum',HeatMap:'HeatMap',D:'D',C:'C',altro:'altro',E:'E (FOMO)','n.d.':'non indicato (giugno)'};
+  const it=DATA.setups.slice().sort((a,b)=>b.pnl-a.pnl).map(s=>({label:name[s.k]||s.k,v:s.pnl,tip:`<div>Setup ${name[s.k]||s.k}</div><div>${s.n} trade · win rate ${s.wr}%</div><div>Totale: <b>${fmtS(s.pnl)}</b></div>`}));
+  hbars('setups',it,{aria:'P&L per setup',l:190});
+})();
+// simulation
+(function(){
+  const S=[{name:'Reale',color:css('--s2'),values:cum(days.map(d=>d.pnl))},
+           {name:'Max 3 trade, stop a 2 perdite',color:css('--s1'),values:cum(days.map(d=>d.sim3))},
+           {name:'Solo stop −500 $/giorno',color:css('--s3'),values:cum(days.map(d=>d.cap))}];
+  document.getElementById('simlegend').innerHTML=S.map(s=>`<span><i style="background:${s.color}"></i>${s.name}: <b>${fmt(s.values[s.values.length-1])}</b></span>`).join('');
+  lineChart('sim',S,labels,{aria:'Simulazione con regole',r:90,endLabels:true});
+})();
+}
+drawAll();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',drawAll);
+
+// tables
+document.querySelector('#idx tbody').innerHTML=IDX.map(r=>`<tr><td>${r[0]}</td><td class="n">${r[1]}</td><td class="n ${r[2]<0?'neg':'pos'}">${fmtS(r[2])}</td><td class="n">${fmtS(r[2]/r[1])}</td></tr>`).join('');
+document.querySelector('#months tbody').innerHTML=MONTHS.map(r=>`<tr><td>${r[0]}</td><td class="n">${r[1]}</td><td class="n">${r[2]}</td><td class="n">${(r[2]/r[1]).toFixed(0)}</td><td class="n ${r[3]<0?'neg':'pos'}">${fmtS(r[3])}</td><td class="n">${r[4]}%</td><td class="n">${r[5].toFixed(2).replace('.',',')}</td><td class="n">${fmtS(r[6])}</td><td class="n">${fmtS(r[7])}</td></tr>`).join('');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+document.querySelector('#days tbody').innerHTML=days.map(d=>`<tr><td style="white-space:nowrap">${dLab(d.d)}</td><td class="n">${d.n}</td><td class="n ${d.pnl<0?'neg':'pos'}">${fmtS(d.pnl)}</td><td class="n">${fmtS(d.sim3)}</td><td class="n">${d.wr}%</td><td class="n">${d.e}</td><td class="n">${d.rv}</td><td class="n">${d.voto??'–'}</td><td>${d.c.length?`<details><summary>${d.c.length===1?'1 nota':d.c.length+' note'}</summary><ul>${d.c.map(c=>`<li>${esc(c)}</li>`).join('')}</ul></details>`:''}</td></tr>`).join('');
+</script>
+</body>
+</html>
