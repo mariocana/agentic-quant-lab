@@ -42,14 +42,37 @@ modifiche ai gate. Il protocollo resta quello del corso (`pipeline_prop.md`).
 
 ## Da valutare (ingeriti, non ancora letti)
 
-- `mc/education/books/G. Defendi - Strategie operative per i mercati finanziari.pdf`
-- `mc/education/books/Guida pratica al trading Volume 2.pdf`
-- `mc/education/books/John T. Marino – Trading dal divano (2024).pdf`
-- `mc/education/books/Trading systems sulle curve non di prezzo.pdf`
-- `mc/education/morpheus/`
-- `mc/education/stefano_serafini/`
-- `mc/education/enrico_stucchi/`
-- `mc/education/unger/`
+Una riga anche qui: sapere **cos'è** un documento senza averlo letto costa trenta secondi
+e evita di riaprirlo per scoprire che non serve.
+
+**`mc/ideas/`**
+- `ssrn-5580590.pdf` — *An Adaptive Multi‑Agent Bitcoin Trading System* (Singhi, UCL), 19 pp.
+  LLM per alpha generation e gestione di portafoglio su crypto. Fuori dal nostro perimetro
+  (futures, PowerLanguage, prop): da leggere semmai per il metodo, non per la strategia.
+- `ssrn-5598690.pdf` — *Evaluating the Parabolic SAR Strategy on Bitcoin* (Mesíček), 16 pp.
+  Valutazione di un singolo indicatore su BTC.
+- `ssrn-6467818.pdf` — 59 pp. di econometria delle serie storiche finanziarie: stazionarietà
+  (ADF), volatility clustering, stylised facts, modelli previsivi. **Metodologia, non
+  strategie** — il candidato più utile dei tre se serve uno strumento statistico.
+- `MOC_ricerca.md` — scheda di ricerca **nostra** (non un ingest): MOC imbalance e ultimi
+  10 minuti, da materiale Stucchi. Ha già una traccia di lavoro dentro. Nota prima di
+  ripartire: il MOC imbalance è un dato **azionario** pubblicato dagli exchange USA, da
+  verificare se e come sia ottenibile per operare su NQ.
+
+**`mc/education/books/`**
+- `G. Defendi - Strategie operative per i mercati finanziari.pdf`
+- `Guida pratica al trading Volume 2.pdf`
+- `John T. Marino – Trading dal divano (2024).pdf`
+- `Trading systems sulle curve non di prezzo.pdf`
+
+**Corsi** (video esclusi dal repo, restano in locale)
+- `mc/education/enrico_stucchi/` — order flow e option flow; ha già un `PLAYBOOK.md` e
+  `MOC_ricerca.md` derivati.
+- `mc/education/stefano_serafini/` — Dax Trading Lab. Contiene **codice**: `DAX5m.txt` e
+  due file di strategia esportati (`.ELD`, `.sef`). Da guardare prima delle altre cartelle:
+  è materiale eseguibile, non solo video.
+- `mc/education/morpheus/` — Pro Trader Blueprint.
+- `mc/education/unger/` — Trading System Supremacy (cartelle già montate come working dir).
 
 **Priorità**: la coda non è urgente. Adesso il lavoro è portare sei strategie già scritte
 attraverso i gate con i dati veri; leggere altro materiale non avvicina quel risultato.
