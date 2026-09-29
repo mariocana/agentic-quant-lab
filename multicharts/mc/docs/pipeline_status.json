@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-28",
+ "updated": "2026-09-29",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
  "prop": "Apex 50k EOD trailing · target $3.000 · max DD $2.500 · daily loss $1.000 · 21 giorni",
@@ -230,10 +230,14 @@
   }
  ],
  "blockers": [
-  "Storico: **conto TradeStation aperto** (email del 28/09). Domani il setup: checklist in `mc/docs/setup_tradestation.md`. Primo dato che serve alla pipeline: la **data della prima barra** di @NQ 5 min caricata partendo dal 2016.",
-  "Licenza MultiCharts: il piano free è **solo simulazione**, non collega feed esterni → senza licenza il conto TradeStation non serve a niente. Domani serve il piano **Standard mensile**; lifetime a Black Friday (27 nov 2026, storicamente $997 invece di $1.497). Se si vuole lo sconto **crossgrade** da MT5/Volumetrica, la mail al supporto MC va mandata **oggi**: è l'unica cosa che può far slittare domani."
+  "Storico: conto TradeStation aperto e licenza MC risolta → **nessun blocco esterno**. Oggi il setup: checklist in `mc/docs/setup_tradestation.md`. Primo dato che serve alla pipeline: la **data della prima barra** di @NQ 5 min caricata partendo dal 2016.",
+  "Promemoria, non un blocco: la copertura della licenza mensile finisce il **29/11**, il Black Friday è il **27/11**. Due giorni di margine per comprare la lifetime: se slitta, si resta senza piattaforma."
  ],
  "log": [
+  {
+   "date": "2026-09-29",
+   "text": "**Licenza MultiCharts risolta**: il supporto ha concesso il crossgrade — **un mese gratis + un mese a $90**, cioè copertura fino al **29/11**, con il Black Friday (27/11) dentro la finestra. Costo del ponte $90 invece di due mensili pieni. Cade l'ultimo blocco esterno: conto TradeStation aperto + piattaforma attiva = si parte con lo Stage 1/2 sui dati veri."
+  },
   {
    "date": "2026-09-28",
    "text": "**Conto TradeStation aperto.** Setup domani. Checklist aggiornata per sei strategie: un solo download di @NQ 1 min copre ORB, VaultBreak, NQ First5 (compressione 5 min), DriftPullback (5 e 15 min) e VWAP Pullback (1 min nativo); @GC 1 min per Gold Asian. Ordine di lavoro: ORB va dritta allo Stage 2 (è l'unica col Gate 1 passato), le altre cinque prima allo Stage 1. Tutte le varianti (`EntryMode`, `TriggerMode`, `UseFilters`, `StopPts`, `SizingMode`) restano a 0: sono Stage 4."

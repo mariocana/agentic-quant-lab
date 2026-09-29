@@ -9,7 +9,10 @@ Da fare nell'ordine, appena i fondi sono accreditati sul conto **Futures**.
       background perché MC la usi come feed.
 
 ## 2. MultiCharts
-- [ ] Acquista il piano **Standard** mensile (prima chiedi al supporto lo sconto crossgrade).
+- [ ] Attiva il piano **Standard**. Crossgrade ottenuto dal supporto (29/09/2026): **primo
+      mese gratis + secondo a $90** → copertura fino al **29/11**, con il Black Friday
+      (27/11) dentro la finestra. La lifetime va comprata entro il **29/11**: dopo si resta
+      senza piattaforma.
 - [ ] Wizard: ☰ → Help → Run Wizard → "ho già data source, login e password" →
       **TradeStation** → account **live** → Test → login → Next. Broker: per ora paper.
 - [ ] File → Broker Profiles → Manage: TradeStation deve risultare **Connected**.
