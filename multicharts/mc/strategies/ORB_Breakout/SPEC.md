@@ -55,6 +55,13 @@ ricostruita dalle uscite in SL e TP del run base:
 punti. Sotto $2.500 si salterebbe oltre un terzo dei trade: non è più togliere la coda,
 è un'altra strategia.
 
+**Come si gira** (deciso 29/09, prima dei risultati): tre **ottimizzazioni**, una per
+periodo (IS intero, 1ª metà, 2ª metà), con `MaxRisk_USD` da **2500 a 5000 step 500**. Il
+base case `0` è già misurato. I valori intermedi (3500, 4500) servono a **giudicare la
+forma della curva** per il criterio del cluster, **non** a scegliere il migliore: la
+decisione resta ancorata ai valori dichiarati sopra. Se un intermedio fosse il massimo
+assoluto ma i dichiarati adiacenti fossero mediocri, la variante si scarta.
+
 **Criterio di scelta, fissato ora**:
 1. deve migliorare l'avg trade in **entrambe** le metà dell'IS (2020‑01→2022‑06 e
    2022‑07→2024‑12), non solo nel totale;
