@@ -79,11 +79,16 @@
    },
    "note": "Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.",
    "metrics": {
-    "base case IS (MaxRisk 0)": "827 trade · WR 55,6% · avg $81 · PF 1,126 · DD $36,3k — 1ª metà PF **0,999**",
-    "con **MaxRisk_USD 3000**": "723 trade · WR 57,0% · avg **$147,65** · PF **1,27** · DD **$18,99k** — 1ª metà PF 1,21, 2ª metà PF 1,33",
-    "Gate 2": "resta **un solo criterio** fallito: DD÷10 = $1.899 contro $1.250. Prima ne fallivano tre."
+    "configurazione attuale": "`MaxRisk_USD 3000`, `TP_RR 1.0` — 723 trade · WR 57,0% · avg **$147,65** · PF **1,274** · R:R 0,96 · DD $18.991 · peggior trade $2.995",
+    "per anno": "2020 **+12.596** (era −20.656) · 2021 +38.261 · 2022 −550 · 2023 +25.423 · 2024 +31.022 — max 35,8% del net",
+    "Gate 2": "7 criteri su 8 passati. Resta **DD÷10 = $1.899** contro $1.250.",
+    "`TP_RR 0.5` scartata": "non tocca il DD (19.229) e peggiora l'avg trade in **entrambe** le metà (107,96→59,82 e 183,88→130,56)"
    },
    "log": [
+    {
+     "date": "2026-09-30",
+     "text": "**`TP_RR 0.5` scartata dallo split‑sample.** Peggiora l'avg trade in entrambe le metà (1ª: 107,96→59,82; 2ª: 183,88→130,56) e soprattutto **non tocca il drawdown** (18.991→19.229), che era l'unica ragione per provarla. Alza sì il WR al 65,6% e porta il R:R a 0,64, più vicino al profilo prop dichiarato dello 0,96 attuale — annotato come **domanda aperta per lo Stage 7**, dove il simulatore ottimizza la probabilità di passare in 21 giorni e non l'avg trade. Ma non è una ragione per adottarla ora. **Ripartizione annuale con MaxRisk 3000 confermata**: il 2020 passa da −20.656 a **+12.596** tenendo 163 trade su 180 — non è stato escluso l'anno, sono stati saltati i giorni con range oltre 150 punti. Nessun anno supera il 35,8% del net. Il 2022 va a −550: è l'anno in cui il tetto costa di più, mercato in trend con range larghi."
+    },
     {
      "date": "2026-09-30",
      "text": "**Griglia `MaxRisk_USD` girata sui tre periodi: la variante funziona, e il criterio scritto prima sceglie da solo.** Nella **prima metà** — quella senza edge — la relazione è monotòna e pulita: avg trade 113 · 108 · 66 · 43 · 36 · 29 al crescere della soglia, PF da 1,25 a 1,05. Quindi nella prima metà i soldi si perdevano proprio **sui giorni a range largo**: mia diagnosi precedente sbagliata, non era solo una serie di perdite normali. Split‑sample: **2500 bocciato** (migliora la 1ª metà ma peggiora la 2ª), **3000 passa** in entrambe → selezione univoca, nessuna discrezionalità. Con 3000 sull'IS: 723 trade, avg $147,65, PF 1,27, WR 57,0%, R:R 0,96, DD $18.991. **Da tre criteri falliti a uno**: resta solo DD÷10 = $1.899 contro $1.250. Il DD per micro scende sotto il max drawdown Apex di $2.500, cioè la strategia sopravviverebbe a un funded. I due drawdown si sono anche riequilibrati (19,0k e 17,5k contro 36,3k e 26,7k)."
@@ -121,7 +126,7 @@
      "text": "Porting da `OrbBreakout_EA` (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2."
     }
    ],
-   "next": "Due cose: (1) Strategy Performance Report completo a `MaxRisk_USD 3000` sull'IS, per avere peggior trade e ripartizione annuale che l'Optimization Report non dà; (2) poi `TP_RR 0.5` sopra al 3000 — deve far scendere il DD da $18.991 a ≤ $12.500. Restano 2 input sui 3 concessi dallo Stage 4."
+   "next": "Resta **solo il drawdown**: da $18.991 a ≤ $12.500. Due input ancora disponibili sui 3 dello Stage 4. Prossime pre‑registrate: **filtro delta** (`UseDeltaFilter 1`, soglia 200 — ora testabile perché TradeStation dà Up/Down volume per barra) e **cutoff ingressi** alle 11:00 CT. Attenzione: il Gate 3 chiede DD al 95° percentile Monte Carlo ÷10 ≤ $2.500, e il 95° percentile sta tipicamente 1,3–1,8× sopra il DD storico → anche passando il Gate 2, lo Stage 3 non è scontato."
   },
   {
    "name": "VaultBreak",
