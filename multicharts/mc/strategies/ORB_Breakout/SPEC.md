@@ -121,3 +121,44 @@ sono mediamente peggiori, ma non c'è una ragione strutturale per cui debba comp
 terzo una serie perdente. Se non basta, l'ORB non supera il Gate 2, e la conclusione da
 trarre è che con lo stop pari all'intero range di apertura la strategia è troppo grande per
 un conto con $2.000 di margine — non che il protocollo abbia sbagliato.
+
+## Stage 4 chiuso — Gate 2 NON superato (30/09/2026)
+
+Terza e ultima variante, `UseEntryCutoff 1` alle 11:00 CT: **passa lo split‑sample**
+(1ª metà 130,79 → 143,14; 2ª metà 188,51 → 227,38) ma **non risolve il drawdown**
+(15.697 → 15.017, −4,3%). Aspettativa dichiarata prima del test: "debole". Confermata.
+
+**Configurazione finale**: `MaxRisk_USD 3000` · `UseDeltaFilter 1` (soglia 200) ·
+`UseEntryCutoff 1` alle 11:00 · `TP_RR 1.0`. **Tre input su tre**: lo Stage 4 è chiuso.
+
+| Criterio | Soglia | Finale | |
+|---|---|---|---|
+| n | ≥ 200 | 550 | ✓ |
+| avg trade | ≥ $70 | $188,63 | ✓ |
+| PF | ≥ 1.2 | 1,337 | ✓ |
+| WR | ≥ 55% | 58,9% | ✓ |
+| R:R | 0.5–1 | 0,93 | ✓ |
+| peggior trade ÷ 10 | ≤ $500 | $300 | ✓ |
+| nessun anno > 50% | — | 31,5% | ✓ |
+| **DD ÷ 10** | **≤ $1.000** | **$1.502** | **✗** |
+
+Percorso del drawdown: $36.290 → $18.991 (MaxRisk) → $15.697 (delta) → $15.017 (cutoff).
+Dimezzato e mezzo, ma il bersaglio era $10.000.
+
+**Perché non si va oltre**: i tre input concessi sono esauriti. Continuare a cercare
+varianti dopo aver visto il fallimento è precisamente ciò che il protocollo vieta.
+
+### Limite del criterio, da tenere presente altrove
+
+Lo split‑sample misura l'**avg trade**, e qualunque filtro che tolga trade marginali lo
+alza anche riducendo il profitto totale: 674 → 550 trade, net $108.759 → $103.746. Il
+cutoff ha «vinto» pagando $5.013. Su LucidFlex questo pesa meno del previsto, perché **non
+c'è limite di tempo** per superare la valutazione — ma il criterio va guardato insieme al
+net, non da solo.
+
+### Diagnosi
+
+Il drawdown non è un difetto correggibile con filtri: è l'**unità di rischio**. Lo stop è
+l'intero range di apertura, una quantità che decide il mercato. Mediana $180 per micro,
+tetto $300 dopo `MaxRisk`. Con $2.000 di MLL, cinque perdite consecutive — che nei cinque
+anni sono accadute — valgono il 75% del conto.
