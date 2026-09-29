@@ -240,6 +240,10 @@
  "log": [
   {
    "date": "2026-09-29",
+   "text": "**Dati TradeStation verificati contro dxFeed: coincidono al tick.** Barra @NQ 5 min del 16/09/2026 10:00 → Close **29.499,50**, identico al prezzo d'ingresso che l'ORB aveva registrato su quella barra coi dati dxFeed (l'ORB entra *this bar on close*, quindi doveva essere il Close e non l'Open). Coincidono prezzo, confine di barra e fuso orario insieme. `Bar # 753.635` conferma che il grafico ha tutto lo storico da gennaio 2016, non una finestra parziale. **Confermato anche il quadro back‑adjustment**: presente esatto, passato traslato di un aggiustamento che cresce andando indietro (~3.900 punti a gennaio 2016). Le metriche in dollari non sono toccate, perché il P&L viene da differenze di prezzo. Via libera allo Stage 2 dell'ORB."
+  },
+  {
+   "date": "2026-09-29",
    "text": "**Storico TradeStation verificato: @NQ 5 min parte dal 3 gennaio 2016** (domenica, riapertura Globex 17:00 CT). IS 2020‑01‑01 → 2024‑12‑31 e OOS 2025 → oggi restano come sono, con quattro anni di margine. **Ma la serie è back‑adjusted**: DriftPullback va in `blocked` allo Stage 1 finché non abbiamo una serie non aggiustata, perché è l'unica strategia che usa una percentuale del prezzo. Le altre cinque non sono toccate e possono partire."
   },
   {
