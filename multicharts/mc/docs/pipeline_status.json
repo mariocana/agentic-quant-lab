@@ -74,17 +74,18 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "blocked"
+    "2": "active"
    },
    "note": "Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.",
    "metrics": {
-    "trade": 61,
-    "wr": "47.5%",
-    "avg": "−$169",
-    "dd": "$40.3k",
-    "period": "4 mesi, 0 costi — non valido"
+    "primo giro IS (SENZA costi, non valido)": "827 trade · WR 55,6% · avg $86 · PF 1,135 · DD $36,2k · peggior trade $6,7k",
+    "per anno": "2020 **−19.690** · 2021 +30.245 · 2022 +10.025 · 2023 +28.770 · 2024 +22.100"
    },
    "log": [
+    {
+     "date": "2026-09-29",
+     "text": "**Primo giro Stage 2 su dati veri — non valido per il gate**: nelle Settings risultano `No Commission`, slippage 0 e **Bar Magnifier Disabled**. Range e input corretti, quindi basta rilanciare. Numeri lordi: 827 trade, PF 1,135, WR 55,6%, avg $86, DD $36,2k, peggior trade $6,7k → fallirebbe comunque **PF, DD e peggior trade** anche così. Il risultato vero è la ripartizione annuale: **il 2020 vale −19.690** e il max DD è datato 25 marzo 2020 (Covid); senza il 2020 gli altri quattro anni fanno $141 di avg trade. Spiega la distanza dal Fabio Model del corso (avg $183, PF 1,28), **validato sul 2021‑2026, cioè senza il Covid**. La finestra IS non si tocca: era dichiarata nella SPEC prima del test. Legittimo invece provare le varianti già pre‑registrate, e `MaxRisk_USD` (salta i giorni con range troppo largo) punta dritto al problema osservato."
+    },
     {
      "date": "2026-09-26",
      "text": "Live *Quant VWAP* (Burzichelli) analizzata: ottimizzazione indipendente della durata del range con picco a **30–32 min** che tiene OOS → i nostri 30 min sono in un cluster, non su un picco fittato. Pre‑registrata una variante d'ingresso: ritracciamento su **VWAP ancorato al breakout** (1–1.5 SD, stop 2×ATR). Il suo TP 3× non si trasferisce: profilo da capitale proprio, non da prop."
@@ -102,7 +103,7 @@
      "text": "Porting da `OrbBreakout_EA` (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2."
     }
    ],
-   "next": "Stage 2: backtest IS 2020‑01‑01 → 2024‑12‑31 su @NQ 5m, 1 contratto, costi on."
+   "next": "Rilanciare lo Stage 2 con **costi accesi** ($2.50/lato + 1 tick) e **Bar Magnifier a 1 min**. Poi leggere il gate sui numeri veri."
   },
   {
    "name": "VaultBreak",
