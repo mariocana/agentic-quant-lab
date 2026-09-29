@@ -5,15 +5,14 @@ Da fare nell'ordine, appena i fondi sono accreditati sul conto **Futures**.
 ## 1. TradeStation
 - [ ] Verifica che il conto Futures risulti **funded** e che nel Client HUB compaiano le
       entitlement dati CME/CBOT/NYMEX/COMEX (profilo **NON‑PRO**). Da qui partono i 90 giorni gratis.
-- [ ] Scarica **`Desktop w/ OptionStation Pro`** — non Titan X, non "TradeStation MCP".
-      È la desktop classica (Windows only): è la sua API quella che MultiCharts usa.
-      Titan X è la piattaforma di nuova generazione e l'integrazione MC non è costruita su
-      quella; "TradeStation MCP" è un connettore per LLM (Claude/ChatGPT) e non c'entra
-      niente con MultiCharts nonostante la sigla. OptionStation Pro è solo un modulo
-      opzioni in bundle: irrilevante per i futures.
-- [ ] Installala **sulla stessa macchina Windows di MultiCharts**, fai login, e lasciala
-      **aperta in background**: MC non parla coi server di TradeStation, parla con la
-      piattaforma installata in locale.
+- [ ] Scarica **`TITAN X`** — verificato sul campo il 29/09/2026: è la piattaforma che
+      MultiCharts usa, **non** la `Desktop w/ OptionStation Pro`. Attenzione perché la
+      pagina download di TradeStation ne elenca sette e due somigliano a quella giusta:
+      la `Desktop w/ OptionStation Pro` è la piattaforma classica e non è quella, e
+      `TradeStation MCP` non c'entra nulla nonostante la sigla — è un connettore per LLM
+      (Claude/ChatGPT) e vuole $10.000 di portafoglio.
+- [ ] Fai login e lasciala **aperta in background**: MC non parla coi server di
+      TradeStation, parla con la piattaforma installata in locale.
 
 ## 2. MultiCharts
 - [ ] Attiva il piano **Standard**. Crossgrade ottenuto dal supporto (29/09/2026): **primo
