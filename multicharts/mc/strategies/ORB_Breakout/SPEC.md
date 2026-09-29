@@ -83,3 +83,41 @@ assoluto ma i dichiarati adiacenti fossero mediocri, la variante si scarta.
 **Contesto del gate**: `DD ÷ 10 = $3.629` contro il max drawdown Apex di **$2.500**. Così
 com'è, anche a 1 solo micro la strategia avrebbe fatto saltare un conto funded nel marzo
 2020. La soglia del gate non è arbitraria: è la regola del conto.
+
+## Configurazione adottata allo Stage 4 (30/09/2026)
+
+```
+MaxRisk_USD = 3000      (salta i giorni con range > 150 pt)
+UseDeltaFilter = 1      (DeltaThreshold 200, valore del corso, NON ottimizzato)
+TP_RR = 1.0             (invariato)
+```
+
+Due input su tre concessi. Percorso, con lo split‑sample come unico arbitro:
+
+| variante | 1ª metà | 2ª metà | esito |
+|---|---|---|---|
+| `MaxRisk 2500` | −0,39 → 113,43 ✓ | 162,67 → 148,52 ✗ | **bocciata** |
+| `MaxRisk 3000` | −0,39 → 107,96 ✓ | 162,67 → 183,88 ✓ | **adottata** |
+| `TP_RR 0.5` | 107,96 → 59,82 ✗ | 183,88 → 130,56 ✗ | **bocciata** |
+| `UseDeltaFilter 1` | 107,96 → 130,79 ✓ | 183,88 → 188,51 ✓ | **adottata** |
+
+**Risultato IS 2020‑2024**: 674 trade · WR 57,6% · avg $161,36 · PF 1,304 · R:R 0,96 ·
+DD $15.697 · peggior trade $2.995 · nessun anno oltre il 37% del net.
+
+**Gate 2: 7 criteri su 8.** Resta `DD ÷ 10 = $1.570` contro la soglia **$1.000**
+(metà dell'MLL di LucidFlex 50k). Servirebbe scendere a $10.000 sul mini, −36%.
+
+**Riserva sul filtro delta**: nella seconda metà il guadagno è +2,5% su 357 trade, cioè
+dentro il rumore; il valore sta quasi tutto nella prima metà (+21%). Possibile che il
+segnale di order flow fosse più forte nel regime 2020‑2022. Da tenere presente come
+aspettativa bassa allo Stage 5.
+
+**Nota**: il max drawdown dell'IS ora cade nella **seconda metà** (ott. 2024), non più a
+marzo 2020. La strategia non ha più un evento eccezionale che domina il profilo di rischio.
+
+**Ultima variante disponibile** (terzo e ultimo input dello Stage 4): cutoff ingressi alle
+11:00 CT. Aspettativa dichiarata prima del test: **debole**. Toglie i breakout tardivi, che
+sono mediamente peggiori, ma non c'è una ragione strutturale per cui debba comprimere di un
+terzo una serie perdente. Se non basta, l'ORB non supera il Gate 2, e la conclusione da
+trarre è che con lo stop pari all'intero range di apertura la strategia è troppo grande per
+un conto con $2.000 di margine — non che il protocollo abbia sbagliato.

@@ -79,12 +79,16 @@
    },
    "note": "Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.",
    "metrics": {
-    "configurazione attuale": "`MaxRisk_USD 3000`, `TP_RR 1.0` — 723 trade · WR 57,0% · avg **$147,65** · PF **1,274** · R:R 0,96 · DD $18.991 · peggior trade $2.995",
-    "per anno": "2020 **+12.596** (era −20.656) · 2021 +38.261 · 2022 −550 · 2023 +25.423 · 2024 +31.022 — max 35,8% del net",
-    "Gate 2": "7 criteri su 8 passati. Resta **DD÷10 = $1.899** contro $1.250.",
-    "`TP_RR 0.5` scartata": "non tocca il DD (19.229) e peggiora l'avg trade in **entrambe** le metà (107,96→59,82 e 183,88→130,56)"
+    "configurazione adottata": "`MaxRisk_USD 3000` + `UseDeltaFilter 1` (soglia 200) + `TP_RR 1.0`",
+    "IS 2020‑2024": "674 trade · WR 57,6% · avg **$161,36** · PF **1,304** · R:R 0,96 · DD $15.697 · peggior trade $2.995",
+    "split‑sample delta": "1ª metà 107,96 → **130,79** · 2ª metà 183,88 → **188,51** — migliora in entrambe",
+    "Gate 2": "7 su 8. Resta **DD÷10 = $1.570** contro $1.000 (LucidFlex): serve −36%."
    },
    "log": [
+    {
+     "date": "2026-09-30",
+     "text": "**Filtro delta adottato: supera lo split‑sample in entrambe le metà.** 1ª metà avg 107,96 → **130,79** (+21%), 2ª metà 183,88 → **188,51** (+2,5%); migliorano anche PF e drawdown in entrambe. È la prima variante che passa senza riserve — `MaxRisk 2500` e `TP_RR 0.5` erano stati bocciati proprio da questo test. **Riserva**: nella seconda metà il guadagno è dentro il rumore, il valore sta quasi tutto nella prima (+21%) → possibile che il segnale di order flow fosse più forte nel regime 2020‑2022; aspettativa bassa per l'OOS. **Nota strutturale**: il max drawdown dell'IS ora cade in **ottobre 2024**, non più a marzo 2020 — la strategia non ha più un evento eccezionale che domina il rischio. Configurazione: `MaxRisk_USD 3000` + `UseDeltaFilter 1` + `TP_RR 1.0`, due input su tre."
+    },
     {
      "date": "2026-09-30",
      "text": "**Filtro delta, IS intero: risultato buono ma ancora provvisorio** (mancano le due metà, quindi non è adottato). Con `MaxRisk 3000` + `UseDeltaFilter 1` (soglia 200, il valore del corso, non ottimizzato): 674 trade contro 723, avg **$161,36** contro $147,65, PF **1,304** contro 1,274, DD **$15.697** contro $18.991, e **net più alto con meno trade** ($108.759 contro $106.752) → i 49 trade tolti erano collettivamente in perdita. Miglioramento diffuso anche negli anni buoni: il 2022 torna positivo (+3.464 da −550) e il 2021 sale a +40.253. Massimo anno 37,0%. **Gate 2: 7 criteri su 8**, resta DD÷10 = $1.570 contro la nuova soglia di **$1.000** (Lucid): serve ancora un taglio del 36%."
@@ -130,7 +134,7 @@
      "text": "Porting da `OrbBreakout_EA` (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2."
     }
    ],
-   "next": "Servono le **due metà** con `MaxRisk 3000` + delta on (2020‑01→2022‑06 e 2022‑07→2024‑12) per chiudere lo split‑sample; i termini di paragone sono avg $107,96 e $183,88. Poi resta una sola pre‑registrata con un meccanismo sul DD: il **cutoff ingressi** alle 11:00 CT."
+   "next": "Ultima pre‑registrata e ultimo input concesso: **cutoff ingressi 11:00 CT**, sui tre periodi. Aspettativa dichiarata: **debole** — il DD deve scendere da $15.697 a ≤ $10.000 (−36%) e un cutoff non ha un meccanismo forte su una serie perdente. Se non basta, l'ORB non supera il Gate 2."
   },
   {
    "name": "VaultBreak",
