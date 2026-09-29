@@ -14,31 +14,51 @@ DD per micro contratto piccolo rispetto al limite della prop. Sviluppo sempre su
 > ## ⛔ Apex è fuori — automazione vietata (verificato 30/09/2026)
 >
 > Dalla pagina *Prohibited Activities* di Apex: **«No Automation or Algorithm Usage
-> allowed»** — i premi riconoscono trader umani, non sistemi che eseguono logiche
-> preprogrammate. Non è una zona grigia. Tutte e sei le nostre strategie sono vietate lì,
-> e collegare MultiCharts via Rithmic non aggirerebbe nulla: violeremmo il contratto dal
-> primo trade.
->
-> **Prop di riferimento da ridefinire su Lucid Trading**, che ha MultiCharts nella lista
-> piattaforme ufficiale e non vieta l'automazione (proibisce micro scalping, hedging e
-> HFT, quest'ultimo definito come ordini in secondi/millisecondi — noi facciamo 1–4 trade
-> al giorno). **Servono ancora i numeri**: max drawdown, daily loss, profit target e tipo
-> di trailing (EOD o intraday) del conto che useremo, più conferma scritta
-> sull'automazione. Fino ad allora le soglie sotto restano quelle vecchie, **da ricalcolare**.
+> allowed»**. Non è una zona grigia. Tutte e sei le nostre strategie sono vietate lì, e
+> collegare MultiCharts via Rithmic non aggirerebbe nulla.
 
-Regole prop di riferimento ~~(Apex 50k, EOD trailing)~~ **obsolete, da rifare su Lucid**:
-target $3.000, max DD $2.500, daily loss $1.000, 21 giorni, max 6 mini / 60 micro.
-Nota: erano già superate di loro, perché Apex ha sostituito i prodotti il 1° marzo 2026 e
-il 50k con quei parametri non è più acquistabile.
+## Prop di riferimento: **LucidFlex 50k** (verificato 30/09/2026)
 
-### Altre regole Apex che generalizzano
+Automazione **esplicitamente permessa** (articolo *Other Trading Activities* → «Automated
+trading systems and trade copiers are permitted»), MultiCharts nella lista piattaforme,
+e il trader risponde di errori e malfunzionamenti del proprio software.
 
-Valgono probabilmente anche altrove, quindi restano criteri di progetto:
-- **niente trade senza stop** → conferma che `StopPts` è obbligatorio su NQ First5;
-- **niente target minuscoli con stop enormi** (il loro esempio: 5 tick contro 150);
-- **flat prima della chiusura**, obbligatorio → già nostro su tutte e sei;
-- **niente hedging su strumenti uguali o correlati**, anche fra conti diversi → conferma e
-  irrigidisce il gate 8: non si può tenere ORB long su NQ e una short su ES in parallelo.
+| | |
+|---|---|
+| Profit target | **$3.000** |
+| Max Loss Limit (MLL) | **$2.000** |
+| Tipo di drawdown | **EOD trailing** sul massimo saldo di *chiusura* |
+| Initial Trail Balance | $52.100 → superato, l'MLL **si blocca** |
+| Locked MLL | $50.100 |
+| Consistency | 50% (con cushion: si può passare in 2 giorni) |
+| Size massima | 4 mini / 40 micro |
+| Daily loss limit | **nessuno** (opzionale al checkout) |
+| Commissioni | NQ **$1.75/lato**, MNQ **$0.50/lato**, GC $2.30, MGC $0.80 |
+
+**Il trailing si ferma prima del target**: l'MLL insegue il saldo solo fino a $52.100, poi
+si blocca a $50.100, mentre il target è $53.000. La fase a rischio è quindi solo il tratto
+**dall'inizio ai primi $2.100 di profitto**; il resto si percorre contro un pavimento fisso.
+È molto meno ostile del trailing continuo che avevamo assunto prima.
+
+**Conti da NON usare**: *LucidDaily*, dove il news trading è un **hard breach** (flat da 1
+minuto prima a 1 minuto dopo le news rosse). Le nostre strategie tengono posizione dalla
+mattina alle 14:00 CT, quindi nei giorni di FOMC (13:00 CT) sarebbero in violazione.
+Restano **Flex**, Pro e Direct.
+
+**Niente Eurex** nella lista prodotti approvati (tutto CME/CBOT/NYMEX/COMEX) → il DAX
+resta fuori, e con esso il Dax Trading Lab di Serafini.
+
+**Attenzione ai costi in micro**: sviluppiamo su 1 NQ, dove il round turn costa $3.50. La
+stessa esposizione in micro (10 MNQ) costa **$10.00**, cioè quasi il triplo. Quando lo
+Stage 7 dimensiona in micro, i costi vanno ricalcolati con le tariffe MNQ: il backtest sul
+mini li sottostima.
+
+### Altre regole tenute come criteri di progetto
+
+Da Apex, perché generalizzano: niente trade senza stop (conferma `StopPts` obbligatorio su
+NQ First5); niente target minuscoli con stop enormi; flat prima della chiusura; **niente
+hedging su strumenti uguali o correlati anche fra conti diversi**, che conferma e
+irrigidisce il gate 8.
 
 ---
 
@@ -79,8 +99,8 @@ Costi: $2.50/lato + 1 tick. Solo il periodo IS.
 | profit factor | ≥ 1.2 |
 | win rate | ≥ 55% (profilo prop) |
 | R:R nominale | 0.5–1 |
-| max DD 1 contratto ÷ 10 (micro) | ≤ 50% del DD prop (**soglia da ricalcolare su Lucid**; col vecchio riferimento Apex: ≤ $1.250) |
-| peggior trade ÷ 10 | ≤ 50% daily loss (≤ $500) |
+| max DD 1 contratto ÷ 10 (micro) | ≤ 50% dell'MLL → **≤ $1.000** (LucidFlex 50k) |
+| peggior trade ÷ 10 | ≤ 25% dell'MLL → **≤ $500** (su Flex non c'è daily loss, quindi si àncora all'MLL) |
 | tabella annuale | nessun anno > 50% del profitto; segno stabile 2021‑23 vs 2024+ |
 
 ## Stage 3 — Monte Carlo built‑in (IS)

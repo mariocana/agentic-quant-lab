@@ -2,7 +2,7 @@
  "updated": "2026-09-30",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
- "prop": "⛔ **Apex fuori: automazione vietata** («No Automation or Algorithm Usage allowed», verificato 30/09/2026). Riferimento da ridefinire su **Lucid Trading** — MultiCharts nativo, automazione non vietata. Mancano max DD, daily loss, target e tipo di trailing.",
+ "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "stages": [
   {
    "id": 0,
@@ -258,12 +258,14 @@
   }
  ],
  "blockers": [
-  "**Numeri di Lucid da raccogliere**: max drawdown, daily loss limit, profit target e tipo di trailing (EOD o intraday) del conto scelto, più conferma scritta che l'automazione è consentita. Da lì si ricalcolano le soglie dei gate 2, 3 e 7.",
-  "**Soglie dei gate da ricalcolare** una volta noti i numeri Lucid: il `DD÷10 ≤ $1.250` del Gate 2 derivava dai $2.500 di Apex (regola: non oltre metà del DD consentito). Stesso discorso per `peggior trade÷10 ≤ $500`, derivato dal daily loss.",
-  "Storico: conto TradeStation aperto e licenza MC risolta → **nessun blocco esterno**. Oggi il setup: checklist in `mc/docs/setup_tradestation.md`. Primo dato che serve alla pipeline: la **data della prima barra** di @NQ 5 min caricata partendo dal 2016.",
-  "Promemoria, non un blocco: la copertura della licenza mensile finisce il **29/11**, il Black Friday è il **27/11**. Due giorni di margine per comprare la lifetime: se slitta, si resta senza piattaforma."
+  "Storico e piattaforma a posto. **Nessun blocco esterno**: restano solo i test.",
+  "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-09-30",
+   "text": "**Prop di riferimento definita: LucidFlex 50k.** Automazione **esplicitamente permessa** («Automated trading systems and trade copiers are permitted»). Numeri: target $3.000, MLL **$2.000**, **EOD trailing** sul massimo saldo di chiusura, consistency 50%, 4 mini / 40 micro, **nessun daily loss** (opzionale). Dettaglio che conta: **il trailing si blocca a $52.100** mentre il target è $53.000 → la fase a rischio è solo il tratto fino ai primi $2.100 di profitto, il resto è contro un pavimento fisso. Molto meno ostile del trailing continuo assunto finora. **Soglie Gate 2 ricalcolate**: DD÷10 ≤ **$1.000** (metà dell'MLL, era $1.250) e peggior trade÷10 ≤ $500 (ancorato all'MLL, perché su Flex non c'è daily loss). **LucidDaily escluso**: il news trading è hard breach e le nostre strategie tengono posizione durante FOMC. **Niente Eurex** nei prodotti approvati → il DAX resta chiuso. **Costi**: NQ $1.75/lato, MNQ $0.50/lato — la stessa esposizione in micro costa quasi il triplo del mini, da ricalcolare allo Stage 7."
+  },
   {
    "date": "2026-09-30",
    "text": "⛔ **Apex è fuori: l'automazione è esplicitamente vietata.** Dalla loro pagina *Prohibited Activities*: «No Automation or Algorithm Usage allowed — i premi riconoscono trader umani, non sistemi che eseguono logiche preprogrammate». Nessuna zona grigia: tutte e sei le strategie sono vietate lì, e collegare MultiCharts via Rithmic non aggira nulla. **Si passa a Lucid Trading**, che ha MultiCharts nella lista piattaforme ufficiale e proibisce solo micro scalping, hedging e HFT (definito come ordini in secondi/millisecondi). Restano da raccogliere i numeri del conto e la conferma scritta sull'automazione. **Altre regole Apex che teniamo come criteri di progetto** perché generalizzano: niente trade senza stop (conferma `StopPts` obbligatorio su NQ First5), niente target minuscoli con stop enormi, flat prima della chiusura, e **niente hedging su strumenti uguali o correlati anche fra conti diversi** — che conferma e irrigidisce il gate 8."
