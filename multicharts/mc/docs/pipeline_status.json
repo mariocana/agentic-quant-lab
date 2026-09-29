@@ -236,6 +236,10 @@
  "log": [
   {
    "date": "2026-09-29",
+   "text": "**Dax Trading Lab (Serafini) sospeso: blocco strumento, non dati.** Il DAX è Eurex e su Apex non è negoziabile → una strategia DAX non serve all'obiettivo prop. Trascritte comunque le 3 lezioni (5h41) e scritto un TODO nel journal. Il pezzo che vale a prescindere è **`DAX5m.txt`**: FDAX continuo a 5 min dal 04/01/2010 all'11/02/2026, 686.684 barre, nessun buco, **con Up/Down volume separati** (delta). Verificato che è back‑adjusted pulito: i salti overnight maggiori sono tutti eventi macro, nessuno su scadenza trimestrale. Uso più probabile, e possibile da subito: **banco di prova indipendente** — 16 anni di un altro mercato su cui verificare se un'idea nata sul NQ regge altrove."
+  },
+  {
+   "date": "2026-09-29",
    "text": "**GEX/GEXBot (*Class summary Freddy*) → playbook, non pipeline algo.** Nuovo verdetto `playbook` nel journal degli ingest, per il materiale valido a mano ma non codificabile: ricorrerà con l'order flow di Stucchi. Fuori dalla pipeline perché servono dati opzioni **e** order flow, la regola è dichiaratamente discrezionale, e il payoff cercato (asimmetrico, upside lasciato correre, incrementi dopo conferma) è l'opposto del profilo prop. Sintesi scritta per il playbook in `mc/ideas/NOTES_gex_freddy.md`. Unico pezzo che potrebbe attraversare: il **calendario** OPEX / triple witching / VIXperation / JHEQX, oggettivo e senza dati opzioni — annotato come possibile filtro di giornata, non pre‑registrato."
   },
   {

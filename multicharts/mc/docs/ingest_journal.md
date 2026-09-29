@@ -41,6 +41,36 @@ modifiche ai gate. Il protocollo resta quello del corso (`pipeline_prop.md`).
 | 2026‑09‑29 | [*Class summary Freddy 19.05* — GEX / GEXBot](../ideas/NOTES_gex_freddy.md) | Note di una lezione: gamma exposure come mappa operativa su NQ/NDX/QQQ, letta con tape e order flow | **playbook** | Fuori dalla pipeline algo per quattro motivi: servono dati opzioni (GEXBot) **e** order flow, la regola è dichiaratamente discrezionale («leggere la reazione»), il payoff cercato è asimmetrico con upside lasciato correre (opposto al profilo prop), e prevede incrementi dopo conferma. Sintesi per il playbook scritta nelle note: meccanica del gamma (attrito / pin / accelerazione, call e put wall), i tre livelli di contesto, e il **calendario** OPEX / triple witching / VIXperation / JHEQX. Quest'ultimo è l'unico pezzo oggettivo e senza dati opzioni: annotato come possibile filtro di giornata, **non** pre‑registrato. |
 | 2026‑09‑29 | `mc/ideas/…Liquidity_Gate_Complete_Academic_Specification_v5.0.docx` | Paper (Westbrook, lug 2026): classifica l'ambiente di liquidità su NQ in 5 tier per decidere quando il flusso istituzionale può forzare l'hedging dei dealer | **in coda** | **Blocco dati**: i criteri sono profondità del book a riposo, velocità di replenishment, gap nel book e **identificatori Market‑by‑Order** — cioè L3/MBO. Vedi `institutional_protocol_digest.md` §7: serve il Bridge (chiuso) + un'entitlement MBO separata, e resta aperto il problema della simmetria storico/live. Prima lettura, valutazione piena non fatta. |
 
+| 2026‑09‑29 | `mc/education/stefano_serafini/Dax Trading Lab` | Corso in 3 lezioni (5h41) sul metodo MVP applicato al DAX + 16 anni di dati + due binari di strategia | **in coda** | **Blocco strumento, non dati**: il DAX è **Eurex** e su Apex non è negoziabile (verificato 29/09) → una strategia DAX non serve all'obiettivo prop. Trascrizioni fatte, analisi del metodo **rimandata**. Vedi il TODO sotto. |
+
+### TODO — Dax Trading Lab (Serafini)
+
+Sospeso, non scartato. Cosa c'è e perché potrebbe tornare utile:
+
+- **Trascrizioni** delle 3 lezioni in `mc/education/stefano_serafini/transcripts/` — fatte, così
+  quando si riprende non si riparte da 5h41 di video.
+- **`DAX5m.txt` — il pezzo che vale a prescindere dal corso.** FDAX continuo a 5 min,
+  **04/01/2010 → 11/02/2026**: 686.684 barre, 4.093 sessioni, ~42.500 barre l'anno senza
+  buchi, zero barre a volume nullo, sessione 08:00–22:00 CET (168 barre/giorno, 73 nelle
+  mezze giornate). Verificata la continuità: i dieci salti overnight maggiori sono tutti
+  eventi macro reali (Brexit, Covid marzo 2020, Ucraina, dazi aprile 2025, referendum
+  greco) e **nessuno cade su una scadenza trimestrale** → serie back‑adjusted pulita, non
+  contratti grezzi incollati. Salto overnight mediano 23 punti. Ha **Up e Down volume
+  separati**, cioè il delta: alimenta `UpTicks`/`DownTicks`.
+- **`.ELD` e `.sef`**: binari. L'ELD è un export EasyLanguage importabile in MC ma
+  normalmente protetto quando distribuito così; il .sef è un archivio serializzato di
+  formato non riconosciuto. **Il sorgente della strategia probabilmente non c'è.**
+
+**Quando riprenderlo** (uno dei due basta):
+1. se si apre un ramo prop con un broker che dà Eurex (vedi «Ramo B» in `pipeline_prop.md`);
+2. se serve un **banco di prova indipendente**: 16 anni di un altro mercato, con delta, su
+   cui verificare se un'idea nata sul NQ regge altrove. Questo si può fare **adesso** e non
+   dipende da Apex — è l'uso più probabile.
+
+**Da valutare comunque per il metodo**: l'MVP di Serafini sembra un impianto suo
+(Macro‑Volumi‑Probabilità) applicabile ad altri strumenti, non una ricetta solo‑DAX. È
+questo, non la strategia DAX, la ragione per cui vale la pena tornarci.
+
 ## Da valutare (ingeriti, non ancora letti)
 
 Una riga anche qui: sapere **cos'è** un documento senza averlo letto costa trenta secondi
@@ -69,9 +99,8 @@ e evita di riaprirlo per scoprire che non serve.
 **Corsi** (video esclusi dal repo, restano in locale)
 - `mc/education/enrico_stucchi/` — order flow e option flow; ha già un `PLAYBOOK.md` e
   `MOC_ricerca.md` derivati.
-- `mc/education/stefano_serafini/` — Dax Trading Lab. Contiene **codice**: `DAX5m.txt` e
-  due file di strategia esportati (`.ELD`, `.sef`). Da guardare prima delle altre cartelle:
-  è materiale eseguibile, non solo video.
+- `mc/education/stefano_serafini/Stock Trading Lab` — 7 video (4,4 GB) sul metodo MVP
+  applicato alle **azioni**. Il Dax Trading Lab è già valutato sopra (in coda).
 - `mc/education/morpheus/` — Pro Trader Blueprint.
 - `mc/education/unger/` — Trading System Supremacy (cartelle già montate come working dir).
 
