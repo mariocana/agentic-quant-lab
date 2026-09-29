@@ -86,6 +86,10 @@
    "log": [
     {
      "date": "2026-09-29",
+     "text": "**Stage 4, griglia `MaxRisk_USD` fissata prima del run**: `0 · 2500 · 3000 · 4000 · 5000`. Il valore «250 pt» pre‑registrato allo Stage 0 era una stima al buio — sullo storico vero salta 3 trade su 395. Distribuzione del range di apertura sull'IS: mediana 90 pt ($1.805), p90 154 pt, p95 188 pt, max 334 pt ($6.680). Scritto anche cosa può e non può fare: **può** sistemare il peggior trade per costruzione, **probabilmente non può** sistemare il DD (è una serie di perdite normali a marzo 2020, non un trade mostruoso), e **gioca contro** il fatto che con `TP_RR 1.0` il target è largo quanto il range, quindi si eliminano anche le vincite maggiori."
+    },
+    {
+     "date": "2026-09-29",
      "text": "**Stage 2 rifatto con costi e Bar Magnifier: Gate 2 NON superato.** 827 trade, avg $81,04, PF 1,126, WR 55,6%, R:R 0,90, DD $36,3k, peggior trade $6.685. Passano n, avg trade, WR, R:R e la concentrazione annuale; **cadono PF, drawdown e peggior trade**. Il costo applicato risulta però solo ~$5,35 a trade tondo (net da $71.450 a $67.022): più basso dei ~$10–15 attesi con $2.50/lato + 1 tick → **da verificare se commissione e slippage sono per lato o per trade**, perché l'avg trade è vicino alla soglia. Diagnosi invariata e ora quantificata: **il 2020 vale −20.656**, il max DD è del 25 marzo 2020, e senza quell'anno gli altri quattro danno $135 di avg trade. Si passa allo **Stage 4** con le varianti già pre‑registrate."
     },
     {
