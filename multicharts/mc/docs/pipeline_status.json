@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-29",
+ "updated": "2026-09-30",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
  "prop": "Apex 50k EOD trailing · target $3.000 · max DD $2.500 · daily loss $1.000 · 21 giorni",
@@ -79,12 +79,15 @@
    },
    "note": "Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.",
    "metrics": {
-    "IS intero (costi on, 1 contratto)": "827 trade · WR 55,6% · avg $81 · PF 1,126 · DD $36,3k · peggior $6.685",
-    "1ª metà 2020‑01→2022‑06": "414 trade · WR 55,3% · avg **−$0,39** · PF **0,999** · net **−$162** · DD $36,3k (25 mar 2020)",
-    "2ª metà 2022‑07→2024‑12": "413 trade · WR 55,9% · avg **$162,67** · PF **1,259** · net $67.184 · DD $26,7k (31 ott 2024)",
-    "Gate 2": "non superato: PF, DD, peggior trade. **Tutto il profitto dell'IS viene dalla seconda metà.**"
+    "base case IS (MaxRisk 0)": "827 trade · WR 55,6% · avg $81 · PF 1,126 · DD $36,3k — 1ª metà PF **0,999**",
+    "con **MaxRisk_USD 3000**": "723 trade · WR 57,0% · avg **$147,65** · PF **1,27** · DD **$18,99k** — 1ª metà PF 1,21, 2ª metà PF 1,33",
+    "Gate 2": "resta **un solo criterio** fallito: DD÷10 = $1.899 contro $1.250. Prima ne fallivano tre."
    },
    "log": [
+    {
+     "date": "2026-09-30",
+     "text": "**Griglia `MaxRisk_USD` girata sui tre periodi: la variante funziona, e il criterio scritto prima sceglie da solo.** Nella **prima metà** — quella senza edge — la relazione è monotòna e pulita: avg trade 113 · 108 · 66 · 43 · 36 · 29 al crescere della soglia, PF da 1,25 a 1,05. Quindi nella prima metà i soldi si perdevano proprio **sui giorni a range largo**: mia diagnosi precedente sbagliata, non era solo una serie di perdite normali. Split‑sample: **2500 bocciato** (migliora la 1ª metà ma peggiora la 2ª), **3000 passa** in entrambe → selezione univoca, nessuna discrezionalità. Con 3000 sull'IS: 723 trade, avg $147,65, PF 1,27, WR 57,0%, R:R 0,96, DD $18.991. **Da tre criteri falliti a uno**: resta solo DD÷10 = $1.899 contro $1.250. Il DD per micro scende sotto il max drawdown Apex di $2.500, cioè la strategia sopravviverebbe a un funded. I due drawdown si sono anche riequilibrati (19,0k e 17,5k contro 36,3k e 26,7k)."
+    },
     {
      "date": "2026-09-29",
      "text": "**Split‑sample del base case: la prima metà dell'IS non ha edge.** 2020‑01→2022‑06: 414 trade, PF **0,999**, net **−$162**, avg −$0,39. 2022‑07→2024‑12: 413 trade, PF 1,259, avg $162,67, net $67.184. Tutto il profitto dell'IS viene dalla seconda metà. Due conseguenze. (1) **La regola dello split‑sample qui perde forza**: con la prima metà a zero, qualunque filtro che tolga due perdite «migliora» — il criterio va letto come *deve diventare genuinamente profittevole*, non *meno peggio*. (2) **Anche la metà buona non basta**: passa tutto il Gate 2 tranne il drawdown, DD÷10 = $2.673, sopra il max DD Apex di **$2.500** — e quel DD è del 31 ottobre 2024, niente a che fare col Covid. Il problema non è l'ingresso, è **l'unità di rischio**: lo stop è l'intero range di apertura (mediana $180 per micro, fino a $668), contro $2.500 di drawdown totale concesso. Dieci perdite di fila a misura mediana sono già il 72% del conto."
@@ -118,7 +121,7 @@
      "text": "Porting da `OrbBreakout_EA` (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2."
     }
    ],
-   "next": "Girare comunque la griglia `MaxRisk_USD` sui tre periodi (è pre‑registrata e costa poco), ma senza aspettarsi che sistemi il DD. Poi decidere: `TP_RR 0.5`, oppure prendere atto che con stop = intero range l'ORB non sta nel profilo Apex e serve una spec diversa."
+   "next": "Due cose: (1) Strategy Performance Report completo a `MaxRisk_USD 3000` sull'IS, per avere peggior trade e ripartizione annuale che l'Optimization Report non dà; (2) poi `TP_RR 0.5` sopra al 3000 — deve far scendere il DD da $18.991 a ≤ $12.500. Restano 2 input sui 3 concessi dallo Stage 4."
   },
   {
    "name": "VaultBreak",
@@ -254,6 +257,10 @@
   "Promemoria, non un blocco: la copertura della licenza mensile finisce il **29/11**, il Black Friday è il **27/11**. Due giorni di margine per comprare la lifetime: se slitta, si resta senza piattaforma."
  ],
  "log": [
+  {
+   "date": "2026-09-30",
+   "text": "**ORB: `MaxRisk_USD 3000` selezionato dallo split‑sample, Gate 2 a un criterio dal passare.** Era: PF 1,126, DD $36,3k, peggior trade $6.685, e una prima metà di IS senza edge (PF 0,999). Ora: PF **1,27**, avg trade **$147,65**, DD $18,99k, peggior trade limitato a ~$3.000 per costruzione, e **entrambe le metà profittevoli** (PF 1,21 e 1,33). Resta fuori solo il drawdown: $1.899 per micro contro la soglia di $1.250. Scritto anche il parser per gli Optimization Report (`mc/docs/read_mcreport.py`): i risultati stanno in gzip+base64 dentro il file INI."
+  },
   {
    "date": "2026-09-29",
    "text": "**ORB: lo split‑sample rivela che metà IS non ha edge** (2020‑01→2022‑06: PF 0,999 su 414 trade). Tutto il profitto viene da 2022‑07 in poi. E anche la metà buona, che passerebbe il Gate 2 su tutto il resto, ha DD÷10 = $2.673 contro i $2.500 di max drawdown Apex — con DD datato ottobre 2024, quindi non è una questione di Covid. Diagnosi: il problema non è la logica d'ingresso ma **l'unità di rischio**, perché lo stop è l'intero range di apertura invece di una cifra scelta."
