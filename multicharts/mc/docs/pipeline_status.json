@@ -191,7 +191,7 @@
    "path": "mc/strategies/DriftPullback",
    "stages": {
     "0": "pass",
-    "1": "pending"
+    "1": "blocked"
    },
    "note": "Codice pronto (`DriftPullback.txt`, due serie dati: 5m esecuzione + 15m segnale). Drift 1h ≥ 0.10% + ancora inclinata → si compra la prima barra 5m **contro** il drift entro 30 min. **L'unica candidata che nasce già col profilo prop**: WR 65%, R:R 0.5 (stop 80 / target 40–50), flat 14:55 CT e cap di perdita giornaliera scritto nella strategia (max 2 loss/giorno = $322 per micro). Sorgente non fornito dal corso: il porting viene dal walkthrough del PDF → lo Stage 1 verifica anche la fedeltà.",
    "metrics": {
@@ -199,6 +199,10 @@
     "worst day strutturale": "2 stop = $3.220 su NQ, $322 su MNQ → max 3 micro sotto il daily loss Apex"
    },
    "log": [
+    {
+     "date": "2026-09-29",
+     "text": "**Problema dati trovato prima di partire**: `@NQ` di TradeStation è back‑adjusted (il 03/01/2016 segna ~8.440 contro i ~4.500 reali). Irrilevante per le altre cinque strategie, che lavorano su differenze di prezzo; **decisivo per questa**, l'unica che usa una percentuale del prezzo (`driftPct`). Con la serie traslata la soglia `DriftThreshPct 0.10` misura regimi diversi a seconda dell'anno, e l'IS verrebbe misurato con un metro diverso dall'OOS. Da risolvere prima dello Stage 1: prima si prova una serie non back‑adjusted (non tocca il codice), e solo se non è praticabile si riscrive il drift in punti normalizzati per ATR."
+    },
     {
      "date": "2026-09-28",
      "text": "Seconda variante configurabile: `TriggerMode` 0 = qualsiasi barra contraria (validato, default) / 1 = barra contraria **con rifiuto**, cioè chiusura lontana almeno `RejShadowFrac` del range dall'estremo del pullback. Il trigger validato è una candela sola e solo il segno di Close−Open: questa chiede che il movimento contrario sia stato respinto dentro la barra, non solo una pausa. Atteso meno trade e WR più alto; con R:R 0.5, perdere trade senza guadagnare win rate peggiora tutto. Compone con `EntryMode`: prima da sole, poi insieme."
@@ -216,7 +220,7 @@
      "text": "Entra in pipeline. Motivo: porta il lato short e soprattutto il **cap di perdita giornaliera strutturale** (MaxLossesPerDay 2), l'unica del corso in cui il worst day è noto prima del backtest invece di essere scoperto nell'equity curve. Rischio principale: è la quinta strategia su NQ e la terza momentum → correlazione da misurare subito dopo lo Stage 2, non al gate 8."
     }
    ],
-   "next": "Stage 1: chart @NQ 5m Globex + Data2 15m dello stesso simbolo, ShowLog 1, ~100 giorni. Controlli chiave: ARM solo su multipli di 15 min, un trade per armamento, scadenza a 6 barre, stop 2 tick peggiori del livello, guardrail 4 trade / 2 loss."
+   "next": "**Bloccata**: serve una serie @NQ non back‑adjusted (o il drift riscritto in ATR) prima di poter fare lo Stage 1. Vedi la sezione dati in SPEC.md."
   },
   {
    "name": "Evento macro",
@@ -234,6 +238,10 @@
   "Promemoria, non un blocco: la copertura della licenza mensile finisce il **29/11**, il Black Friday è il **27/11**. Due giorni di margine per comprare la lifetime: se slitta, si resta senza piattaforma."
  ],
  "log": [
+  {
+   "date": "2026-09-29",
+   "text": "**Storico TradeStation verificato: @NQ 5 min parte dal 3 gennaio 2016** (domenica, riapertura Globex 17:00 CT). IS 2020‑01‑01 → 2024‑12‑31 e OOS 2025 → oggi restano come sono, con quattro anni di margine. **Ma la serie è back‑adjusted**: DriftPullback va in `blocked` allo Stage 1 finché non abbiamo una serie non aggiustata, perché è l'unica strategia che usa una percentuale del prezzo. Le altre cinque non sono toccate e possono partire."
+  },
   {
    "date": "2026-09-29",
    "text": "**Dax Trading Lab (Serafini) sospeso: blocco strumento, non dati.** Il DAX è Eurex e su Apex non è negoziabile → una strategia DAX non serve all'obiettivo prop. Trascritte comunque le 3 lezioni (5h41) e scritto un TODO nel journal. Il pezzo che vale a prescindere è **`DAX5m.txt`**: FDAX continuo a 5 min dal 04/01/2010 all'11/02/2026, 686.684 barre, nessun buco, **con Up/Down volume separati** (delta). Verificato che è back‑adjusted pulito: i salti overnight maggiori sono tutti eventi macro, nessuno su scadenza trimestrale. Uso più probabile, e possibile da subito: **banco di prova indipendente** — 16 anni di un altro mercato su cui verificare se un'idea nata sul NQ regge altrove."

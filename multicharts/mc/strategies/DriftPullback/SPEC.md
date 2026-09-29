@@ -142,3 +142,37 @@ Gate della pipeline. In più, kill specifici:
   comportamento codificato nel nostro gate 8 (bench sopra il 90° percentile MC, rientro
   solo a nuovo massimo di equity) — ma significa che il regime recente le è ostile, e
   che l'OOS 2025+ va guardato con quell'aspettativa.
+
+## Attenzione dati — serie back‑adjusted (29/09/2026)
+
+`@NQ` di TradeStation è un **contratto continuo back‑adjusted**: il presente è corretto, il
+passato è traslato dell'aggiustamento accumulato sui rollover. Riscontro: il 03/01/2016 la
+serie segna ~8.440 mentre il NQ vero stava intorno a 4.500, cioè ~3.900 punti di scarto.
+
+**Per le altre cinque strategie è irrilevante**: lavorano su *differenze* di prezzo (range
+ORB, ATR, stop e target in punti, distanze dal VWAP), e una traslazione costante non le tocca.
+
+**Per DriftPullback no**, ed è l'unica:
+
+```
+driftPct = (Close of data2 - Close[DriftLen] of data2) / Close[DriftLen] of data2 * 100
+```
+
+È una **percentuale del prezzo**. Su una serie traslata la stessa escursione in punti dà
+una percentuale diversa a seconda dell'anno: nel 2016, 40 punti erano lo 0,88% del prezzo
+vero (4.530) ma risultano lo 0,47% su quello aggiustato (8.440). La soglia
+`DriftThreshPct 0.10` — che il tutorial chiama esplicitamente *una definizione di regime,
+non un parametro da ottimizzare* — misurerebbe quindi regimi via via più permissivi
+andando indietro nel tempo, e l'IS 2020–2024 sarebbe misurato con un metro diverso
+dall'OOS.
+
+**Da risolvere prima dello Stage 1**, in quest'ordine:
+1. **Serie non back‑adjusted** per questa strategia (il tipo di contratto continuo è
+   configurabile lato simbolo). È la soluzione da provare per prima perché non tocca il
+   codice e lascia i parametri congelati come sono.
+2. Solo se la 1 non è praticabile: riscrivere il drift in **punti normalizzati per ATR**
+   invece che in percentuale. Più invasiva — cambia una definizione congelata dall'autore,
+   quindi i suoi numeri di riferimento non sarebbero più confrontabili.
+
+Non accettare la terza via (usare la serie aggiustata e tirare avanti): renderebbe l'unico
+parametro non ottimizzabile della strategia dipendente dall'anno.
