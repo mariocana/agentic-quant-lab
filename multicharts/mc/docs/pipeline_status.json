@@ -2,7 +2,7 @@
  "updated": "2026-09-30",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
- "prop": "Apex 50k EOD trailing · target $3.000 · max DD $2.500 · daily loss $1.000 · 21 giorni",
+ "prop": "⛔ **Apex fuori: automazione vietata** («No Automation or Algorithm Usage allowed», verificato 30/09/2026). Riferimento da ridefinire su **Lucid Trading** — MultiCharts nativo, automazione non vietata. Mancano max DD, daily loss, target e tipo di trailing.",
  "stages": [
   {
    "id": 0,
@@ -258,12 +258,16 @@
   }
  ],
  "blockers": [
-  "**Domanda aperta più importante del progetto: l'algo trading è consentito?** Se non lo è, tutto ciò che stiamo costruendo è inutilizzabile su quel broker. Sul sito Apex non sono riuscito a trovare la regola (sito rifatto, FAQ in 404). Lucid non vieta l'automazione fra le pratiche proibite — elenca micro scalping, hedging e HFT definito come ordini in secondi/millisecondi — e ha **MultiCharts nella lista piattaforme ufficiale**. Ma «non vietato» non è «permesso»: **serve risposta scritta dal supporto di entrambe.**",
-  "**Parametri Apex da rinfrescare**: Apex ha cambiato prodotti il 1° marzo 2026 (EOD Trail / Intraday Trail; il 25k Intraday Trail ha max DD $1.000, target $1.500, 4 mini/40 micro, 1 giorno minimo, consistency 50% sul funded e nessuna in eval). Il nostro riferimento — 50k legacy, DD $2.500, daily loss $1.000, 21 giorni, 6 mini/60 micro — non è più acquistabile. Da aggiornare anche se restassimo con Apex, perché le soglie del Gate 2 ne derivano.",
+  "**Numeri di Lucid da raccogliere**: max drawdown, daily loss limit, profit target e tipo di trailing (EOD o intraday) del conto scelto, più conferma scritta che l'automazione è consentita. Da lì si ricalcolano le soglie dei gate 2, 3 e 7.",
+  "**Soglie dei gate da ricalcolare** una volta noti i numeri Lucid: il `DD÷10 ≤ $1.250` del Gate 2 derivava dai $2.500 di Apex (regola: non oltre metà del DD consentito). Stesso discorso per `peggior trade÷10 ≤ $500`, derivato dal daily loss.",
   "Storico: conto TradeStation aperto e licenza MC risolta → **nessun blocco esterno**. Oggi il setup: checklist in `mc/docs/setup_tradestation.md`. Primo dato che serve alla pipeline: la **data della prima barra** di @NQ 5 min caricata partendo dal 2016.",
   "Promemoria, non un blocco: la copertura della licenza mensile finisce il **29/11**, il Black Friday è il **27/11**. Due giorni di margine per comprare la lifetime: se slitta, si resta senza piattaforma."
  ],
  "log": [
+  {
+   "date": "2026-09-30",
+   "text": "⛔ **Apex è fuori: l'automazione è esplicitamente vietata.** Dalla loro pagina *Prohibited Activities*: «No Automation or Algorithm Usage allowed — i premi riconoscono trader umani, non sistemi che eseguono logiche preprogrammate». Nessuna zona grigia: tutte e sei le strategie sono vietate lì, e collegare MultiCharts via Rithmic non aggira nulla. **Si passa a Lucid Trading**, che ha MultiCharts nella lista piattaforme ufficiale e proibisce solo micro scalping, hedging e HFT (definito come ordini in secondi/millisecondi). Restano da raccogliere i numeri del conto e la conferma scritta sull'automazione. **Altre regole Apex che teniamo come criteri di progetto** perché generalizzano: niente trade senza stop (conferma `StopPts` obbligatorio su NQ First5), niente target minuscoli con stop enormi, flat prima della chiusura, e **niente hedging su strumenti uguali o correlati anche fra conti diversi** — che conferma e irrigidisce il gate 8."
+  },
   {
    "date": "2026-09-30",
    "text": "**Valutazione cambio prop da Apex a Lucid, e due scoperte collaterali.** Motivo del cambio: Lucid supporta **nativamente MultiCharts** (verificato: è nella loro lista piattaforme) e non vieta l'automazione fra le pratiche proibite; su Apex l'algo trading sarebbe a rischio. **Non ho potuto verificare la regola Apex sull'automazione**: sito rifatto, pagine FAQ e policy in 404. Da chiedere per iscritto a entrambe — è la domanda più importante del progetto. Indizio a favore di Lucid: hanno definito l'HFT in senso stretto (ordini in secondi/millisecondi) invece di vietare l'automazione in blocco; noi facciamo 1–4 trade al giorno. **Scoperta 1**: i nostri parametri Apex sono del prodotto **legacy**, non più acquistabile — Apex ha cambiato tutto il 1° marzo 2026. **Scoperta 2**: Apex ora elenca **EUREX** fra gli strumenti (con asterisco): se confermato, si riapre il Dax Trading Lab di Serafini, archiviato ieri proprio perché il DAX non sembrava negoziabile."

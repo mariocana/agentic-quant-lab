@@ -11,9 +11,34 @@ Profilo target (Lezione 10, Live 1–5): **win rate ≥ 55–60%, R:R 0.5–1**,
 DD per micro contratto piccolo rispetto al limite della prop. Sviluppo sempre su **NQ
 (o contratto pieno) a 1 contratto**; la size in micro la decide il simulatore.
 
-Regole prop di riferimento (Apex 50k, EOD trailing): target **$3.000**, max DD
-**$2.500**, daily loss $1.000, 21 giorni, max 6 mini / 60 micro, min $150/giorno,
-payout 100% dei primi $25k, ladder totale ~$13k per account.
+> ## ⛔ Apex è fuori — automazione vietata (verificato 30/09/2026)
+>
+> Dalla pagina *Prohibited Activities* di Apex: **«No Automation or Algorithm Usage
+> allowed»** — i premi riconoscono trader umani, non sistemi che eseguono logiche
+> preprogrammate. Non è una zona grigia. Tutte e sei le nostre strategie sono vietate lì,
+> e collegare MultiCharts via Rithmic non aggirerebbe nulla: violeremmo il contratto dal
+> primo trade.
+>
+> **Prop di riferimento da ridefinire su Lucid Trading**, che ha MultiCharts nella lista
+> piattaforme ufficiale e non vieta l'automazione (proibisce micro scalping, hedging e
+> HFT, quest'ultimo definito come ordini in secondi/millisecondi — noi facciamo 1–4 trade
+> al giorno). **Servono ancora i numeri**: max drawdown, daily loss, profit target e tipo
+> di trailing (EOD o intraday) del conto che useremo, più conferma scritta
+> sull'automazione. Fino ad allora le soglie sotto restano quelle vecchie, **da ricalcolare**.
+
+Regole prop di riferimento ~~(Apex 50k, EOD trailing)~~ **obsolete, da rifare su Lucid**:
+target $3.000, max DD $2.500, daily loss $1.000, 21 giorni, max 6 mini / 60 micro.
+Nota: erano già superate di loro, perché Apex ha sostituito i prodotti il 1° marzo 2026 e
+il 50k con quei parametri non è più acquistabile.
+
+### Altre regole Apex che generalizzano
+
+Valgono probabilmente anche altrove, quindi restano criteri di progetto:
+- **niente trade senza stop** → conferma che `StopPts` è obbligatorio su NQ First5;
+- **niente target minuscoli con stop enormi** (il loro esempio: 5 tick contro 150);
+- **flat prima della chiusura**, obbligatorio → già nostro su tutte e sei;
+- **niente hedging su strumenti uguali o correlati**, anche fra conti diversi → conferma e
+  irrigidisce il gate 8: non si può tenere ORB long su NQ e una short su ES in parallelo.
 
 ---
 
@@ -54,7 +79,7 @@ Costi: $2.50/lato + 1 tick. Solo il periodo IS.
 | profit factor | ≥ 1.2 |
 | win rate | ≥ 55% (profilo prop) |
 | R:R nominale | 0.5–1 |
-| max DD 1 contratto ÷ 10 (micro) | ≤ 50% del DD prop (Apex 50k: ≤ $1.250) |
+| max DD 1 contratto ÷ 10 (micro) | ≤ 50% del DD prop (**soglia da ricalcolare su Lucid**; col vecchio riferimento Apex: ≤ $1.250) |
 | peggior trade ÷ 10 | ≤ 50% daily loss (≤ $500) |
 | tabella annuale | nessun anno > 50% del profitto; segno stabile 2021‑23 vs 2024+ |
 
