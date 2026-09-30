@@ -164,6 +164,10 @@
    "log": [
     {
      "date": "2026-10-01",
+     "text": "**Prova (b) preparata: @ES con stop/target riscalati sull'ATR.** `StopLossPts` e `TakeProfitPts` erano già in punti, quindi il porting non tocca il codice. Fattore 0,265 (rapporto delle medie ATR sull'IS). In dollari il rischio per micro scende da $200 a **$132,50**: è il punto della prova, più granularità sotto lo stesso MLL. **Due handicap messi per iscritto prima dei risultati**: (1) il rapporto ES/NQ è passato da 0,35 a 0,22 in cinque anni, quindi uno stop fisso sarà stretto nella prima metà e largo nella seconda — se lo split‑sample si sbilancia, questa è la prima spiegazione da considerare; (2) rispetto al proprio rumore ES è **4× più grossolano** (ATR ~220 tick contro ~836), e l'attrito per trade passa dall'1,35% al **4,30%** del target. Aspettativa dichiarata: ES dovrebbe uscire *peggio* sul P/D; se esce meglio nonostante l'attrito, il segnale è forte."
+    },
+    {
+     "date": "2026-10-01",
      "text": "**`MaxTradesPerDay 1` bocciata dallo split‑sample, ed è il caso più insidioso finora.** 1ª metà avg $92,02 → **$234,18** (+154%); 2ª metà $134,58 → **$81,55** (−39%). Sull'IS intero sembrava ottima — avg da $110 a $167, PF da 1,246 a 1,397, DD da $18.895 a $16.317, tre metriche su tre in miglioramento — ma il **P/D peggiora** (4,21 → 3,93) e lo split‑sample mostra che tutto il guadagno viene dal 2020‑2022, mentre nel 2022‑2024 il net crolla da 41.450 a 13.781. **Terza bocciatura odierna di una variante che l'IS intero avrebbe approvato.** **Segnale di fragilità più serio del fallimento stesso**: nella 1ª metà il parametro ottimale è 1 trade/giorno (P/D 4,97), nella 2ª è 3 (P/D 2,86 contro 1,11). La sensibilità al parametro **cambia segno** fra le due metà — in un periodo i rientri dopo uno stop sono il problema, nell'altro sono dove sta il guadagno. Il base case a 3/giorno nasconde l'instabilità perché le due metà sembrano simili (PF 1,202 e 1,308)."
     },
     {
@@ -179,7 +183,7 @@
      "text": "Spec + codice. Scelta: ATR **rolling 252** invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti."
     }
    ],
-   "next": "Restano 2 input sui 3 dello Stage 4 e una sola pre‑registrata: la griglia **`NoiseMult` 0.5/0.7 × `DailyATRLen` 252/504**, da ottimizzare insieme scegliendo il cluster. Aspettativa dichiarata: **debole** sul drawdown — è una griglia di parametri senza un meccanismo diretto, come il cutoff dell'ORB. Serve portare il DD da $18.895 a ~$7.800. In parallelo la prova (b) su ES, da giudicare sul **P/D** (riferimento NQ: 4,21).",
+   "next": "**Prova (b) in corso — porting su @ES.** Conversione decisa ex ante e a verbale nella SPEC: fattore ATR ES/NQ = **0,265** (media 208,66 vs 55,26 su 21 campioni IS) → `StopLossPts 26,50`, `TakeProfitPts 13,25`. Nessun'altra modifica, codice invariato. Tre run (IS intero + due metà), giudizio sul **P/D**, riferimento da battere **4,21**. Poi resta la griglia `NoiseMult` 0.5/0.7 × `DailyATRLen` 252/504.",
    "metrics": {
     "Stage 2 IS 2020‑2024": "723 trade · WR **63,1%** · avg $110,15 · PF 1,246 · R:R 0,73 · DD **$18.895** · peggior trade $2.005",
     "per anno": "2020 +4.361 · 2021 +20.692 · 2022 +16.826 · 2023 +21.316 · 2024 +16.442 — **tutti positivi**, max 26,8% del net",
@@ -303,6 +307,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-01",
+   "text": "**Criterio P/D a verbale in `pipeline_prop.md`.** A lotti fissi profitto e drawdown scalano entrambi con N, quindi una size valida esiste **se e solo se** `P/D ≥ Target/MLL` — e **N si semplifica**: se il rapporto non regge, nessuna size lo aggiusta. Conseguenza sulla scelta del conto: Target/MLL vale 1,25 (25k) · **1,50 (50k)** · 2,00 (100k e 150k). Il conto più grande **non** è più facile, chiede il doppio del P/D; il 25k ha il rapporto migliore ma un MLL da $1.200 che le nostre NQ non reggono a 1 micro. Resta il 50k. Poiché il Gate 3 usa il 95° percentile Monte Carlo (misurato **2,57×** lo storico), la soglia MC‑robusta sul 50k è **≈ 3,86**. VaultBreak è a 4,21: passa, ma di poco. Da qui la regola operativa dello Stage 4: **le varianti si giudicano sul P/D**, non su avg trade / PF / drawdown presi singolarmente."
+  },
   {
    "date": "2026-10-01",
    "text": "**Due strategie indipendenti, lo stesso muro: il drawdown.** ORB (dopo tre varianti) $15.017; VaultBreak (base case) $18.895 — cioè **$1.500 e $1.889 per micro** contro un MLL di **$2.000**. Logiche diverse, stesso ordine di grandezza. La diagnosi non è più sulla singola strategia: **su NQ, a 1 micro, il conto LucidFlex 50k è piccolo**. Aritmetica: MNQ rischia ~$200 per trade con stop da 100 punti, e su 700+ trade una serie perdente da 9–10 è ordinaria, non eccezionale → ~$1.900 di drawdown senza che succeda nulla di strano. Tre strade, da decidere: (a) **ridurre il rischio per trade** (stop più stretto, o `MaxTradesPerDay 1`); (b) **strumento meno volatile in dollari** — MES muove ~$300/micro al giorno contro i ~$700 di MNQ, cioè circa la metà; (c) **conto più grande** — LucidFlex 100k ha MLL $3.000 e 150k $4.500, dove $1.889 diventa il 42% invece del 94%. **Nota**: la (c) non è spostare la soglia dopo aver fallito, è chiedersi se il 50k sia il conto giusto per questa famiglia di strategie. Va decisa deliberatamente, non per comodità."

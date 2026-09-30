@@ -114,3 +114,83 @@ Più grave del fallimento della variante: **il parametro ottimale si ribalta fra
 Il base case a 3/giorno **maschera** l'instabilità, perché con quel valore le due metà
 sembrano coerenti (PF 1,202 e 1,308). Da tenere presente allo Stage 5: è il tipo di
 fragilità che emerge fuori campione.
+
+## Stage 4 — prova (b): porting su @ES. Regola di conversione, **decisa prima di lanciare**
+
+Il codice **non cambia**: `StopLossPts` e `TakeProfitPts` sono già in punti, quindi il
+porting è un cambio di due input più lo strumento. Tutto il resto resta identico:
+`NoiseMult 0.60`, `DailyATRLen 252`, `EarliestEntry 845`, `LatestEntry 1400`,
+`FlattenTime 1450`, `MaxTradesPerDay 3`, `VWAPExitBars 2`, sessione **RTH CME custom**.
+
+### Come si converte
+
+Stop e target si riscalano sul **rumore proprio dello strumento**, cioè sul `DailyATR` che
+la strategia già calcola. Rapporto letto da `ShowLog`, 21 campioni trimestrali sull'IS:
+
+| data | ATR @NQ | ATR @ES | ES/NQ | | data | ATR @NQ | ATR @ES | ES/NQ |
+|---|---|---|---|---|---|---|---|---|
+| 02/01/20 | 81,71 | 28,42 | 0,348 | | 03/01/23 | 303,07 | 78,05 | 0,258 |
+| 01/04/20 | 118,27 | 45,47 | 0,384 | | 03/04/23 | 268,81 | 70,34 | 0,262 |
+| 01/07/20 | 145,36 | 57,32 | 0,394 | | 03/07/23 | 228,90 | 60,96 | 0,266 |
+| 01/10/20 | 176,62 | 65,21 | 0,369 | | 02/10/23 | 212,99 | 48,79 | 0,229 |
+| 04/01/21 | 206,85 | 66,08 | 0,319 | | 02/01/24 | 196,27 | 43,57 | 0,222 |
+| 01/04/21 | 204,66 | 53,66 | 0,262 | | 01/04/24 | 188,94 | 41,75 | 0,221 |
+| 01/07/21 | 199,81 | 48,45 | 0,242 | | 01/07/24 | 199,87 | 45,35 | 0,227 |
+| 01/10/21 | 181,40 | 42,87 | 0,236 | | 01/10/24 | 227,23 | 51,29 | 0,226 |
+| 03/01/22 | 192,26 | 42,88 | 0,223 | | 31/12/24 | 244,08 | 55,50 | 0,227 |
+| 01/04/22 | 230,15 | 58,37 | 0,254 | | | | | |
+| 01/07/22 | 275,75 | 75,14 | 0,272 | | **media** | **208,66** | **55,26** | **0,2648** |
+| 03/10/22 | 298,80 | 81,09 | 0,271 | | | | | |
+
+**Fattore adottato: 0,265** (rapporto delle medie, non media dei rapporti — pesa i periodi
+per la loro volatilità assoluta, che è ciò che conta per uno stop fisso).
+
+| | @NQ | @ES |
+|---|---|---|
+| `StopLossPts` | 100 | **26,50** |
+| `TakeProfitPts` | 50 | **13,25** |
+| Stop in $ (mini) | $2.000 | $1.325 |
+| Target in $ (mini) | $1.000 | $662,50 |
+| Stop in $ (micro) | $200 | **$132,50** |
+| Target in $ (micro) | $100 | $66,25 |
+
+Entrambi i valori ES sono multipli di 0,25 (tick), quindi rappresentabili esatti.
+
+### Due avvertenze messe per iscritto **prima** dei risultati
+
+**1. Il rapporto non è stabile.** È passato da 0,35 (2020) a 0,22 (2024): NQ ha guadagnato
+volatilità relativa su ES per cinque anni di fila. Uno stop fisso a 0,265 sarà quindi
+**troppo stretto** nella prima metà dell'IS e **troppo largo** nella seconda. È lo stesso
+difetto che ha già il 100 fisso su NQ — per questo lo teniamo uguale, per confrontare like
+for like — ma se ES dovesse mostrare uno split‑sample sbilanciato, **questa è la prima
+spiegazione da considerare**, prima di concludere che lo strumento non funziona. La cura
+(stop in frazioni di `DailyATR` anziché in punti) è una variante separata, non ora.
+
+**2. ES parte con un handicap di attrito di ~3×.** Il tick ES vale $12,50 contro i $5,00 di
+NQ, ma l'ATR di ES vale ~220 tick contro gli ~836 di NQ: rispetto al proprio rumore, ES è
+uno strumento **4 volte più grossolano**.
+
+| | @NQ | @ES |
+|---|---|---|
+| Commissioni r/t (mini) | $3,50 | ~$3,50 |
+| Slippage 2 tick | $10,00 | $25,00 |
+| **Attrito totale** | **$13,50** | **$28,50** |
+| in % del target | 1,35% | **4,30%** |
+
+Quindi se ES esce peggio di NQ di un margine modesto, **non è una bocciatura della logica**:
+è il costo. Se esce meglio *nonostante* questo, il segnale è forte.
+
+### Metro di giudizio
+
+**P/D**, come da `pipeline_prop.md`. Riferimento da battere: **4,21** (NQ, IS intero).
+Tre run come sempre: IS intero + due metà. La variante passa solo se il P/D migliora **e**
+lo split‑sample non si ribalta.
+
+**Aspettativa dichiarata**: l'attrito relativo 3× dice che ES dovrebbe uscire *peggio* sul
+P/D. Il motivo per provarlo comunque è la **granularità**: $132,50 di rischio per micro
+contro $200 significa poter tenere ~1,5× i contratti sotto lo stesso MLL di $2.000, e la
+size è l'unico modo per arrivare a $3.000 di target quando il P/D è appena sufficiente.
+
+> Da verificare al lancio: la tariffa **MES/ES** nella lista prodotti approvati Lucid non è
+> ancora a verbale. Per questo run usare gli stessi costi di NQ ($1,75/lato + 1 tick di
+> slippage per lato) e correggere allo Stage 7 se la tariffa reale differisce.

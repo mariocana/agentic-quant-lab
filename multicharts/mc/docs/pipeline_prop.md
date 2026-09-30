@@ -62,6 +62,60 @@ irrigidisce il gate 8.
 
 ---
 
+## Il criterio P/D — perché la size non salva una strategia (01/10/2026)
+
+Lavoriamo a **lotti fissi**, senza compounding. Quindi con N contratti profitto e drawdown
+scalano entrambi lineari: `P_N = N·P` e `D_N = N·D`, dove P e D sono profitto e drawdown
+misurati **a 1 micro** sulla finestra di valutazione.
+
+Per passare servono due condizioni insieme:
+
+```
+N · P  ≥  Target        →   N ≥ Target / P
+N · D  ≤  MLL           →   N ≤ MLL / D
+```
+
+Una N valida esiste **se e solo se** `Target/P ≤ MLL/D`, cioè:
+
+> **P / D  ≥  Target / MLL**
+
+**N si semplifica.** Non compare nel criterio. Se il rapporto non regge, nessuna size lo
+aggiusta: aumentare i contratti avvicina al target e al breach nella stessa proporzione.
+
+### Conseguenza sulla scelta del conto
+
+| Conto | Target | MLL | **Target/MLL** |
+|---|---|---|---|
+| 25k | $1.500 | $1.200 | **1,25** |
+| **50k** | $3.000 | $2.000 | **1,50** |
+| 100k | $6.000 | $3.000 | **2,00** |
+| 150k | $9.000 | $4.500 | **2,00** |
+
+Il conto più grande **non** è più facile: chiede un P/D doppio. Il 25k ha il rapporto
+migliore ma un MLL di $1.200 che le nostre strategie NQ non reggono nemmeno a 1 micro
+(drawdown misurato $1.502 ORB, $1.889 VaultBreak). **Resta il 50k**, come già scelto.
+
+### Come si usa, e cosa NON dice
+
+È uno **screening di fattibilità**, non una promessa. In particolare:
+
+- usa il drawdown **storico su un singolo percorso**. Il Gate 3 usa il 95° percentile Monte
+  Carlo, che nella nostra unica misurazione vale **2,57×** lo storico. Un criterio
+  MC-robusto chiede quindi circa `P/D ≥ 2,57 × Target/MLL` → **≈ 3,86 sul 50k**;
+- ignora l'**EOD trailing**: nel tratto iniziale (fino a $2.100 di profitto) il pavimento si
+  alza, quindi il margine reale è più stretto di MLL;
+- ignora la **consistency 50%** e l'**ordine dei trade** (li copre il Monte Carlo);
+- P e D vanno misurati sulla stessa finestra e con gli stessi costi.
+
+**Riferimento corrente**: VaultBreak IS 2020‑2024 → P/D = 79.636 / 18.895 = **4,21**.
+Supera il 3,86 MC-robusto, ma di poco. È il numero da battere per ogni variante.
+
+> Regola operativa: allo Stage 4 una variante si giudica sul **P/D**, non su avg trade / PF
+> / drawdown presi singolarmente. `MaxTradesPerDay 1` migliorava tutte e tre e peggiorava
+> il P/D — ed era sbagliata (vedi VaultBreak SPEC).
+
+---
+
 ## Stage 0 — Spec (prima di scrivere codice)
 Scrivi in `mc/strategies/<nome>/SPEC.md`:
 - ipotesi in una frase + **perché** dovrebbe funzionare (chi perde soldi contro di noi);
