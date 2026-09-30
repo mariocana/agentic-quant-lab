@@ -156,16 +156,26 @@
    "path": "mc/strategies/VaultBreak",
    "stages": {
     "0": "pass",
-    "1": "active"
+    "1": "pass",
+    "2": "active"
    },
    "note": "Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati.",
    "log": [
+    {
+     "date": "2026-10-01",
+     "text": "**Gate 1 superato.** Stop −100 pt e target +50 pt esatti su tutti i trade, orari dentro la finestra, max 3 ingressi/giorno, zero overnight. **Scaling ×10 esatto su ogni metrica** (net, peggior trade, drawdown: rapporto 10,000; stesso n e stesso PF) — era il controllo critico, perché `SetStopLoss` è per posizione e senza `CurrentContracts` con 10 contratti lo stop varrebbe un decimo. **Correzione alla spec**: l'uscita VWAP chiude solo l'**8%** dei trade, non la maggioranza. Non è un bug (le tre uscite VWAP scattano a −38/−64/−80 punti, il contatore funziona) ma non fa in tempo: l'ingresso richiede prezzo sopra `NoiseUp`, e a quel punto il VWAP sta spesso oltre 100 punti sotto, quindi lo stop fisso arriva prima. La strategia è di fatto «compra il breakout, +50/−100» → allo Stage 4 contano le varianti su stop e target, non quelle sul VWAP. **Aggiunti `TradeStartEL`/`TradeEndEL`** (default 0 = spenti): separano il lead‑in del rolling ATR dal periodo valutato, dato che in MC il range del grafico è anche il range del backtest. **Da verificare allo Stage 2**: DD $8.156 in tre mesi, contro i $15.017 in cinque anni dell'ORB."
+    },
     {
      "date": "2026-09-22",
      "text": "Spec + codice. Scelta: ATR **rolling 252** invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti."
     }
    ],
-   "next": "Stage 1: chart @NQ 5m **RTH**, `DailyATRLen 20` per il lead‑in, verifica meccanica."
+   "next": "**Stage 2**: `DailyATRLen 252`, chart caricato **dal 2019‑01‑01** per il lead‑in, e `TradeStartEL 1200101` / `TradeEndEL 1241231` per limitare gli ingressi all'IS. Poi le due metà: `1200101→1220630` e `1220701→1241231`. Il numero da guardare è il **drawdown**: serve sotto ~$7.800 sul mini per avere una speranza al Gate 3.",
+   "metrics": {
+    "Gate 1 (100 gg, DailyATRLen 20)": "39 trade · stop −100 pt e target +50 pt **esatti** · max 3/giorno · 0 overnight · **scaling ×10 esatto su ogni metrica**",
+    "uscite reali": "Profit Target 62% · Stop Loss 22% · **VB‑VWAPX solo 8%** → la spec diceva il contrario, corretta",
+    "da verificare": "DD **$8.156 in tre mesi**; l'ORB faceva $15.017 in cinque anni"
+   }
   },
   {
    "name": "VWAP Pullback",

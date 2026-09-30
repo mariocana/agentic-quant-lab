@@ -37,6 +37,12 @@ Inputs:
     StopLossPts(100),          { 100 pt NQ = $2.000 per contratto }
     TakeProfitPts(50),         { 50 pt NQ = $1.000 per contratto }
     Num_Contracts(1),
+    { --- finestra di trading (NON e' logica di trading: serve a separare il
+          lead-in dal periodo valutato). Formato data EasyLanguage = YYYMMDD
+          con YYY = anno - 1900:  1200101 = 1 gen 2020 · 1241231 = 31 dic 2024
+          0 = disattivato --- }
+    TradeStartEL(0),
+    TradeEndEL(0),
     ShowLog(false);
 
 Variables:
@@ -54,7 +60,7 @@ Variables:
     intrabarpersist VWAP(0),
     intrabarpersist BarsBelowVW(0),
     intrabarpersist DTrades(0),
-    BarVol(0), Qty(0);
+    BarVol(0), Qty(0), dateOK(false);
 
 Arrays:
     intrabarpersist RngBuf[600](0);
@@ -112,8 +118,16 @@ if cVol > 0 then VWAP = cTPV / cVol;
 if Close < VWAP then BarsBelowVW = BarsBelowVW + 1
 else BarsBelowVW = 0;
 
+{ ===== FINESTRA DI TRADING =====
+  Il grafico puo' caricare storia precedente per il lead-in del rolling ATR
+  senza che quei giorni entrino nel periodo valutato. Gate solo sugli
+  INGRESSI: una posizione aperta resta gestita normalmente. }
+dateOK = (TradeStartEL = 0 or Date >= TradeStartEL)
+     and (TradeEndEL   = 0 or Date <= TradeEndEL);
+
 { ===== ENTRY (long only) ===== }
 if MarketPosition = 0
+   and dateOK
    and NoiseUp > 0
    and Close > NoiseUp
    and Close > VWAP

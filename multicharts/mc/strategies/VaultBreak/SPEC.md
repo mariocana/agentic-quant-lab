@@ -19,7 +19,7 @@ singola 43%).
 | Target | $1.000 per contratto (50 pt) — R:R nominale 0.5 |
 | Altre uscite | 2 chiusure consecutive sotto il VWAP; flat 14:50 CT |
 | Trade/giorno | max 3 |
-| Profilo prop | R:R 0.5, WR alto → ok (l'uscita VWAP chiude la maggior parte dei trade prima di TP/SL) |
+| Profilo prop | R:R 0.5, WR alto → ok. ~~L'uscita VWAP chiude la maggior parte dei trade prima di TP/SL~~ **falso, verificato al Gate 1**: vedi sotto |
 
 **IS**: 2020‑01‑01 → 2024‑12‑31 · **OOS**: 2025‑01‑01 → oggi.
 **Varianti pre‑registrate (Stage 4)**: NoiseMult 0.5/0.7 con DailyATRLen 252/504
@@ -29,3 +29,63 @@ usare 0845/1400/1450. `SetStopLoss`/`SetProfitTarget` sono per posizione: con N
 contratti moltiplicare. Il DailyATR seeded/expanding del template originale NON si usa.
 **Kill**: gate pipeline. Se in OOS il WR scende sotto 55% con R:R 0.5, la strategia non
 serve alla prop.
+
+## Gate 1 superato — 01/10/2026
+
+100 giorni (29/06 → 30/09/2026), `DailyATRLen 20` per il lead‑in, costi on, Bar Magnifier
+1 min, chart @NQ 5 min su sessione custom **RTH CME 08:30–15:00 CT** (verificata: prima
+barra timbrata 08:35).
+
+| Controllo | Esito |
+|---|---|
+| Stop | **−100,00 pt esatti** su tutti e 9 gli stop |
+| Target | **+50,00 pt esatti** su tutti e 25 |
+| Peggior trade | −$2.005 = 100 pt × $20 + costi |
+| Orari ingresso | 09:00 → 13:55, dentro 08:45–14:00 |
+| Uscita a tempo | 14:55 (segnale 14:50 eseguito alla barra dopo) |
+| Max ingressi/giorno | 3, mai 4 |
+| Overnight | 0 |
+| **Scaling ×10** | **esatto su ogni metrica** (net, peggior trade, DD: rapporto 10,000; stesso n, stesso PF) |
+
+Lo scaling era il controllo critico: `SetStopLoss` è **per posizione**, non per contratto,
+quindi senza `CurrentContracts` con 10 contratti lo stop varrebbe un decimo.
+
+### Correzione alla spec: l'uscita VWAP è marginale
+
+Distribuzione reale delle uscite: **Profit Target 62% · Stop Loss 22% · VB‑VWAPX 8% ·
+VB‑TIMEX 5%**.
+
+Non è un bug — le tre uscite VWAP scattano a −38, −64 e −80 punti dall'ingresso, quindi il
+contatore funziona. È che **non fa in tempo**: l'ingresso richiede prezzo sopra `NoiseUp`,
+cioè ben sopra l'apertura di sessione, e a quel punto il VWAP di giornata sta spesso più di
+100 punti sotto. Lo stop fisso scatta prima.
+
+**Conseguenza**: la strategia è di fatto *«compra il breakout, +50 / −100»*, con R:R 0.5 su
+quasi tutti i trade. Non è un male — è il profilo prop — ma le varianti pre‑registrate sul
+VWAP contano poco, mentre quelle su **stop e target** contano tutto. Da tenere presente
+allo Stage 4.
+
+### Nuovi input `TradeStartEL` / `TradeEndEL`
+
+Non sono logica di trading (default 0 = spenti, comportamento invariato): servono a
+separare il **lead‑in** dal periodo valutato, perché in MultiCharts il range del grafico è
+anche il range del backtest. Con `DailyATRLen 252` servono 252 sessioni prima dell'IS,
+altrimenti il primo anno non produce trade.
+
+Formato data EasyLanguage, `YYYMMDD` con `YYY = anno − 1900`:
+
+| data | valore |
+|---|---|
+| 01/01/2020 | `1200101` |
+| 30/06/2022 | `1220630` |
+| 01/07/2022 | `1220701` |
+| 31/12/2024 | `1241231` |
+
+Il gate agisce **solo sugli ingressi**: una posizione già aperta resta gestita.
+
+### Osservazione da verificare allo Stage 2
+
+Drawdown **$8.156 in tre mesi** su 39 trade. Per confronto l'ORB, stessa misura, faceva
+$15.017 **in cinque anni**. Un massimo su tre mesi non si estrapola, e `DailyATRLen` era a
+20 anziché 252 — ma il drawdown su cinque anni può solo essere **maggiore** di quello su
+tre mesi. Annotato prima dello Stage 2 per non trasformarlo in una giustificazione dopo.
