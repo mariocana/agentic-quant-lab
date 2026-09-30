@@ -75,37 +75,59 @@ Sospeso, non scartato. Cosa c'è e perché potrebbe tornare utile:
 (Macro‑Volumi‑Probabilità) applicabile ad altri strumenti, non una ricetta solo‑DAX. È
 questo, non la strategia DAX, la ragione per cui vale la pena tornarci.
 
-## Da valutare (ingeriti, non ancora letti)
+## Inventario — cosa è fatto e cosa resta
 
-Una riga anche qui: sapere **cos'è** un documento senza averlo letto costa trenta secondi
-e evita di riaprirlo per scoprire che non serve.
+Aggiornato **01/10/2026**. Una riga per documento anche quando non l'abbiamo letto: sapere
+**cos'è** costa trenta secondi ed evita di riaprirlo per scoprire che non serve.
 
-**`mc/ideas/`**
-- ~~i tre `ssrn-*.pdf`~~ — **letti il 30/09/2026, tutti scartati.** Vedi la tabella sopra e
-  [`NOTES_ssrn_batch.md`](../ideas/NOTES_ssrn_batch.md).
-- `MOC_ricerca.md` — scheda di ricerca **nostra** (non un ingest): MOC imbalance e ultimi
-  10 minuti, da materiale Stucchi. Ha già una traccia di lavoro dentro. Nota prima di
-  ripartire: il MOC imbalance è un dato **azionario** pubblicato dagli exchange USA, da
-  verificare se e come sia ottenibile per operare su NQ.
+### `mc/ideas/` — ✅ tutto smarcato
 
-**`mc/education/books/`**
-- `G. Defendi - Strategie operative per i mercati finanziari.pdf`
-- `Guida pratica al trading Volume 2.pdf`
-- `John T. Marino – Trading dal divano (2024).pdf`
-- `Trading systems sulle curve non di prezzo.pdf`
+Non resta niente da processare in questa cartella.
 
-**Corsi** (video esclusi dal repo, restano in locale)
-- `mc/education/enrico_stucchi/` — order flow e option flow; ha già un `PLAYBOOK.md` e
-  `MOC_ricerca.md` derivati.
-- `mc/education/stefano_serafini/Stock Trading Lab` — 7 video (4,4 GB) sul metodo MVP
-  applicato alle **azioni**. Il Dax Trading Lab è già valutato sopra (in coda).
-- `mc/education/morpheus/` — Pro Trader Blueprint.
-- `mc/education/unger/` — Trading System Supremacy (cartelle già montate come working dir).
+| File | Cos'è | Stato |
+|---|---|---|
+| `Class summary Freddy 19.05.pdf` | GEX / GEXBot su NQ‑NDX‑QQQ | **playbook** → [`NOTES_gex_freddy.md`](../ideas/NOTES_gex_freddy.md) |
+| `…Liquidity_Gate…v5.0.docx` | Tier di liquidità su NQ (Westbrook) | **in coda** — blocco dati L3/MBO, vedi `institutional_protocol_digest.md` §7 |
+| `ssrn-5598690.pdf` | Parabolic SAR su BTC | **scartato** → [`NOTES_ssrn_batch.md`](../ideas/NOTES_ssrn_batch.md) |
+| `ssrn-5580590.pdf` | Multi‑agent LLM su BTC | **scartato** → stesso file |
+| `ssrn-6467818.pdf` | Econometria applicata | **scartato** → stesso file |
+| `MOC_ricerca.md` | Scheda **nostra**, non un ingest | Traccia di lavoro aperta. Nota prima di ripartire: il MOC imbalance è un dato **azionario** pubblicato dagli exchange USA — da verificare se e come sia ottenibile per operare su NQ |
 
-**Priorità**: la coda non è urgente. Adesso il lavoro è portare sei strategie già scritte
-attraverso i gate con i dati veri; leggere altro materiale non avvicina quel risultato.
-Si valuta un documento quando serve un'idea per un buco preciso del basket (oggi: nessuno
-— mancano i test, non le idee).
+### `mc/education/books/` — 2 fatti, 4 da fare
+
+| Libro | Stato |
+|---|---|
+| Alexander Elder — *Vivere di trading* | ✅ **idee estratte** → [`NOTES_elder.md`](../education/books/NOTES_elder.md) |
+| Steve Palmquist — *Money‑Making Candlestick Patterns* | ✅ **idee estratte** → [`NOTES_palmquist_candlestick.md`](../education/books/NOTES_palmquist_candlestick.md) |
+| G. Defendi — *Strategie operative per i mercati finanziari* | ⬜ da processare |
+| *Guida pratica al trading Volume 2* | ⬜ da processare |
+| John T. Marino — *Trading dal divano* (2024) | ⬜ da processare |
+| *Trading systems sulle curve non di prezzo* | ⬜ da processare — **il più promettente dei quattro**: è l'unico il cui titolo prometta qualcosa che non abbiamo già (equity curve trading, filtri su curve derivate) |
+
+### Corsi in `mc/education/` — 2 fatti, 1 parziale, 3 da fare
+
+I video restano in locale, fuori dal repo; nel repo entrano trascrizioni e note.
+
+| Corso | Cos'è | Stato |
+|---|---|---|
+| `protocollo/` — **The Institutional Protocol** (Matteo Conti) | 19 trascrizioni, 11 moduli, 69 code template | ✅ **fatto ed è la fonte della pipeline** → `pipeline_prop.md` + `institutional_protocol_digest.md`. Da qui nascono tutte e sei le strategie in `mc/strategies/` |
+| `morpheus/` — **Pro Trader Blueprint** | Modulo 1 «Comincia da qui» (3 tutorial), modulo 2 «I Modelli Intraday» (9 video) | ◐ **parziale**. Video 1‑5 del modulo 2: ✅ fatti (01/10) → [`ANALISI_modelli_intraday_1-5.md`](../education/morpheus/ANALISI_modelli_intraday_1-5.md). ⬜ **Restano i video 6‑9**: *Modelli di Orderflow Puro per NQ*, *15m IVB su ES*, *5m ORB Gap Fill su ES*, *PbD su ES*. I tre su **ES** sono i più interessanti — è l'unico strumento oltre a NQ nel nostro perimetro. Il modulo 1 sono tutorial di piattaforma: nessun contenuto operativo, si salta |
+| `enrico_stucchi/` — order flow / option flow | 4 PDF + 7 video | ◐ **parziale**. PDF (VolBook, Masterclass Orderflow 1‑2, Liquidity Bootcamp) → ✅ `PLAYBOOK.md` + `MOC_ricerca.md`. Trascritti i due Savius Traders Talk. ⬜ **Non trascritti i tre video Option Flow** (15/12, 08/01, 15/01). Verdetto del corso però già dato: **playbook**, non pipeline — servono dati opzioni e order flow |
+| `stefano_serafini/Dax Trading Lab` | 3 lezioni (5h41) + `DAX5m.txt` + binari | ⬜ **in coda** — vedi il TODO sopra. Trascrizioni fatte, analisi del metodo MVP rimandata. Blocco strumento (Eurex non su Apex), non dati |
+| `stefano_serafini/Stock Trading Lab` | 7 video (4,4 GB), metodo MVP sulle **azioni** | ⬜ da processare — ma universo azionario con stock picking: la domanda 2 della checklist lo boccia quasi certamente in partenza |
+| `unger/` — **Trading System Supremacy** | 12 cartelle di strategie (BIAS, Counter Trend, DAXFirstHour, ESCounter, FXFader, Gap, IntraToOverNight, Night FIB, Stop Progressivi, Trend Following, WeeklyBump, Daily Factor) + 3 documenti | ⬜ **da processare, ed è il blocco più grosso che resta**. Citato solo nei doc del vecchio stack MQL5, mai portato in `mc/`. Le cartelle sono già montate come working dir. È l'unica fonte in coda che contenga **strategie già scritte** invece che concetti |
+
+**Priorità**: la coda non è urgente. Il lavoro è portare le strategie già scritte
+attraverso i gate con i dati veri; leggere altro materiale non avvicina quel risultato. Si
+valuta un documento quando serve un'idea per un **buco preciso** del basket.
+
+Aggiornamento 01/10: un buco preciso adesso c'è, ed è la ragione per cui il modulo Morpheus
+è stato letto subito invece di finire in coda. ORB e VaultBreak sono morte per la stessa
+causa — 95° percentile MC a ~$3.110 per micro contro un budget di $2.000 — cioè per
+**rischio per trade**, non per mancanza di edge. Quindi: si legge materiale che riduca lo
+stop, non materiale che aggiunga segnali. Con questo criterio, delle sei voci ⬜ qui sopra
+la sola candidata seria è la libreria **Unger**, perché contiene strategie già scritte e
+misurabili in mezz'ora invece che concetti da tradurre.
 
 ## Cosa cercare quando si legge qualcosa di nuovo
 
