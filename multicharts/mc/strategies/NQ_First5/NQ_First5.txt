@@ -61,7 +61,8 @@ Arrays:
 Variables:
     ema(0), dayHigh(0), dayLow(0), inSession(false),
     rIdx(0), rN(0), rSum(0), adr(0), adrLong(0),
-    k(0), refRangeOK(false), regimeOK(false), signalDone(false), dateOK(false);
+    k(0), refRangeOK(false), regimeOK(false), signalDone(false), dateOK(false),
+    newDay(false);
 
 once begin
     if RefBarMinRange < 0 or VolRegimeRatio <= 0 then
@@ -77,19 +78,16 @@ end;
 
 ema = XAverage(Close, EMALength);
 
-{ ---- range di sessione in un ring buffer da 120 slot ---- }
-if Time > SessionOpen and Time <= ExitTime then begin
-    if inSession = false then begin
-        dayHigh = High;
-        dayLow  = Low;
-        inSession = true;
-    end
-    else begin
-        dayHigh = MaxList(dayHigh, High);
-        dayLow  = MinList(dayLow, Low);
-    end;
-end
-else if inSession then begin
+{ ---- range di sessione in un ring buffer da 120 slot ----
+  Il rollover deve scattare in DUE casi, non solo uno:
+    a) arriva una barra fuori dalla finestra  -> chart Globex 24h
+    b) cambia la data                         -> chart RTH-only, dove barre
+       fuori finestra non esistono e (a) non si verifica MAI.
+  Senza (b), su un chart a sola sessione RTH l'ADR resta 0 in silenzio e la
+  versione filtrata non fa un solo trade (regimeOK richiede rN >= 100). }
+newDay = Date <> Date[1];
+
+if inSession and (newDay or Time <= SessionOpen or Time > ExitTime) then begin
     sessRange[rIdx] = dayHigh - dayLow;
     rIdx = Mod(rIdx + 1, 120);
     rN = MinList(rN + 1, 120);
@@ -115,8 +113,20 @@ else if inSession then begin
     inSession = false;
 end;
 
+if Time > SessionOpen and Time <= ExitTime then begin
+    if inSession = false then begin
+        dayHigh = High;
+        dayLow  = Low;
+        inSession = true;
+    end
+    else begin
+        dayHigh = MaxList(dayHigh, High);
+        dayLow  = MinList(dayLow, Low);
+    end;
+end;
+
 { ---- un segnale per giorno ---- }
-if Date <> Date[1] then
+if newDay then
     signalDone = false;
 
 { ---- finestra di trading: solo ingressi ---- }
@@ -152,9 +162,16 @@ if MarketPosition = 0 and signalDone = false and dateOK and Time = SignalTime th
     signalDone = true;
 end;
 
-{ ---- stop opzionale (variante prop, off di default) ---- }
+{ ---- stop opzionale (variante prop, off di default) ----
+  `SetStopLoss` e' PER POSIZIONE, quindi l'importo va moltiplicato per i
+  contratti. NON si usa `CurrentContracts`: sulla barra d'ingresso la
+  posizione non e' ancora aperta, CurrentContracts vale 0 e lo stop verrebbe
+  calcolato su 1 contratto -> con NumContracts 10 lo stop reale sulla prima
+  barra dopo l'ingresso e' StopPts/10 (verificato: 71 trade su 100 chiusi a
+  -20 pt invece di -200). `NumContracts` e' la size che la strategia apre
+  sempre, quindi e' esatta e indipendente dallo stato di riempimento. }
 if StopPts > 0 then
-    SetStopLoss(StopPts * BigPointValue * MaxList(1, CurrentContracts));
+    SetStopLoss(StopPts * BigPointValue * NumContracts);
 
 { ---- uscita a tempo alla chiusura cash ---- }
 if MarketPosition > 0 and Time >= ExitTime then

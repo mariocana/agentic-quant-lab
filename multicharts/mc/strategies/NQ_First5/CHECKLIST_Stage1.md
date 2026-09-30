@@ -21,6 +21,13 @@ la spec. Nessuna conclusione sul P&L da questo run.
 > ⚠️ È l'errore facile della giornata: abbiamo appena costruito la sessione **RTH CME
 > custom** per VaultBreak. Qui va la **Globex 24h**. Con la sessione sbagliata l'ADR viene
 > calcolato su una finestra diversa e la barra delle 08:35 può non esistere.
+>
+> **Accaduto davvero al primo giro**: log con `ADR= 0.00` su tutte le righe e **zero righe
+> `F5 EOD`**. Il rollover di sessione stava solo nel ramo `else` della finestra
+> `SessionOpen..ExitTime`: su un chart RTH quelle barre non esistono e il ramo non scattava
+> mai. Ora il rollover scatta **anche al cambio di data**, quindi l'ADR è indipendente dal
+> tipo di chart — ma la Globex resta quella prescritta, perché definisce il range di
+> sessione su cui l'ADR è tarato.
 
 ## 2. Costi (già quelli onesti, non li cambiamo più)
 
@@ -85,6 +92,36 @@ Quindi tre run, non due:
 | D | **200** | 10 | ogni metrica **×10 esatta** rispetto a C |
 
 Se D non scala esattamente, lo stop non è per contratto e va corretto prima di proseguire.
+
+#### Esito del primo giro (30/09/2026) — A/B **passati**, C/D **bocciati**, bug corretto
+
+| run | Net | Trade | % Prof | scala? |
+|---|---|---|---|---|
+| A `StopPts 0` × 1 | 75.570 | 100 | 57,0% | — |
+| B `StopPts 0` × 10 | 755.700 | 100 | 57,0% | ✅ ×10 esatto, trade per trade identici |
+| C `StopPts 200` × 1 | 49.695 | 100 | 50,0% | — |
+| D `StopPts 200` × 10 | 112.750 | 100 | **19,0%** | ❌ atteso 496.950 |
+
+La causa, letta nella lista trade di D: **71 uscite su 100 alle 08:40** — la barra
+immediatamente successiva all'ingresso — tutte a **−20,00 punti esatti**. Venti punti sono
+`200 / 10`. In C le 35 uscite a stop sono tutte a **−200,00** precisi.
+
+`SetStopLoss` è per posizione, e il codice moltiplicava per `CurrentContracts`. Ma lo stop
+attivo su una barra è quello calcolato alla **chiusura della barra precedente**, che è la
+barra d'ingresso: lì la posizione non è ancora aperta, `CurrentContracts` vale 0,
+`MaxList(1, 0)` vale 1 e lo stop è $4.000 su una posizione da 10 contratti. Dalla seconda
+barra in poi si allarga ai 200 punti giusti — infatti 7 trade muoiono a −200 e la perdita
+massima è $40.150, corretta.
+
+> Con 1 contratto `MaxList(1, 0)` restituisce **il valore giusto per caso**. Il difetto è
+> invisibile al run base e compare solo moltiplicando la size: è precisamente il motivo per
+> cui il test ×10 esiste, e il motivo per cui va fatto **con lo stop acceso**.
+
+Correzione: `SetStopLoss(StopPts * BigPointValue * NumContracts)`. `NumContracts` è la size
+che la strategia apre sempre, non dipende dallo stato di riempimento.
+(VaultBreak non ha il difetto: gestisce già il caso flat con `Num_Contracts` nel ramo `else`.)
+
+C e D vanno **rifatti** dopo la ricompilazione. A e B restano validi.
 
 ### 5b. Gate date `TradeStartEL` / `TradeEndEL`
 
