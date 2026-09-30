@@ -41,6 +41,10 @@ modifiche ai gate. Il protocollo resta quello del corso (`pipeline_prop.md`).
 | 2026‑09‑29 | [*Class summary Freddy 19.05* — GEX / GEXBot](../ideas/NOTES_gex_freddy.md) | Note di una lezione: gamma exposure come mappa operativa su NQ/NDX/QQQ, letta con tape e order flow | **playbook** | Fuori dalla pipeline algo per quattro motivi: servono dati opzioni (GEXBot) **e** order flow, la regola è dichiaratamente discrezionale («leggere la reazione»), il payoff cercato è asimmetrico con upside lasciato correre (opposto al profilo prop), e prevede incrementi dopo conferma. Sintesi per il playbook scritta nelle note: meccanica del gamma (attrito / pin / accelerazione, call e put wall), i tre livelli di contesto, e il **calendario** OPEX / triple witching / VIXperation / JHEQX. Quest'ultimo è l'unico pezzo oggettivo e senza dati opzioni: annotato come possibile filtro di giornata, **non** pre‑registrato. |
 | 2026‑09‑29 | `mc/ideas/…Liquidity_Gate_Complete_Academic_Specification_v5.0.docx` | Paper (Westbrook, lug 2026): classifica l'ambiente di liquidità su NQ in 5 tier per decidere quando il flusso istituzionale può forzare l'hedging dei dealer | **in coda** | **Blocco dati**: i criteri sono profondità del book a riposo, velocità di replenishment, gap nel book e **identificatori Market‑by‑Order** — cioè L3/MBO. Vedi `institutional_protocol_digest.md` §7: serve il Bridge (chiuso) + un'entitlement MBO separata, e resta aperto il problema della simmetria storico/live. Prima lettura, valutazione piena non fatta. |
 
+| 2026‑09‑30 | [Morpheus — *Pro Trader Blueprint*, «2. I Modelli Intraday» video 1‑5](../education/morpheus/ANALISI_modelli_intraday_1-5.md) | Il modello IVB: ORB/Initial Balance a 30 min sulla cash NY + conferma volumetrica (VSA, order flow), più profile framing | **idee estratte** | Il modello principale **è già nostro e già morto**: IVB = `ORB_Breakout` (stessa finestra 08:30‑09:00 CT, stesso TF, stessa scelta dei 30 min, stesso ingresso su chiusura piena), chiusa al Gate 3. Una sola idea nuova merita codice: **stop dietro la candela di breakout a 5 min invece che dietro il range** — attacca il vincolo che ha ucciso ORB e VaultBreak. È una **nuova Stage 0** (`IVB_Type1`), non una riapertura. Quattro varianti Stage 4 candidate: wick contenitiva, cutoff orario (già pre‑registrato), IB annidati, VSA sforzo/risultato. Order flow, big trades e l'indicatore DeepCharts: fuori stack (servono footprint bid/ask). Statistiche citate senza fonte, ma **misurabili da noi**. |
+| 2026‑09‑30 | [`mc/ideas/ssrn-5598690.pdf`](../ideas/NOTES_ssrn_batch.md) — *Evaluating the Parabolic SAR Strategy on Bitcoin* (Mesíček, nov 2025, 16 pp.) | Test del PSAR su BTC/USDT 2015‑2025, 1H e 1D, long/short/reversal | **scartato** | Risultato negativo e dichiarato: nessuna modalità batte il buy & hold. Backtest **senza fee e senza slippage** su 6.370 trade a 1H. L'unico risultato positivo («seasonality‑calibrated», Sharpe 1,35) è ottenuto restringendo l'operatività alle ore/giorni storicamente migliori **dopo** aver visto i risultati, senza OOS: è il fitting che vietiamo allo Stage 2. |
+| 2026‑09‑30 | [`mc/ideas/ssrn-5580590.pdf`](../ideas/NOTES_ssrn_batch.md) — *An Adaptive Multi‑Agent Bitcoin Trading System* (Singhi, UCL, 19 pp.) | Agenti LLM (DeepSeek‑r1) per allocazione su BTC, con «verbal feedback» al posto del fine‑tuning | **scartato** | **Contaminazione del test**: l'LLM legge news e sentiment su lug 2024–apr 2025, periodo dentro il suo training. Nove mesi di test, zero costi di transazione, e l'output è una decisione di un LLM — non una regola codificabile né backtestabile. Architettura interessante, strategia inesistente. |
+| 2026‑09‑30 | [`mc/ideas/ssrn-6467818.pdf`](../ideas/NOTES_ssrn_batch.md) — *Applied Econometrics and Algorithmic Trading* (59 pp., elaborato didattico) | ADF, volatility clustering, ARIMA/GARCH, poi MA crossover e RSI mean‑reversion con IS/OOS e walk‑forward | **scartato** | Era il candidato più promettente dei tre e non regge: **il documento si contraddice sui propri dati** (Parte I «gennaio 2025 – gennaio 2026», 364 righe; Parte IV «gennaio 2024 – gennaio 2026» con una walk‑forward da 21 finestre che ne richiederebbe oltre 700). RSI con 16 trade IS e 42 OOS su un periodo più corto. I costi ci sono (0,1%/lato) e l'impianto è concettualmente giusto, ma la nostra pipeline è più severa e gira su dati che esistono. |
 | 2026‑09‑29 | `mc/education/stefano_serafini/Dax Trading Lab` | Corso in 3 lezioni (5h41) sul metodo MVP applicato al DAX + 16 anni di dati + due binari di strategia | **in coda** | **Blocco strumento, non dati**: il DAX è **Eurex** e su Apex non è negoziabile (verificato 29/09) → una strategia DAX non serve all'obiettivo prop. Trascrizioni fatte, analisi del metodo **rimandata**. Vedi il TODO sotto. |
 
 ### TODO — Dax Trading Lab (Serafini)
@@ -77,14 +81,8 @@ Una riga anche qui: sapere **cos'è** un documento senza averlo letto costa tren
 e evita di riaprirlo per scoprire che non serve.
 
 **`mc/ideas/`**
-- `ssrn-5580590.pdf` — *An Adaptive Multi‑Agent Bitcoin Trading System* (Singhi, UCL), 19 pp.
-  LLM per alpha generation e gestione di portafoglio su crypto. Fuori dal nostro perimetro
-  (futures, PowerLanguage, prop): da leggere semmai per il metodo, non per la strategia.
-- `ssrn-5598690.pdf` — *Evaluating the Parabolic SAR Strategy on Bitcoin* (Mesíček), 16 pp.
-  Valutazione di un singolo indicatore su BTC.
-- `ssrn-6467818.pdf` — 59 pp. di econometria delle serie storiche finanziarie: stazionarietà
-  (ADF), volatility clustering, stylised facts, modelli previsivi. **Metodologia, non
-  strategie** — il candidato più utile dei tre se serve uno strumento statistico.
+- ~~i tre `ssrn-*.pdf`~~ — **letti il 30/09/2026, tutti scartati.** Vedi la tabella sopra e
+  [`NOTES_ssrn_batch.md`](../ideas/NOTES_ssrn_batch.md).
 - `MOC_ricerca.md` — scheda di ricerca **nostra** (non un ingest): MOC imbalance e ultimi
   10 minuti, da materiale Stucchi. Ha già una traccia di lavoro dentro. Nota prima di
   ripartire: il MOC imbalance è un dato **azionario** pubblicato dagli exchange USA, da
@@ -113,6 +111,9 @@ Si valuta un documento quando serve un'idea per un buco preciso del basket (oggi
 
 Le domande che hanno deciso i verdetti finora, nell'ordine in cui conviene farsele:
 
+0. **Che asset e che costi?** Prima ancora di aprire il documento. I tre paper SSRN del
+   30/09 erano tutti identificabili come fuori perimetro dal solo abstract — Bitcoin,
+   rendimenti in percentuale, nessuna frizione modellata. Trenta secondi invece di un'ora.
 1. **Che dati servono?** Se servono dati che non abbiamo (opzioni, MBO, L3, tick lunghi),
    il resto è accademico: `in coda` con il blocco scritto, e si va avanti.
 2. **Che universo e che timeframe?** Azioni screenate su migliaia di simboli ≠ un solo
