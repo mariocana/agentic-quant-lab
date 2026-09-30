@@ -157,10 +157,15 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "blocked"
+    "2": "blocked",
+    "4": "active"
    },
    "note": "Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati.",
    "log": [
+    {
+     "date": "2026-10-01",
+     "text": "**`MaxTradesPerDay 1` bocciata dallo split‑sample, ed è il caso più insidioso finora.** 1ª metà avg $92,02 → **$234,18** (+154%); 2ª metà $134,58 → **$81,55** (−39%). Sull'IS intero sembrava ottima — avg da $110 a $167, PF da 1,246 a 1,397, DD da $18.895 a $16.317, tre metriche su tre in miglioramento — ma il **P/D peggiora** (4,21 → 3,93) e lo split‑sample mostra che tutto il guadagno viene dal 2020‑2022, mentre nel 2022‑2024 il net crolla da 41.450 a 13.781. **Terza bocciatura odierna di una variante che l'IS intero avrebbe approvato.** **Segnale di fragilità più serio del fallimento stesso**: nella 1ª metà il parametro ottimale è 1 trade/giorno (P/D 4,97), nella 2ª è 3 (P/D 2,86 contro 1,11). La sensibilità al parametro **cambia segno** fra le due metà — in un periodo i rientri dopo uno stop sono il problema, nell'altro sono dove sta il guadagno. Il base case a 3/giorno nasconde l'instabilità perché le due metà sembrano simili (PF 1,202 e 1,308)."
+    },
     {
      "date": "2026-10-01",
      "text": "**Stage 2: Gate 2 non superato, ma solo sul drawdown.** 723 trade, WR **63,1%**, avg $110,15, PF 1,246, R:R 0,73. **Tutti e cinque gli anni positivi** (max 26,8% del net) ed **entrambe le metà profittevoli** (PF 1,202 e 1,308) — profilo più solido di quello che l'ORB aveva al suo meglio. Cade solo `DD÷10 = $1.889` contro $1.000; max DD datato **9 giugno 2021**, non un evento eccezionale. Il gate sulle date ha funzionato: riga 2019 con 0 trade, primo trade il 3 gennaio 2020. **Secondo muro identico in due strategie indipendenti** — vedi la nota nel log globale."
@@ -174,7 +179,7 @@
      "text": "Spec + codice. Scelta: ATR **rolling 252** invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti."
     }
    ],
-   "next": "Stage 4 se si decide di proseguire sul 50k: l'unica pre‑registrata mirata al DD è **`MaxTradesPerDay 1`** (oggi 3 → worst day da $600 a $200 per micro). Serve portare il DD da $18.895 a ~$7.800, cioè **−59%**. In alternativa la decisione sulla **taglia del conto** (vedi log globale).",
+   "next": "Restano 2 input sui 3 dello Stage 4 e una sola pre‑registrata: la griglia **`NoiseMult` 0.5/0.7 × `DailyATRLen` 252/504**, da ottimizzare insieme scegliendo il cluster. Aspettativa dichiarata: **debole** sul drawdown — è una griglia di parametri senza un meccanismo diretto, come il cutoff dell'ORB. Serve portare il DD da $18.895 a ~$7.800. In parallelo la prova (b) su ES, da giudicare sul **P/D** (riferimento NQ: 4,21).",
    "metrics": {
     "Stage 2 IS 2020‑2024": "723 trade · WR **63,1%** · avg $110,15 · PF 1,246 · R:R 0,73 · DD **$18.895** · peggior trade $2.005",
     "per anno": "2020 +4.361 · 2021 +20.692 · 2022 +16.826 · 2023 +21.316 · 2024 +16.442 — **tutti positivi**, max 26,8% del net",

@@ -89,3 +89,28 @@ Drawdown **$8.156 in tre mesi** su 39 trade. Per confronto l'ORB, stessa misura,
 $15.017 **in cinque anni**. Un massimo su tre mesi non si estrapola, e `DailyATRLen` era a
 20 anziché 252 — ma il drawdown su cinque anni può solo essere **maggiore** di quello su
 tre mesi. Annotato prima dello Stage 2 per non trasformarlo in una giustificazione dopo.
+
+## Stage 4 — `MaxTradesPerDay 1` bocciata (01/10/2026)
+
+| | avg $ | PF | net $ | DD | **P/D** |
+|---|---|---|---|---|---|
+| 1ª metà, 3/giorno | 92,02 | 1,202 | 38.186 | −18.895 | 2,02 |
+| 1ª metà, **1/giorno** | **234,18** | 1,656 | 50.348 | −10.134 | **4,97** |
+| 2ª metà, 3/giorno | 134,58 | 1,308 | 41.450 | −14.509 | 2,86 |
+| 2ª metà, **1/giorno** | **81,55** | 1,162 | 13.781 | −12.447 | **1,11** |
+
+Split‑sample: 1ª metà **+154%**, 2ª metà **−39%**. Scartata.
+
+**Da ricordare come caso di studio**: sull'IS intero la variante migliorava avg trade
+($110 → $167), PF (1,246 → 1,397) **e** drawdown ($18.895 → $16.317). Tre metriche su tre.
+Ma il **P/D peggiorava** (4,21 → 3,93) e tutto il guadagno veniva dalla prima metà.
+
+### Segnale di fragilità
+
+Più grave del fallimento della variante: **il parametro ottimale si ribalta fra le metà**.
+2020‑2022 vuole 1 trade/giorno (P/D 4,97 contro 2,02), 2022‑2024 ne vuole 3 (2,86 contro
+1,11). Nei rientri dopo uno stop sta il problema in un periodo e il guadagno nell'altro.
+
+Il base case a 3/giorno **maschera** l'instabilità, perché con quel valore le due metà
+sembrano coerenti (PF 1,202 e 1,308). Da tenere presente allo Stage 5: è il tipo di
+fragilità che emerge fuori campione.
