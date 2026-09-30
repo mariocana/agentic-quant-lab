@@ -1,5 +1,5 @@
 {
- "updated": "2026-09-30",
+ "updated": "2026-10-01",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -26,7 +26,7 @@
    "id": 3,
    "name": "Monte Carlo",
    "short": "MC",
-   "gate": "Reshuffle 1000: mediana > 0 · < 10% sim negative · DD 95°÷10 ≤ $2.500"
+   "gate": "Reshuffle 1000: mediana > 0 · < 10% sim negative · **DD 95°÷10 ≤ $2.000** (MLL LucidFlex)"
   },
   {
    "id": 4,
@@ -274,6 +274,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-01",
+   "text": "**Corretta la soglia del Gate 3**, rimasta a $2.500 quando ieri ho ricalcolato quelle del Gate 2 su Lucid: il DD al 95° percentile ÷10 va confrontato con l'**MLL, quindi $2.000**. Messa per iscritto anche la ragione della differenza fra i due gate: il Gate 2 usa il 50% dell'MLL perché guarda **un solo percorso storico** e il margine copre la coda ignota; il Gate 3 usa il 100% perché il 95° percentile **è già** la coda. Corretta **prima** di lanciare il Monte Carlo, non dopo."
+  },
   {
    "date": "2026-09-30",
    "text": "**Prop di riferimento definita: LucidFlex 50k.** Automazione **esplicitamente permessa** («Automated trading systems and trade copiers are permitted»). Numeri: target $3.000, MLL **$2.000**, **EOD trailing** sul massimo saldo di chiusura, consistency 50%, 4 mini / 40 micro, **nessun daily loss** (opzionale). Dettaglio che conta: **il trailing si blocca a $52.100** mentre il target è $53.000 → la fase a rischio è solo il tratto fino ai primi $2.100 di profitto, il resto è contro un pavimento fisso. Molto meno ostile del trailing continuo assunto finora. **Soglie Gate 2 ricalcolate**: DD÷10 ≤ **$1.000** (metà dell'MLL, era $1.250) e peggior trade÷10 ≤ $500 (ancorato all'MLL, perché su Flex non c'è daily loss). **LucidDaily escluso**: il news trading è hard breach e le nostre strategie tengono posizione durante FOMC. **Niente Eurex** nei prodotti approvati → il DAX resta chiuso. **Costi**: NQ $1.75/lato, MNQ $0.50/lato — la stessa esposizione in micro costa quasi il triplo del mini, da ricalcolare allo Stage 7."

@@ -107,7 +107,12 @@ Costi: $2.50/lato + 1 tick. Solo il periodo IS.
 Reshuffle 1000 sim, 100% trade; Distribution analysis.
 
 **Gate 3**: mediana net profit > 0; < 10% simulazioni in perdita; DD 95° perc. ÷ 10
-≤ DD prop ($2.500).
+≤ MLL → **≤ $2.000** (LucidFlex 50k).
+
+> Perché qui la soglia è il 100% dell'MLL e al Gate 2 era il 50%: il Gate 2 guarda **un
+> solo percorso storico**, quindi il margine copre la coda ignota. Il 95° percentile del
+> reshuffle **è già** la coda, quindi non serve margine sopra. Le due soglie misurano la
+> stessa cosa con strumenti di qualità diversa.
 
 ## Stage 4 — Miglioramenti (solo IS)
 Base case = versione senza filtri. Ogni aggiunta deve avere una ragione e passare lo
