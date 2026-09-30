@@ -12,9 +12,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "pipeline_status.json")
 OUT = os.path.join(HERE, "pipeline_board.html")
 
-LABEL = {"pass": "passato", "active": "in corso", "blocked": "bloccato",
+LABEL = {"pass": "passato", "waiver": "passato per override registrato",
+         "active": "in corso", "blocked": "bloccato",
          "fail": "fallito", "pending": "da fare", "na": "n/a"}
-SYMBOL = {"pass": "✓", "active": "●", "blocked": "■", "fail": "✕", "pending": "·", "na": "—"}
+SYMBOL = {"pass": "✓", "waiver": "!", "active": "●", "blocked": "■", "fail": "✕",
+          "pending": "·", "na": "—"}
 
 
 def esc(s):
@@ -187,6 +189,8 @@ tbody tr:last-child td {{ border-bottom:0; }}
 .chip {{ display:inline-grid; place-items:center; width:30px; height:30px; border-radius:4px; font-weight:600;
          border:1px solid transparent; }}
 .chip.pass    {{ background:var(--pass-bg); color:var(--pass); border-color:var(--pass); }}
+.chip.waiver  {{ background:var(--active-bg); color:var(--active); border-color:var(--active);
+                 border-style:dashed; font-weight:700; }}
 .chip.active  {{ background:var(--active-bg); color:var(--active); border-color:var(--active); }}
 .chip.blocked {{ background:var(--blocked-bg); color:var(--blocked); border-color:var(--blocked); }}
 .chip.fail    {{ background:var(--blocked-bg); color:var(--blocked); border-color:var(--blocked); }}
@@ -195,6 +199,7 @@ tbody tr:last-child td {{ border-bottom:0; }}
 .where {{ white-space:nowrap; padding-right:16px !important; }}
 .pill {{ display:inline-block; padding:3px 10px; border-radius:999px; font-size:.78rem; font-weight:500; }}
 .pill.pass {{ background:var(--pass-bg); color:var(--pass); }}
+.pill.waiver {{ background:var(--active-bg); color:var(--active); border:1px dashed var(--active); }}
 .pill.active {{ background:var(--active-bg); color:var(--active); }}
 .pill.blocked, .pill.fail {{ background:var(--blocked-bg); color:var(--blocked); }}
 .pill.pending {{ background:var(--pending-bg); color:var(--pending); }}
@@ -258,6 +263,7 @@ footer {{ color:var(--muted); font-size:.8rem; }}
   </div>
   <div class="legend">
     <span><span class="chip pass">✓</span>gate passato</span>
+    <span><span class="chip waiver">!</span>passato per <b>override registrato</b>, non per merito</span>
     <span><span class="chip active">●</span>in corso</span>
     <span><span class="chip blocked">■</span>bloccato (manca qualcosa)</span>
     <span><span class="chip fail">✕</span>fallito → cimitero</span>

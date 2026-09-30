@@ -162,3 +162,34 @@ Il drawdown non è un difetto correggibile con filtri: è l'**unità di rischio*
 l'intero range di apertura, una quantità che decide il mercato. Mediana $180 per micro,
 tetto $300 dopo `MaxRisk`. Con $2.000 di MLL, cinque perdite consecutive — che nei cinque
 anni sono accadute — valgono il 75% del conto.
+
+## Override registrato del Gate 2 — 01/10/2026
+
+**Decisione**: il Gate 2 è dichiarato superato **per override esplicito**, non per merito.
+Unico criterio non rispettato: `DD ÷ 10 = $1.502` contro la soglia di $1.000.
+
+**Motivazione**: la soglia del Gate 2 è fissata al **50% dell'MLL** perché misura un
+**singolo percorso storico**, e il margine serve a coprire la coda ignota. Lo Stage 3
+misura la stessa cosa con uno strumento migliore — il 95° percentile di 1000 reshuffle,
+che *è* la coda — e per questo la sua soglia è il 100% dell'MLL. Andare allo Stage 3 non
+salta un controllo: sostituisce uno stimatore debole con uno forte, su un criterio già
+scritto prima del test.
+
+**Condizioni della riserva** (senza queste è una nota che nessuno rilegge):
+1. **Scadenza**: se al Gate 3 il DD al 95° percentile ÷ 10 supera **$2.000**, è un no
+   definitivo. Non si ridiscute, non si cercano altre varianti — lo Stage 4 è chiuso.
+2. **Si porta avanti**: la riserva resta segnata fino allo **Stage 7**, dove il simulatore
+   prop dà la risposta vera sulla domanda che conta davvero, cioè la probabilità di
+   toccare $48.000 prima di arrivare a $52.100.
+3. **Resta a verbale**: se un domani l'ORB deludesse in esercizio, questo è il punto in cui
+   abbiamo scelto di forzare, con la data.
+
+**Attesa dichiarata prima del Monte Carlo**: il 95° percentile del DD sta tipicamente fra
+1,3 e 1,8 volte il massimo storico. Da $15.017 significa **$1.950–$2.700 per micro**, cioè
+a cavallo della soglia. È genuinamente incerto — ed è esattamente il motivo per cui vale la
+pena misurarlo invece di discuterne.
+
+**Quello che l'override non cancella**: la diagnosi resta quella scritta sopra. Lo stop
+pari all'intero range di apertura è un'unità di rischio che decide il mercato, non noi. Una
+spec separata con **stop a rischio fisso** resta la correzione strutturale, e va fatta come
+strategia nuova — non come salvataggio di questa.
