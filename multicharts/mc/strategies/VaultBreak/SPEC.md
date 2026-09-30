@@ -191,6 +191,65 @@ P/D. Il motivo per provarlo comunque è la **granularità**: $132,50 di rischio 
 contro $200 significa poter tenere ~1,5× i contratti sotto lo stesso MLL di $2.000, e la
 size è l'unico modo per arrivare a $3.000 di target quando il P/D è appena sufficiente.
 
-> Da verificare al lancio: la tariffa **MES/ES** nella lista prodotti approvati Lucid non è
-> ancora a verbale. Per questo run usare gli stessi costi di NQ ($1,75/lato + 1 tick di
-> slippage per lato) e correggere allo Stage 7 se la tariffa reale differisce.
+### Costi: identici a tutti i run precedenti
+
+Letti dai report esistenti (`Settings` dell'xlsx), **non li cambiamo**, altrimenti il
+confronto con NQ non vale:
+
+| | |
+|---|---|
+| Commission | **`2.5$ per Contract`** (per lato) |
+| Slippage | **`1 tick`** — MultiCharts lo esprime in tick, si converte da solo |
+| Bar Magnifier | **Enabled, 1 Minute** |
+| Interest Rate | 0.02 |
+
+$2,50/lato è più conservativo della tariffa Lucid reale su NQ ($1,75). La tariffa ES/MES
+non è ancora a verbale: si corregge allo Stage 7.
+
+### ⚠ Lo slippage non viene quasi addebitato — correzione analitica obbligatoria
+
+Verificato sui report: con `Slippage 1 tick` impostato, MultiCharts ha addebitato
+
+| run | trade | slippage teorico (1 tick × 2 lati) | **addebitato** | % |
+|---|---|---|---|---|
+| VB Stage 2 IS intero | 723 | $7.230 | **$213,80** | 3,0% |
+| ORB IS 2020‑24 costi | 827 | $8.270 | **$292,80** | 3,5% |
+
+Causa probabile (**da verificare**): MC limita lo slippage al range della barra, e con il
+Bar Magnifier su 1 minuto molte barre valgono 1–2 tick, quindi non c'è spazio per
+applicarlo. Qualunque sia il meccanismo, il fatto è che **tutti i nostri numeri di Stage 2
+sono ottimistici dello slippage quasi intero**.
+
+Effetto su VaultBreak NQ:
+
+| ipotesi di slippage | costo | net | **P/D** |
+|---|---|---|---|
+| come da backtest | $214 | 79.636 | **4,21** |
+| 1 tick su entry + 1 tick sui soli stop (22%) | $4.410 | 75.440 | **3,99** |
+| 1 tick su entrambi i lati | $7.230 | 72.620 | **3,84** |
+
+Nello scenario pieno **scende sotto la soglia MC‑robusta di 3,86**. Il margine che sembrava
+esistere è in buona parte slippage non pagato.
+
+**Perché questo è decisivo proprio per ES**: il tick ES vale $12,50 contro $5,00. Se ES
+producesse un numero di trade simile (~700), lo slippage pieno sarebbe **~$17.500** contro
+i ~$7.200 di NQ, su un gross stimato di ~$51.000 (avg trade ≈ $110 × 0,6625, stima). Cioè
+**~34% del gross contro l'8% di NQ** — esattamente l'handicap 4× previsto sopra, che però
+**il backtest non mostrerà**, perché lo slippage non lo addebita.
+
+**Regola per questo confronto**: si tengono le impostazioni invariate (comparabilità) e si
+applica la correzione **a posteriori e allo stesso modo sui due strumenti**, dal numero di
+trade del report:
+
+```
+slippage_reale = n_trade × 2 × tick_value      (NQ $5,00 · ES $12,50)
+net_corretto   = net_report − slippage_reale + slippage_addebitato
+P/D            = net_corretto / drawdown
+```
+
+Il P/D si legge **su net_corretto**, non su quello del report. Il riferimento NQ da battere
+diventa quindi **3,84** (scenario pieno), non 4,21.
+
+> **Da aprire come voce separata**: rifare i Gate 2/3 già passati con lo slippage incorporato
+> nella commissione (`$2,50 + 1 tick = $7,50 per contratto per lato` su NQ) invece che come
+> campo slippage. Non ora: prima si chiude la prova ES a parità di condizioni.

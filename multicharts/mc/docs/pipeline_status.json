@@ -303,10 +303,15 @@
   }
  ],
  "blockers": [
+  "**Debito tecnico aperto**: lo slippage impostato a 1 tick viene addebitato solo al ~3% del dovuto (MC lo limita al range della barra con Bar Magnifier 1 min). I Gate 2/3 già passati vanno rifatti con lo slippage incorporato nella commissione ($2,50 + 1 tick = $7,50/lato su NQ). Nel frattempo il P/D si legge sul **net corretto analiticamente**.",
   "Storico e piattaforma a posto. **Nessun blocco esterno**: restano solo i test.",
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-01",
+   "text": "**Lo slippage non viene quasi addebitato: tutti i numeri di Stage 2 sono ottimistici.** Controllando le impostazioni nei report per preparare il run ES: con `Slippage 1 tick` impostato, MultiCharts ha addebitato **$213,80 su 723 trade** (VaultBreak) e **$292,80 su 827** (ORB) — cioè il **3%** di quanto costerebbe un tick per lato ($7.230 e $8.270). Causa probabile da verificare: MC limita lo slippage al range della barra e con Bar Magnifier 1 minuto non c'è spazio. Effetto sul P/D di VaultBreak: 4,21 → **3,99** (1 tick su entry + stop) → **3,84** (1 tick su entrambi i lati), cioè **sotto la soglia MC‑robusta di 3,86**. Il margine che sembrava esserci era in buona parte slippage non pagato. **Decisivo per la prova ES**: il tick ES vale $12,50 contro $5,00, quindi lo slippage vero peserebbe ~34% del gross contro l'8% di NQ — ma il backtest non lo mostrerebbe. Decisione: impostazioni invariate per comparabilità, correzione **analitica a posteriori sui due strumenti** (`n_trade × 2 × tick_value`), e il P/D si legge sul net corretto. Aperta voce separata: rifare i Gate 2/3 già passati con lo slippage incorporato nella commissione ($7,50/lato su NQ)."
+  },
   {
    "date": "2026-10-01",
    "text": "**Criterio P/D a verbale in `pipeline_prop.md`.** A lotti fissi profitto e drawdown scalano entrambi con N, quindi una size valida esiste **se e solo se** `P/D ≥ Target/MLL` — e **N si semplifica**: se il rapporto non regge, nessuna size lo aggiusta. Conseguenza sulla scelta del conto: Target/MLL vale 1,25 (25k) · **1,50 (50k)** · 2,00 (100k e 150k). Il conto più grande **non** è più facile, chiede il doppio del P/D; il 25k ha il rapporto migliore ma un MLL da $1.200 che le nostre NQ non reggono a 1 micro. Resta il 50k. Poiché il Gate 3 usa il 95° percentile Monte Carlo (misurato **2,57×** lo storico), la soglia MC‑robusta sul 50k è **≈ 3,86**. VaultBreak è a 4,21: passa, ma di poco. Da qui la regola operativa dello Stage 4: **le varianti si giudicano sul P/D**, non su avg trade / PF / drawdown presi singolarmente."
