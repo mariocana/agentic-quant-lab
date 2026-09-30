@@ -349,6 +349,31 @@ Conseguenza: il nostro **VWAP Pullback** (unica "mean reverting" in lista) parte
 sospetto a carico — se fallisce i gate non è sfortuna; e **NQ First5** copre il ruolo
 davvero mancante, quello short.
 
+## Riaprire una strategia chiusa: quando sì e quando no (01/10/2026)
+
+Domanda emersa dopo la chiusura di ORB e VaultBreak: **conviene rifarle long *e* short?**
+Risposta: **no, non ora** — e la ragione tecnica è più interessante del verdetto.
+
+1. **Il vincolo che le ha uccise è il rischio per trade, non la direzione.** Entrambe
+   rischiano ~$200 per micro (stop 100 pt NQ): l'MLL da $2.000 sono 10 stop. Il 95°
+   percentile a ~$3.110 vale ~26 perdite medie. Aggiungere un lato **aggiunge trade, non
+   riduce l'unità di rischio**.
+2. **Il Gate 3 è cieco proprio al beneficio che si spererebbe.** Il vantaggio di un lato
+   short è *temporale*: guadagna quando il long sanguina. Ma il Monte Carlo a reshuffle
+   **distrugge l'ordine dei trade** — assume che siano scambiabili. Una diversificazione che
+   dipende da *quando* i trade accadono non compare nel 95° percentile. Anzi: a parità di
+   edge per trade, più trade significano più occasioni per una brutta serie, quindi il
+   percentile peggiora. Sotto questa metrica aggiungere lo short ha più probabilità di
+   **danneggiare** che di aiutare.
+3. **Non sarebbe una variante ma un'ipotesi nuova** → nuova spec Stage 0, non un
+   ripescaggio. E abbiamo appena pagato due volte il prezzo di fare Stage 4 su cose che non
+   avevano passato lo Stage 3.
+
+**Condizione esplicita per riaprirle**: se NQ First5 — che è progettata con lo short e ha lo
+stop parametrico — mostra allo Stage 2 che il lato short su NQ ha un edge reale, allora
+riaprire ORB/VaultBreak long+short diventa un'ipotesi **informata** invece di un tentativo
+di salvataggio. Prima di quel dato, no.
+
 ## Candidati valutati e scartati
 
 - **Gold/Silver Reversion** (template 17 del corso, GC vs SI, 5 min). Fade del movimento
