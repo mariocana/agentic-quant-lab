@@ -349,6 +349,65 @@ Conseguenza: il nostro **VWAP Pullback** (unica "mean reverting" in lista) parte
 sospetto a carico — se fallisce i gate non è sfortuna; e **NQ First5** copre il ruolo
 davvero mancante, quello short.
 
+## Il cimitero non è un bidone — e perché non si passa dallo Stage 5 (01/10/2026)
+
+Domanda: *una strategia non dovrebbe arrivare almeno all'OOS prima di essere chiusa?*
+**No, per costruzione** — ma la risposta va qualificata, perché il rischio che nasconde è
+reale.
+
+### Perché l'OOS non si spende sui bocciati
+
+Lo Stage 5 si fa **una volta sola**: guardare l'OOS lo consuma. Spenderlo su una strategia
+che già sappiamo non dimensionabile non aggiunge nulla e crea la tentazione peggiore —
+usare l'informazione OOS per aggiustarla, che è contaminazione. L'ordine dei gate esiste
+per mettere i test **economici e decisivi prima** di quelli costosi e irripetibili.
+
+### Ma la *causa di morte* va registrata, perché non sono equivalenti
+
+| causa | significato | recuperabile? |
+|---|---|---|
+| **A — edge assente** | expectancy negativa, split‑sample fallito, PF ≤ 1 | no |
+| **B — non entra nel conto** | l'edge c'è, ma l'unità di rischio è troppo grande per l'MLL | **sì**, se cambiano conto, strumento o unità di rischio |
+
+ORB e VaultBreak sono **B**, non A: positive in tutti e cinque gli anni e in entrambe le
+metà. Non sono «strategie sbagliate», sono **incompatibili con 1 micro NQ su un MLL da
+$2.000**. Verificato che non sia un artefatto della scelta del conto — per VaultBreak
+(P = $7.262, D = $3.109 per micro) non esiste N intera su **nessuna** taglia Lucid:
+
+| conto | serve N fra | esito |
+|---|---|---|
+| 25k | 0,21 e 0,39 micro | nessuna |
+| 50k | 0,41 e 0,64 | nessuna |
+| 100k | 0,83 e 0,96 | nessuna |
+| 150k | **1,24 e 1,45** | nessuna — manca l'intero per un soffio |
+
+**Regola**: ogni strategia chiusa resta archiviata **con i suoi report**. Se cambia il gate,
+il conto o lo strumento, si ri‑testa in minuti — non si ricostruisce.
+
+### La domanda metodologica aperta: il Gate 3 è il gate giusto?
+
+Va messa per iscritto adesso, **mentre non conviene**, non quando farà comodo.
+
+Il Gate 3 chiede: *nel 95% dei riordinamenti, 1 micro tenuto per cinque anni non sfonda
+l'MLL*. Ma il problema reale della prop non è quello: è **arrivare a +$3.000 prima di
+−$2.000**, su una finestra breve, con la possibilità di ripagare la fee e ritentare. È un
+problema di **primo passaggio**, non di massimo drawdown quinquennale — e chi lo risolve è
+lo **Stage 7**, che sta *dopo* il Gate 3 e che il Gate 3 impedisce di raggiungere.
+
+In più il Monte Carlo a reshuffle assume i trade **scambiabili**: distrugge la struttura
+temporale, quindi è severo con chi guadagna proprio dall'ordine in cui le cose accadono.
+
+**Non si tocca adesso.** Rilassare un gate subito dopo due bocciature è esattamente la mossa
+che ci siamo impegnati a non fare. Ma si fissa il **trigger**:
+
+> Se **tutte** le candidate rimaste falliscono il Gate 3 pur avendo un edge (causa B), la
+> conclusione non è «nessuna strategia funziona» ma **«il Gate 3 è mal specificato per il
+> modello di business della prop»**. A quel punto si ri‑deriva la soglia dal problema di
+> primo passaggio — una volta, su principio, prima di rivedere i numeri — e si ri‑passa
+> **tutto il cimitero** nel gate nuovo.
+
+Due su due sono già causa B. Il terzo dato lo darà NQ First5.
+
 ## Riaprire una strategia chiusa: quando sì e quando no (01/10/2026)
 
 Domanda emersa dopo la chiusura di ORB e VaultBreak: **conviene rifarle long *e* short?**

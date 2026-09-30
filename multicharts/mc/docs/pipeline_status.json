@@ -78,7 +78,7 @@
     "4": "pass",
     "3": "fail"
    },
-   "note": "Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.",
+   "note": "**Causa di morte: B — non entra nel conto** (l'edge c'è: positiva in tutti gli anni e in entrambe le metà dell'IS; è l'unità di rischio a non stare in un MLL da $2.000 con 1 micro NQ). Archiviata **con i report**: se cambia gate, conto o strumento si ri‑testa in minuti. Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico.",
    "metrics": {
     "configurazione finale": "`MaxRisk_USD 3000` · `UseDeltaFilter 1` · `UseEntryCutoff 1` 11:00 · `TP_RR 1.0`",
     "IS 2020‑2024": "550 trade · WR 58,9% · avg $193,97 · PF 1,35 · DD storico $12.125 (close‑to‑close)",
@@ -161,7 +161,7 @@
     "4": "active",
     "3": "fail"
    },
-   "note": "Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati.",
+   "note": "**Causa di morte: B — non entra nel conto** (l'edge c'è: positiva in tutti gli anni e in entrambe le metà dell'IS; è l'unità di rischio a non stare in un MLL da $2.000 con 1 micro NQ). Archiviata **con i report**: se cambia gate, conto o strumento si ri‑testa in minuti. Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati.",
    "log": [
     {
      "date": "2026-10-01",
@@ -321,6 +321,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-01",
+   "text": "**Messa per iscritto la domanda scomoda sul Gate 3, mentre non conviene.** Il Gate 3 chiede che 1 micro tenuto **cinque anni** non sfondi l'MLL nel 95% dei riordinamenti. Ma il problema reale della prop è **arrivare a +$3.000 prima di −$2.000 su una finestra breve, potendo ritentare**: è un problema di *primo passaggio*, e chi lo risolve è lo **Stage 7** — che sta dopo il Gate 3 e che il Gate 3 impedisce di raggiungere. In più il reshuffle assume i trade scambiabili, quindi penalizza chi guadagna dall'ordine degli eventi. **Non lo tocchiamo adesso**: rilassare un gate subito dopo due bocciature è la mossa che ci siamo impegnati a non fare. Fissato invece il trigger: se *tutte* le candidate falliscono il Gate 3 pur avendo un edge, allora il gate è mal specificato, si ri‑deriva dal primo passaggio e si ri‑passa tutto il cimitero. Introdotta anche la **causa di morte** nel cimitero: A = edge assente (definitivo), B = non entra nel conto (recuperabile). ORB e VaultBreak sono **B**, e per VaultBreak non esiste N intera su nessuna taglia Lucid — nemmeno la 150k, che ne chiederebbe fra 1,24 e 1,45."
+  },
   {
    "date": "2026-10-01",
    "text": "**Il numero che chiude la famiglia: $3.109 e $3.121 per micro.** ORB e VaultBreak — logica diversa, trigger diverso, numero di trade diverso, una ottimizzata in tre passaggi e l'altra no — falliscono lo stesso gate con il **95° percentile a 0,4% di distanza l'uno dall'altro**. Non è una proprietà delle due strategie: è quanto costa, in coda, tenere **1 micro NQ** in un breakout long‑only intraday. Contro un MLL di $2.000 non c'è size che lo sistemi, perché la size minima è già troppo grande. **Due strategie chiuse, nessuna variante da rilanciare.** Si passa a **NQ First5**, ferma allo Stage 1: porta il lato short che al basket manca del tutto, e con `StopPts` esplicito permette di scegliere il rischio per micro *prima* del backtest invece di scoprirlo al Gate 3."
