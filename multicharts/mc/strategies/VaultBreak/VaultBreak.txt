@@ -98,7 +98,7 @@ if Date <> Date[1] then begin
     else NoiseUp = 0;
 
     if ShowLog and DailyATR > 0 then
-        Print("VB ", Date:8:0, " open=", SessOpen:8:2, " ATR=", DailyATR:8:2, " NoiseUp=", NoiseUp:8:2);
+        Print(GetSymbolName," VB ", Date:8:0, " open=", SessOpen:8:2, " ATR=", DailyATR:8:2, " NoiseUp=", NoiseUp:8:2);
 end
 else begin
     if High > SessHigh then SessHigh = High;
