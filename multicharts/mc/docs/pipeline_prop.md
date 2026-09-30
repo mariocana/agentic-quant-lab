@@ -163,10 +163,23 @@ Reshuffle 1000 sim, 100% trade; Distribution analysis.
 **Gate 3**: mediana net profit > 0; < 10% simulazioni in perdita; DD 95° perc. ÷ 10
 ≤ MLL → **≤ $2.000** (LucidFlex 50k).
 
+**Prerequisito sui costi**: il MC gira sulla lista trade del report, quindi eredita lo
+slippage non addebitato. Il report di input va prodotto con lo **slippage incorporato nella
+commissione** (`$2,50 + 1 tick`: **$7,50/lato su NQ**, $15,00 su ES), campo slippage a 0.
+Addebita un tick anche sui target (che sono limit e non slitterebbero): è conservativo, ed
+è l'unico modo per avere una lista trade corretta senza stimare nulla.
+
 > Perché qui la soglia è il 100% dell'MLL e al Gate 2 era il 50%: il Gate 2 guarda **un
 > solo percorso storico**, quindi il margine copre la coda ignota. Il 95° percentile del
 > reshuffle **è già** la coda, quindi non serve margine sopra. Le due soglie misurano la
 > stessa cosa con strumenti di qualità diversa.
+
+>  **Regola d'ordine, violata due volte — Stage 3 viene PRIMA dello Stage 4.**
+> Sull'ORB abbiamo ottimizzato tre varianti e poi il Monte Carlo l'ha uccisa: lavoro
+> buttato. Su VaultBreak abbiamo rifatto lo stesso errore (`MaxTradesPerDay`, porting ES)
+> con il Gate 3 mai lanciato. Il Monte Carlo è **economico** (gira sul report già in mano)
+> e **decisivo**: va fatto appena il Gate 2 è chiuso, prima di spendere run su varianti.
+> Se una strategia muore al Gate 3, ogni ora di Stage 4 spesa prima è tempo perso.
 
 ## Stage 4 — Miglioramenti (solo IS)
 Base case = versione senza filtri. Ogni aggiunta deve avere una ragione e passare lo

@@ -187,7 +187,7 @@
      "text": "Spec + codice. Scelta: ATR **rolling 252** invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti."
     }
    ],
-   "next": "Resta **una sola** variante pre‑registrata: la griglia `NoiseMult` 0.5/0.7 × `DailyATRLen` 252/504, da ri‑ottimizzare insieme come cluster. Aspettativa dichiarata **debole**. Se non alza il P/D oltre 3,94 (NQ, slippage reale), VaultBreak va allo Stage 3 così com'è — e il Monte Carlo con la soglia 2,57× è il vero esame.",
+   "next": "**Stage 3, subito — e prima della griglia.** Un solo run NQ IS con lo slippage incorporato nella commissione (`$7,50/lato`, campo slippage a 0), poi Monte Carlo 1000 reshuffle sulla lista trade corretta. Gate 3: DD 95° perc. ÷ 10 ≤ $2.000. Con P/D corretto 3,84–3,94 contro la soglia 3,86 è in bilico: il MC decide. La griglia `NoiseMult` × `DailyATRLen` si tocca **solo se passa**.",
    "metrics": {
     "Stage 2 IS 2020‑2024": "723 trade · WR **63,1%** · avg $110,15 · PF 1,246 · R:R 0,73 · DD **$18.895** · peggior trade $2.005",
     "per anno": "2020 +4.361 · 2021 +20.692 · 2022 +16.826 · 2023 +21.316 · 2024 +16.442 — **tutti positivi**, max 26,8% del net",
@@ -312,6 +312,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-01",
+   "text": "**Errore di processo, il secondo identico: Stage 4 prima dello Stage 3.** Sull'ORB abbiamo ottimizzato tre varianti e poi il Monte Carlo l'ha uccisa. Su VaultBreak abbiamo appena fatto lo stesso — `MaxTradesPerDay 1` e il porting ES — con il Gate 3 **mai lanciato**. Il MC è economico (gira sul report già in mano) e decisivo. Regola messa nella pipeline: **Stage 3 appena chiuso il Gate 2, prima di spendere run su varianti**. Aggiunto anche il prerequisito sui costi: il report di input al MC va prodotto con lo slippage incorporato nella commissione ($7,50/lato su NQ), altrimenti il MC eredita lo slippage non addebitato."
+  },
   {
    "date": "2026-10-01",
    "text": "**Chiusa la strada (b) del muro sul drawdown: lo strumento meno volatile non aiuta.** VaultBreak su @ES con stop e target riscalati sull'ATR (26,5 / 13,25) esce peggio di NQ in tutti gli scenari di costo. Il motivo è istruttivo e vale oltre questa strategia: ES offre sì la granularità che cercavamo (DD per micro $1.209 contro $1.889), ma **l'edge per unità di rischio è più debole** (0,0427 R contro 0,0577) e il tick da $12,50 su un ATR di ~220 tick rende l'attrito il **44% del gross**. Delle tre strade del 01/10 restano la (a) — già bocciata su `MaxTradesPerDay 1` — e la (c), il conto più grande, che il criterio P/D ha già escluso perché chiede un rapporto doppio. **Il 50k resta, e il margine è quello che è.**"
