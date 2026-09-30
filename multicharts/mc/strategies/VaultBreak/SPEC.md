@@ -317,3 +317,31 @@ riaprisse, è una **nuova spec Stage 0**, non una variante di questa.
 **Conseguenza sulla pipeline**: la strada (b) del 01/10 — «strumento meno volatile in
 dollari» — è chiusa per VaultBreak. Restano la (a) rischio per trade (già bocciata con
 `MaxTradesPerDay 1`) e la griglia `NoiseMult` × `DailyATRLen`, l'ultima pre‑registrata.
+
+## Stage 2 rifatto con i costi onesti — baseline per il Gate 3 (01/10/2026)
+
+`Commission 7.5$ per Contract` ($2,50 + 1 tick da $5,00), `Slippage 0 ticks`, tutto il resto
+identico. Controprova che il cambio è solo di costo: **723 trade** e stessa distribuzione
+delle uscite (TP 377 · TIMEX 161 · SL 100 · VWAPX 85) del run precedente.
+
+| | slippage 1 tick (sottostimato) | **costi onesti** |
+|---|---|---|
+| Net profit | 79.636 | **72.620** |
+| Costi totali | 3.829 | **10.845** |
+| Avg trade | 110,15 | **100,44** |
+| Profit Factor | 1,246 | **1,220** |
+| Max Strategy DD | −18.895 | **−19.113** |
+| Max Close‑to‑Close DD | −18.368 | −18.620 |
+| **P/D** | 4,21 | **3,80** |
+
+Il net coincide al dollaro con la correzione analitica prevista ($72.620): il metodo era
+giusto. **Questo è il report di input del Gate 3**, non il precedente.
+
+- **Gate 2** con i costi veri: DD/10 = **$1.911** per micro contro la soglia $1.000. Resta
+  fallito (era già passato per waiver registrato).
+- **P/D 3,80** contro la soglia MC‑robusta stimata 3,86: sotto, ma di un'incollatura. La
+  stima non decide — decide il Monte Carlo.
+- Se il rapporto 2,57× misurato sull'ORB si ripetesse, il 95° percentile uscirebbe a
+  ~$49.100, cioè **$4.912 per micro** contro un MLL di $2.000. Previsione scritta prima del
+  run: **VaultBreak non passa il Gate 3**. Se passa, il 2,57× non è una costante e va
+  ricalibrato.

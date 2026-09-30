@@ -164,6 +164,10 @@
    "log": [
     {
      "date": "2026-10-01",
+     "text": "**Stage 2 rifatto con i costi onesti** (`Commission 7,5$/contratto`, slippage 0): net **$72.620** contro i $79.636 precedenti, avg trade $100,44, PF 1,220, Max Strategy DD **−$19.113**. **P/D = 3,80.** Il net coincide al dollaro con la correzione analitica che avevo calcolato ($72.620): il metodo era giusto. Stessi 723 trade e stessa distribuzione delle uscite, quindi il cambio è puramente di costo. Gate 2 con i costi veri: $1.911 per micro contro la soglia $1.000, resta fallito. Questo è il report di input del Gate 3."
+    },
+    {
+     "date": "2026-10-01",
      "text": "**Prova (b) bocciata: @ES è nettamente peggiore su tutti e tre i run.** P/D 2,42 grezzo contro i 4,21 di NQ; con lo slippage corretto **1,56** (scenario realistico) e **1,26** (pieno) contro 3,94 e 3,84. A 1,26 non passa nemmeno `Target/MLL = 1,50`, prima ancora del Monte Carlo. **Non è solo attrito**: a parità di rischio l'edge ES vale **0,0427 R contro 0,0577 R**, cioè il 26% in meno *prima* dei costi. Poi lo slippage pieno pesa il **44% del gross** su ES contro l'8,7% di NQ. Le due avvertenze pre‑registrate si sono verificate entrambe: il drift del rapporto ATR ha penalizzato la prima metà (P/D 1,25 contro 1,49) e l'handicap di attrito era **sottostimato** (previsto 34%, reale 44%). Split‑sample coerente, nessun ribaltamento: risultato pulito. **La granularità c'era davvero** — DD per micro MES $1.209 contro MNQ $1.889 — ma il profitto crolla: $1.528 contro $7.262 per micro. Test di fattibilità su MES: servono N≥2 per il target e N≤1 per l'MLL, **nessuna N valida**. Boccia «ES con parametri ATR‑equivalenti», non «ES»: cercare ora uno stop ES migliore sarebbe curve fitting, semmai è una nuova spec Stage 0."
     },
     {
@@ -187,7 +191,7 @@
      "text": "Spec + codice. Scelta: ATR **rolling 252** invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti."
     }
    ],
-   "next": "**Stage 3, subito — e prima della griglia.** Un solo run NQ IS con lo slippage incorporato nella commissione (`$7,50/lato`, campo slippage a 0), poi Monte Carlo 1000 reshuffle sulla lista trade corretta. Gate 3: DD 95° perc. ÷ 10 ≤ $2.000. Con P/D corretto 3,84–3,94 contro la soglia 3,86 è in bilico: il MC decide. La griglia `NoiseMult` × `DailyATRLen` si tocca **solo se passa**.",
+   "next": "**Monte Carlo, adesso.** Input: `VB_Stage2_IS-intero_costi-onesti.xlsx` (net $72.620, DD −$19.113, 723 trade). 1000 reshuffle, 100% dei trade, Distribution analysis, esportare la distribuzione del **max drawdown** (non del net profit). **Gate 3: 95° percentile ≤ $20.000.** Previsione scritta prima: se il 2,57× dell'ORB tiene, esce ~$49.100 e non passa.",
    "metrics": {
     "Stage 2 IS 2020‑2024": "723 trade · WR **63,1%** · avg $110,15 · PF 1,246 · R:R 0,73 · DD **$18.895** · peggior trade $2.005",
     "per anno": "2020 +4.361 · 2021 +20.692 · 2022 +16.826 · 2023 +21.316 · 2024 +16.442 — **tutti positivi**, max 26,8% del net",
