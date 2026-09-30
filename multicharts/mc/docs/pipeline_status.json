@@ -164,6 +164,10 @@
    "log": [
     {
      "date": "2026-10-01",
+     "text": "**Prova (b) bocciata: @ES è nettamente peggiore su tutti e tre i run.** P/D 2,42 grezzo contro i 4,21 di NQ; con lo slippage corretto **1,56** (scenario realistico) e **1,26** (pieno) contro 3,94 e 3,84. A 1,26 non passa nemmeno `Target/MLL = 1,50`, prima ancora del Monte Carlo. **Non è solo attrito**: a parità di rischio l'edge ES vale **0,0427 R contro 0,0577 R**, cioè il 26% in meno *prima* dei costi. Poi lo slippage pieno pesa il **44% del gross** su ES contro l'8,7% di NQ. Le due avvertenze pre‑registrate si sono verificate entrambe: il drift del rapporto ATR ha penalizzato la prima metà (P/D 1,25 contro 1,49) e l'handicap di attrito era **sottostimato** (previsto 34%, reale 44%). Split‑sample coerente, nessun ribaltamento: risultato pulito. **La granularità c'era davvero** — DD per micro MES $1.209 contro MNQ $1.889 — ma il profitto crolla: $1.528 contro $7.262 per micro. Test di fattibilità su MES: servono N≥2 per il target e N≤1 per l'MLL, **nessuna N valida**. Boccia «ES con parametri ATR‑equivalenti», non «ES»: cercare ora uno stop ES migliore sarebbe curve fitting, semmai è una nuova spec Stage 0."
+    },
+    {
+     "date": "2026-10-01",
      "text": "**Prova (b) preparata: @ES con stop/target riscalati sull'ATR.** `StopLossPts` e `TakeProfitPts` erano già in punti, quindi il porting non tocca il codice. Fattore 0,265 (rapporto delle medie ATR sull'IS). In dollari il rischio per micro scende da $200 a **$132,50**: è il punto della prova, più granularità sotto lo stesso MLL. **Due handicap messi per iscritto prima dei risultati**: (1) il rapporto ES/NQ è passato da 0,35 a 0,22 in cinque anni, quindi uno stop fisso sarà stretto nella prima metà e largo nella seconda — se lo split‑sample si sbilancia, questa è la prima spiegazione da considerare; (2) rispetto al proprio rumore ES è **4× più grossolano** (ATR ~220 tick contro ~836), e l'attrito per trade passa dall'1,35% al **4,30%** del target. Aspettativa dichiarata: ES dovrebbe uscire *peggio* sul P/D; se esce meglio nonostante l'attrito, il segnale è forte."
     },
     {
@@ -183,7 +187,7 @@
      "text": "Spec + codice. Scelta: ATR **rolling 252** invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti."
     }
    ],
-   "next": "**Prova (b) in corso — porting su @ES.** Conversione decisa ex ante e a verbale nella SPEC: fattore ATR ES/NQ = **0,265** (media 208,66 vs 55,26 su 21 campioni IS) → `StopLossPts 26,50`, `TakeProfitPts 13,25`. Nessun'altra modifica, codice invariato. Tre run (IS intero + due metà), giudizio sul **P/D**, riferimento da battere **4,21**. Poi resta la griglia `NoiseMult` 0.5/0.7 × `DailyATRLen` 252/504.",
+   "next": "Resta **una sola** variante pre‑registrata: la griglia `NoiseMult` 0.5/0.7 × `DailyATRLen` 252/504, da ri‑ottimizzare insieme come cluster. Aspettativa dichiarata **debole**. Se non alza il P/D oltre 3,94 (NQ, slippage reale), VaultBreak va allo Stage 3 così com'è — e il Monte Carlo con la soglia 2,57× è il vero esame.",
    "metrics": {
     "Stage 2 IS 2020‑2024": "723 trade · WR **63,1%** · avg $110,15 · PF 1,246 · R:R 0,73 · DD **$18.895** · peggior trade $2.005",
     "per anno": "2020 +4.361 · 2021 +20.692 · 2022 +16.826 · 2023 +21.316 · 2024 +16.442 — **tutti positivi**, max 26,8% del net",
@@ -308,6 +312,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-01",
+   "text": "**Chiusa la strada (b) del muro sul drawdown: lo strumento meno volatile non aiuta.** VaultBreak su @ES con stop e target riscalati sull'ATR (26,5 / 13,25) esce peggio di NQ in tutti gli scenari di costo. Il motivo è istruttivo e vale oltre questa strategia: ES offre sì la granularità che cercavamo (DD per micro $1.209 contro $1.889), ma **l'edge per unità di rischio è più debole** (0,0427 R contro 0,0577) e il tick da $12,50 su un ATR di ~220 tick rende l'attrito il **44% del gross**. Delle tre strade del 01/10 restano la (a) — già bocciata su `MaxTradesPerDay 1` — e la (c), il conto più grande, che il criterio P/D ha già escluso perché chiede un rapporto doppio. **Il 50k resta, e il margine è quello che è.**"
+  },
   {
    "date": "2026-10-01",
    "text": "**Lo slippage non viene quasi addebitato: tutti i numeri di Stage 2 sono ottimistici.** Controllando le impostazioni nei report per preparare il run ES: con `Slippage 1 tick` impostato, MultiCharts ha addebitato **$213,80 su 723 trade** (VaultBreak) e **$292,80 su 827** (ORB) — cioè il **3%** di quanto costerebbe un tick per lato ($7.230 e $8.270). Causa probabile da verificare: MC limita lo slippage al range della barra e con Bar Magnifier 1 minuto non c'è spazio. Effetto sul P/D di VaultBreak: 4,21 → **3,99** (1 tick su entry + stop) → **3,84** (1 tick su entrambi i lati), cioè **sotto la soglia MC‑robusta di 3,86**. Il margine che sembrava esserci era in buona parte slippage non pagato. **Decisivo per la prova ES**: il tick ES vale $12,50 contro $5,00, quindi lo slippage vero peserebbe ~34% del gross contro l'8% di NQ — ma il backtest non lo mostrerebbe. Decisione: impostazioni invariate per comparabilità, correzione **analitica a posteriori sui due strumenti** (`n_trade × 2 × tick_value`), e il P/D si legge sul net corretto. Aperta voce separata: rifare i Gate 2/3 già passati con lo slippage incorporato nella commissione ($7,50/lato su NQ)."

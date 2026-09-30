@@ -253,3 +253,67 @@ diventa quindi **3,84** (scenario pieno), non 4,21.
 > **Da aprire come voce separata**: rifare i Gate 2/3 già passati con lo slippage incorporato
 > nella commissione (`$2,50 + 1 tick = $7,50 per contratto per lato` su NQ) invece che come
 > campo slippage. Non ora: prima si chiude la prova ES a parità di condizioni.
+
+## Stage 4 — prova (b) **bocciata**: @ES è nettamente peggiore (01/10/2026)
+
+Setup verificato dai report: `@ES`, `StopLossPts 26.5`, `TakeProfitPts 13.25`, `NoiseMult
+0.60`, `DailyATRLen 252`, `MaxTradesPerDay 3`, date `1200101/1220630/1220701/1241231`,
+costi `2.5$ per Contract` + `1 tick` + Bar Magnifier 1 min. Tutto come pre‑registrato.
+
+| | net | n | avg | DD | **P/D** | P/D slip. reale | P/D slip. pieno |
+|---|---|---|---|---|---|---|---|
+| **NQ** IS intero | 79.636 | 723 | 110,15 | −18.895 | **4,21** | 3,94 | 3,84 |
+| NQ 1ª metà | 38.186 | 415 | 92,02 | −18.895 | 2,02 | 1,87 | 1,81 |
+| NQ 2ª metà | 41.450 | 308 | 134,58 | −14.509 | 2,86 | 2,71 | 2,65 |
+| **ES** IS intero | 29.248 | 576 | 50,78 | −12.094 | **2,42** | **1,56** | **1,26** |
+| ES 1ª metà | 15.118 | 336 | 45,00 | −12.094 | 1,25 | 0,75 | 0,58 |
+| ES 2ª metà | 14.129 | 240 | 58,87 | −9.470 | 1,49 | 1,03 | 0,88 |
+
+*Slippage reale* = 1 tick su entry + su tutte le uscite **tranne il Profit Target** (limit,
+non slitta): NQ 1.069 fill, ES 870. *Pieno* = 1 tick su entrambi i lati.
+Uscite: NQ TP 377 / TIMEX 161 / SL 100 / VWAPX 85 · ES TP 282 / TIMEX 134 / VWAPX 87 / SL 73.
+
+**Bocciata su tutti e tre i run, in ogni scenario di costo.** Corretto, ES scende a **1,26**
+contro la soglia `Target/MLL = 1,50` del 50k: non passa nemmeno il criterio di fattibilità,
+prima ancora del Monte Carlo.
+
+### Non è (solo) l'attrito: l'edge su ES è più debole
+
+| | gross/trade | stop | **edge in R** |
+|---|---|---|---|
+| NQ | $115,44 | $2.000 | **0,0577** |
+| ES | $56,53 | $1.325 | **0,0427** |
+
+A parità di rischio, ES rende il **26% in meno prima dei costi**. Il ridimensionamento ATR
+funziona (lo stop ES è il 66% di quello NQ, l'avg trade è il 49%): è proprio il vantaggio
+per unità di rischio che è inferiore. Poi arriva l'attrito e finisce il lavoro — lo
+slippage pieno vale **44% del gross** su ES contro l'**8,7%** di NQ.
+
+### Le due avvertenze pre‑registrate: verificate, e non salvano la variante
+
+1. **Il drift del rapporto ATR ha morso davvero.** La prima metà — dove 0,265 rende lo stop
+   troppo stretto per ES — è la peggiore (P/D 1,25 contro 1,49). Direzione esatta prevista.
+   Ma anche la metà "favorita" resta sotto NQ (1,49 vs 2,86) e sotto 1,50 una volta corretta.
+2. **L'handicap di attrito era sottostimato**: avevo previsto ~34% del gross, è il 44%.
+   Avevo stimato l'avg trade lordo ES a ~$73, è $56,53.
+
+**Split‑sample coerente**: entrambe le metà peggiori di NQ, nessun ribaltamento. È un
+risultato pulito, non il caso di un singolo periodo.
+
+### La granularità c'era — e non è bastata
+
+L'ipotesi era giusta sul rischio: per micro, DD **MES $1.209** contro **MNQ $1.889** su un
+MLL di $2.000. Ma crolla il profitto: per micro, net corretto **$1.528** (ES) contro
+**$7.262** (NQ). Test di fattibilità su MES: servono `N ≥ 3.000/1.528 = 2` contratti per il
+target e `N ≤ 2.000/1.209 = 1` per l'MLL. **Nessuna N valida.**
+
+### Cosa questo NON dice
+
+Boccia **«VaultBreak su ES con parametri ATR‑equivalenti»**, non «ES». Esiste in teoria uno
+stop ES migliore del 26,5 — ma cercarlo dopo aver visto questi numeri è curve fitting sullo
+strumento, ed è esattamente ciò che la regola pre‑registrata serviva a impedire. Se mai si
+riaprisse, è una **nuova spec Stage 0**, non una variante di questa.
+
+**Conseguenza sulla pipeline**: la strada (b) del 01/10 — «strumento meno volatile in
+dollari» — è chiusa per VaultBreak. Restano la (a) rischio per trade (già bocciata con
+`MaxTradesPerDay 1`) e la griglia `NoiseMult` × `DailyATRLen`, l'ultima pre‑registrata.
