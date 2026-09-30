@@ -42,3 +42,29 @@ l'avg trade netto scende sotto $70 o il WR sotto il 50%.
 **Attenzione — correlazione**: stesso strumento, stessa ora e stessa idea di drift
 dell'ORB. Misurare la correlazione con ORB già dopo lo Stage 2, senza aspettare il
 gate 8: se è alta, nel basket ne entra una sola (o si tiene First5 solo per lo short).
+
+## Aggiunte al codice prima dello Stage 1 (01/10/2026)
+
+Non sono logica di trading, sono prerequisiti della pipeline che al codice mancavano:
+
+- **`ShowLog`** (default `false`) → due righe di log: `F5 EOD` a fine sessione con `rN`,
+  ADR breve, ADR lungo e il loro rapporto; `F5 SIG` sulla barra delle 08:35 con close, EMA,
+  direzione, range della barra di riferimento ed esito dei due filtri. Senza, lo Stage 1
+  non è verificabile.
+- **`TradeStartEL` / `TradeEndEL`** (default 0 = spenti) → separano il warm-up di 100
+  sessioni (`VolRegimeLongLen`) dal periodo valutato. Agiscono **solo sugli ingressi**: una
+  posizione aperta resta gestita. Stesso schema già validato su VaultBreak.
+
+Checklist operativa: `CHECKLIST_Stage1.md`.
+
+## Budget di rischio noto in anticipo (da ORB e VaultBreak)
+
+Le due strategie chiuse sono uscite dal Gate 3 a **$3.121** e **$3.109** di drawdown per
+micro al 95° percentile Monte Carlo, contro un MLL di **$2.000**. Due logiche indipendenti,
+scarto dello 0,4%: è la misura di quanto costa tenere 1 micro NQ in un sistema intraday
+direzionale con stop da ~$200/micro.
+
+**Conseguenza per First5**: il budget è `95° percentile ≤ $2.000 per micro`, che con i
+fattori di amplificazione misurati (1,67× su VaultBreak, 2,56× sull'ORB) significa puntare a
+un **drawdown storico di $10.000–12.000 con 1 mini**. Va deciso allo Stage 0 della variante
+`StopPts`, non scoperto al Gate 3 — è esattamente l'errore che abbiamo già pagato due volte.

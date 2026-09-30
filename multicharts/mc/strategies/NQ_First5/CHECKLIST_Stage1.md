@@ -1,0 +1,127 @@
+# NQ First5 — checklist Stage 1 (verifica meccanica)
+
+Obiettivo dello Stage 1: **non** capire se guadagna, ma se fa *esattamente* quello che dice
+la spec. Nessuna conclusione sul P&L da questo run.
+
+---
+
+## 1. Chart
+
+| | |
+|---|---|
+| Strumento | **@NQ** |
+| Risoluzione | **5 minuti** — obbligatoria, la barra di riferimento è definita su questa |
+| Sessione | **Globex 24h**, *non* la RTH CME custom di VaultBreak |
+| Timezone | **Exchange (CT)** |
+| Periodo | ultimi ~100 giorni di trading |
+| Max bars back | **≥ 300** |
+| Bar Magnifier | **non serve** (tutti i fill sono a chiusura barra) — servirà allo Stage 4 con `StopPts` > 0 |
+| IOG | **off** |
+
+> ⚠️ È l'errore facile della giornata: abbiamo appena costruito la sessione **RTH CME
+> custom** per VaultBreak. Qui va la **Globex 24h**. Con la sessione sbagliata l'ADR viene
+> calcolato su una finestra diversa e la barra delle 08:35 può non esistere.
+
+## 2. Costi (già quelli onesti, non li cambiamo più)
+
+| | |
+|---|---|
+| Commission | **`7.5$ per Contract`** ($2,50 + 1 tick da $5,00) |
+| Slippage | **`0 ticks`** |
+
+Gli ingressi e le uscite sono ordini *at close*, cioè market: un tick di attraversamento
+dello spread è l'ipotesi giusta.
+
+## 3. Input per questo run
+
+| input | valore |
+|---|---|
+| `EMALength` | 12 |
+| `SignalTime` | 835 |
+| `ExitTime` | 1500 |
+| `SessionOpen` | 830 |
+| `AllowLongs` / `AllowShorts` | 1 / 1 |
+| `UseFilters` | **0** (base case) |
+| `StopPts` | **0** |
+| `NumContracts` | 1 |
+| `TradeStartEL` / `TradeEndEL` | 0 / 0 |
+| **`ShowLog`** | **True** |
+
+`ShowLog` è booleano (True/False), non 0/1. Output nel **PowerLanguage Editor → View →
+Output Window**, e ricordati di forzare un ricalcolo dopo aver aperto la finestra.
+
+---
+
+## 4. I controlli — tutti devono passare
+
+| # | Controllo | Come si verifica |
+|---|---|---|
+| 1 | **Un solo trade al giorno**, mai due | List of Trades: una coppia entry/exit per data |
+| 2 | **Ingresso sempre alle 08:35** | tutte le entry timbrate 08:35, nessun altro orario |
+| 3 | **Direzione coerente col log** | riga `F5 SIG`: `dir=1` → long, `dir=-1` → short, e corrisponde al trade |
+| 4 | **Uscita alle 15:00** | tutte le uscite a 15:00 CT |
+| 5 | **Zero posizioni overnight** | nessun trade che attraversa la mezzanotte |
+| 6 | **Entrambi i lati presenti** | conta long e short: se gli short sono ~0 c'è un bug, è il punto della strategia |
+| 7 | **Niente trade nel weekend** | nessuna entry sabato/domenica |
+| 8 | **Mezze giornate** | annotare i giorni in cui l'uscita è anticipata da `SetExitOnClose` |
+| 9 | **Numero segnali ≈ numero sessioni** | nel log una riga `F5 SIG` per giorno di borsa; se ne mancano, c'è un buco dati sulla barra delle 08:35 |
+| 10 | **ADR sensato e crescente** | righe `F5 EOD`: `sessioni=` sale fino a 100+, `ADR20` e `ADR100` in punti NQ plausibili (centinaia) |
+
+## 5. I due controlli che contano davvero
+
+### 5a. Scaling ×10 — **da fare con lo stop acceso**
+
+È il controllo che ha salvato VaultBreak al Gate 1. `SetStopLoss` è **per posizione**, non
+per contratto: senza `CurrentContracts` con 10 contratti lo stop varrebbe un decimo. Ma con
+`StopPts 0` lo stop non esiste e **il bug non si vedrebbe**.
+
+Quindi tre run, non due:
+
+| run | `StopPts` | `NumContracts` | atteso |
+|---|---|---|---|
+| A | 0 | 1 | base |
+| B | 0 | 10 | ogni metrica **×10 esatta** rispetto ad A |
+| C | **200** | 1 | peggior trade ≈ **−200 pt × $20 = −$4.000** + costi |
+| D | **200** | 10 | ogni metrica **×10 esatta** rispetto a C |
+
+Se D non scala esattamente, lo stop non è per contratto e va corretto prima di proseguire.
+
+### 5b. Gate date `TradeStartEL` / `TradeEndEL`
+
+Serve allo Stage 2 per separare il warm-up (100 sessioni di `VolRegimeLongLen`) dal periodo
+valutato, perché in MultiCharts **il range del grafico è anche il range del backtest**.
+
+1. metti `TradeStartEL` e `TradeEndEL` su una finestra interna al periodo caricato;
+2. verifica che **non ci siano ingressi fuori** da quella finestra;
+3. verifica che una posizione aperta l'ultimo giorno utile **venga comunque chiusa**
+   normalmente alle 15:00 (il gate agisce solo sugli ingressi).
+
+Formato EasyLanguage `YYYMMDD`, `YYY = anno − 1900`:
+
+| data | valore |
+|---|---|
+| 01/01/2020 | `1200101` |
+| 30/06/2022 | `1220630` |
+| 01/07/2022 | `1220701` |
+| 31/12/2024 | `1241231` |
+
+---
+
+## 6. Cosa annotare comunque (non è un gate)
+
+Sono i numeri che useremo allo Stage 0 della variante `StopPts`, che la spec dichiara
+**obbligatoria per l'uso prop**:
+
+- **peggior trade in punti**, long e short separati → è il worst day strutturale, e senza
+  stop non ha limite;
+- **distribuzione long vs short**: numero, WR e avg trade di ciascun lato;
+- quante volte il trade avrebbe superato **100 pt di perdita** (≈ $200/micro, il budget che
+  sappiamo già essere il massimo sostenibile).
+
+> Il budget lo conosciamo in anticipo, ed è la lezione di ORB e VaultBreak: il 95°
+> percentile Monte Carlo deve stare **sotto $2.000 per micro**. Entrambe sono uscite a
+> ~$3.110. Tradotto per First5: puntare a un drawdown storico intorno ai **$10.000–12.000**
+> con 1 mini. Se dopo lo Stage 2 il base case è molto sopra, lo stop non è una variante
+> opzionale — è la strategia.
+
+**Gate 1**: tutti i controlli della sezione 4 e 5 passati. Report salvati in `reports/`.

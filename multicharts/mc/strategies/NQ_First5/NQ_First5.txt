@@ -43,7 +43,17 @@ Inputs:
     ADRLength(20),             { sessioni nell'ADR breve, max 30 }
     VolRegimeLongLen(100),     { sessioni nell'ADR lungo, max 120, = warm-up }
     StopPts(0),                { variante prop: stop in punti NQ; 0 = off }
-    NumContracts(1);
+    NumContracts(1),
+    { --- finestra di trading (NON e' logica di trading: serve a separare il
+          warm-up dal periodo valutato, perche' in MultiCharts il range del
+          grafico e' anche il range del backtest). Formato EasyLanguage
+          YYYMMDD con YYY = anno - 1900:
+            1200101 = 1 gen 2020 - 1220630 = 30 giu 2022 - 1241231 = 31 dic 2024
+          0 = disattivato. Agisce SOLO sugli ingressi: una posizione gia'
+          aperta resta gestita fino alla sua uscita normale. --- }
+    TradeStartEL(0),
+    TradeEndEL(0),
+    ShowLog(false);
 
 Arrays:
     sessRange[120](0);
@@ -51,7 +61,7 @@ Arrays:
 Variables:
     ema(0), dayHigh(0), dayLow(0), inSession(false),
     rIdx(0), rN(0), rSum(0), adr(0), adrLong(0),
-    k(0), refRangeOK(false), regimeOK(false), signalDone(false);
+    k(0), refRangeOK(false), regimeOK(false), signalDone(false), dateOK(false);
 
 once begin
     if RefBarMinRange < 0 or VolRegimeRatio <= 0 then
@@ -95,6 +105,13 @@ else if inSession then begin
         rSum = rSum + sessRange[Mod(rIdx - k + 120, 120)];
     end;
     adrLong = rSum / MinList(VolRegimeLongLen, rN);
+
+    if ShowLog then
+        Print("F5 EOD ", Date:8:0, " sessioni=", rN:4:0,
+              " ADR", ADRLength:3:0, "=", adr:8:2,
+              " ADR", VolRegimeLongLen:4:0, "=", adrLong:8:2,
+              " ratio=", (adr / MaxList(adrLong, 0.000001)):6:3);
+
     inSession = false;
 end;
 
@@ -102,8 +119,12 @@ end;
 if Date <> Date[1] then
     signalDone = false;
 
+{ ---- finestra di trading: solo ingressi ---- }
+dateOK = (TradeStartEL = 0 or Date >= TradeStartEL)
+     and (TradeEndEL   = 0 or Date <= TradeEndEL);
+
 { ---- ingresso sulla barra di riferimento ---- }
-if MarketPosition = 0 and signalDone = false and Time = SignalTime then begin
+if MarketPosition = 0 and signalDone = false and dateOK and Time = SignalTime then begin
 
     refRangeOK = true;
     regimeOK   = true;
@@ -119,6 +140,15 @@ if MarketPosition = 0 and signalDone = false and Time = SignalTime then begin
         else if Close < ema and AllowShorts = 1 then
             SellShort ("F5.S") NumContracts contracts this bar at close;
     end;
+
+    if ShowLog then
+        Print("F5 SIG ", Date:8:0, " ", Time:5:0,
+              " close=", Close:9:2, " ema=", ema:9:2,
+              " dir=", IFF(Close > ema, 1, -1):3:0,
+              " refRng=", (High - Low):7:2, " ADR=", adr:8:2,
+              " refOK=", IFF(refRangeOK, 1, 0):2:0,
+              " regOK=", IFF(regimeOK, 1, 0):2:0);
+
     signalDone = true;
 end;
 
