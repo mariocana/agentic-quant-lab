@@ -345,3 +345,54 @@ giusto. **Questo è il report di input del Gate 3**, non il precedente.
   ~$49.100, cioè **$4.912 per micro** contro un MLL di $2.000. Previsione scritta prima del
   run: **VaultBreak non passa il Gate 3**. Se passa, il 2,57× non è una costante e va
   ricalibrato.
+
+## Gate 3 **fallito** — VaultBreak chiusa (01/10/2026)
+
+Monte Carlo 1000 reshuffle, 100% dei trade, sul report a costi onesti.
+
+| | |
+|---|---|
+| Base (close‑to‑close) | −$18.620 |
+| Mediana (50°) | −$18.105 |
+| **95° percentile** | **−$31.090** |
+| Largest drawdown su 1000 | −$39.945 |
+| **Per micro** | **$3.109** contro un MLL di **$2.000** |
+
+**Sforo del 55%. Gate 3 fallito.** Mediana net profit positiva e nessun problema sul lato
+profitto: è il drawdown della coda, esattamente come per l'ORB.
+
+### Il numero che conta più del verdetto
+
+| | DD storico (c2c) | 95° perc. | per micro |
+|---|---|---|---|
+| ORB (dopo 3 varianti) | $12.184 | $31.210 | **$3.121** |
+| VaultBreak (base case) | $18.620 | $31.090 | **$3.109** |
+
+Due strategie **indipendenti** — logica diversa, trigger diverso, numero di trade diverso,
+una ottimizzata in tre passaggi e l'altra no — finiscono a **$3.109 e $3.121 per micro**.
+Uno scarto dello 0,4%. Non è una coincidenza sulle singole strategie: è la misura di quanto
+costa, in coda, tenere 1 micro NQ in un breakout long‑only intraday.
+
+### Previsione sbagliata, e ricalibrazione
+
+Avevo previsto ~$49.100 applicando il 2,57× dell'ORB. **Sbagliato: è uscito $31.090**, cioè
+un rapporto di **1,67×**. Il fattore di amplificazione del Monte Carlo **non è una costante**:
+dipende dalla dispersione dei trade. L'ORB aveva perdite fino a $3.000 (cap `MaxRisk_USD`) ed
+è molto più sensibile al reshuffle; VaultBreak ha la perdita bloccata a −$2.015 e una
+distribuzione più regolare. La regola derivata «P/D ≥ 3,86» è ritirata da `pipeline_prop.md`.
+
+### Perché il criterio P/D da solo non bastava
+
+P/D sulla coda MC = 72.620 / 31.090 = **2,34 ≥ 1,50**: il criterio di fattibilità **passa**.
+Ma richiede `N ≥ 3.000/7.262 = 0,41` e `N ≤ 2.000/3.109 = 0,64` micro — e **mezzo micro non
+esiste**. È la condizione di granularità che manca al criterio, ora aggiunta alla pipeline.
+
+### Kill
+
+La spec diceva: «gate pipeline». Il gate è fallito. **VaultBreak si chiude come l'ORB**, e
+la griglia `NoiseMult` × `DailyATRLen` **non si lancia**: sarebbe la quarta variante su una
+strategia già bocciata, lo stesso errore fatto sull'ORB.
+
+Quel che resta — e va usato, non riscritto da zero: il codice è corretto e verificato al
+Gate 1, gli input `TradeStartEL`/`TradeEndEL` servono a tutte, e la lezione sul rischio per
+micro vale per l'intera famiglia.

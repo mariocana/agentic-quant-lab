@@ -99,16 +99,27 @@ migliore ma un MLL di $1.200 che le nostre strategie NQ non reggono nemmeno a 1 
 
 È uno **screening di fattibilità**, non una promessa. In particolare:
 
-- usa il drawdown **storico su un singolo percorso**. Il Gate 3 usa il 95° percentile Monte
-  Carlo, che nella nostra unica misurazione vale **2,57×** lo storico. Un criterio
-  MC-robusto chiede quindi circa `P/D ≥ 2,57 × Target/MLL` → **≈ 3,86 sul 50k**;
+- usa il drawdown **storico su un singolo percorso**, non la coda Monte Carlo del Gate 3;
+- **soprattutto: ignora la granularità.** Il criterio ammette N frazionari, ma il contratto
+  minimo è 1 micro. Serve quindi una **seconda condizione indipendente**:
+
+  > **D per 1 micro ≤ MLL** — anche la size minima deve sopravvivere.
+
+  VaultBreak è il caso che l'ha resa evidente: P/D sulla coda MC = 2,34 ≥ 1,50, quindi il
+  primo criterio **passa**; ma il drawdown a 1 micro è $3.109 contro $2.000, e non esiste
+  mezzo micro. **Bocciata dalla seconda condizione.** Le due vanno verificate entrambe;
 - ignora l'**EOD trailing**: nel tratto iniziale (fino a $2.100 di profitto) il pavimento si
   alza, quindi il margine reale è più stretto di MLL;
 - ignora la **consistency 50%** e l'**ordine dei trade** (li copre il Monte Carlo);
 - P e D vanno misurati sulla stessa finestra e con gli stessi costi.
 
-**Riferimento corrente**: VaultBreak IS 2020‑2024 → P/D = 79.636 / 18.895 = **4,21**.
-Supera il 3,86 MC-robusto, ma di poco. È il numero da battere per ogni variante.
+> **Ritrattazione (01/10/2026).** Avevo derivato da qui una soglia «MC-robusta» di 3,86 sul
+> 50k, moltiplicando `Target/MLL` per il 2,57× misurato sull'ORB. **Sbagliato: quel rapporto
+> non è una costante.** Misurato su due strategie vale **2,56 (ORB)** e **1,67 (VaultBreak)**,
+> entrambi come 95° percentile ÷ drawdown close-to-close. Dipende dalla forma della
+> distribuzione dei trade — l'ORB, con perdite fino a $3.000 per il cap `MaxRisk_USD`, è molto
+> più sensibile al reshuffle di VaultBreak, che ha la perdita bloccata a −$2.015. Nessuna
+> scorciatoia: **il Monte Carlo va lanciato**, non stimato.
 
 > Regola operativa: allo Stage 4 una variante si giudica sul **P/D**, non su avg trade / PF
 > / drawdown presi singolarmente. `MaxTradesPerDay 1` migliorava tutte e tre e peggiorava
