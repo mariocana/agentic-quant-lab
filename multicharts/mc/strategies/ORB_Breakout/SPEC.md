@@ -193,3 +193,43 @@ pena misurarlo invece di discuterne.
 pari all'intero range di apertura è un'unità di rischio che decide il mercato, non noi. Una
 spec separata con **stop a rischio fisso** resta la correzione strutturale, e va fatta come
 strategia nuova — non come salvataggio di questa.
+
+## Stage 3 — Gate 3 NON superato. Fine del percorso (01/10/2026)
+
+Monte Carlo built‑in, 1000 reshuffle, 100% dei trade, sulla configurazione finale
+(550 trade, PF 1,35, avg $193,97, peggior perdita $2.990 — verificata).
+
+| | close‑to‑close |
+|---|---|
+| DD storico (base equity curve) | $12.125 |
+| Simulazione migliore | $9.830 |
+| **DD 95° percentile** | **$31.210** → **$3.121 per micro** |
+| Simulazione peggiore | $42.855 |
+| **Soglia Gate 3** | **$2.000** |
+
+**Supera del 56%.** Per la condizione 1 della riserva registrata il 01/10, è un **no
+definitivo**: non si ridiscute e lo Stage 4 resta chiuso.
+
+**Errore di stima da annotare**: avevo previsto un 95° percentile fra 1,3 e 1,8 volte il
+massimo storico. Il rapporto reale è **2,57×**. Con WR 59% e R:R 0,93 il risultato dipende
+quasi solo dall'**ordine** di vincite e perdite: nello storico la serie perdente più lunga
+è 5, ma su mille rimescolamenti emergono serie molto più lunghe, e ogni perdita vale fino a
+$3.000. È esattamente ciò che un singolo percorso storico non può mostrare.
+
+### Esito
+
+L'ORB **così come è specificata** non è utilizzabile su un conto con $2.000 di MLL. Non
+perché non abbia un edge — ne ha uno stabile, PF 1,34 e WR 59% su cinque anni, positivo in
+entrambe le metà dell'IS — ma perché **l'unità di rischio è troppo grande per il conto**.
+
+**L'OOS 2025+ non è stato toccato.** Resta intatto per la eventuale spec con stop a rischio
+fisso, che è la correzione strutturale e va aperta come **strategia nuova** allo Stage 0.
+
+### Calibrazione utile per le altre cinque strategie
+
+Un solo dato, quindi da confermare, ma indicativo: se il rapporto **2,57×** fra 95°
+percentile Monte Carlo e massimo storico fosse tipico, per superare il Gate 3 servirebbe un
+DD storico ÷ 10 sotto i **~$780**. La soglia del Gate 2 ($1.000, cioè il 50% dell'MLL) è
+quindi un filtro **leggermente permissivo** rispetto a ciò che il Gate 3 chiede davvero.
+Non la cambiamo su un dato solo, ma è bene saperlo prima di investire tempo su una
+strategia che al Gate 2 passa per un soffio.
