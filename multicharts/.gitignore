@@ -6,7 +6,8 @@
 ._*
 
 # Custom folder icons
-Icon
+Icon
+
 
 # Volume root files
 .DocumentRevisions-V100
@@ -16,11 +17,14 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+.claude
 ### Materiale corso MultiCharts: binari pesanti (video, zip, installer)
 mc/**/*.mp4
+mc/**/*.mov
 mc/**/*.zip
 mc/**/*.exe
 mc/*.zip
 
 # Video dei corsi (troppo grandi per GitHub)
 *.mp4
+*.mov
