@@ -61,3 +61,22 @@ WHEAT_STATES = {
 }
 
 
+
+
+# ── Volatility / options context (Stucchi playbook) ──────────────────────
+VOL_INDICES = ["VIX", "VIX9D", "VIX1D", "VIX3M"]
+CHAIN_UNDERLYINGS = ["SPX"]
+
+
+@dataclass(frozen=True)
+class MCFile:
+    """A MultiCharts ExportBars CSV in data/multicharts/."""
+    symbol: str     # canonical name in bronze
+    file: str       # file stem written by the indicator
+    chart_tz: str   # time zone of the MultiCharts chart
+
+
+MC_FILES = [
+    MCFile("ES", "ES_1min", "America/Chicago"),
+    MCFile("NQ", "NQ_1min", "America/Chicago"),
+]

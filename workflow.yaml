@@ -44,6 +44,19 @@ sources:
     modes: [rest]
     docs: https://quickstats.nass.usda.gov/api
 
+  cboe:
+    type: volatility indices (daily) + index option chains (15-min delayed snapshot)
+    modes: [rest]
+    docs: https://www.cboe.com/us/options/market_statistics/
+  squeezemetrics:
+    type: SPX DIX / GEX daily (free CSV)
+    modes: [rest]
+    docs: https://squeezemetrics.com/monitor/dix
+  multicharts:
+    type: futures 1m bars exported by the ExportBars indicator (MultiCharts in Parallels VM)
+    modes: [file]
+    docs: data/multicharts/<symbol>_1min.csv
+
 bronze:
   binance_spot_ohlcv:
     source: binance
@@ -105,6 +118,33 @@ bronze:
       state per year, timestamped at the approximate NASS release
       date so downstream joins respect publication vintage.
       symbol = f"{commodity}_{class}_{state}" (e.g. WHEAT_WINTER_KS).
+
+  cboe_index_daily:
+    source: cboe
+    grain: 1d
+    partition: [symbol, year, month]
+    notes: VIX, VIX9D, VIX1D, VIX3M daily OHLC, stamped 16:15 ET (no look-ahead)
+
+  cboe_option_chain:
+    source: cboe
+    grain: snapshot (launchd, fixed times)
+    partition: [symbol, year, month]
+    notes: |
+      SPX/SPXW chain, expiries <= 90d, strikes +-20% of spot. One timestamp
+      per snapshot (download time UTC). CBOE serves only the current chain:
+      this table IS our option history. Basis for GEX levels and EM.
+
+  squeezemetrics:
+    source: squeezemetrics
+    grain: 1d
+    partition: [symbol, year, month]
+    notes: SPX close, DIX, GEX since 2011, stamped 18:00 ET
+
+  multicharts_ohlcv:
+    source: multicharts
+    grain: 1m
+    partition: [symbol, year, month]
+    notes: ES / NQ 1m continuous (@ES unadjusted, 24h), with upticks/downticks for approximate delta
 
 silver:
   binance_spot_ohlcv:
