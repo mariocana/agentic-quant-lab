@@ -53,6 +53,7 @@ DOCS = [
 
     ("Ricerca e ingest", "Journal degli ingest", "mc/docs/ingest_journal.md"),
     ("Ricerca e ingest", "Morpheus — modelli intraday 1-5", "mc/education/morpheus/ANALISI_modelli_intraday_1-5.md"),
+    ("Ricerca e ingest", "Unger — i due PDF", "mc/education/unger/NOTES_unger_pdf.md"),
     ("Ricerca e ingest", "SSRN — i tre paper scartati", "mc/ideas/NOTES_ssrn_batch.md"),
     ("Ricerca e ingest", "GEX / Freddy", "mc/ideas/NOTES_gex_freddy.md"),
     ("Ricerca e ingest", "MOC — scheda di ricerca", "mc/ideas/MOC_ricerca.md"),
