@@ -185,3 +185,6 @@ cython_debug/
 poetry.lock
 data/
 dashboard/node_modules/
+
+# La regola "lib/" qui sopra (Python) escludeva anche il codice del frontend
+!dashboard/src/lib/

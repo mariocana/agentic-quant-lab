@@ -1,0 +1,22 @@
+// ExportBars: esporta le barre del grafico in CSV per quantlake.
+// MultiCharts gira in Parallels: il file viene scritto direttamente nella cartella
+// del Mac tramite la condivisione \\Mac\Home (Parallels > Configura > Opzioni >
+// Condivisione > "Condividi cartelle Mac": almeno la cartella Home).
+// Applicare a @ES 1 minuto, sessione 24h, con tutta la storia caricata.
+// Lasciarlo attivo: ad ogni barra chiusa aggiunge una riga. Per NQ cambiare FilePath.
+Inputs: FilePath("\\Mac\Home\Documents\Repo\my-codes\python\quantlake\data\multicharts\ES_1min.csv");
+Vars: riga("");
+
+once begin
+    FileDelete(FilePath);
+    FileAppend(FilePath, "date,time,open,high,low,close,volume,ticks,upticks,downticks" + NewLine);
+end;
+
+if BarStatus(1) = 2 then begin
+    riga = NumToStr(Date + 19000000, 0) + "," + NumToStr(Time, 0) + ","
+         + NumToStr(Open, 2) + "," + NumToStr(High, 2) + ","
+         + NumToStr(Low, 2) + "," + NumToStr(Close, 2) + ","
+         + NumToStr(Volume, 0) + "," + NumToStr(Ticks, 0) + ","
+         + NumToStr(UpTicks, 0) + "," + NumToStr(DownTicks, 0);
+    FileAppend(FilePath, riga + NewLine);
+end;
