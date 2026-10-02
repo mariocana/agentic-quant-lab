@@ -159,6 +159,19 @@ def dashboard(st):
                    % (esc(g["gate"]), esc(g["short"])) for g in stages)
 
     blockers = "".join("<li>%s</li>" % inline(b) for b in st.get("blockers", []))
+
+    td = st.get("todo")
+    todo = ""
+    if td:
+        groups = "".join(
+            '<div class="tg"><h3>%s%s</h3><ul>%s</ul></div>'
+            % (esc(g["title"]),
+               ' <span class="note">%s</span>' % esc(g["note"]) if g.get("note") else "",
+               "".join("<li>%s</li>" % inline(i) for i in g["items"]))
+            for g in td["groups"])
+        todo = ('<section class="todo"><h2>Prossimi passi '
+                '<span class="note">memo del %s</span></h2>%s</section>'
+                % (esc(td.get("updated", "")), groups))
     entries = st.get("log", [])
     item = lambda e: ('<li><time>%s</time><div>%s</div></li>'
                       % (esc(e["date"]), inline(e["text"])))
@@ -174,6 +187,8 @@ def dashboard(st):
   <h1>Il banco di lavoro</h1>
   <p class="goal">%s</p>
 </header>
+
+%s
 
 <section>
   <h2>Board della pipeline</h2>
@@ -209,7 +224,7 @@ def dashboard(st):
   <ol class="log">%s</ol>
   %s
 </section>
-""" % (esc(st["updated"]), esc(st["goal"]), head, "".join(rows),
+""" % (esc(st["updated"]), esc(st["goal"]), todo, head, "".join(rows),
        inline(st.get("profile", "")), inline(st.get("prop", "")), blockers, log, more)
 
 
@@ -355,6 +370,16 @@ main{overflow-x:hidden}
 .log time{flex:0 0 5.4em; color:var(--muted); font-size:.78rem;
           font-family:ui-monospace,monospace; padding-top:.28em}
 .log div{min-width:0}
+.todo{border:1px solid var(--line); border-left:3px solid var(--accent);
+      border-radius:0 10px 10px 0; padding:4px 22px 18px; background:var(--panel)}
+.todo h2{border:none; margin-top:1.1em; padding-bottom:0}
+.todo h3{font-size:.95rem; margin:1.3em 0 .3em;
+         font-family:ui-sans-serif,system-ui,sans-serif}
+.todo ul{margin:.3em 0; padding-left:1.15em}
+.todo li{margin:.32em 0}
+.todo .tg:first-of-type{margin-top:-.4em}
+.note{font-weight:400; font-size:.76rem; color:var(--muted); letter-spacing:0;
+      font-family:ui-sans-serif,system-ui,sans-serif; text-transform:none}
 .more{margin-top:14px}
 .more summary{cursor:pointer; color:var(--accent); font-size:.85rem;
               font-family:ui-sans-serif,system-ui,sans-serif}

@@ -109,6 +109,10 @@ Ordinate dalla più semplice (bastano i tuoi dati ES/NQ a 1 minuto) alla più co
 2. **Direzione degli ultimi 10 minuti rispetto alla giornata.** Il rendimento
    15:50–16:00 continua o inverte quello 09:30–15:50? Cambia nei trend day (giornate
    con chiusura vicino a massimo o minimo)?
+   **Ipotesi di Stucchi** (Liquidity Bootcamp, Day 1, 0:11:17): «quando arriva il market
+   on close, 10 minuti prima della chiusura, il 75% delle volte la direzione è la stessa
+   della direzione principale della giornata: è una continuazione». Da verificare: cosa
+   si intende per "direzione principale" (apertura→15:50? VWAP?) e se il 75% regge su ES.
 3. **Giorni speciali.** Fine mese, scadenza trimestrale e ribilanciamento, ricostituzione
    Russell rispetto ai giorni normali: range e direzione degli ultimi 10 minuti.
 4. **Imbalance noto.** Con il segno e la dimensione del MOC imbalance delle 15:50 (se
@@ -121,6 +125,16 @@ Ordinate dalla più semplice (bastano i tuoi dati ES/NQ a 1 minuto) alla più co
    rispetto all'asta cash?
 
 ---
+
+### Altre statistiche dette a voce da Stucchi (Bootcamp Day 1, da verificare)
+
+- I gap si chiudono il **65%** delle volte nella stessa sessione.
+- L'oro tende a salire il venerdì pomeriggio; il petrolio a scendere il lunedì mattina.
+- CL: movimento iniziale circa 15 minuti prima del settlement delle 14:30 ET,
+  accelerazione negli ultimi 5 minuti (Day 3, 0:38:56; slide *LB 165–166*).
+
+Fonte: `mc/education/enrico_stucchi/transcripts/8_Liquidity_Bootcamp_Day1.txt` e
+`BOOTCAMP_video_vs_slide.md`.
 
 ## 4. Come usarla oggi
 

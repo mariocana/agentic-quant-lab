@@ -3,6 +3,40 @@
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
+ "todo": {
+  "updated": "2026-10-03",
+  "groups": [
+   {
+    "title": "1. Chiudere lo Stage 1 di NQ First5",
+    "note": "il grosso",
+    "items": [
+     "Ricompila `NQ_First5.txt` — i due fix sono committati (stop che non scalava, ADR a zero su chart RTH)",
+     "Rifai **solo C e D**: `StopPts 200` × 1 e × 10. **A e B restano validi**",
+     "Chart **Globex 24h**, `ShowLog` **True** — servono le righe `F5 EOD` per verificare l'ADR, che non abbiamo ancora mai visto",
+     "**D deve dare ×10 esatto su C.** Se non scala, non si prosegue",
+     "Poi il gate date `TradeStartEL` / `TradeEndEL`"
+    ]
+   },
+   {
+    "title": "2. Prima di qualsiasi codice IVB",
+    "items": [
+     "Misurare la **distribuzione del range della candela di breakout** su @NQ. È il rischio per trade: dice subito se $2.000/micro è raggiungibile. Se sì → nuova Stage 0 `IVB_Type1`; se no si chiude lì"
+    ]
+   },
+   {
+    "title": "Sul tavolo, non urgente",
+    "items": [
+     "**Debito tecnico**: rifare i Gate 2/3 già passati con lo slippage dentro la commissione ($7,50/lato)",
+     "Stage 1 mai fatto: **VWAP Pullback**, **Gold Asian Range**",
+     "**DriftPullback** bloccato — serve @NQ non back-adjusted, o il drift riscritto in ATR",
+     "*(nuovo, dall'ingest Unger del 03/10)* **Test del carattere di NQ**: stesso channel breakout con N da 1 a 15, si legge la forma dei risultati. Mezz'ora, e dice se stiamo costruendo la settima strategia breakout contro corrente",
+     "*(nuovo, 03/10)* Verificare **`SetStopContract`** col test ×10 — renderebbe `SetStopLoss` per contratto e toglierebbe alla radice il bug di C/D. **Non insieme al punto 1**: una cosa per volta",
+     "*(nuovo, 30/09)* Morpheus: restano i **video 6-9**, i tre su **ES** sono i più interessanti",
+     "Coda ingest: le **12 cartelle di codice Unger** — prime da guardare **ESCounter** e **Gap**"
+    ]
+   }
+  ]
+ },
  "stages": [
   {
    "id": 0,
