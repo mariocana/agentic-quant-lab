@@ -89,7 +89,8 @@ def slug(path):
 def inline(text):
     """Grassetto, corsivo e `code` dentro una stringa che arriva dal JSON."""
     out = esc(text)
-    out = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", out)
+    out = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", out)   # prima il doppio asterisco
+    out = re.sub(r"\*(.+?)\*", r"<em>\1</em>", out)      # poi quello singolo
     out = re.sub(r"`(.+?)`", r"<code>\1</code>", out)
     return out
 
