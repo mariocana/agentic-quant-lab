@@ -28,3 +28,10 @@ mc/*.zip
 # Video dei corsi (troppo grandi per GitHub)
 *.mp4
 *.mov
+
+### Python
+__pycache__/
+*.py[cod]
+.venv/
+.ipynb_checkpoints/
+.pytest_cache/
