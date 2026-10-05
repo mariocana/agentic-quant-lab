@@ -1,8 +1,9 @@
 """On-demand COT sync for the desk's SYNC button.
 
 Same contract as cot-analyzer's sync.py (data_status / run_sync), but the
-fetch is now the quantlake pipeline itself, run as subprocesses so the
-web app and the weekly launchd job share exactly one code path:
+fetch is now the quantlake pipeline itself, run as subprocesses: the
+same two scripts you can also run by hand. No scheduled job — data is
+pulled when you press SYNC (the first press downloads the full history).
 
     historical/cftc_cot.py         CFTC API -> bronze/cftc_cot (incremental)
     historical/cot_positioning.py  bronze -> silver/cftc_cot + gold/cot_positioning/1w
