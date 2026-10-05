@@ -1,8 +1,12 @@
 """Silver for CFTC Commitments of Traders (bronze/cftc_cot -> silver/cftc_cot).
 
-Row-wise only: everything here depends on a single weekly report, so a
-silver row never changes once written. Cross-week metrics (changes,
-z-scores) live in gold/cot_positioning.
+Row-wise only: everything here depends on a single weekly report.
+Cross-week metrics (changes, z-scores) live in gold/cot_positioning.
+
+Unlike the OHLCV silvers this table is not merged: it is rebuilt in full
+from bronze on every run (a few tens of thousands of rows) and written in
+one overwrite, partitioned by symbol only. Per-symbol merges on
+[symbol, year, month] meant ~4 rows per file and minutes per rebuild.
 
   - drop reports missing open interest or non-commercial long/short
   - dedupe on (symbol, report_date)
@@ -10,8 +14,9 @@ z-scores) live in gold/cot_positioning.
     (null when OI <= 0)
 """
 import polars as pl
+from deltalake import write_deltalake
 
-import quantlake.silver.ingest as silver
+from quantlake.config import SILVER_ROOT
 
 TABLE = "cftc_cot"
 
@@ -36,10 +41,11 @@ def clean_cot(df: pl.DataFrame) -> pl.DataFrame:
     )
 
 
-def ingest(df: pl.DataFrame) -> pl.DataFrame:
-    """Clean and persist to silver/cftc_cot. Insert-only, safe to re-run."""
-    if df.is_empty():
-        return df
-    df = clean_cot(df)
-    silver.save(df, TABLE)
+def rebuild(bronze: pl.DataFrame) -> pl.DataFrame:
+    """Clean the full bronze history and overwrite silver/cftc_cot."""
+    if bronze.is_empty():
+        return bronze
+    df = clean_cot(bronze)
+    write_deltalake(str(SILVER_ROOT / TABLE), df.to_arrow(), mode="overwrite",
+                    partition_by=["symbol"], schema_mode="overwrite")
     return df

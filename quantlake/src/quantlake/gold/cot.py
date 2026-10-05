@@ -18,9 +18,9 @@ price bars only sees a report after it was published.
 """
 import numpy as np
 import polars as pl
+from deltalake import write_deltalake
 
 from quantlake.config import GOLD_ROOT
-from quantlake.storage import upsert
 
 TABLE = "cot_positioning"
 TIMEFRAME = "1w"
@@ -51,10 +51,15 @@ def positioning(df: pl.DataFrame) -> pl.DataFrame:
 
 
 def save(df: pl.DataFrame) -> None:
-    """Upsert into gold/cot_positioning/1w, overwriting recomputed rows."""
+    """Overwrite gold/cot_positioning/1w (full rebuild, partitioned by symbol).
+
+    Same reasoning as silver/cot.rebuild: the whole table is recomputed from
+    silver every run, so one overwrite replaces 32 per-symbol merges.
+    """
     if df.is_empty():
         return
-    upsert(df, str(GOLD_ROOT / TABLE / TIMEFRAME), update_matched=True)
+    write_deltalake(str(GOLD_ROOT / TABLE / TIMEFRAME), df.to_arrow(), mode="overwrite",
+                    partition_by=["symbol"], schema_mode="overwrite")
 
 
 def _prior_window_stats(x: np.ndarray, lookback: int) -> tuple[np.ndarray, np.ndarray]:

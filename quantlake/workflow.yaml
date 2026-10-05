@@ -153,8 +153,10 @@ bronze:
   cftc_cot:
     source: cftc
     grain: 1w
-    partition: [symbol, year, month]
+    partition: [symbol]
     notes: |
+      plain Delta append (rows strictly after last_bronze_ts), not merge:
+      monthly partitions would hold ~4 rows each and make merges crawl.
       open interest + non-commercial / commercial / non-reportable long &
       short (+ nc spreading) for 32 contracts (FX, crypto, index, rates,
       commodities), history since 1986. Positions are as of Tuesday
@@ -210,6 +212,7 @@ silver:
   cftc_cot:
     from: [bronze/cftc_cot]
     transforms:
+      - full rebuild from bronze each run, one overwrite partitioned by symbol
       - drop reports missing open interest or non-commercial long/short
       - dedupe on (symbol, report_date)
       - nc_net / comm_net / nonrept_net = long - short per trader group
@@ -260,8 +263,9 @@ gold:
   cot_positioning/1w:
     from: [silver/cftc_cot]
     transforms:
-      - per-symbol full rebuild each week (tiny table, complete rolling windows)
+      - full rebuild from silver each run, one overwrite partitioned by symbol
       - week-over-week changes nc_long_chg / nc_short_chg / nc_net_chg
       - z26 / z52 + pct_rank_26 / pct_rank_52 of nc_net vs PRIOR weeks only (min 10)
       - category (FX / Crypto / Index / Rates / Commodity) from applications/symbols.py
       - keeps the Friday-release timestamp — as-of joins onto price bars stay look-ahead free
+      - "UI: applications/cot_desk (Flask, local) — pairs, matrices, top-3, Claude review"
