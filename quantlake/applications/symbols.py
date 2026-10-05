@@ -80,3 +80,58 @@ MC_FILES = [
     MCFile("ES", "ES_1min", "America/Chicago"),
     MCFile("NQ", "NQ_1min", "America/Chicago"),
 ]
+
+
+# ── CFTC Commitments of Traders (migrated from cot-analyzer) ─────────────
+@dataclass(frozen=True)
+class COTInstrument:
+    """A futures contract tracked in bronze/cftc_cot.
+
+    If a contract returns no rows, its CFTC code is probably wrong —
+    check on publicreporting.cftc.gov/resource/6dca-aqww.json?contract_market_name=...
+    """
+    symbol: str      # canonical name (bronze partition)
+    cftc_code: str   # cftc_contract_market_code
+    name: str        # human-readable CFTC contract name
+    category: str    # FX | Crypto | Index | Rates | Commodity
+
+
+COT_INSTRUMENTS = [
+    # Forex
+    COTInstrument("AUD",      "232741", "AUSTRALIAN DOLLAR",     "FX"),
+    COTInstrument("GBP",      "096742", "BRITISH POUND",         "FX"),
+    COTInstrument("CAD",      "090741", "CANADIAN DOLLAR",       "FX"),
+    COTInstrument("EUR",      "099741", "EURO FX",               "FX"),
+    COTInstrument("JPY",      "097741", "JAPANESE YEN",          "FX"),
+    COTInstrument("CHF",      "092741", "SWISS FRANC",           "FX"),
+    COTInstrument("NZD",      "112741", "NEW ZEALAND DOLLAR",    "FX"),
+    COTInstrument("USD",      "098662", "U.S. DOLLAR INDEX",     "FX"),
+    # Crypto
+    COTInstrument("BTC",      "133741", "BITCOIN",               "Crypto"),
+    COTInstrument("ETH",      "146021", "ETHER CASH SETTLED",    "Crypto"),
+    # Index
+    COTInstrument("SPX",      "13874+", "S&P 500 CONSOLIDATED",  "Index"),
+    COTInstrument("ES",       "13874A", "E-MINI S&P 500",        "Index"),
+    COTInstrument("NQ",       "209742", "NASDAQ-100 MINI",       "Index"),
+    COTInstrument("YM",       "124603", "DOW JONES MINI ($5)",   "Index"),
+    COTInstrument("RTY",      "239742", "RUSSELL 2000 MINI",     "Index"),
+    COTInstrument("EMD",      "33874A", "E-MINI S&P 400",        "Index"),
+    COTInstrument("VX",       "1170E1", "VIX FUTURES",           "Index"),
+    # Rates
+    COTInstrument("ZQ",       "045601", "30-DAY FED FUNDS",      "Rates"),
+    COTInstrument("ZT",       "042601", "2-YEAR T-NOTES",        "Rates"),
+    COTInstrument("ZF",       "044601", "5-YEAR T-NOTES",        "Rates"),
+    COTInstrument("ZN",       "043602", "10-YEAR T-NOTES",       "Rates"),
+    COTInstrument("ZB",       "020601", "30-YEAR T-BOND",        "Rates"),
+    COTInstrument("UB",       "020604", "ULTRA T-BOND",          "Rates"),
+    # Commodities
+    COTInstrument("CL_NYMEX", "067651", "CRUDE OIL WTI (NYMEX)", "Commodity"),
+    COTInstrument("CL_ICE",   "067411", "CRUDE OIL WTI (ICE)",   "Commodity"),
+    COTInstrument("NG",       "023651", "NATURAL GAS",           "Commodity"),
+    COTInstrument("GC",       "088691", "GOLD",                  "Commodity"),
+    COTInstrument("SI",       "084691", "SILVER",                "Commodity"),
+    COTInstrument("HG",       "085692", "COPPER #1",             "Commodity"),
+    COTInstrument("PA",       "075651", "PALLADIUM",             "Commodity"),
+    COTInstrument("PL",       "076651", "PLATINUM",              "Commodity"),
+    COTInstrument("AL",       "191693", "ALUMINUM MWP",          "Commodity"),
+]
