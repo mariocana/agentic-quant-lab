@@ -559,7 +559,11 @@ async function refreshSyncStatus() {
     if (!d.ok) { setSyncStatus('status unavailable', 'err'); return; }
     if (d.syncing) { startSyncPolling(); return; }
     if (d.current) setSyncStatus('up to date · ' + (d.newest || '—'), 'fresh');
-    else setSyncStatus('stale · newest ' + (d.newest || 'none') + ' < ' + d.expected, 'stale');
+    else {
+      const n = (d.stale || []).length;
+      setSyncStatus(`stale · ${n}/${d.total} instruments without ${d.expected}`, 'stale');
+      syncStatus.title = 'Behind: ' + (d.stale || []).join(', ');
+    }
   } catch (e) {
     setSyncStatus('status unavailable', 'err');
   }
@@ -614,6 +618,7 @@ function startSyncPolling() {
         setSyncStatus('sync failed: ' + (res.error || 'unknown'), 'err');
       } else {
         const errs = (res.errors && res.errors.length) ? ` · ${res.errors.length} errors` : '';
+        syncStatus.title = (res.errors || []).map(e => `${e.ticker}: ${e.error}`).join('\n');
         setSyncStatus(`done · +${res.new_rows} rows · newest ${res.newest || '—'}${errs}`,
                       errs ? 'stale' : 'fresh');
         // New data may mean new report dates — refresh the dropdown.

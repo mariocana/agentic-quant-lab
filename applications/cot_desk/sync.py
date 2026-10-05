@@ -20,6 +20,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import store
+from instruments import INSTRUMENTS
 
 _APPS = Path(__file__).resolve().parents[1]
 _PROJECT = _APPS.parent
@@ -40,15 +41,22 @@ def latest_expected_report_date(today: date | None = None) -> date:
 
 
 def data_status() -> dict:
-    """Cheap freshness snapshot read from gold. No CFTC API calls."""
+    """Cheap freshness snapshot read from gold. No CFTC API calls.
+
+    Current only when EVERY tracked instrument has the expected report:
+    one fresh instrument must not hide 31 missing ones.
+    """
     expected = latest_expected_report_date()
-    dates = store.available_report_dates()
-    newest = dates[0] if dates else None
+    newest_by = store.newest_by_symbol()
+    stale = sorted(t for t in INSTRUMENTS if newest_by.get(t) is None or newest_by[t] < expected)
+    newest = max(newest_by.values()) if newest_by else None
     return {
-        "current": newest is not None and newest >= expected,
+        "current": not stale,
         "newest": newest.isoformat() if newest else None,
         "expected": expected.isoformat(),
-        "instruments": store.symbol_count(),
+        "instruments": len(newest_by),
+        "total": len(INSTRUMENTS),
+        "stale": stale,
     }
 
 
@@ -92,6 +100,13 @@ def run_sync(only_ticker: str | None = None, progress=None) -> dict:
 
     errors = [m.groupdict() for m in map(_ERROR_RE.match, fetch_out) if m]
     status = data_status()
+    # Still behind after a clean fetch: CFTC has no report for that week yet
+    # (holiday / shutdown delay) or the CFTC code in symbols.py is wrong.
+    failed = {e["ticker"] for e in errors}
+    errors += [
+        {"ticker": t, "error": f"no report for {status['expected']} (release delayed or wrong CFTC code)"}
+        for t in status["stale"] if t not in failed
+    ]
     return {
         "ok": not errors,
         "finished_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),

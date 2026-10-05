@@ -65,6 +65,14 @@ def available_report_dates() -> list[date]:
     return df["report_date"].unique().sort(descending=True).to_list()
 
 
+def newest_by_symbol() -> dict[str, date]:
+    """Latest report_date per symbol."""
+    df = _gold()
+    if df.is_empty():
+        return {}
+    return dict(df.group_by("symbol").agg(pl.col("report_date").max()).iter_rows())
+
+
 def row_count() -> int:
     return _gold().height
 
