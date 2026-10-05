@@ -9,6 +9,6 @@ echo "=== $(date '+%F %T') $1"
 case "$1" in
   chain) $PY applications/spx_chain_snapshot.py ;;
   daily) $PY applications/historical/cboe_vix.py && $PY applications/historical/squeezemetrics.py ;;
-  weekly) $PY applications/historical/cftc_cot.py ;;
+  weekly) $PY applications/historical/cftc_cot.py; $PY applications/historical/cot_positioning.py ;;
   *) echo "uso: $0 chain|daily|weekly"; exit 1 ;;
 esac
