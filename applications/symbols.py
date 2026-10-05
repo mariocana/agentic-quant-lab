@@ -135,3 +135,26 @@ COT_INSTRUMENTS = [
     COTInstrument("PL",       "076651", "PLATINUM",              "Commodity"),
     COTInstrument("AL",       "191693", "ALUMINUM MWP",          "Commodity"),
 ]
+
+
+# ── Satellite NDVI (Sentinel-2 + USDA CDL + NASS) ────────────────────────
+@dataclass(frozen=True)
+class NDVIAoi:
+    """An area of interest for bronze/sentinel2_ndvi.
+
+    bbox_id is the partition symbol. state/county link the AOI to the
+    NASS county yield and state Crop Progress used as ground truth.
+    """
+    bbox_id: str
+    bbox: tuple[float, float, float, float]   # min_lon, min_lat, max_lon, max_lat
+    state: str
+    county: str
+    crop_class: int = 24                       # CDL winter wheat
+
+
+NDVI_AOIS = [
+    NDVIAoi("KS_SUMNER_5KM", (-97.50, 37.20, -97.45, 37.25), "KS", "SUMNER"),
+]
+
+# Harvest years. Each new season costs one ~3 GB CDL download (one-time).
+NDVI_SEASONS = [2021, 2023, 2025]
