@@ -14,18 +14,24 @@ CFTC API ──▶ historical/cftc_cot.py ──▶ bronze/cftc_cot
                         silver/cftc_cot ──▶ gold/cot_positioning/1w ──▶ cot_desk
 ```
 
-- Weekly job: `applications/raccolta.sh weekly` (launchd
-  `com.mario.quantlake.weekly`, Saturday 09:00).
-- The **SYNC** button in the UI runs the same two scripts on demand.
+- No scheduled job: press **SYNC** in the UI. It checks whether a new
+  report should exist (published Friday 15:30 ET) and, only if gold is
+  stale, runs the two scripts above. The first press downloads the full
+  history since 1986 (about a minute).
 
 ## Run
 
 From `python/quantlake`:
 
 ```bash
-.venv/bin/python applications/historical/cftc_cot.py         # first run: full history since 1986
+.venv/bin/python applications/cot_desk/app.py                # http://127.0.0.1:5050, then SYNC
+```
+
+The scripts also run by hand, without the UI:
+
+```bash
+.venv/bin/python applications/historical/cftc_cot.py [EUR GC …]
 .venv/bin/python applications/historical/cot_positioning.py
-.venv/bin/python applications/cot_desk/app.py                # http://127.0.0.1:5050
 ```
 
 ## `.env`
