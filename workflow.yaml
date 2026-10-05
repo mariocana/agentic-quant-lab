@@ -56,6 +56,10 @@ sources:
     type: futures 1m bars exported by the ExportBars indicator (MultiCharts in Parallels VM)
     modes: [file]
     docs: data/multicharts/<symbol>_1min.csv
+  cftc:
+    type: Commitments of Traders, legacy futures only (weekly, free Socrata API)
+    modes: [rest]
+    docs: https://publicreporting.cftc.gov/resource/6dca-aqww.json
 
 bronze:
   binance_spot_ohlcv:
@@ -145,6 +149,18 @@ bronze:
     grain: 1m
     partition: [symbol, year, month]
     notes: ES / NQ 1m continuous (@ES unadjusted, 24h), with upticks/downticks for approximate delta
+
+  cftc_cot:
+    source: cftc
+    grain: 1w
+    partition: [symbol, year, month]
+    notes: |
+      open interest + non-commercial / commercial / non-reportable long &
+      short (+ nc spreading) for 32 contracts (FX, crypto, index, rates,
+      commodities), history since 1986. Positions are as of Tuesday
+      (report_date) but stamped at the Friday 15:30 ET release, so joins
+      never see a report before it was public.
+      symbol = canonical ticker (EUR, GC, ES…), mapping in applications/symbols.py.
 
 silver:
   binance_spot_ohlcv:
