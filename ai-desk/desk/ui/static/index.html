@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ai-desk</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+  --series: #2a78d6; --series-soft: #cde2fb;
+  --good: #0ca30c; --good-text: #006300; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
+  --btn: #f0efec; --btn-hover: #e6e5e0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --series: #3987e5; --series-soft: #184f95; --good-text: #0ca30c;
+    --btn: #262625; --btn-hover: #333331;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1280px; margin: 0 auto; padding: 16px 20px 48px; }
+header { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 6px 0 14px; }
+header h1 { font-size: 18px; margin: 0; font-weight: 600; letter-spacing: -0.01em; }
+.badge { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--ink-2); text-transform: uppercase; letter-spacing: .04em; }
+.badge.mainnet { background: var(--critical); color: #fff; border-color: transparent; }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); }
+.pill .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+.pill.ok .dot { background: var(--good); } .pill.frozen .dot { background: var(--warning); }
+.pill.halted .dot { background: var(--serious); } .pill.kill .dot { background: var(--critical); }
+.spacer { flex: 1; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+button { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--btn); color: var(--ink); cursor: pointer; }
+button:hover { background: var(--btn-hover); } button:disabled { opacity: .5; cursor: default; }
+button.primary { background: var(--series); color: #fff; border-color: transparent; }
+button.danger { background: var(--critical); color: #fff; border-color: transparent; }
+button.ghost { background: transparent; }
+.grid { display: grid; gap: 12px; }
+.tiles { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); margin-bottom: 12px; }
+.tile.hero { grid-column: span 2; }
+.tile, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.tile .label { font-size: 12px; color: var(--ink-2); } .tile .value { font-size: 22px; font-weight: 600; margin-top: 2px; }
+.tile.hero .value { font-size: 36px; line-height: 1.1; }
+.tile .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.up { color: var(--good-text); } .down { color: var(--critical); }
+.two { grid-template-columns: 2fr 1fr; margin-bottom: 12px; }
+@media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+.card h2 { font-size: 13px; font-weight: 600; margin: 0 0 10px; color: var(--ink-2); text-transform: uppercase; letter-spacing: .05em; display: flex; align-items: center; gap: 10px; }
+.card h2 .spacer { flex: 1; }
+.card { margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+td.num, th.num { text-align: right; }
+tbody tr:hover { background: color-mix(in srgb, var(--series) 6%, transparent); }
+.tablewrap { overflow-x: auto; }
+.empty { color: var(--muted); padding: 10px 0; }
+.tag { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 6px; border: 1px solid var(--border); color: var(--ink-2); margin-right: 4px; }
+.tag.approve { border-color: var(--good); } .tag.reduce { border-color: var(--warning); } .tag.reject { border-color: var(--critical); }
+.range { display: flex; gap: 4px; } .range button { padding: 3px 9px; font-size: 12px; } .range button.on { background: var(--series); color: #fff; border-color: transparent; }
+#chart { width: 100%; height: 260px; display: block; }
+.tooltip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.12); display: none; }
+.tooltip b { font-size: 14px; display: block; }
+.chartwrap { position: relative; }
+.form { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 18px; }
+.field label { display: block; font-size: 12px; color: var(--ink-2); }
+.field .help { font-size: 11px; color: var(--muted); }
+.field input { font: inherit; width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--page); color: var(--ink); margin-top: 3px; }
+.field .unit { font-size: 11px; color: var(--muted); margin-left: 6px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13px; } .kv dt { color: var(--ink-2); } .kv dd { margin: 0; }
+select, input[type=time], input[type=number] { font: inherit; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--page); color: var(--ink); }
+pre.logs { font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--page); border: 1px solid var(--border); border-radius: 8px; padding: 10px; max-height: 260px; overflow: auto; margin: 0; white-space: pre-wrap; }
+.toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--page); padding: 8px 14px; border-radius: 8px; font-size: 13px; display: none; z-index: 10; }
+.toast.err { background: var(--critical); color: #fff; }
+.alert { border-left: 4px solid var(--serious); padding: 8px 12px; background: var(--surface); border-radius: 8px; margin-bottom: 12px; display: none; }
+.alert.critical { border-left-color: var(--critical); }
+.muted { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>ai-desk</h1>
+  <span class="badge" id="venue">—</span>
+  <span class="badge" id="strategy">—</span>
+  <span class="pill" id="status"><span class="dot"></span><span id="statusText">loading</span></span>
+  <span class="spacer"></span>
+  <div class="actions">
+    <button id="btnDry" class="ghost" title="Run the full cycle but send nothing">Dry run</button>
+    <button id="btnRun" class="primary">Run cycle</button>
+    <button id="btnKill" class="danger">Kill switch</button>
+  </div>
+</header>
+
+<div class="alert" id="alert"></div>
+
+<div class="grid tiles">
+  <div class="tile hero"><div class="label">Equity</div><div class="value" id="equity">—</div><div class="sub" id="asof"></div></div>
+  <div class="tile"><div class="label">Today</div><div class="value" id="dayPnl">—</div><div class="sub" id="dayPnlUsd"></div></div>
+  <div class="tile"><div class="label">From peak</div><div class="value" id="dd">—</div><div class="sub" id="peak"></div></div>
+  <div class="tile"><div class="label">Gross exposure</div><div class="value" id="gross">—</div><div class="sub" id="lev"></div></div>
+  <div class="tile"><div class="label">Net exposure</div><div class="value" id="net">—</div><div class="sub" id="npos"></div></div>
+</div>
+
+<div class="grid two">
+  <div class="card">
+    <h2>Equity <span class="spacer"></span><span class="range" id="range"><button data-r="1">24h</button><button data-r="7" class="on">7d</button><button data-r="30">30d</button><button data-r="0">all</button></span></h2>
+    <div class="chartwrap"><svg id="chart"></svg><div class="tooltip" id="tip"></div></div>
+  </div>
+  <div class="card">
+    <h2>Desk</h2>
+    <dl class="kv">
+      <dt>Mode</dt><dd><select id="mode"><option value="paper">Paper (simulated fills, live prices)</option><option value="live">Live (API wallet)</option></select></dd>
+      <dt>Schedule</dt><dd class="row"><label><input type="checkbox" id="schedOn"> daily at</label><input type="time" id="schedTime" value="00:05"> <span class="muted">UTC</span></dd>
+      <dt>Next run</dt><dd id="nextRun">—</dd>
+      <dt>Halt</dt><dd id="halt">—</dd>
+    </dl>
+    <div class="row" style="margin-top:12px">
+      <button id="btnUnlock">Unlock halt</button>
+      <button id="btnFlatten">Close all positions</button>
+      <button id="btnReset" class="ghost">Reset paper</button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Positions <span class="spacer"></span><span class="muted" id="posCount"></span></h2>
+  <div class="tablewrap"><table id="positions"><thead><tr>
+    <th>Asset</th><th>Side</th><th class="num">Notional</th><th class="num">Entry</th><th class="num">Mark</th><th class="num">P&amp;L</th><th class="num">%</th><th class="num">Funding/h</th><th class="num">Age</th><th>Strategy</th>
+  </tr></thead><tbody></tbody></table></div>
+  <div class="empty" id="posEmpty">No open positions.</div>
+</div>
+
+<div class="card">
+  <h2>Last cycle <span class="muted" id="lastCycle"></span><span class="spacer"></span><span class="muted" id="lastCycleSub"></span></h2>
+  <div class="tablewrap"><table id="cycle"><thead><tr>
+    <th>Asset</th><th>Side</th><th class="num">Requested</th><th>Verdict</th><th class="num">Approved</th><th>Rules fired</th><th class="num">Fill</th><th class="num">Fee</th><th>Reason</th>
+  </tr></thead><tbody></tbody></table></div>
+  <div class="empty" id="cycleEmpty">No cycle yet. Press <b>Run cycle</b>.</div>
+</div>
+
+<div class="card">
+  <h2>Risk limits <span class="spacer"></span><button id="btnSaveLimits" class="primary">Save limits</button></h2>
+  <div class="form" id="limits"></div>
+</div>
+
+<div class="grid two">
+  <div class="card">
+    <h2>Universe <span class="spacer"></span><span class="muted">what reversal_v1 can trade now</span></h2>
+    <div class="tablewrap"><table id="universe"><thead><tr><th>Asset</th><th class="num">24h volume</th><th class="num">Open interest</th><th class="num">Funding/h</th><th class="num">Mid</th></tr></thead><tbody></tbody></table></div>
+  </div>
+  <div class="card">
+    <h2>Activity</h2>
+    <div class="tablewrap"><table id="activity"><thead><tr><th>When</th><th>What</th></tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Logs</h2>
+  <pre class="logs" id="logs"></pre>
+</div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const fmtUsd = (v, d = 2) => (v < 0 ? "-" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtPct = (v, d = 2) => (v > 0 ? "+" : "") + (v * 100).toFixed(d) + "%";
+const fmtCompact = (v) => "$" + Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(v);
+const fmtPx = (v) => v == null ? "—" : v >= 100 ? v.toFixed(1) : v >= 1 ? v.toFixed(4) : v.toPrecision(4);
+const ago = (iso) => { if (!iso) return ""; const s = (Date.now() - new Date(iso)) / 1000; return s < 90 ? `${Math.round(s)}s ago` : s < 5400 ? `${Math.round(s / 60)}m ago` : s < 172800 ? `${(s / 3600).toFixed(1)}h ago` : `${Math.round(s / 86400)}d ago`; };
+const signClass = (v) => v > 0 ? "up" : v < 0 ? "down" : "";
+let toastTimer;
+function toast(msg, err = false) { const t = $("#toast"); t.textContent = msg; t.className = "toast" + (err ? " err" : ""); t.style.display = "block"; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.style.display = "none", 3500); }
+async function api(path, method = "GET", body) {
+  const r = await fetch(path, { method, headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.detail || j.error || r.statusText);
+  return j;
+}
+function cell(tr, text, cls) { const td = document.createElement("td"); td.textContent = text; if (cls) td.className = cls; tr.appendChild(td); return td; }
+
+// ---- state -----------------------------------------------------------------
+let state = null;
+async function refreshState() {
+  try { state = await api("/api/state"); } catch (e) { toast("state: " + e.message, true); return; }
+  const s = state;
+  $("#venue").textContent = s.venue; $("#venue").className = "badge" + (s.venue === "MAINNET" ? " mainnet" : "");
+  $("#strategy").textContent = `${s.strategy.id} · ${s.strategy.interval}`;
+  const pill = $("#status"); pill.className = "pill " + s.status;
+  $("#statusText").textContent = { ok: "OK", frozen: "Frozen: daily loss", halted: "Halted", kill: "Kill switch" }[s.status] + (s.running ? " · running…" : "");
+  $("#equity").textContent = fmtUsd(s.equity_usd); $("#asof").textContent = "as of " + new Date(s.as_of).toLocaleTimeString();
+  const dp = $("#dayPnl"); dp.textContent = fmtPct(s.day_pnl_pct); dp.className = "value " + signClass(s.day_pnl_pct);
+  $("#dayPnlUsd").textContent = fmtUsd(s.day_pnl_usd) + " · freeze at " + fmtPct(-s.limits.daily_loss_freeze_pct, 0);
+  const dd = $("#dd"); dd.textContent = fmtPct(s.drawdown_pct); dd.className = "value " + signClass(s.drawdown_pct);
+  $("#peak").textContent = "peak " + fmtUsd(s.peak_equity, 0) + " · halt at " + fmtPct(-s.limits.max_drawdown_pct, 0);
+  $("#gross").textContent = fmtUsd(s.gross_usd, 0); $("#lev").textContent = s.gross_leverage.toFixed(2) + "x · max " + s.limits.max_gross_leverage + "x";
+  $("#net").textContent = fmtUsd(s.net_usd, 0); $("#npos").textContent = s.positions.length + " positions";
+  const lc = s.last_cycle;
+  $("#lastCycle").textContent = lc ? ago(lc.ts) : "";
+  $("#lastCycleSub").textContent = lc ? `${lc.intents} intents · ${lc.approved} ok · ${lc.reduced} cut · ${lc.rejected} rejected · ${lc.fills} fills${lc.dry_run ? " · dry" : ""}` : "";
+  $("#mode").value = s.mode; $("#schedOn").checked = s.ui.schedule_enabled; $("#schedTime").value = s.ui.schedule_time_utc;
+  $("#nextRun").textContent = s.next_run_utc ? new Date(s.next_run_utc).toLocaleString() : "not scheduled";
+  $("#halt").textContent = s.halted ? s.halt_reason : "none";
+  $("#btnUnlock").disabled = !s.halted; $("#btnReset").disabled = s.mode !== "paper";
+  $("#btnRun").disabled = s.running; $("#btnDry").disabled = s.running;
+  $("#btnKill").textContent = s.kill ? "Release kill switch" : "Kill switch"; $("#btnKill").className = s.kill ? "" : "danger";
+  const al = $("#alert");
+  if (s.last_error) { al.textContent = "Last cycle failed: " + s.last_error; al.className = "alert critical"; al.style.display = "block"; }
+  else if (s.halted) { al.textContent = "Desk halted (" + s.halt_reason + "). No new risk until you unlock."; al.className = "alert"; al.style.display = "block"; }
+  else al.style.display = "none";
+  renderPositions(s.positions);
+}
+function renderPositions(ps) {
+  const tb = $("#positions tbody"); tb.innerHTML = "";
+  $("#posEmpty").style.display = ps.length ? "none" : "block"; $("#posCount").textContent = ps.length ? `${ps.length} open` : "";
+  for (const p of ps) {
+    const tr = document.createElement("tr");
+    cell(tr, p.asset); cell(tr, p.side);
+    cell(tr, fmtUsd(Math.abs(p.notional_usd), 0), "num"); cell(tr, fmtPx(p.entry_px), "num"); cell(tr, fmtPx(p.mark_px), "num");
+    cell(tr, fmtUsd(p.upnl_usd), "num " + signClass(p.upnl_usd)); cell(tr, fmtPct(p.upnl_pct), "num " + signClass(p.upnl_pct));
+    cell(tr, p.funding_hourly == null ? "—" : fmtPct(p.funding_hourly, 4), "num");
+    cell(tr, p.age_hours == null ? "—" : `${p.age_hours.toFixed(1)}h / ${p.horizon_hours ?? "—"}h`, "num");
+    cell(tr, p.strategy_id || "—");
+    tb.appendChild(tr);
+  }
+}
+
+// ---- equity chart ----------------------------------------------------------
+let series = [], rangeDays = 7;
+async function refreshEquity() { try { series = await api("/api/equity"); drawChart(); } catch (e) { toast("equity: " + e.message, true); } }
+function drawChart() {
+  const svg = $("#chart"); const W = svg.clientWidth || 800, H = 260, L = 64, R = 12, T = 12, B = 26;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = "";
+  const now = Date.now(); const cutoff = rangeDays ? now - rangeDays * 86400e3 : 0;
+  let pts = series.map(d => ({ t: new Date(d.ts).getTime(), v: d.equity })).filter(d => d.t >= cutoff);
+  if (state) pts.push({ t: now, v: state.equity_usd, live: true });
+  if (pts.length < 2) { svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="var(--muted)" font-size="13">Not enough history yet</text>`; return; }
+  const t0 = pts[0].t, t1 = pts[pts.length - 1].t;
+  let v0 = Math.min(...pts.map(p => p.v)), v1 = Math.max(...pts.map(p => p.v));
+  const pad = (v1 - v0) * 0.1 || v0 * 0.002; v0 -= pad; v1 += pad;
+  const span = t1 - t0, yLabel = (v1 - v0) < 20000 ? (v) => fmtUsd(v, 0) : fmtCompact;
+  const xLabel = (d) => span < 36 * 3600e3 ? d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : d.toLocaleDateString([], { month: "short", day: "numeric" });
+  const x = t => L + (t - t0) / (t1 - t0 || 1) * (W - L - R), y = v => T + (v1 - v) / (v1 - v0) * (H - T - B);
+  const ns = "http://www.w3.org/2000/svg"; const el = (n, a) => { const e = document.createElementNS(ns, n); for (const k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; };
+  for (let i = 0; i <= 4; i++) { const v = v0 + (v1 - v0) * i / 4; el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: "var(--grid)" }); const tx = el("text", { x: L - 8, y: y(v) + 4, "text-anchor": "end", "font-size": 11, fill: "var(--muted)", style: "font-variant-numeric: tabular-nums" }); tx.textContent = yLabel(v); }
+  const nx = Math.min(6, Math.floor(W / 140));
+  for (let i = 0; i <= nx; i++) { const t = t0 + (t1 - t0) * i / nx; const d = new Date(t); const tx = el("text", { x: x(t), y: H - 8, "text-anchor": i === 0 ? "start" : i === nx ? "end" : "middle", "font-size": 11, fill: "var(--muted)" }); tx.textContent = xLabel(d); }
+  el("line", { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: "var(--axis)" });
+  const d = pts.map((p, i) => (i ? "L" : "M") + x(p.t).toFixed(1) + " " + y(p.v).toFixed(1)).join(" ");
+  el("path", { d: d + ` L${x(t1).toFixed(1)} ${H - B} L${x(t0).toFixed(1)} ${H - B} Z`, fill: "var(--series-soft)", opacity: 0.35 });
+  el("path", { d, fill: "none", stroke: "var(--series)", "stroke-width": 2, "stroke-linejoin": "round" });
+  const last = pts[pts.length - 1]; el("circle", { cx: x(last.t), cy: y(last.v), r: 4, fill: "var(--series)", stroke: "var(--surface)", "stroke-width": 2 });
+  const cross = el("line", { x1: 0, x2: 0, y1: T, y2: H - B, stroke: "var(--axis)", "stroke-dasharray": "3 3", style: "display:none" });
+  const dot = el("circle", { r: 5, fill: "var(--series)", stroke: "var(--surface)", "stroke-width": 2, style: "display:none" });
+  const tip = $("#tip");
+  svg.onmousemove = (ev) => {
+    const rect = svg.getBoundingClientRect(); const mx = (ev.clientX - rect.left) * W / rect.width;
+    let best = pts[0], bd = Infinity; for (const p of pts) { const dd = Math.abs(x(p.t) - mx); if (dd < bd) { bd = dd; best = p; } }
+    cross.setAttribute("x1", x(best.t)); cross.setAttribute("x2", x(best.t)); cross.style.display = "";
+    dot.setAttribute("cx", x(best.t)); dot.setAttribute("cy", y(best.v)); dot.style.display = "";
+    tip.innerHTML = ""; const b = document.createElement("b"); b.textContent = fmtUsd(best.v); tip.appendChild(b);
+    tip.appendChild(document.createTextNode((best.live ? "now" : new Date(best.t).toLocaleString()) + (pts[0] !== best ? "  " + fmtPct(best.v / pts[0].v - 1) + " vs range start" : "")));
+    tip.style.display = "block"; const px = x(best.t) * rect.width / W; tip.style.left = Math.min(px + 12, rect.width - 200) + "px"; tip.style.top = Math.max(0, y(best.v) * rect.height / H - 44) + "px";
+  };
+  svg.onmouseleave = () => { cross.style.display = "none"; dot.style.display = "none"; tip.style.display = "none"; };
+}
+$("#range").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; rangeDays = +b.dataset.r; for (const x of $("#range").children) x.classList.toggle("on", x === b); drawChart(); });
+window.addEventListener("resize", drawChart);
+
+// ---- last cycle --------------------------------------------------------------
+async function refreshCycle() {
+  let c; try { c = await api("/api/cycle"); } catch (e) { return; }
+  const tb = $("#cycle tbody"); tb.innerHTML = "";
+  $("#cycleEmpty").style.display = c.intents.length ? "none" : "block";
+  for (const i of c.intents) {
+    const tr = document.createElement("tr");
+    cell(tr, i.asset); cell(tr, i.side + (i.reduce_only ? " · close" : ""));
+    cell(tr, fmtUsd(i.notional_usd, 0), "num");
+    const v = cell(tr, ""); if (i.decision) { const t = document.createElement("span"); t.className = "tag " + i.decision; t.textContent = i.decision; v.appendChild(t); }
+    cell(tr, i.approved_usd == null ? "—" : fmtUsd(i.approved_usd, 0), "num");
+    const rf = cell(tr, ""); for (const r of i.rules_fired) { const t = document.createElement("span"); t.className = "tag"; t.textContent = r; rf.appendChild(t); }
+    cell(tr, i.fill_px == null ? "—" : fmtPx(i.fill_px), "num"); cell(tr, i.fee_usd == null ? "—" : fmtUsd(i.fee_usd), "num");
+    cell(tr, i.reason).style.whiteSpace = "normal";
+    tb.appendChild(tr);
+  }
+}
+
+// ---- limits ------------------------------------------------------------------
+async function refreshLimits() {
+  const fields = await api("/api/limits"); const f = $("#limits"); f.innerHTML = "";
+  for (const x of fields) {
+    const d = document.createElement("div"); d.className = "field";
+    const l = document.createElement("label"); l.textContent = x.label; const u = document.createElement("span"); u.className = "unit"; u.textContent = x.unit; l.appendChild(u);
+    const i = document.createElement("input"); i.type = "number"; i.step = "any"; i.value = x.value; i.dataset.path = x.path;
+    const h = document.createElement("div"); h.className = "help"; h.textContent = x.help;
+    d.append(l, i, h); f.appendChild(d);
+  }
+}
+$("#btnSaveLimits").onclick = async () => {
+  const values = {}; for (const i of $("#limits").querySelectorAll("input")) values[i.dataset.path] = +i.value;
+  try { await api("/api/limits", "PUT", { values }); toast("Limits saved"); refreshState(); } catch (e) { toast(e.message, true); }
+};
+
+// ---- universe / activity / logs ---------------------------------------------
+async function refreshUniverse() {
+  const u = await api("/api/universe").catch(() => []); const tb = $("#universe tbody"); tb.innerHTML = "";
+  for (const a of u) { const tr = document.createElement("tr"); cell(tr, a.asset); cell(tr, fmtCompact(a.day_volume_usd), "num"); cell(tr, fmtCompact(a.open_interest_usd), "num"); cell(tr, fmtPct(a.funding_hourly, 4), "num " + signClass(a.funding_hourly)); cell(tr, fmtPx(a.mid_px), "num"); tb.appendChild(tr); }
+}
+async function refreshActivity() {
+  const rows = await api("/api/journal?last=400").catch(() => []); const tb = $("#activity tbody"); tb.innerHTML = "";
+  const keep = rows.filter(r => r.kind === "cycle" || r.kind === "event" || r.kind === "fill").slice(-25).reverse();
+  for (const r of keep) {
+    const tr = document.createElement("tr"); cell(tr, new Date(r.ts).toLocaleString());
+    let what = r.kind;
+    if (r.kind === "cycle") what = `cycle${r.dry_run ? " (dry)" : ""}: ${r.intents} intents, ${r.fills} fills, equity ${fmtUsd(r.equity, 0)}` + (r.state_rules?.length ? " · " + r.state_rules.join(", ") : "");
+    if (r.kind === "fill") what = `fill: ${r.side} ${fmtUsd(r.filled_usd, 0)} ${r.asset} @ ${fmtPx(r.fill_px)}${r.partial ? " (partial)" : ""}`;
+    if (r.kind === "event") what = r.event + (r.was ? ` (was ${r.was})` : "") + (r.values ? " " + JSON.stringify(r.values) : "");
+    cell(tr, what).style.whiteSpace = "normal"; tb.appendChild(tr);
+  }
+}
+async function refreshLogs() { const l = await api("/api/logs?last=120").catch(() => []); const pre = $("#logs"); const atBottom = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 4; pre.textContent = l.join("\n"); if (atBottom) pre.scrollTop = pre.scrollHeight; }
+
+// ---- actions -----------------------------------------------------------------
+async function act(fn, okMsg) { try { await fn(); if (okMsg) toast(okMsg); await refreshAll(); } catch (e) { toast(e.message, true); } }
+$("#btnRun").onclick = () => act(() => api("/api/run", "POST", { dry_run: false }), "Cycle started");
+$("#btnDry").onclick = () => act(() => api("/api/run", "POST", { dry_run: true }), "Dry run started");
+$("#btnKill").onclick = () => { const on = !state?.kill; if (on && !confirm("Engage the kill switch? No new risk will be taken; closing stays allowed.")) return; act(() => api("/api/kill", "POST", { on }), on ? "Kill switch engaged" : "Kill switch released"); };
+$("#btnUnlock").onclick = () => { if (confirm("Clear the halt? Make sure you know why it fired.")) act(() => api("/api/unlock", "POST"), "Unlocked"); };
+$("#btnFlatten").onclick = () => { if (confirm("Close ALL open positions at market now?")) act(async () => { const r = await api("/api/flatten", "POST"); toast(`${r.fills} positions closed`); }); };
+$("#btnReset").onclick = () => { const v = prompt("Reset the paper account. Starting equity (USD):", "10000"); if (v) act(() => api("/api/paper/reset", "POST", { starting_equity: +v }), "Paper account reset"); };
+$("#mode").onchange = async (e) => {
+  const mode = e.target.value; let confirmTxt;
+  if (mode === "live" && state.venue !== "testnet" && state.mode !== "live") { confirmTxt = prompt("You are switching to LIVE on MAINNET with real funds. Type MAINNET to confirm:"); if (confirmTxt !== "MAINNET") { e.target.value = state.mode; return; } }
+  else if (mode === "live" && !confirm("Switch to live execution on " + (state.venue === "paper" ? "testnet" : state.venue) + "?")) { e.target.value = state.mode; return; }
+  act(() => api("/api/settings", "PUT", { mode, confirm: confirmTxt }), "Mode: " + mode);
+};
+$("#schedOn").onchange = (e) => act(() => api("/api/settings", "PUT", { schedule_enabled: e.target.checked }), e.target.checked ? "Scheduled" : "Schedule off");
+$("#schedTime").onchange = (e) => act(() => api("/api/settings", "PUT", { schedule_time_utc: e.target.value }), "Schedule time saved");
+
+// ---- loop --------------------------------------------------------------------
+async function refreshAll() { await refreshState(); await Promise.all([refreshEquity(), refreshCycle(), refreshActivity(), refreshLogs()]); }
+refreshAll(); refreshLimits(); refreshUniverse();
+setInterval(refreshAll, 15000); setInterval(refreshUniverse, 120000);
+let wasRunning = false; setInterval(async () => { if (state?.running) wasRunning = true; else if (wasRunning) { wasRunning = false; refreshAll(); } }, 2000);
+setInterval(async () => { if (state?.running) { await refreshState(); await refreshLogs(); } }, 2000);
+</script>
+</body>
+</html>
