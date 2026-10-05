@@ -2,8 +2,14 @@
 
 Migrated from the cot-analyzer project (Postgres cot_weekly table).
 Resumes per symbol from last_bronze_ts; first run pulls the full history
-since 1986. Re-running is safe: the Delta merge on (symbol, timestamp)
-never duplicates a week.
+since 1986.
+
+Storage differs from the other bronze tables on purpose: plain Delta
+append, partitioned by symbol only. With [symbol, year, month] a weekly
+table means ~15k files of ~4 rows, and each merge rescans all of them
+(measured: >10 min for one weekly update). Append stays idempotent
+because the connector only returns reports strictly after
+last_bronze_ts; silver dedupes on (symbol, report_date) anyway.
 
 Run:
     .venv/bin/python applications/historical/cftc_cot.py              # all
@@ -16,8 +22,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from deltalake import write_deltalake
+
 import quantlake.bronze.ingest as bronze
 from quantlake.bronze.connectors.cftc_cot import CFTCCOTConnector
+from quantlake.config import BRONZE_ROOT
 from symbols import COT_INSTRUMENTS
 
 from dotenv import load_dotenv
@@ -52,7 +61,7 @@ for inst in COT_INSTRUMENTS:
         print(f"[{inst.symbol}] up to date")
     else:
         df = bronze.add_partition_columns(df, symbol=inst.symbol)
-        bronze.save(df, TABLE)
+        write_deltalake(str(BRONZE_ROOT / TABLE), df.to_arrow(), mode="append", partition_by=["symbol"])
         print(f"[{inst.symbol}] {len(df):,} weeks, last report {df['report_date'].max()}")
     time.sleep(connector.pause_s)  # be polite with Socrata
 

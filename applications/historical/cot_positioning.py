@@ -6,9 +6,8 @@ Run AFTER the bronze ingester:
     historical/cot_positioning.py  -> silver/cftc_cot + gold/cot_positioning/1w (this script)
 
 Weekly data is tiny (~2,000 rows per contract since 1986), so each run
-rebuilds every symbol from its full bronze history: rolling z-scores
-always see a complete window. Silver is insert-only; gold overwrites
-matched rows (update_matched), so re-running is safe.
+rebuilds both tables from the full bronze history in one overwrite each:
+rolling z-scores always see a complete window and re-running is safe.
 
 Usage:
     .venv/bin/python applications/historical/cot_positioning.py
@@ -38,16 +37,18 @@ meta = pl.DataFrame(
     }
 )
 
+bronze = pl.from_arrow(DeltaTable(BRONZE_PATH).to_pyarrow_table())
+silver = silver_cot.rebuild(bronze)
+gold = gold_cot.positioning(silver).join(meta, on="symbol", how="left")
+gold_cot.save(gold)
+
+last = gold.group_by("symbol").agg(pl.all().sort_by("timestamp").last())
+by_symbol = {r["symbol"]: r for r in last.iter_rows(named=True)}
+weeks = dict(gold.group_by("symbol").len().iter_rows())
 for inst in COT_INSTRUMENTS:
-    bronze = pl.from_arrow(
-        DeltaTable(BRONZE_PATH).to_pyarrow_table(filters=[("symbol", "=", inst.symbol)])
-    )
-    if bronze.is_empty():
+    r = by_symbol.get(inst.symbol)
+    if r is None:
         print(f"[{inst.symbol}] no bronze rows")
         continue
-    silver = silver_cot.ingest(bronze)
-    gold = gold_cot.positioning(silver).join(meta, on="symbol", how="left")
-    gold_cot.save(gold)
-    last = gold.tail(1).row(0, named=True)
-    z26 = "n/a" if last["z26"] is None else f"{last['z26']:+.2f}"
-    print(f"[{inst.symbol}] {len(gold):,} weeks, {last['report_date']} net {last['nc_net']:+,} z26 {z26}")
+    z26 = "n/a" if r["z26"] is None else f"{r['z26']:+.2f}"
+    print(f"[{inst.symbol}] {weeks[inst.symbol]:,} weeks, {r['report_date']} net {r['nc_net']:+,} z26 {z26}")

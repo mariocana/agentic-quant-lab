@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COT Positioning Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e12;
+    --panel: #121820;
+    --panel-2: #161d27;
+    --line: #232d3a;
+    --ink: #e8eef5;
+    --dim: #7b8a9c;
+    --accent: #ffd23f;
+    --green: #3fd17a;
+    --red: #ff5d6c;
+    --blue: #5ab0ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(90,176,255,0.06), transparent 40%),
+      radial-gradient(circle at 90% 10%, rgba(255,210,63,0.05), transparent 35%);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+  header {
+    border-bottom: 1px solid var(--line);
+    padding: 28px 32px 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+    background: linear-gradient(180deg, rgba(18,24,32,0.6), transparent);
+  }
+  .brand h1 {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 900;
+    font-size: 30px;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .brand h1 .dot { color: var(--accent); }
+  .brand p {
+    color: var(--dim);
+    font-size: 12px;
+    margin-top: 8px;
+    letter-spacing: 0.04em;
+  }
+  .controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--dim); cursor: pointer; user-select: none;
+  }
+  .toggle input { accent-color: var(--accent); width: 15px; height: 15px; }
+  /* Report date picker */
+  .date-picker {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .date-picker label {
+    font-size: 10px; letter-spacing: 0.08em; color: var(--dim);
+    text-transform: uppercase;
+  }
+  select#reportDate {
+    background: var(--panel); color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 9px 12px; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; cursor: pointer;
+    min-width: 180px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237b8a9c' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+  select#reportDate:hover { border-color: var(--accent); }
+  select#reportDate:disabled { opacity: 0.5; cursor: wait; }
+  button#run {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 14px; letter-spacing: 0.03em;
+    background: var(--accent); color: #0a0e12;
+    border: none; padding: 13px 26px; cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s, opacity 0.2s;
+  }
+  button#run:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(255,210,63,0.25);
+  }
+  button#run:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Sync button + freshness indicator */
+  .sync-wrap { display: flex; flex-direction: column; gap: 4px; }
+  button#sync {
+    font-family: 'JetBrains Mono', monospace; font-weight: 700;
+    font-size: 12px; letter-spacing: 0.04em;
+    background: var(--panel-2); color: var(--ink);
+    border: 1px solid var(--line); padding: 10px 16px; cursor: pointer;
+    transition: border-color 0.2s, opacity 0.2s;
+  }
+  button#sync:hover:not(:disabled) { border-color: var(--accent); }
+  button#sync:disabled { opacity: 0.5; cursor: wait; }
+  .sync-status {
+    font-size: 10px; letter-spacing: 0.04em; color: var(--dim);
+    min-height: 12px; padding-left: 2px;
+  }
+  .sync-status.fresh { color: var(--green); }
+  .sync-status.stale { color: var(--accent); }
+  .sync-status.err   { color: var(--red); }
+
+  main { padding: 28px 32px; max-width: 1280px; margin: 0 auto; }
+
+  #progress {
+    display: none;
+    align-items: center; gap: 14px;
+    padding: 18px 20px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    margin-bottom: 28px;
+    font-size: 13px;
+  }
+  #progress.active { display: flex; }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid var(--line);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty { text-align: center; padding: 90px 20px; color: var(--dim); }
+  .empty .big {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 22px; color: var(--ink); margin-bottom: 10px;
+  }
+
+  #results { display: none; }
+  #results.visible { display: block; }
+
+  .meta {
+    display: flex; gap: 28px; flex-wrap: wrap; align-items: center;
+    font-size: 12px; color: var(--dim);
+    padding: 14px 18px; margin-bottom: 26px;
+    background: var(--panel); border: 1px solid var(--line);
+  }
+  .meta b { color: var(--accent); font-weight: 700; }
+  .meta .badge-historical {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(255,210,63,0.12);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 4px 10px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+
+  section { margin-bottom: 38px; }
+  section > h2 {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--dim); margin-bottom: 14px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--line);
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  th {
+    text-align: right; padding: 9px 12px; color: var(--dim);
+    font-weight: 500; border-bottom: 1px solid var(--line);
+    white-space: nowrap; font-size: 11px; letter-spacing: 0.03em;
+  }
+  th:first-child, td:first-child { text-align: left; }
+  td {
+    text-align: right; padding: 9px 12px;
+    border-bottom: 1px solid rgba(35,45,58,0.5);
+    white-space: nowrap;
+  }
+  tr.clickable { cursor: pointer; transition: background 0.1s; }
+  tr.clickable:hover {
+    background: var(--panel-2);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+  tr.clickable td:first-child::after {
+    content: '↗';
+    color: var(--dim);
+    opacity: 0;
+    margin-left: 8px;
+    font-size: 10px;
+    transition: opacity 0.1s;
+  }
+  tr.clickable:hover td:first-child::after { opacity: 1; }
+
+  .pos { color: var(--green); }
+  .neg { color: var(--red); }
+  .ccy-name, .dim { color: var(--dim); font-size: 11px; }
+  .z-extreme { color: var(--accent); font-weight: 700; }
+  .cat-row td {
+    color: var(--accent); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; padding-top: 16px; border: none;
+    cursor: default;
+  }
+
+  /* Heatmap matrices */
+  .matrices { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .matrices { grid-template-columns: 1fr; } }
+  .matrix-wrap h3 { font-size: 11px; color: var(--dim); margin-bottom: 8px; font-weight: 500; }
+  .matrix td, .matrix th { padding: 6px 8px; font-size: 11px; text-align: center; }
+  .matrix th:first-child, .matrix td:first-child { text-align: center; color: var(--dim); }
+
+  /* Top setup cards */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 800px) { .cards { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel); border: 1px solid var(--line);
+    padding: 18px; position: relative; overflow: hidden;
+    cursor: pointer; transition: transform 0.1s, border-color 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px; background: var(--accent);
+  }
+  .card .rank {
+    font-family: 'Archivo', sans-serif; font-weight: 900;
+    font-size: 13px; color: var(--accent);
+  }
+  .card .label {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 19px; margin: 6px 0 12px; letter-spacing: -0.01em;
+  }
+  .card .row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; padding: 4px 0; color: var(--dim);
+  }
+  .card .row span:last-child { color: var(--ink); }
+
+  /* AI panel */
+  .ai-controls {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .ai-btn {
+    font-family: 'Archivo', sans-serif; font-weight: 700;
+    font-size: 13px; letter-spacing: 0.02em;
+    background: var(--blue); color: #0a0e12;
+    border: none; padding: 11px 20px; cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s, opacity 0.2s;
+  }
+  .ai-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(90,176,255,0.25);
+  }
+  .ai-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .ai-btn.secondary { background: var(--panel-2); color: var(--ink); border: 1px solid var(--line); }
+  .ai-btn.secondary:hover:not(:disabled) { border-color: var(--blue); box-shadow: none; }
+  .ai-asset-picker { display: flex; align-items: center; gap: 8px; }
+  select#aiAssetSelect {
+    background: var(--panel); color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 10px 12px; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; cursor: pointer; min-width: 220px;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237b8a9c' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px;
+  }
+  select#aiAssetSelect:hover { border-color: var(--blue); }
+  .ai-panel {
+    background: var(--panel); border: 1px solid var(--line);
+    border-left: 3px solid var(--blue); padding: 22px 24px;
+  }
+  .ai-panel .ai-head {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    font-size: 12px; color: var(--dim);
+  }
+  .ai-panel .ai-head .badge {
+    background: var(--blue); color: #0a0e12; font-weight: 700;
+    padding: 2px 8px; font-size: 10px; letter-spacing: 0.05em;
+  }
+  .ai-body {
+    font-size: 13.5px; line-height: 1.7; color: #cdd7e3;
+    white-space: pre-wrap; word-wrap: break-word;
+  }
+  .ai-body strong { color: var(--ink); }
+  .ai-note {
+    padding: 16px 20px; background: var(--panel);
+    border: 1px solid var(--line); border-left: 3px solid var(--dim);
+    font-size: 12.5px; color: var(--dim); line-height: 1.6;
+  }
+  .ai-note code {
+    background: var(--panel-2); padding: 2px 6px; color: var(--accent);
+    border-radius: 2px;
+  }
+  .error-box {
+    padding: 20px; background: rgba(255,93,108,0.08);
+    border: 1px solid var(--red); color: var(--red); font-size: 13px;
+  }
+
+  /* ----- Chart Modal ----- */
+  .modal-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(10,14,18,0.85);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .modal-backdrop.active { display: flex; }
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    width: 100%; max-width: 1100px; max-height: 92vh;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-head {
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .modal-head h3 {
+    font-family: 'Archivo', sans-serif; font-weight: 800;
+    font-size: 19px; letter-spacing: -0.01em;
+  }
+  .modal-head .sub { font-size: 11px; color: var(--dim); margin-top: 4px; }
+  .modal-actions { display: flex; gap: 10px; align-items: center; }
+  .range-btns { display: flex; gap: 4px; }
+  .range-btn {
+    background: var(--bg); border: 1px solid var(--line);
+    color: var(--dim); padding: 6px 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    cursor: pointer; transition: all 0.1s;
+  }
+  .range-btn:hover { color: var(--ink); border-color: var(--accent); }
+  .range-btn.active { background: var(--accent); color: #0a0e12; border-color: var(--accent); }
+  .modal-link {
+    color: var(--blue); text-decoration: none; font-size: 11px;
+    padding: 6px 10px; border: 1px solid var(--line);
+  }
+  .modal-link:hover { border-color: var(--blue); }
+  .modal-close {
+    background: none; border: 1px solid var(--line); color: var(--ink);
+    width: 32px; height: 32px; cursor: pointer; font-size: 16px;
+  }
+  .modal-close:hover { border-color: var(--red); color: var(--red); }
+  .modal-body {
+    padding: 20px 24px; overflow-y: auto; flex: 1;
+  }
+  .chart-wrap { position: relative; height: 380px; margin-bottom: 12px; }
+  .oi-wrap { position: relative; height: 90px; }
+  .chart-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+    gap: 12px; margin-top: 16px;
+    padding-top: 16px; border-top: 1px solid var(--line);
+    font-size: 12px;
+  }
+  .chart-stat { display: flex; flex-direction: column; gap: 3px; }
+  .chart-stat .lbl { color: var(--dim); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .chart-stat .val { color: var(--ink); font-weight: 600; }
+
+  footer {
+    text-align: center; color: var(--dim); font-size: 11px;
+    padding: 30px; border-top: 1px solid var(--line); margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>COT POSITIONING DESK<span class="dot">.</span></h1>
+    <p>NON-COMMERCIAL · LEGACY FUTURES · OFFICIAL CFTC DATA</p>
+  </div>
+  <div class="controls">
+    <div class="sync-wrap">
+      <button id="sync" title="Check for new CFTC data and download it if the DB is stale">⟳ SYNC</button>
+      <span id="syncStatus" class="sync-status">checking…</span>
+    </div>
+    <div class="date-picker">
+      <label for="reportDate">Report date</label>
+      <select id="reportDate" disabled>
+        <option value="">Loading dates...</option>
+      </select>
+    </div>
+    <button id="run">RUN ANALYSIS</button>
+  </div>
+</header>
+
+<main>
+  <div id="progress">
+    <div class="spinner"></div>
+    <div class="msg" id="progressMsg">Starting...</div>
+  </div>
+
+  <div class="empty" id="empty">
+    <div class="big">No analysis yet</div>
+    <div>Hit <b style="color:var(--accent)">RUN ANALYSIS</b> to load the latest COT data.<br>
+    Click any asset row or top setup to see its historical chart.</div>
+  </div>
+
+  <div id="results">
+    <div class="meta" id="meta"></div>
+
+    <section id="topSection">
+      <h2>Top 3 Cleanest Setups <span style="color:var(--dim);font-weight:400;font-size:10px;text-transform:none;letter-spacing:0;">— click for chart</span></h2>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <section id="aiSection">
+      <h2>AI Overview <span style="color:var(--dim);font-weight:400;font-size:10px;text-transform:none;letter-spacing:0;">— COT-based, on demand</span></h2>
+      <div class="ai-controls">
+        <button class="ai-btn" id="aiTop3Btn">⚡ AI Overview Top-3</button>
+        <div class="ai-asset-picker">
+          <select id="aiAssetSelect">
+            <option value="">Select an asset…</option>
+          </select>
+          <button class="ai-btn secondary" id="aiAssetBtn" disabled>Analyze asset</button>
+        </div>
+      </div>
+      <div id="aiTop3Container"></div>
+      <div id="aiAssetContainer"></div>
+    </section>
+
+    <section>
+      <h2>Currency Positioning <span style="color:var(--dim);font-weight:400;font-size:10px;text-transform:none;letter-spacing:0;">— click row for chart</span></h2>
+      <table id="ccyTable"></table>
+    </section>
+
+    <section>
+      <h2>Crypto · Indices · Rates · Commodities <span style="color:var(--dim);font-weight:400;font-size:10px;text-transform:none;letter-spacing:0;">— click row for chart</span></h2>
+      <table id="assetTable"></table>
+    </section>
+
+    <section>
+      <h2>FX Cross-Pair Matrices · ×1000 contracts</h2>
+      <div class="matrices">
+        <div class="matrix-wrap">
+          <h3>Long-term bias (Net base − Net quote)</h3>
+          <table class="matrix" id="biasMatrix"></table>
+        </div>
+        <div class="matrix-wrap">
+          <h3>Weekly momentum (ΔNet base − ΔNet quote)</h3>
+          <table class="matrix" id="momMatrix"></table>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Full FX Pair Ranking · 28 pairs</h2>
+      <table id="pairTable"></table>
+    </section>
+  </div>
+</main>
+
+<!-- Chart Modal -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3 id="modalTitle">—</h3>
+        <div class="sub" id="modalSub">—</div>
+      </div>
+      <div class="modal-actions">
+        <div class="range-btns" id="rangeBtns">
+          <button class="range-btn" data-range="3M">3M</button>
+          <button class="range-btn active" data-range="1Y">1Y</button>
+          <button class="range-btn" data-range="2Y">2Y</button>
+        </div>
+        <a class="modal-link" id="modalLink" href="#" target="_blank">Open full page ↗</a>
+        <button class="modal-close" id="modalClose">×</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="chart-wrap"><canvas id="chartNet"></canvas></div>
+      <div class="oi-wrap"><canvas id="chartOI"></canvas></div>
+      <div class="chart-stats" id="chartStats"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Positioning context, not a signal generator. COT data lags the market by 3–7 days.
+</footer>
+
+<script>
+const $ = sel => document.querySelector(sel);
+const $$ = sel => document.querySelectorAll(sel);
+const runBtn = $('#run');
+const dateSelect = $('#reportDate');
+let polling = null;
+let chartNet = null, chartOI = null;
+let currentHistory = null;
+let currentRange = '1Y';
+let currentReportDate = '';
+
+// ===== Helpers =====
+function fmt(n) { if (n == null) return '—'; return n.toLocaleString('en-US'); }
+function signed(n) { if (n == null) return '—'; return (n > 0 ? '+' : '') + n.toLocaleString('en-US'); }
+function cls(n) { return n > 0 ? 'pos' : (n < 0 ? 'neg' : ''); }
+function zCls(z) { return (z !== null && Math.abs(z) > 1.5) ? 'z-extreme' : ''; }
+function heatColor(v) {
+  if (v === null) return 'transparent';
+  const t = Math.max(-1, Math.min(1, v / 150));
+  if (t > 0) return `rgba(63,209,122,${0.08 + t*0.32})`;
+  return `rgba(255,93,108,${0.08 + (-t)*0.32})`;
+}
+
+// ===== Populate report date dropdown on load =====
+async function loadReportDates() {
+  try {
+    const r = await fetch('/api/report-dates');
+    const data = await r.json();
+    if (!data.ok || !data.dates.length) {
+      dateSelect.innerHTML = '<option value="">No dates available</option>';
+      return;
+    }
+    // First option = "Latest" (empty value → backend uses most recent)
+    let html = '<option value="">Latest (' + data.dates[0] + ')</option>';
+    html += data.dates.map((d, i) =>
+      `<option value="${d}">${d}${i === 0 ? ' (latest)' : ''}</option>`
+    ).join('');
+    dateSelect.innerHTML = html;
+    dateSelect.disabled = false;
+  } catch (e) {
+    dateSelect.innerHTML = '<option value="">Failed to load dates</option>';
+  }
+}
+loadReportDates();
+
+// ===== Data sync =====
+const syncBtn = $('#sync');
+const syncStatus = $('#syncStatus');
+let syncPolling = null;
+
+function setSyncStatus(text, cls) {
+  syncStatus.textContent = text;
+  syncStatus.className = 'sync-status' + (cls ? ' ' + cls : '');
+}
+
+// Freshness check on load (no CFTC API call server-side)
+async function refreshSyncStatus() {
+  try {
+    const r = await fetch('/api/data-status');
+    const d = await r.json();
+    if (!d.ok) { setSyncStatus('status unavailable', 'err'); return; }
+    if (d.syncing) { startSyncPolling(); return; }
+    if (d.current) setSyncStatus('up to date · ' + (d.newest || '—'), 'fresh');
+    else setSyncStatus('stale · newest ' + (d.newest || 'none') + ' < ' + d.expected, 'stale');
+  } catch (e) {
+    setSyncStatus('status unavailable', 'err');
+  }
+}
+refreshSyncStatus();
+
+syncBtn.addEventListener('click', async () => {
+  syncBtn.disabled = true;
+  syncBtn.textContent = '⏳ SYNCING…';
+  setSyncStatus('checking for new data…');
+  try {
+    const res = await fetch('/api/sync', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({}),
+    });
+    const d = await res.json();
+    if (!d.ok) {
+      setSyncStatus(d.error || 'sync failed', 'err');
+      finishSync();
+      return;
+    }
+    if (d.state === 'skipped') {
+      setSyncStatus('already up to date · ' + (d.newest || '—'), 'fresh');
+      finishSync();
+      return;
+    }
+    // state === 'running' → poll until done
+    startSyncPolling();
+  } catch (e) {
+    setSyncStatus('sync failed: ' + e.message, 'err');
+    finishSync();
+  }
+});
+
+function startSyncPolling() {
+  syncBtn.disabled = true;
+  syncBtn.textContent = '⏳ SYNCING…';
+  if (syncPolling) clearInterval(syncPolling);
+  syncPolling = setInterval(async () => {
+    try {
+      const r = await fetch('/api/sync/status');
+      const d = await r.json();
+      if (d.state === 'running') {
+        setSyncStatus(d.status_msg || 'syncing…');
+        return;
+      }
+      clearInterval(syncPolling);
+      syncPolling = null;
+      const res = d.result || {};
+      if (d.state === 'error' || res.ok === false) {
+        setSyncStatus('sync failed: ' + (res.error || 'unknown'), 'err');
+      } else {
+        const errs = (res.errors && res.errors.length) ? ` · ${res.errors.length} errors` : '';
+        setSyncStatus(`done · +${res.new_rows} rows · newest ${res.newest || '—'}${errs}`,
+                      errs ? 'stale' : 'fresh');
+        // New data may mean new report dates — refresh the dropdown.
+        loadReportDates();
+      }
+      finishSync();
+    } catch (e) {
+      clearInterval(syncPolling);
+      syncPolling = null;
+      setSyncStatus('sync status error: ' + e.message, 'err');
+      finishSync();
+    }
+  }, 1000);
+}
+
+function finishSync() {
+  syncBtn.disabled = false;
+  syncBtn.textContent = '⟳ SYNC';
+}
+
+// ===== Run analysis =====
+runBtn.addEventListener('click', startRun);
+
+async function startRun() {
+  runBtn.disabled = true;
+  dateSelect.disabled = true;
+  $('#empty').style.display = 'none';
+  $('#results').classList.remove('visible');
+  $('#progress').classList.add('active');
+  $('#progressMsg').textContent = 'Starting...';
+  try {
+    const body = {};
+    // Only send report_date if user picked a non-default option
+    if (dateSelect.value) body.report_date = dateSelect.value;
+    const res = await fetch('/run', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body),
+    });
+    const {job_id} = await res.json();
+    pollStatus(job_id);
+  } catch (e) {
+    showError('Failed to start: ' + e.message);
+    finishRun();
+  }
+}
+
+function pollStatus(jobId) {
+  polling = setInterval(async () => {
+    try {
+      const res = await fetch('/status/' + jobId);
+      const data = await res.json();
+      $('#progressMsg').textContent = data.status_msg || 'Working...';
+      if (data.state === 'done') {
+        clearInterval(polling);
+        const r = await fetch('/result/' + jobId);
+        const result = await r.json();
+        render(result);
+        finishRun();
+      } else if (data.state === 'error' || data.state === 'not_found') {
+        clearInterval(polling);
+        const r = await fetch('/result/' + jobId);
+        const result = await r.json();
+        showError(result.error || 'Analysis failed');
+        finishRun();
+      }
+    } catch (e) {
+      clearInterval(polling);
+      showError('Polling error: ' + e.message);
+      finishRun();
+    }
+  }, 500);
+}
+
+function finishRun() {
+  runBtn.disabled = false;
+  dateSelect.disabled = false;
+  $('#progress').classList.remove('active');
+}
+
+function showError(msg) {
+  $('#empty').style.display = 'block';
+  $('#empty').innerHTML = '<div class="error-box">⚠ ' + msg + '</div>';
+}
+
+// ===== Render =====
+function render(data) {
+  if (!data.ok) { showError(data.error || 'Unknown error'); return; }
+
+  let metaHtml = `
+    <div>Report date: <b>${data.report_date}</b></div>
+    <div>Generated: <b>${data.generated_at}</b></div>
+    <div>Instruments: <b>${data.counts.currencies + data.counts.assets}</b></div>
+    <div>FX pairs: <b>${data.counts.pairs}</b></div>`;
+  if (data.is_historical) {
+    metaHtml += `<div class="badge-historical">⏱ Historical report · backtest mode</div>`;
+  }
+  $('#meta').innerHTML = metaHtml;
+
+  // Top setup cards (clickable for asset cards; pairs not clickable as they're combinations)
+  $('#cards').innerHTML = data.top_setups.length ? data.top_setups.map((s, i) => {
+    const isSingle = s.type === 'SINGLE';
+    const ticker = isSingle ? s.label.split(' ')[0] : null;
+    return `
+      <div class="card" ${isSingle ? `onclick="openChart('${ticker}')"` : ''}>
+        <div class="rank">#${i+1} · ${isSingle ? 'ASSET' : 'FX PAIR'}</div>
+        <div class="label">${s.label}</div>
+        <div class="row"><span>Bias</span><span>${s.bias}</span></div>
+        <div class="row"><span>Momentum</span><span>${s.momentum}</span></div>
+        <div class="row"><span>Net</span><span class="${cls(s.net_value)}">${signed(s.net_value)}</span></div>
+        <div class="row"><span>ΔNet</span><span class="${cls(s.chg_value)}">${signed(s.chg_value)}</span></div>
+        <div class="row"><span>z-score (26w)</span><span class="${zCls(s.z26)}">${s.z26 ?? '—'}</span></div>
+        <div class="row"><span>Score</span><span>${s.score}</span></div>
+      </div>`;
+  }).join('') : '<div class="dim">No clean setups this week.</div>';
+
+  // Store the current analysis context (for AI calls) and set up AI controls
+  currentReportDate = dateSelect.value || '';
+  setupAIControls(data);
+
+  // Currency table (clickable)
+  $('#ccyTable').innerHTML = `
+    <thead><tr>
+      <th>Ccy</th><th>Long</th><th>Short</th><th>Net</th>
+      <th>ΔLong</th><th>ΔShort</th><th>ΔNet</th><th>z(26w)</th><th>%rank</th>
+    </tr></thead><tbody>
+    ${data.currencies.map(c => `
+      <tr class="clickable" onclick="openChart('${c.code}')">
+        <td><b>${c.code}</b> <span class="ccy-name">${c.name}</span></td>
+        <td>${fmt(c.long)}</td><td>${fmt(c.short)}</td>
+        <td class="${cls(c.net)}">${signed(c.net)}</td>
+        <td class="${cls(c.long_chg)}">${signed(c.long_chg)}</td>
+        <td class="${cls(c.short_chg)}">${signed(c.short_chg)}</td>
+        <td class="${cls(c.net_chg)}">${signed(c.net_chg)}</td>
+        <td class="${zCls(c.z26)}">${c.z26 ?? '—'}</td>
+        <td class="dim">${c.pct_rank_26w !== null ? c.pct_rank_26w + '%' : '—'}</td>
+      </tr>`).join('')}
+    </tbody>`;
+
+  // Asset table (clickable, grouped by category)
+  let lastCat = null;
+  let assetRows = '';
+  data.assets.forEach(a => {
+    if (a.category !== lastCat) {
+      assetRows += `<tr class="cat-row"><td colspan="7">${a.category}</td></tr>`;
+      lastCat = a.category;
+    }
+    assetRows += `
+      <tr class="clickable" onclick="openChart('${a.code}')">
+        <td><b>${a.code}</b> <span class="ccy-name">${a.name}</span></td>
+        <td class="${cls(a.net)}">${signed(a.net)}</td>
+        <td>${a.net_pct_oi}%</td>
+        <td class="${cls(a.net_chg)}">${signed(a.net_chg)}</td>
+        <td>${a.bias}</td>
+        <td>${a.momentum}</td>
+        <td class="${zCls(a.z26)}">${a.z26 ?? '—'}</td>
+      </tr>`;
+  });
+  $('#assetTable').innerHTML = `
+    <thead><tr>
+      <th>Asset</th><th>Net</th><th>%OI</th><th>ΔNet</th>
+      <th>Bias</th><th>Momentum</th><th>z(26w)</th>
+    </tr></thead><tbody>${assetRows}</tbody>`;
+
+  renderMatrix('#biasMatrix', data.bias_matrix, data.matrix_codes);
+  renderMatrix('#momMatrix', data.momentum_matrix, data.matrix_codes);
+
+  $('#pairTable').innerHTML = `
+    <thead><tr>
+      <th>Pair</th><th>Net diff</th><th>ΔNet diff</th>
+      <th>Bias</th><th>Momentum</th><th>Aligned</th>
+    </tr></thead><tbody>
+    ${data.pairs.map(p => `
+      <tr>
+        <td><b>${p.pair}</b></td>
+        <td class="${cls(p.net_diff)}">${signed(p.net_diff)}</td>
+        <td class="${cls(p.chg_diff)}">${signed(p.chg_diff)}</td>
+        <td>${p.bias}</td><td>${p.momentum}</td>
+        <td>${p.alignment}</td>
+      </tr>`).join('')}
+    </tbody>`;
+
+  $('#results').classList.add('visible');
+}
+
+function renderMatrix(sel, matrix, codes) {
+  let html = '<thead><tr><th></th>' + codes.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+  matrix.forEach(row => {
+    html += `<tr><td>${row.base}</td>`;
+    codes.forEach(q => {
+      const v = row.cells[q];
+      if (v === null) html += `<td class="dim">·</td>`;
+      else html += `<td style="background:${heatColor(v)}">${v > 0 ? '+' : ''}${v}</td>`;
+    });
+    html += '</tr>';
+  });
+  $(sel).innerHTML = html + '</tbody>';
+}
+
+// ===== AI Overview (on-demand) =====
+function setupAIControls(data) {
+  // Reset containers
+  $('#aiTop3Container').innerHTML = '';
+  $('#aiAssetContainer').innerHTML = '';
+
+  // Populate the asset dropdown from currencies + assets in the result
+  const opts = ['<option value="">Select an asset…</option>'];
+  // Currencies
+  data.currencies.forEach(c => {
+    opts.push(`<option value="${c.code}">${c.code} · ${c.name}</option>`);
+  });
+  // Single assets (crypto/index/rates/commodity)
+  data.assets.forEach(a => {
+    opts.push(`<option value="${a.code}">${a.code} · ${a.name}</option>`);
+  });
+  $('#aiAssetSelect').innerHTML = opts.join('');
+
+  // Reset buttons to enabled state
+  $('#aiTop3Btn').disabled = false;
+  $('#aiTop3Btn').textContent = '⚡ AI Overview Top-3';
+  $('#aiAssetBtn').disabled = true;
+}
+
+// Enable "Analyze asset" only when an asset is selected
+$('#aiAssetSelect').addEventListener('change', (e) => {
+  $('#aiAssetBtn').disabled = !e.target.value;
+});
+
+// --- Top-3 AI overview ---
+$('#aiTop3Btn').addEventListener('click', async () => {
+  const btn = $('#aiTop3Btn');
+  const container = $('#aiTop3Container');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generating…';
+  container.innerHTML = '<div class="ai-note">Generating AI overview of the top-3 setups…</div>';
+  try {
+    const body = {};
+    if (currentReportDate) body.report_date = currentReportDate;
+    const res = await fetch('/ai/top3', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body),
+    });
+    const ai = await res.json();
+    container.innerHTML = renderAIResult(ai, 'Top-3 setups');
+  } catch (e) {
+    container.innerHTML = `<div class="ai-note">⚠ Request failed: ${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ AI Overview Top-3';
+  }
+});
+
+// --- Single-asset AI overview ---
+$('#aiAssetBtn').addEventListener('click', async () => {
+  const ticker = $('#aiAssetSelect').value;
+  if (!ticker) return;
+  const btn = $('#aiAssetBtn');
+  const container = $('#aiAssetContainer');
+  btn.disabled = true;
+  btn.textContent = '⏳ Analyzing…';
+  container.innerHTML = `<div class="ai-note">Analyzing ${ticker} COT positioning…</div>`;
+  try {
+    const body = { ticker };
+    if (currentReportDate) body.report_date = currentReportDate;
+    const res = await fetch('/ai/asset', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body),
+    });
+    const ai = await res.json();
+    container.innerHTML = renderAIResult(ai, ticker + (ai.name ? ' · ' + ai.name : ''));
+  } catch (e) {
+    container.innerHTML = `<div class="ai-note">⚠ Request failed: ${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Analyze asset';
+  }
+});
+
+function renderAIResult(ai, subject) {
+  if (ai.status === 'ok') {
+    let body = ai.text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    return `<div class="ai-panel">
+      <div class="ai-head"><span class="badge">CLAUDE</span> ${ai.model} · ${subject} · COT sounding board</div>
+      <div class="ai-body">${body}</div></div>`;
+  } else if (ai.status === 'no_key') {
+    return `<div class="ai-note">⚠ <code>ANTHROPIC_API_KEY</code> not set on the server. AI overview is unavailable until a key is configured.</div>`;
+  } else if (ai.status === 'no_setups') {
+    return `<div class="ai-note">No clean setups with aligned bias + momentum to analyze for this report.</div>`;
+  } else {
+    return `<div class="ai-note">⚠ AI overview failed: ${ai.text || 'unknown error'}.</div>`;
+  }
+}
+
+// ===== Chart Modal =====
+async function openChart(ticker) {
+  $('#modalTitle').textContent = ticker;
+  $('#modalSub').textContent = 'Loading...';
+  $('#modalLink').href = '/history/' + ticker;
+  $('#modal').classList.add('active');
+
+  try {
+    const res = await fetch('/api/history/' + ticker);
+    const data = await res.json();
+    if (!data.ok) {
+      $('#modalSub').textContent = '⚠ ' + (data.error || 'Failed to load');
+      return;
+    }
+    currentHistory = data;
+    $('#modalTitle').textContent = `${data.ticker} · ${data.name}`;
+    $('#modalSub').textContent = `${data.category} · ${data.n_weeks} weekly reports · ${data.oldest} → ${data.newest}`;
+    drawCharts(currentRange);
+    renderChartStats();
+  } catch (e) {
+    $('#modalSub').textContent = '⚠ Network error: ' + e.message;
+  }
+}
+
+function closeModal() {
+  $('#modal').classList.remove('active');
+  if (chartNet) { chartNet.destroy(); chartNet = null; }
+  if (chartOI)  { chartOI.destroy();  chartOI  = null; }
+  currentHistory = null;
+}
+
+$('#modalClose').addEventListener('click', closeModal);
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+$$('.range-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $$('.range-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentRange = btn.dataset.range;
+    if (currentHistory) drawCharts(currentRange);
+  });
+});
+
+function filterByRange(series, range) {
+  if (range === '2Y' || !range) return series;
+  const now = new Date(series[series.length - 1].date);
+  const cutoff = new Date(now);
+  if (range === '3M') cutoff.setMonth(cutoff.getMonth() - 3);
+  else if (range === '1Y') cutoff.setFullYear(cutoff.getFullYear() - 1);
+  return series.filter(p => new Date(p.date) >= cutoff);
+}
+
+function drawCharts(range) {
+  if (!currentHistory) return;
+  const data = filterByRange(currentHistory.series, range);
+  const labels = data.map(p => p.date);
+  const nets = data.map(p => p.net);
+  const ois  = data.map(p => p.open_interest);
+
+  // Color the area depending on whether each point is above/below zero
+  // We use a single segment color callback for fluid green/red areas
+  if (chartNet) chartNet.destroy();
+  if (chartOI)  chartOI.destroy();
+
+  const netCtx = document.getElementById('chartNet').getContext('2d');
+  chartNet = new Chart(netCtx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Non-Commercial Net',
+        data: nets,
+        stepped: true,
+        borderColor: ctx => {
+          const v = ctx.p1?.parsed?.y ?? 0;
+          return v >= 0 ? '#3fd17a' : '#ff5d6c';
+        },
+        segment: {
+          borderColor: ctx => (ctx.p1.parsed.y >= 0 ? '#3fd17a' : '#ff5d6c'),
+        },
+        backgroundColor: ctx => {
+          const chart = ctx.chart;
+          const {ctx: c, chartArea} = chart;
+          if (!chartArea) return null;
+          const g = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+          g.addColorStop(0,    'rgba(63,209,122,0.35)');
+          g.addColorStop(0.5,  'rgba(63,209,122,0.05)');
+          g.addColorStop(0.5,  'rgba(255,93,108,0.05)');
+          g.addColorStop(1,    'rgba(255,93,108,0.35)');
+          return g;
+        },
+        fill: { target: { value: 0 } },
+        borderWidth: 2,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+      }],
+    },
+    options: {
+      maintainAspectRatio: false, responsive: true,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#121820',
+          borderColor: '#232d3a',
+          borderWidth: 1,
+          titleColor: '#e8eef5',
+          bodyColor: '#e8eef5',
+          padding: 12,
+          callbacks: {
+            label: (ctx) => {
+              const i = ctx.dataIndex;
+              const p = data[i];
+              return [
+                `Net: ${p.net >= 0 ? '+' : ''}${p.net.toLocaleString()}`,
+                `Long: ${p.nc_long.toLocaleString()}`,
+                `Short: ${p.nc_short.toLocaleString()}`,
+                `Open Interest: ${p.open_interest.toLocaleString()}`,
+              ];
+            }
+          }
+        },
+      },
+      scales: {
+        x: {
+          type: 'time',
+          time: { unit: range === '3M' ? 'week' : 'month' },
+          ticks: { color: '#7b8a9c', font: { size: 10 } },
+          grid: { color: 'rgba(35,45,58,0.4)' },
+        },
+        y: {
+          ticks: {
+            color: '#7b8a9c',
+            font: { size: 10 },
+            callback: v => v.toLocaleString(),
+          },
+          grid: {
+            color: ctx => ctx.tick.value === 0 ? '#7b8a9c' : 'rgba(35,45,58,0.4)',
+            lineWidth: ctx => ctx.tick.value === 0 ? 1.5 : 1,
+          },
+        },
+      },
+    },
+  });
+
+  // OI bars (smaller chart below)
+  const oiCtx = document.getElementById('chartOI').getContext('2d');
+  chartOI = new Chart(oiCtx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Open Interest',
+        data: ois,
+        backgroundColor: 'rgba(123,138,156,0.4)',
+        borderColor: 'rgba(123,138,156,0.6)',
+        borderWidth: 0,
+        barThickness: range === '3M' ? 8 : 2,
+      }],
+    },
+    options: {
+      maintainAspectRatio: false, responsive: true,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#121820',
+          borderColor: '#232d3a',
+          borderWidth: 1,
+          padding: 10,
+          callbacks: {
+            title: () => 'Open Interest',
+            label: ctx => ctx.parsed.y.toLocaleString(),
+          }
+        },
+      },
+      scales: {
+        x: { type: 'time', display: false },
+        y: {
+          ticks: {
+            color: '#7b8a9c', font: { size: 9 },
+            callback: v => (v / 1000).toFixed(0) + 'k',
+          },
+          grid: { color: 'rgba(35,45,58,0.4)' },
+        },
+      },
+    },
+  });
+}
+
+function renderChartStats() {
+  if (!currentHistory || !currentHistory.series.length) return;
+  const s = currentHistory.series;
+  const last = s[s.length - 1];
+  const max = Math.max(...s.map(p => p.net));
+  const min = Math.min(...s.map(p => p.net));
+  const range = max - min;
+
+  $('#chartStats').innerHTML = `
+    <div class="chart-stat"><span class="lbl">Latest net</span><span class="val ${cls(last.net)}">${signed(last.net)}</span></div>
+    <div class="chart-stat"><span class="lbl">Latest long</span><span class="val">${fmt(last.nc_long)}</span></div>
+    <div class="chart-stat"><span class="lbl">Latest short</span><span class="val">${fmt(last.nc_short)}</span></div>
+    <div class="chart-stat"><span class="lbl">Open interest</span><span class="val">${fmt(last.open_interest)}</span></div>
+    <div class="chart-stat"><span class="lbl">2Y high (net)</span><span class="val pos">${signed(max)}</span></div>
+    <div class="chart-stat"><span class="lbl">2Y low (net)</span><span class="val neg">${signed(min)}</span></div>
+    <div class="chart-stat"><span class="lbl">2Y range</span><span class="val">${fmt(range)}</span></div>
+  `;
+}
+</script>
+</body>
+</html>
