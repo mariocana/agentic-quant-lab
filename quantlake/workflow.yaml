@@ -207,6 +207,14 @@ silver:
     transforms:
       - passthrough (no OHLCV cleaning) — scalar annual values
 
+  cftc_cot:
+    from: [bronze/cftc_cot]
+    transforms:
+      - drop reports missing open interest or non-commercial long/short
+      - dedupe on (symbol, report_date)
+      - nc_net / comm_net / nonrept_net = long - short per trader group
+      - nc_net_pct_oi = 100 * nc_net / open_interest (null when OI <= 0)
+
 gold:
   top_10_momentum_crypto/5m:
     from: [silver/binance_spot_ohlcv]
@@ -248,3 +256,12 @@ gold:
       - weights use join_asof on NASS release timestamps — vintage-safe, no look-ahead
       - Oryon features — SMA20/EMA20 on close, SMA30 on stress_index
       - "live runner: Capital poll 1m (bronze + silver + build_live_bar) + Open-Meteo poll 1h (bronze + silver/crop_weather rebuild)"
+
+  cot_positioning/1w:
+    from: [silver/cftc_cot]
+    transforms:
+      - per-symbol full rebuild each week (tiny table, complete rolling windows)
+      - week-over-week changes nc_long_chg / nc_short_chg / nc_net_chg
+      - z26 / z52 + pct_rank_26 / pct_rank_52 of nc_net vs PRIOR weeks only (min 10)
+      - category (FX / Crypto / Index / Rates / Commodity) from applications/symbols.py
+      - keeps the Friday-release timestamp — as-of joins onto price bars stay look-ahead free
