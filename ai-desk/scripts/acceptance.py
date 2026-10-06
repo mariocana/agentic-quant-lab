@@ -73,6 +73,11 @@ def main() -> int:
     if st["mode"] != "paper":
         print("  REFUSING: the desk is in live mode. This test opens and closes positions.")
         return 2
+    if st.get("stale_code"):
+        print("  REFUSING: the running desk is older than the source files on disk.")
+        print("  Restart it (Ctrl+C in its terminal, then `.venv/bin/desk ui`) and run this again —")
+        print("  otherwise you are testing the code you had, not the code you have.")
+        return 2
 
     original = {f["path"]: f["value"] for f in api("/api/limits")}
     try:

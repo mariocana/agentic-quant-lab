@@ -7,7 +7,9 @@
   unlock            clear a drawdown / daily-loss halt
   universe          what the strategy would trade right now
   journal [--kind K] [--last N]
-  ui [--port 8765]  start the web UI (the normal way to run the desk)
+  ui [--port 8765] [--reload]
+                    start the web UI (the normal way to run the desk).
+                    Compiles every module and parses the dashboard script first.
 """
 from __future__ import annotations
 
@@ -97,7 +99,7 @@ def cmd_journal(args):
 
 def cmd_ui(args):
     from desk.ui.server import main as serve
-    serve(port=args.port)
+    serve(port=args.port, reload=args.reload, skip_preflight=args.no_preflight)
 
 
 def main(argv=None):
@@ -116,7 +118,11 @@ def main(argv=None):
     sub.add_parser("unlock").set_defaults(fn=cmd_unlock)
     j = sub.add_parser("journal"); j.add_argument("--kind"); j.add_argument("--last", type=int, default=20)
     j.set_defaults(fn=cmd_journal)
-    u = sub.add_parser("ui"); u.add_argument("--port", type=int, default=8765); u.set_defaults(fn=cmd_ui)
+    u = sub.add_parser("ui")
+    u.add_argument("--port", type=int, default=8765)
+    u.add_argument("--reload", action="store_true", help="restart the desk when a source file changes (development only)")
+    u.add_argument("--no-preflight", action="store_true", help="skip the compile/parse check before starting")
+    u.set_defaults(fn=cmd_ui)
 
     args = p.parse_args(argv)
     args.fn(args)

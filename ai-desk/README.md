@@ -25,8 +25,24 @@ desk/
 ```bash
 uv venv --python 3.12 && uv pip install -e ".[dev]"
 cp .env.example .env            # optional for paper mode
-desk ui                         # http://127.0.0.1:8765
+.venv/bin/desk ui               # http://127.0.0.1:8765
 ```
+
+`desk ui` runs a **preflight** before it opens the port: it byte-compiles every
+module and parses the dashboard's script with node. There is no bundler here, so
+this is the build step — without it a syntax error surfaces as a 500 on the first
+request, or as a blank page served by a healthy-looking server. Both have happened.
+
+| flag | |
+|---|---|
+| `--reload` | restart the desk whenever a source file changes. Development only: a restart can interrupt a running cycle. |
+| `--no-preflight` | skip the compile/parse check. |
+| `--port N` | default 8765. |
+
+Python loads modules once, so a desk started *before* an edit keeps running the old
+code — a fixed bug then looks unfixed. `/api/state` reports `stale_code` when a
+source file is newer than the process: the dashboard shows a banner and the
+acceptance script refuses to run until you restart.
 
 The web UI is how the desk is operated. It shows equity (hero + curve), today's
 P&L against the freeze line, drawdown against the halt line, gross/net exposure,
@@ -39,13 +55,42 @@ paper/live, and a built-in daily scheduler (no cron needed). Binds to localhost 
 ```
 ├── ui/service.py     everything the UI can do, one object (adapter, lock, scheduler, log ring)
 ├── ui/server.py      FastAPI wrapper, /api/*
-└── ui/static/        single-page vanilla HTML/JS, no build step
+└── ui/static/        single-page vanilla HTML/JS, no bundler (see preflight above)
 ```
 
 The CLI (`desk run|status|kill|unlock|journal|universe`) still exists for scripts
 and debugging; it drives the same files. Paper state lives in
 `var/paper_account.json`, risk state in `var/risk_state.json`, UI settings in
 `var/ui_settings.json`, the journal in `var/journal.jsonl`. Delete `var/` to start over.
+
+## Acceptance
+
+The unit tests cover the pieces. This drives the running desk through its own API
+and checks that the brakes work once they are all mounted together — it is what you
+run before trusting the desk with money, and after any change under `risk/`.
+
+```bash
+.venv/bin/desk ui                          # terminal 1
+.venv/bin/python scripts/acceptance.py     # terminal 2
+```
+
+| # | what it proves |
+|---|---|
+| 1 | the paper account resets to a known state |
+| 2 | a dry run produces intents and executes **nothing** |
+| 3 | a real cycle stays inside the per-asset cap and the leverage limit |
+| 4 | a tiny per-asset cap rejects every opening intent — the limits actually bite |
+| 5 | the kill switch blocks new risk and **still allows closing** |
+| 6 | flatten leaves no position behind, not even dust |
+| 7 | a daily-loss freeze refuses new risk |
+| 8 | targets, intents, verdicts and fills all reach the journal |
+
+Paper mode only — it refuses to run against a live account, and it refuses to run
+against a stale process. It edits the paper account and `config/limits.yaml` while
+it works and restores the limits afterwards, including after a failure.
+
+It says nothing about whether the strategy makes money. It says that the risk
+engine has the last word and that no path goes around it.
 
 ## The rules that matter
 
@@ -82,10 +127,18 @@ and debugging; it drives the same files. Paper state lives in
 2. `.env`: `HL_TESTNET=1`, `HL_ACCOUNT_ADDRESS`, `HL_API_WALLET_KEY`.
 3. In the UI, switch Mode to Live (testnet). Dry run first, then Run cycle.
 
-Known phase-1 gaps on the live path: positions read back from the exchange have no
-`strategy_id`/`opened_at` (a local ledger keyed on cloid is next), so the time stop
-only works in paper mode; ALO orders that rest are cancelled at the next cycle rather
-than tracked to fill. Mainnet asks you to type `MAINNET`; don't, yet.
+Known phase-1 gaps on the live path, in the order they block things:
+
+1. **No local position ledger.** Positions read back from the exchange carry no
+   `strategy_id` / `opened_at`, so the time stop only works on paper and the
+   rebalance cannot tell its own positions from anyone else's. Keyed on cloid, next.
+2. **Fills are not reconciled.** Fees are estimated at 0.045% instead of read from
+   `user_fills`, and an ALO order that rests is cancelled at the next cycle rather
+   than followed to its fill.
+3. **The live adapter has never seen a wallet.** It is written against the SDK
+   signatures and nothing more. Testnet, dry run, then minimum size.
+
+Mainnet asks you to type `MAINNET`; don't, yet.
 
 ## Phase 2 (not started)
 

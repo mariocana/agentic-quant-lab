@@ -331,7 +331,8 @@ async function refreshState() {
   $("#btnRun").disabled = s.running; $("#btnDry").disabled = s.running;
   $("#btnKill").textContent = s.kill ? "Release kill switch" : "Kill switch"; $("#btnKill").className = s.kill ? "" : "danger";
   const al = $("#alert");
-  if (s.last_error) { al.textContent = "Last cycle failed: " + s.last_error; al.className = "alert critical"; al.style.display = "block"; }
+  if (s.stale_code) { al.textContent = "The desk is running code older than the files on disk — restart it (Ctrl+C, then desk ui) before trusting a test run."; al.className = "alert"; al.style.display = "block"; }
+  else if (s.last_error) { al.textContent = "Last cycle failed: " + s.last_error; al.className = "alert critical"; al.style.display = "block"; }
   else if (s.halted) { al.textContent = "Desk halted (" + s.halt_reason + "). No new risk until you unlock."; al.className = "alert"; al.style.display = "block"; }
   else al.style.display = "none";
   renderPositions(s.positions);

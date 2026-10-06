@@ -10,6 +10,7 @@ import json
 import re
 import logging
 import threading
+import time
 import traceback
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -143,6 +144,8 @@ class DeskService:
         self._adapter = None
         self._contexts_cache: tuple[float, dict] = (0.0, {})
         self._stop = threading.Event()
+        self.started_at = time.time()
+        self._stale_cache: tuple[float, bool] = (0.0, False)
         self.scheduler = threading.Thread(target=self._scheduler, daemon=True, name="desk-scheduler")
         self.scheduler.start()
 
@@ -194,6 +197,27 @@ class DeskService:
             self._contexts_cache = (now, ctx)
         return ctx
 
+    def code_changed_since_start(self, max_age_s: float = 10.0) -> bool:
+        """True when a source file is newer than this process.
+
+        Python loads modules once: after an edit the running desk keeps executing the
+        old code, which makes a fixed bug look unfixed and a test run meaningless.
+        """
+        ts, stale = self._stale_cache
+        now = time.time()
+        if now - ts <= max_age_s:
+            return stale
+        root = Path(__file__).resolve().parent.parent
+        newest = 0.0
+        for f in list(root.rglob("*.py")) + list(root.rglob("*.html")):
+            try:
+                newest = max(newest, f.stat().st_mtime)
+            except OSError:
+                pass
+        stale = newest > self.started_at
+        self._stale_cache = (now, stale)
+        return stale
+
     def state(self) -> dict:
         ctx = self.contexts()
         adapter = self.adapter
@@ -237,6 +261,7 @@ class DeskService:
             "positions": positions, "last_cycle": self.last_cycle,
             "limits": limits, "ui": self.ui, "next_run_utc": self._next_run().isoformat() if self.ui["schedule_enabled"] else None,
             "strategy": {"id": self.strategy.id, "interval": self.strategy.interval, "horizon_hours": self.strategy.horizon_hours},
+            "stale_code": self.code_changed_since_start(),
             "as_of": now.isoformat(),
         }
 

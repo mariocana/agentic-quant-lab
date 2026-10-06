@@ -73,3 +73,17 @@ def test_limits_edit_round_trips_awkward_floats():
         written = float(_fmt(v))
         out = set_yaml_scalar(src, "daily_loss_freeze_pct", written)
         assert yaml.safe_load(out)["daily_loss_freeze_pct"] == written, v
+
+
+def test_state_reports_stale_code():
+    """Python loads modules once: after an edit the running desk keeps the old code.
+    The dashboard banner and the acceptance script both rely on this flag."""
+    from desk.ui.service import DeskService
+
+    svc = object.__new__(DeskService)        # no network, no threads
+    svc._stale_cache = (0.0, False)
+    svc.started_at = 0.0                     # every source file is newer than the epoch
+    assert svc.code_changed_since_start() is True
+    svc._stale_cache = (0.0, False)
+    svc.started_at = 2 ** 40                 # ...and none is newer than the far future
+    assert svc.code_changed_since_start() is False
