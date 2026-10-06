@@ -19,6 +19,7 @@ from hyperliquid.utils.types import Cloid
 
 from desk.data.hl_market import HLMarket
 from desk.execution.base import ExecutionAdapter, round_price, round_size
+from desk.execution.ledger import PositionLedger
 from desk.schemas import AccountState, Fill, OrderIntent, RiskVerdict
 
 log = logging.getLogger(__name__)
@@ -42,10 +43,26 @@ class HyperliquidAdapter(ExecutionAdapter):
         # account reads and asset metadata come from the venue we execute on,
         # not from the (mainnet) data feed the strategy looks at
         self.venue = HLMarket(base_url)
+        self.ledger = PositionLedger()
         log.info("HL adapter: signing with agent %s for account %s (%s)", wallet.address, account_address, base_url)
 
     def account_state(self) -> AccountState:
-        return self.venue.account_state(self.address)
+        """Sizes from the exchange, context from the ledger.
+
+        The exchange is the only source of truth for what is open; the ledger adds
+        who opened it and when. A position with no ledger row comes back with
+        managed=False, and the rest of the desk leaves it alone.
+        """
+        acc = self.venue.account_state(self.address)
+        gone = self.ledger.reconcile({p.asset for p in acc.positions})
+        if gone:
+            log.info("ledger: closed on the exchange, dropping %s", ", ".join(gone))
+        acc.positions = self.ledger.enrich(acc.positions)
+        unmanaged = [p.asset for p in acc.positions if not p.managed]
+        if unmanaged:
+            log.warning("positions on the exchange that this desk did not open: %s "
+                        "(left untouched)", ", ".join(unmanaged))
+        return acc
 
     # ---- orders --------------------------------------------------------------
 
@@ -111,10 +128,14 @@ class HyperliquidAdapter(ExecutionAdapter):
         if intent.stop_px and not intent.reduce_only:
             stop_oid = self._place_stop(intent.asset, is_buy, total_sz, intent.stop_px, szd)
 
-        return Fill(intent_id=intent.id, asset=intent.asset, side=intent.side, requested_usd=intent.notional_usd,
+        fill = Fill(intent_id=intent.id, asset=intent.asset, side=intent.side, requested_usd=intent.notional_usd,
                     filled_usd=filled_usd, decision_px=mid_px, fill_px=avg_px, fee_usd=fee,
                     partial=total_sz < sz - 1e-12, exchange_oid=str(filled["oid"]),
                     stop_oid=str(stop_oid) if stop_oid else None)
+        # Record before returning: a desk that dies here would otherwise own a
+        # position it can no longer recognise.
+        self.ledger.record(fill, intent, cloid=cloid.to_raw())
+        return fill
 
     def _place_stop(self, asset: str, entry_is_buy: bool, sz: float, stop_px: float, szd: int) -> int | None:
         trigger = round_price(stop_px, szd)
@@ -135,6 +156,7 @@ class HyperliquidAdapter(ExecutionAdapter):
             status = _first_status(resp)
             if "filled" in status:
                 f = status["filled"]
+                self.ledger.forget(p.asset)
                 fills.append(Fill(intent_id="flatten", asset=p.asset, side="sell" if p.size > 0 else "buy",
                                   requested_usd=abs(p.notional_usd), filled_usd=float(f["avgPx"]) * float(f["totalSz"]),
                                   decision_px=p.mark_px, fill_px=float(f["avgPx"]), fee_usd=0.0, partial=False,

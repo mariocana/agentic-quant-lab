@@ -249,6 +249,7 @@ class DeskService:
                 "upnl_pct": p.unrealized_pnl_usd / abs(p.notional_usd) if p.notional_usd else 0.0,
                 "funding_hourly": c.funding_hourly if c else None,
                 "strategy_id": p.strategy_id, "age_hours": age_h, "horizon_hours": p.horizon_hours,
+                "managed": p.managed,
             })
         return {
             "venue": self.venue_label(), "mode": self.ui["mode"], "status": status,
@@ -258,7 +259,8 @@ class DeskService:
             "gross_usd": acc.gross_notional_usd, "gross_leverage": acc.gross_notional_usd / equity if equity else 0.0,
             "net_usd": sum(p.notional_usd for p in acc.positions),
             "halted": rs.halted, "halt_reason": rs.halt_reason, "kill": RiskState.kill_engaged(),
-            "positions": positions, "last_cycle": self.last_cycle,
+            "positions": positions, "unmanaged": [p["asset"] for p in positions if not p["managed"]],
+            "last_cycle": self.last_cycle,
             "limits": limits, "ui": self.ui, "next_run_utc": self._next_run().isoformat() if self.ui["schedule_enabled"] else None,
             "strategy": {"id": self.strategy.id, "interval": self.strategy.interval, "horizon_hours": self.strategy.horizon_hours},
             "stale_code": self.code_changed_since_start(),

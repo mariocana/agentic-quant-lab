@@ -8,7 +8,10 @@ def intents_from_targets(targets: list[TargetPosition], account: AccountState, s
                          min_delta_usd: float = 15.0, stop_pct: float | None = 0.08,
                          marks: dict[str, float] | None = None) -> list[OrderIntent]:
     wanted = {t.asset: t for t in targets}
-    held = {p.asset: p for p in account.positions if p.strategy_id in (None, strategy_id)}
+    # Only this strategy's own positions. One opened by hand, or by a desk whose
+    # ledger was lost, is left alone: closing someone else's position because it
+    # is not in our target list would be the worst kind of helpful.
+    held = {p.asset: p for p in account.positions if p.managed and p.strategy_id == strategy_id}
     out: list[OrderIntent] = []
 
     for asset in set(wanted) | set(held):

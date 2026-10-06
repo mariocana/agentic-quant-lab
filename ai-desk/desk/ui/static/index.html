@@ -103,6 +103,7 @@ pre.logs::-webkit-scrollbar-thumb { background: var(--border-strong); border-rad
 .toast.err { border-color: var(--critical); color: var(--serious); }
 .alert { border: 1px solid var(--warning); border-left-width: 3px; padding: 7px 11px; background: var(--surface); border-radius: 3px; margin-bottom: 8px; display: none; font: 400 11px/1.5 var(--mono); color: var(--ink-2); }
 .alert.critical { border-color: var(--critical); color: var(--serious); }
+tr.unmanaged td { color: var(--warning); }
 .muted { color: var(--muted); font: 400 10px/1.5 var(--mono); text-transform: none; letter-spacing: 0; }
 /* ---- app shell: sidebar + main ------------------------------------------- */
 .app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
@@ -331,7 +332,8 @@ async function refreshState() {
   $("#btnRun").disabled = s.running; $("#btnDry").disabled = s.running;
   $("#btnKill").textContent = s.kill ? "Release kill switch" : "Kill switch"; $("#btnKill").className = s.kill ? "" : "danger";
   const al = $("#alert");
-  if (s.stale_code) { al.textContent = "The desk is running code older than the files on disk — restart it (Ctrl+C, then desk ui) before trusting a test run."; al.className = "alert"; al.style.display = "block"; }
+  if (s.unmanaged?.length) { al.textContent = "On the exchange but not opened by this desk: " + s.unmanaged.join(", ") + " — left untouched. The desk will not size, time-stop or close them."; al.className = "alert"; al.style.display = "block"; }
+  else if (s.stale_code) { al.textContent = "The desk is running code older than the files on disk — restart it (Ctrl+C, then desk ui) before trusting a test run."; al.className = "alert"; al.style.display = "block"; }
   else if (s.last_error) { al.textContent = "Last cycle failed: " + s.last_error; al.className = "alert critical"; al.style.display = "block"; }
   else if (s.halted) { al.textContent = "Desk halted (" + s.halt_reason + "). No new risk until you unlock."; al.className = "alert"; al.style.display = "block"; }
   else al.style.display = "none";
@@ -342,12 +344,14 @@ function renderPositions(ps) {
   $("#posEmpty").style.display = ps.length ? "none" : "block"; $("#posCount").textContent = ps.length ? `${ps.length} open` : "";
   for (const p of ps) {
     const tr = document.createElement("tr");
-    cell(tr, p.asset); cell(tr, p.side);
+    if (!p.managed) tr.classList.add("unmanaged");
+    cell(tr, p.asset + (p.managed ? "" : " ⚠"));
+    cell(tr, p.side);
     cell(tr, fmtUsd(Math.abs(p.notional_usd), 0), "num"); cell(tr, fmtPx(p.entry_px), "num"); cell(tr, fmtPx(p.mark_px), "num");
     cell(tr, fmtUsd(p.upnl_usd), "num " + signClass(p.upnl_usd)); cell(tr, fmtPct(p.upnl_pct), "num " + signClass(p.upnl_pct));
     cell(tr, p.funding_hourly == null ? "—" : fmtPct(p.funding_hourly, 4), "num");
     cell(tr, p.age_hours == null ? "—" : `${Math.round(p.age_hours)}h/${p.horizon_hours ?? "—"}h`, "num");
-    cell(tr, p.strategy_id || "—");
+    cell(tr, p.managed ? (p.strategy_id || "—") : "not this desk");
     tb.appendChild(tr);
   }
 }

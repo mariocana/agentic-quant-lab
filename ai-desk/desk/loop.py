@@ -26,7 +26,7 @@ def time_stop_intents(account: AccountState, limits: dict, now: datetime | None 
     now = now or datetime.now(timezone.utc)
     out = []
     for p in account.positions:
-        if not p.opened_at or not p.horizon_hours:
+        if not p.managed or not p.opened_at or not p.horizon_hours:
             continue
         deadline = p.opened_at + timedelta(hours=p.horizon_hours + limits["time_stop_grace_hours"])
         if now >= deadline:

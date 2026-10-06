@@ -157,15 +157,20 @@ not reuse, and keep the account small until the paper track has weeks behind it.
 2. `.env`: `HL_TESTNET=1`, `HL_ACCOUNT_ADDRESS`, `HL_API_WALLET_KEY`.
 3. In the UI, switch Mode to Live (testnet). Dry run first, then Run cycle.
 
+**The position ledger** (`desk/execution/ledger.py`) holds what the exchange does
+not: which strategy opened a position, when, with what horizon, and the cloids of
+the fills that built it. Sizes always come from the exchange; the ledger only
+annotates them. A position with no ledger row is reported `managed: false` — the
+rebalance will not close it, the time stop will not touch it, and the dashboard
+says so in a banner. Opening a position by hand on the same account is therefore
+safe, and so is losing the ledger: the desk stops managing, it does not guess.
+
 Known phase-1 gaps on the live path, in the order they block things:
 
-1. **No local position ledger.** Positions read back from the exchange carry no
-   `strategy_id` / `opened_at`, so the time stop only works on paper and the
-   rebalance cannot tell its own positions from anyone else's. Keyed on cloid, next.
-2. **Fills are not reconciled.** Fees are estimated at 0.045% instead of read from
+1. **Fills are not reconciled.** Fees are estimated at 0.045% instead of read from
    `user_fills`, and an ALO order that rests is cancelled at the next cycle rather
-   than followed to its fill.
-3. **The live adapter has never seen a wallet.** It is written against the SDK
+   than followed to its fill — so a resting order never reaches the ledger.
+2. **The live adapter has never seen a wallet.** It is written against the SDK
    signatures and nothing more. Testnet, dry run, then minimum size.
 
 Mainnet asks you to type `MAINNET`; don't, yet.

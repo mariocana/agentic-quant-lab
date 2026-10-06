@@ -138,6 +138,7 @@ class Position(BaseModel):
     opened_at: datetime | None = None
     strategy_id: str | None = None
     horizon_hours: int | None = None
+    managed: bool = True                # False: on the exchange but not in our ledger
 
 
 class AssetContext(BaseModel):
