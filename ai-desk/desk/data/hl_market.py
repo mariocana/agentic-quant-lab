@@ -9,6 +9,8 @@ import time
 from datetime import datetime, timezone
 
 from hyperliquid.info import Info
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from desk.schemas import AccountState, AssetContext, Position, asset_class
 
@@ -19,9 +21,31 @@ class Candle(dict):
     """{t, o, h, l, c, v} with t in ms UTC. Kept as a dict for cheap parquet/sqlite IO."""
 
 
+def _with_retries(info: Info, attempts: int = 4, timeout_s: float = 20.0) -> Info:
+    """Make the SDK's HTTP session survive a dropped connection.
+
+    One cycle makes ~30 sequential calls. Without this, a single
+    "Remote end closed connection without response" kills the whole cycle: no
+    orders, no journal record, a trading day lost. Seen in production.
+    """
+    retry = Retry(
+        total=attempts, connect=attempts, read=attempts, status=attempts,
+        backoff_factor=0.5,                       # 0.5s, 1s, 2s, 4s
+        status_forcelist=(429, 500, 502, 503, 504),
+        allowed_methods=frozenset({"GET", "POST"}),   # these reads are idempotent
+        raise_on_status=False,
+    )
+    adapter = HTTPAdapter(max_retries=retry, pool_maxsize=16)
+    info.session.mount("https://", adapter)
+    info.session.mount("http://", adapter)
+    if info.timeout is None:
+        info.timeout = timeout_s              # never hang a cycle on one call
+    return info
+
+
 class HLMarket:
     def __init__(self, base_url: str, dexs: tuple[str, ...] = ()):
-        self.info = Info(base_url, skip_ws=True)
+        self.info = _with_retries(Info(base_url, skip_ws=True))
         self.dexs = dexs
         self._meta_cache: dict[str, dict] = {}   # asset -> {szDecimals, maxLeverage}
 

@@ -73,23 +73,21 @@ def run_cycle(dry: bool) -> dict:
     r = api("/api/run", "POST", {"dry_run": dry})
     if "_http_error" in r:
         raise SystemExit(f"\n  the desk refused to start a cycle: {r}")
+    # Wait for the journal to move, not for `running` to clear: the flag is set
+    # inside the worker thread, so right after the POST it is still false and
+    # "not running" would mean "has not started yet" as easily as "is done".
     for _ in range(180):
         time.sleep(1)
         st = api("/api/state")
         if "running" not in st:
             raise SystemExit(f"\n  the desk stopped answering: {st}")
-        if not st["running"]:
-            break
-    else:
-        raise SystemExit("\n  the cycle is still running after 3 minutes; aborting.")
-    if st.get("last_error"):
-        raise SystemExit(f"\n  the cycle raised and wrote no record:\n    {st['last_error']}\n"
-                         "  Check the platform logs for the traceback.")
-    cycle = api("/api/cycle")
-    if cycle.get("ts") == before:
-        raise SystemExit("\n  the cycle finished but wrote no new journal record — "
-                         "the desk is reporting a stale cycle. Check the platform logs.")
-    return cycle
+        if st.get("last_error"):
+            raise SystemExit(f"\n  the cycle raised and wrote no record:\n    {st['last_error']}\n"
+                             "  Check the platform logs for the traceback.")
+        cycle = api("/api/cycle")
+        if cycle.get("ts") != before:
+            return cycle
+    raise SystemExit("\n  no new cycle appeared in the journal after 3 minutes; aborting.")
 
 
 def set_limit(path: str, value: float):

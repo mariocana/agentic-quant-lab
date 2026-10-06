@@ -87,3 +87,17 @@ def test_state_reports_stale_code():
     svc._stale_cache = (0.0, False)
     svc.started_at = 2 ** 40                 # ...and none is newer than the far future
     assert svc.code_changed_since_start() is False
+
+
+def test_market_feed_retries_dropped_connections():
+    """A cycle makes ~30 sequential calls to one host. One dropped connection must
+    not cost the whole cycle, so the session carries retries and a timeout."""
+    from desk.data.hl_market import HLMarket
+
+    m = HLMarket("https://api.hyperliquid.xyz")
+    adapter = m.info.session.get_adapter("https://api.hyperliquid.xyz")
+    retry = adapter.max_retries
+    assert retry.total >= 3 and retry.connect >= 3 and retry.read >= 3
+    assert retry.backoff_factor > 0
+    assert 500 in retry.status_forcelist and 429 in retry.status_forcelist
+    assert m.info.timeout, "a call with no timeout can hang a cycle forever"
