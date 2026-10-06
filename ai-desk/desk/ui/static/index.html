@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ai-desk</title>
 <style>
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
 :root {
   color-scheme: dark;
@@ -22,9 +23,6 @@
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--page); color: var(--ink); font: 13px/1.45 var(--sans); -webkit-font-smoothing: antialiased; }
-main { max-width: 1360px; margin: 0 auto; padding: 0 12px 40px; }
-header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 2px 12px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
-header h1 { font: 600 13px/1 var(--mono); margin: 0; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
 .badge { font: 500 10px/1.6 var(--mono); padding: 2px 7px; border-radius: 3px; border: 1px solid var(--border-strong); color: var(--muted); text-transform: uppercase; letter-spacing: .09em; }
 .badge.mainnet { background: var(--critical); color: #fff; border-color: transparent; }
 .pill { display: inline-flex; align-items: center; gap: 6px; font: 500 11px/1.6 var(--mono); padding: 2px 9px; border-radius: 3px; border: 1px solid var(--border-strong); text-transform: uppercase; letter-spacing: .06em; }
@@ -45,18 +43,17 @@ button.danger { background: transparent; color: var(--critical); border-color: v
 button.danger:hover { background: var(--critical); color: #fff; }
 button.ghost { background: transparent; }
 .grid { display: grid; gap: 8px; }
-.tiles { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-bottom: 8px; }
-.tile.hero { grid-column: span 2; }
-.tile, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; }
-.tile { padding: 10px 12px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; }
 .card { padding: 0; margin-bottom: 8px; }
-.tile .label { font: 400 10px/1.4 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .09em; }
-.tile .value { font: 500 19px/1.25 var(--mono); margin-top: 3px; letter-spacing: -.01em; }
-.tile.hero .value { font-size: 30px; color: var(--accent); }
-.tile .sub { font: 400 10px/1.4 var(--mono); color: var(--muted); margin-top: 3px; }
 .up { color: var(--good); } .down { color: var(--serious); }
 .two { grid-template-columns: 2fr 1fr; margin-bottom: 8px; }
-@media (max-width: 900px) { .two { grid-template-columns: 1fr; } .tile.hero { grid-column: span 1; } }
+@media (max-width: 1000px) {
+  .app { grid-template-columns: 44px 1fr; }
+  .app .side-head h1, .app .side-block, .app nav.nav .lbl, .app nav.nav .badge-n { display: none; }
+  .app nav.nav button { justify-content: center; padding: 8px 0; }
+  .app .side-head { justify-content: center; padding: 0; }
+  .app .side-head .toggle { margin: 0; }
+}
 .card h2 { font: 500 10px/1.6 var(--mono); margin: 0; padding: 7px 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .11em; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); background: var(--surface); }
 .card h2 .spacer { flex: 1; }
 .card > :not(h2) { padding: 10px 12px; }
@@ -105,93 +102,189 @@ pre.logs::-webkit-scrollbar-thumb { background: var(--border-strong); border-rad
 .alert { border: 1px solid var(--warning); border-left-width: 3px; padding: 7px 11px; background: var(--surface); border-radius: 3px; margin-bottom: 8px; display: none; font: 400 11px/1.5 var(--mono); color: var(--ink-2); }
 .alert.critical { border-color: var(--critical); color: var(--serious); }
 .muted { color: var(--muted); font: 400 10px/1.5 var(--mono); text-transform: none; letter-spacing: 0; }
+/* ---- app shell: sidebar + main ------------------------------------------- */
+.app { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+.app.collapsed { grid-template-columns: 44px 1fr; }
+.sidebar { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.side-head { display: flex; align-items: center; gap: 8px; padding: 0 10px; height: 42px; border-bottom: 1px solid var(--border); flex: none; }
+.side-head .mark { color: var(--accent); display: flex; }
+.side-head h1 { font: 600 12px/1 var(--mono); margin: 0; letter-spacing: .16em; text-transform: uppercase; color: var(--ink); }
+.side-head .toggle { margin-left: auto; padding: 3px; border: none; background: none; color: var(--dim); }
+.side-head .toggle:hover { background: var(--elevated); color: var(--ink); }
+.side-scroll { flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+.side-scroll::-webkit-scrollbar { width: 6px; }
+.side-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+.side-block { padding: 9px 10px; border-bottom: 1px solid var(--border); }
+.side-block .chips { display: flex; gap: 5px; flex-wrap: wrap; }
+.metric { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 3px 0; }
+.metric .k { font: 400 10px/1.5 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.metric .v { font: 500 12px/1.4 var(--mono); color: var(--ink); }
+.metric .s { font: 400 9.5px/1.4 var(--mono); color: var(--dim); }
+.equity-k { font: 400 10px/1.4 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .09em; }
+.equity-v { font: 500 23px/1.2 var(--mono); color: var(--accent); letter-spacing: -.01em; margin-top: 2px; }
+.equity-s { font: 400 9.5px/1.4 var(--mono); color: var(--dim); margin-top: 2px; }
+nav.nav { padding: 6px 0; }
+nav.nav button { display: flex; align-items: center; gap: 9px; width: 100%; padding: 6px 11px; border: none; border-radius: 0; background: none; color: var(--muted); text-transform: none; letter-spacing: .04em; font: 400 11px/1.5 var(--mono); border-left: 2px solid transparent; }
+nav.nav button:hover { background: var(--elevated); color: var(--ink); }
+nav.nav button.on { background: var(--elevated); color: var(--accent); border-left-color: var(--accent); }
+nav.nav svg { flex: none; width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+nav.nav .badge-n { margin-left: auto; font-size: 9.5px; color: var(--dim); }
+.app.collapsed .side-head h1, .app.collapsed .side-block, .app.collapsed nav.nav .lbl, .app.collapsed nav.nav .badge-n { display: none; }
+.app.collapsed nav.nav button { justify-content: center; padding: 8px 0; }
+.app.collapsed .side-head { justify-content: center; padding: 0; }
+.app.collapsed .side-head .toggle { margin: 0; }
+main { min-width: 0; display: flex; flex-direction: column; }
+.topbar { display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 14px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 5; }
+.topbar h2 { font: 500 11px/1 var(--mono); margin: 0; color: var(--ink); text-transform: uppercase; letter-spacing: .12em; }
+.topbar .asof { font: 400 10px/1 var(--mono); color: var(--dim); }
+.content { padding: 12px 14px 32px; }
+section.view[hidden] { display: none; }
 </style>
 </head>
 <body>
+<div class="app">
+
+<aside class="sidebar">
+  <div class="side-head">
+    <span class="mark"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 4 6-8"/><path d="M3 21h18"/></svg></span>
+    <h1>ai-desk</h1>
+    <button class="toggle" id="btnCollapse" title="Collapse sidebar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-6 6 6 6"/><path d="M20 4v16"/></svg></button>
+  </div>
+
+  <div class="side-scroll">
+    <div class="side-block">
+      <div class="chips">
+        <span class="pill" id="status"><span class="dot"></span><span id="statusText">loading</span></span>
+      </div>
+      <div class="chips" style="margin-top:6px">
+        <span class="badge" id="venue">—</span>
+        <span class="badge" id="strategy">—</span>
+      </div>
+    </div>
+
+    <div class="side-block">
+      <div class="equity-k">Equity</div>
+      <div class="equity-v" id="equity">—</div>
+      <div class="equity-s" id="asof"></div>
+    </div>
+
+    <div class="side-block">
+      <div class="metric"><span class="k">Today</span><span class="v" id="dayPnl">—</span></div>
+      <div class="metric"><span class="s" id="dayPnlUsd"></span></div>
+      <div class="metric"><span class="k">From peak</span><span class="v" id="dd">—</span></div>
+      <div class="metric"><span class="s" id="peak"></span></div>
+    </div>
+
+    <div class="side-block">
+      <div class="metric"><span class="k">Gross</span><span class="v" id="gross">—</span></div>
+      <div class="metric"><span class="s" id="lev"></span></div>
+      <div class="metric"><span class="k">Net</span><span class="v" id="net">—</span></div>
+      <div class="metric"><span class="s" id="npos"></span></div>
+    </div>
+
+    <nav class="nav">
+      <button id="nav-overview" title="Overview"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M19 9l-5 5-4-4-4 4"/></svg><span class="lbl">Overview</span></button>
+      <button id="nav-cycle" title="Last cycle"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg><span class="lbl">Last cycle</span></button>
+      <button id="nav-limits" title="Risk limits"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg><span class="lbl">Risk limits</span></button>
+      <button id="nav-universe" title="Universe"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/></svg><span class="lbl">Universe</span></button>
+      <button id="nav-activity" title="Activity"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span class="lbl">Activity</span></button>
+      <button id="nav-logs" title="Logs"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h5"/><path d="M8 13h8"/><path d="M8 17h6"/></svg><span class="lbl">Logs</span></button>
+      <button id="nav-desk" title="Desk"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H1a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 2.6 7"/></svg><span class="lbl">Desk</span></button>
+    </nav>
+  </div>
+</aside>
+
 <main>
-<header>
-  <h1>ai-desk</h1>
-  <span class="badge" id="venue">—</span>
-  <span class="badge" id="strategy">—</span>
-  <span class="pill" id="status"><span class="dot"></span><span id="statusText">loading</span></span>
-  <span class="spacer"></span>
-  <div class="actions">
-    <button id="btnDry" class="ghost" title="Run the full cycle but send nothing">Dry run</button>
-    <button id="btnRun" class="primary">Run cycle</button>
-    <button id="btnKill" class="danger">Kill switch</button>
-  </div>
-</header>
-
-<div class="alert" id="alert"></div>
-
-<div class="grid tiles">
-  <div class="tile hero"><div class="label">Equity</div><div class="value" id="equity">—</div><div class="sub" id="asof"></div></div>
-  <div class="tile"><div class="label">Today</div><div class="value" id="dayPnl">—</div><div class="sub" id="dayPnlUsd"></div></div>
-  <div class="tile"><div class="label">From peak</div><div class="value" id="dd">—</div><div class="sub" id="peak"></div></div>
-  <div class="tile"><div class="label">Gross exposure</div><div class="value" id="gross">—</div><div class="sub" id="lev"></div></div>
-  <div class="tile"><div class="label">Net exposure</div><div class="value" id="net">—</div><div class="sub" id="npos"></div></div>
-</div>
-
-<div class="grid two">
-  <div class="card">
-    <h2>Equity <span class="spacer"></span><span class="range" id="range"><button data-r="1">24h</button><button data-r="7" class="on">7d</button><button data-r="30">30d</button><button data-r="0">all</button></span></h2>
-    <div class="chartwrap"><svg id="chart"></svg><div class="tooltip" id="tip"></div></div>
-  </div>
-  <div class="card">
-    <h2>Desk</h2>
-    <dl class="kv">
-      <dt>Mode</dt><dd><select id="mode"><option value="paper">Paper (simulated fills, live prices)</option><option value="live">Live (API wallet)</option></select></dd>
-      <dt>Schedule</dt><dd class="row"><label><input type="checkbox" id="schedOn"> daily at</label><input type="time" id="schedTime" value="00:05"> <span class="muted">UTC</span></dd>
-      <dt>Next run</dt><dd id="nextRun">—</dd>
-      <dt>Halt</dt><dd id="halt">—</dd>
-    </dl>
-    <div class="row" style="margin-top:12px">
-      <button id="btnUnlock">Unlock halt</button>
-      <button id="btnFlatten">Close all positions</button>
-      <button id="btnReset" class="ghost">Reset paper</button>
+  <div class="topbar">
+    <h2 id="viewTitle">Overview</h2>
+    <span class="spacer"></span>
+    <div class="actions">
+      <button id="btnDry" class="ghost" title="Run the full cycle but send nothing">Dry run</button>
+      <button id="btnRun" class="primary">Run cycle</button>
+      <button id="btnKill" class="danger">Kill switch</button>
     </div>
   </div>
-</div>
 
-<div class="card">
-  <h2>Positions <span class="spacer"></span><span class="muted" id="posCount"></span></h2>
-  <div class="tablewrap"><table id="positions"><thead><tr>
-    <th>Asset</th><th>Side</th><th class="num">Notional</th><th class="num">Entry</th><th class="num">Mark</th><th class="num">P&amp;L</th><th class="num">%</th><th class="num">Funding/h</th><th class="num">Age</th><th>Strategy</th>
-  </tr></thead><tbody></tbody></table></div>
-  <div class="empty" id="posEmpty">No open positions.</div>
-</div>
+  <div class="content">
+    <div class="alert" id="alert"></div>
 
-<div class="card">
-  <h2>Last cycle <span class="muted" id="lastCycle"></span><span class="spacer"></span><span class="muted" id="lastCycleSub"></span></h2>
-  <div class="tablewrap"><table id="cycle"><thead><tr>
-    <th>Asset</th><th>Side</th><th class="num">Requested</th><th>Verdict</th><th class="num">Approved</th><th>Rules fired</th><th class="num">Fill</th><th class="num">Fee</th><th>Reason</th>
-  </tr></thead><tbody></tbody></table></div>
-  <div class="empty" id="cycleEmpty">No cycle yet. Press <b>Run cycle</b>.</div>
-</div>
+    <section class="view" id="view-overview">
+      <div class="card">
+        <h2>Equity <span class="spacer"></span><span class="range" id="range"><button data-r="1">24h</button><button data-r="7" class="on">7d</button><button data-r="30">30d</button><button data-r="0">all</button></span></h2>
+        <div class="chartwrap"><svg id="chart"></svg><div class="tooltip" id="tip"></div></div>
+      </div>
+      <div class="card">
+        <h2>Positions <span class="spacer"></span><span class="muted" id="posCount"></span></h2>
+        <div class="tablewrap"><table id="positions"><thead><tr>
+          <th>Asset</th><th>Side</th><th class="num">Notional</th><th class="num">Entry</th><th class="num">Mark</th><th class="num">P&amp;L</th><th class="num">%</th><th class="num">Funding/h</th><th class="num">Age</th><th>Strategy</th>
+        </tr></thead><tbody></tbody></table></div>
+        <div class="empty" id="posEmpty">No open positions.</div>
+      </div>
+    </section>
 
-<div class="card">
-  <h2>Risk limits <span class="spacer"></span><button id="btnSaveLimits" class="primary">Save limits</button></h2>
-  <div class="form" id="limits"></div>
-</div>
+    <section class="view" id="view-cycle" hidden>
+      <div class="card">
+        <h2>Last cycle <span class="muted" id="lastCycle"></span><span class="spacer"></span><span class="muted" id="lastCycleSub"></span></h2>
+        <div class="tablewrap"><table id="cycle"><thead><tr>
+          <th>Asset</th><th>Side</th><th class="num">Requested</th><th>Verdict</th><th class="num">Approved</th><th>Rules fired</th><th class="num">Fill</th><th class="num">Fee</th><th>Reason</th>
+        </tr></thead><tbody></tbody></table></div>
+        <div class="empty" id="cycleEmpty">No cycle yet. Press <b>Run cycle</b>.</div>
+      </div>
+    </section>
 
-<div class="grid two">
-  <div class="card">
-    <h2>Universe <span class="spacer"></span><span class="muted">what reversal_v1 can trade now</span></h2>
-    <div class="tablewrap"><table id="universe"><thead><tr><th>Asset</th><th class="num">24h volume</th><th class="num">Open interest</th><th class="num">Funding/h</th><th class="num">Mid</th></tr></thead><tbody></tbody></table></div>
+    <section class="view" id="view-limits" hidden>
+      <div class="card">
+        <h2>Risk limits <span class="spacer"></span><button id="btnSaveLimits" class="primary">Save limits</button></h2>
+        <div class="form" id="limits"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-universe" hidden>
+      <div class="card">
+        <h2>Universe <span class="spacer"></span><span class="muted">what reversal_v1 can trade now</span></h2>
+        <div class="tablewrap"><table id="universe"><thead><tr><th>Asset</th><th class="num">24h volume</th><th class="num">Open interest</th><th class="num">Funding/h</th><th class="num">Mid</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-activity" hidden>
+      <div class="card">
+        <h2>Activity</h2>
+        <div class="tablewrap"><table id="activity"><thead><tr><th>When</th><th>What</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-logs" hidden>
+      <div class="card">
+        <h2>Logs</h2>
+        <pre class="logs" id="logs"></pre>
+      </div>
+    </section>
+
+    <section class="view" id="view-desk" hidden>
+      <div class="card">
+        <h2>Execution</h2>
+        <dl class="kv">
+          <dt>Mode</dt><dd><select id="mode"><option value="paper">Paper (simulated fills, live prices)</option><option value="live">Live (API wallet)</option></select></dd>
+          <dt>Schedule</dt><dd class="row"><label><input type="checkbox" id="schedOn"> daily at</label><input type="time" id="schedTime" value="00:05"> <span class="muted">UTC</span></dd>
+          <dt>Next run</dt><dd id="nextRun">—</dd>
+          <dt>Halt</dt><dd id="halt">—</dd>
+        </dl>
+      </div>
+      <div class="card">
+        <h2>Manual intervention</h2>
+        <div class="row">
+          <button id="btnUnlock">Unlock halt</button>
+          <button id="btnFlatten" class="danger">Close all positions</button>
+          <button id="btnReset" class="ghost">Reset paper</button>
+        </div>
+        <div class="empty" style="padding-top:8px">Closing is always allowed, even with the kill switch engaged. Unlock clears a daily-loss or drawdown halt — check why it fired first.</div>
+      </div>
+    </section>
   </div>
-  <div class="card">
-    <h2>Activity</h2>
-    <div class="tablewrap"><table id="activity"><thead><tr><th>When</th><th>What</th></tr></thead><tbody></tbody></table></div>
-  </div>
-</div>
-
-<div class="card">
-  <h2>Logs</h2>
-  <pre class="logs" id="logs"></pre>
-</div>
 </main>
-<div class="toast" id="toast"></div>
 
+</div>
+<div class="toast" id="toast"></div>
 <script>
 const $ = (s) => document.querySelector(s);
 const fmtUsd = (v, d = 2) => (v < 0 ? "-" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -375,6 +468,29 @@ refreshAll(); refreshLimits(); refreshUniverse();
 setInterval(refreshAll, 15000); setInterval(refreshUniverse, 120000);
 let wasRunning = false; setInterval(async () => { if (state?.running) wasRunning = true; else if (wasRunning) { wasRunning = false; refreshAll(); } }, 2000);
 setInterval(async () => { if (state?.running) { await refreshState(); await refreshLogs(); } }, 2000);
+
+// ---- sidebar navigation ------------------------------------------------------
+const VIEWS = { overview: "Overview", cycle: "Last cycle", limits: "Risk limits", universe: "Universe", activity: "Activity", logs: "Logs", desk: "Desk" };
+function showView(name) {
+  if (!VIEWS[name]) name = "overview";
+  for (const k in VIEWS) {
+    document.getElementById("view-" + k).hidden = k !== name;
+    document.getElementById("nav-" + k).classList.toggle("on", k === name);
+  }
+  $("#viewTitle").textContent = VIEWS[name];
+  try { localStorage.setItem("desk.view", name); } catch (e) {}
+  if (name === "overview") drawChart();          // the SVG has no width while hidden
+}
+for (const k in VIEWS) document.getElementById("nav-" + k).onclick = () => showView(k);
+$("#btnCollapse").onclick = () => {
+  const c = document.querySelector(".app").classList.toggle("collapsed");
+  try { localStorage.setItem("desk.collapsed", c ? "1" : "0"); } catch (e) {}
+  drawChart();
+};
+try {
+  if (localStorage.getItem("desk.collapsed") === "1") document.querySelector(".app").classList.add("collapsed");
+  showView(localStorage.getItem("desk.view") || "overview");
+} catch (e) { showView("overview"); }
 </script>
 </body>
 </html>
