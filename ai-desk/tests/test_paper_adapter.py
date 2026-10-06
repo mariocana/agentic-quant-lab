@@ -51,3 +51,27 @@ def test_flatten_all(tmp_path):
     go(a, "ETH", "sell", 100.0, 10.0)
     fills = a.flatten_all()
     assert len(fills) == 2 and a.account_state().positions == []
+
+
+def test_reduce_only_closes_exactly_and_never_flips(tmp_path):
+    """With slippage, notional/price does not reproduce the open size: a close must
+    still land on zero, not on a dust position of the opposite sign."""
+    a = PaperAdapter(starting_equity=1_000.0, fee_bps=4.5, slippage_bps=25.0, path=tmp_path / "p.json")
+    go(a, "BTC", "buy", 100.0, 100.0)
+    size = a.account_state().positions[0].size
+    go(a, "BTC", "sell", abs(size) * 100.0, 100.0, reduce_only=True)
+    assert a.account_state().positions == []
+
+
+def test_reduce_only_without_a_position_does_nothing(tmp_path):
+    a = PaperAdapter(starting_equity=1_000.0, path=tmp_path / "p.json")
+    _, f = go(a, "BTC", "sell", 100.0, 100.0, reduce_only=True)
+    assert f is None and a.account_state().positions == []
+
+
+def test_flatten_all_with_costs_leaves_nothing(tmp_path):
+    a = PaperAdapter(starting_equity=1_000.0, fee_bps=4.5, slippage_bps=20.0, path=tmp_path / "p.json")
+    go(a, "BTC", "buy", 100.0, 100.0)
+    go(a, "ETH", "sell", 100.0, 10.0)
+    a.flatten_all()
+    assert a.account_state().positions == []

@@ -68,9 +68,21 @@ class PaperAdapter(ExecutionAdapter):
         fill_px = mid_px * (1 + sign * self.slippage_bps / 1e4)
         notional = verdict.approved_notional_usd
         size = sign * notional / fill_px
-        fee = notional * self.fee_bps / 1e4
 
         p = self.state["positions"].get(intent.asset)
+        if intent.reduce_only:
+            # A reduce-only order can never open or flip a position. The notional was
+            # computed at the mark, so with slippage it buys slightly more or less size
+            # than is open; without this clamp a "close" leaves a dust position behind.
+            if p is None:
+                return None
+            if size * p["size"] >= 0 or abs(size) > abs(p["size"]) * 0.995:
+                # within half a percent of the whole position: this is a close, not a trim.
+                # The caller sizes in notional at the mark, so slippage always leaves a
+                # sliver one way or the other; closing exactly is what the venue would do.
+                size = -p["size"]
+                notional = abs(size) * fill_px
+        fee = notional * self.fee_bps / 1e4
         if p is None:
             self.state["positions"][intent.asset] = {
                 "size": size, "entry_px": fill_px, "opened_at": datetime.now(timezone.utc).isoformat(),
@@ -103,7 +115,9 @@ class PaperAdapter(ExecutionAdapter):
         for asset, p in list(self.state["positions"].items()):
             mark = self._mark(asset, p["entry_px"])
             side = "sell" if p["size"] > 0 else "buy"
-            intent = OrderIntent(asset=asset, side=side, notional_usd=abs(p["size"]) * mark, reduce_only=True,
+            # size the ticket at the price it will actually fill at, not at the mark
+            fill_px = mark * (1 + (1 if side == "buy" else -1) * self.slippage_bps / 1e4)
+            intent = OrderIntent(asset=asset, side=side, notional_usd=abs(p["size"]) * fill_px, reduce_only=True,
                                  order_type="limit_ioc", strategy_id="risk", horizon_hours=0, reason="flatten_all")
             verdict = RiskVerdict(intent_id=intent.id, decision="approve", approved_notional_usd=intent.notional_usd)
             f = self.execute(intent, verdict, mark)

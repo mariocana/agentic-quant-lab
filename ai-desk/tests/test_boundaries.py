@@ -44,3 +44,32 @@ def test_hyperliquid_rounding():
     assert round_price(0.0033343312, 0) == 0.003334          # 6 decimals max for szDecimals 0
     assert round_price(1.234567, 2) == 1.2346
     assert round_size(0.123456789, 3) == 0.123
+
+
+def test_limits_edit_keeps_comments():
+    """limits.yaml documents the rules as much as it sets them: an edit from the UI
+    must not strip the comments."""
+    import yaml
+    from desk.ui.service import set_yaml_scalar
+
+    src = (ROOT.parent / "config" / "limits.yaml").read_text()
+    out = set_yaml_scalar(src, "max_notional_pct_equity.hip3", 0.03)
+    out = set_yaml_scalar(out, "max_gross_leverage", 2.5)
+    assert yaml.safe_load(out)["max_notional_pct_equity"]["hip3"] == 0.03
+    assert yaml.safe_load(out)["max_gross_leverage"] == 2.5
+    assert yaml.safe_load(out)["max_notional_pct_equity"]["crypto"] == yaml.safe_load(src)["max_notional_pct_equity"]["crypto"]
+    assert out.count("#") == src.count("#"), "comments were lost"
+    assert "thin builder-deployed books" in out
+
+
+def test_limits_edit_round_trips_awkward_floats():
+    """A value derived from a ratio (0.000264263414306...) must survive the write:
+    the file is the source of truth, so what we store must be what we can re-read."""
+    import yaml
+    from desk.ui.service import _fmt, set_yaml_scalar
+
+    src = (ROOT.parent / "config" / "limits.yaml").read_text()
+    for v in (0.00026426341430613176, 1e-7, 0.1, 15.0, 3.0, 2):
+        written = float(_fmt(v))
+        out = set_yaml_scalar(src, "daily_loss_freeze_pct", written)
+        assert yaml.safe_load(out)["daily_loss_freeze_pct"] == written, v

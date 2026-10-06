@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import collections
 import json
+import re
 import logging
 import threading
 import traceback
@@ -46,6 +47,73 @@ LIMIT_FIELDS = [
     ("min_notional_usd", "Minimum ticket", "USD", "Below this the fee floor dominates. Rejected."),
     ("time_stop_grace_hours", "Time stop grace", "hours", "Positions are closed at horizon + grace."),
 ]
+
+
+def _fmt(value) -> str:
+    """Short, round-trippable YAML scalar. repr() on a float computed from a ratio
+    gives things like 0.00018650000000000002, which then wrecks the file's layout."""
+    if isinstance(value, bool):
+        return str(value).lower()
+    if isinstance(value, float):
+        t = f"{value:.12g}"
+        if "e" in t:
+            # YAML 1.1 only reads an exponent as a number when the mantissa has a
+            # decimal point: PyYAML loads "1e-07" as the *string* "1e-07".
+            mant, _, exp = t.partition("e")
+            t = (mant if "." in mant else mant + ".0") + "e" + exp
+        elif "." not in t:
+            t += ".0"
+        return t
+    return str(value)
+
+
+def limits_get(limits: dict, path: str):
+    v = limits
+    for k in path.split("."):
+        v = v[k]
+    return v
+
+
+def set_yaml_scalar(text: str, path: str, value) -> str:
+    """Replace one scalar in a YAML file, in place, keeping comments and layout.
+
+    limits.yaml documents the rules as much as it configures them; rewriting it
+    with yaml.safe_dump would throw every comment away.
+    """
+    keys = path.split(".")
+    lines = text.splitlines(keepends=True)
+    depth, start = 0, 0
+    while depth < len(keys):
+        want, found = keys[depth], -1
+        for i in range(start, len(lines)):
+            line = lines[i]
+            stripped = line.lstrip()
+            if not stripped or stripped.lstrip().startswith("#"):
+                continue
+            indent = len(line) - len(stripped)
+            if indent < depth * 2:                         # left the parent block
+                break
+            if indent == depth * 2 and stripped.split(":", 1)[0].strip() == want:
+                found = i
+                break
+        if found < 0:
+            raise ValueError(f"{path} not found in limits file")
+        if depth == len(keys) - 1:
+            line = lines[found].rstrip("\n")
+            head, _, rest = line.partition(":")
+            m = re.match(r"^(\s*)(\S+)(\s*)(#.*)?$", rest)
+            if not m:
+                raise ValueError(f"cannot parse the value of {path}")
+            lead, current, gap, comment = m.group(1) or " ", m.group(2), m.group(3) or "", m.group(4) or ""
+            if yaml.safe_load(current) == value:
+                return "".join(lines)                      # unchanged: leave the line byte for byte
+            new_v = _fmt(value)
+            if comment:                                    # keep the comment roughly in column
+                gap = " " * min(8, max(2, len(gap) + len(current) - len(new_v)))
+            lines[found] = f"{head}:{lead}{new_v}{gap}{comment}\n"
+            return "".join(lines)
+        start, depth = found + 1, depth + 1
+    raise ValueError(f"{path} not found in limits file")
 
 
 class RingHandler(logging.Handler):
@@ -300,6 +368,7 @@ class DeskService:
             v = float(v)
             if v < 0:
                 raise ValueError(f"{path} must be >= 0")
+            v = float(_fmt(v))        # keep the in-memory dict and the file byte-compatible
             keys = path.split(".")
             d = limits
             for k in keys[:-1]:
@@ -307,8 +376,12 @@ class DeskService:
             d[keys[-1]] = int(v) if path == "time_stop_grace_hours" else v
         if limits["daily_loss_freeze_pct"] > limits["daily_loss_flatten_pct"]:
             raise ValueError("freeze must be below flatten")
-        header = "# Risk limits. Read by desk/risk/engine.py and nowhere else.\n# Edited from the UI; every number here is enforced in code.\n"
-        LIMITS_PATH.write_text(header + yaml.safe_dump(limits, sort_keys=False))
+        text = LIMITS_PATH.read_text()
+        for path, v in values.items():
+            text = set_yaml_scalar(text, path, limits_get(limits, path))
+        if yaml.safe_load(text) != limits:                 # never write a file we cannot read back
+            raise ValueError("limits file would not round-trip; not written")
+        LIMITS_PATH.write_text(text)
         record("event", {"event": "limits_changed", "values": values, "by": "ui"})
 
     # ---- scheduler -----------------------------------------------------------
