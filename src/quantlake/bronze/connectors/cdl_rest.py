@@ -61,6 +61,13 @@ class CDLConnector:
             return None
         return next(self.cache_dir.rglob(f"{year}_30m_cdls.tif"), None)
 
+    def is_published(self, year: int) -> bool:
+        """True if USDA serves the CDL zip for `year`. Reads headers only."""
+        if self.cached(year) is not None:
+            return True
+        with httpx.stream("GET", _URL.format(year=year), timeout=60, follow_redirects=True) as r:
+            return r.status_code == 200
+
     def fetch(self, year: int) -> Path:
         """Return the national CDL GeoTIFF for `year`, downloading it once."""
         hit = self.cached(year)
