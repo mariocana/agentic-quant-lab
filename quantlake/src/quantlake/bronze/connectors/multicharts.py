@@ -3,9 +3,9 @@
 The PowerLanguage indicator ExportBars writes one line per closed bar:
     date,time,open,high,low,close,volume,ticks,upticks,downticks
 with date = YYYYMMDD and time = HHMM of the bar *close*, in the
-chart's time zone. MultiCharts runs in a Parallels VM: the indicator
-writes straight into this project's data folder through the Mac share
-(\\\\Mac\\Home\\...), so the file is always up to date.
+chart's time zone. MultiCharts runs on a separate Windows PC: the
+indicator writes into this project's data/multicharts folder shared from
+the Mac over SMB (or the CSV is copied here by hand).
 
 Quantlake convention: `timestamp` is the bar *open* (UTC), plus
 `timestamp_close`. upticks/downticks give an approximate delta
