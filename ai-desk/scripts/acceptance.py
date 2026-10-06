@@ -49,13 +49,19 @@ def check(name: str, ok: bool, detail: str = ""):
 
 
 def run_cycle(dry: bool) -> dict:
-    """Start a cycle and wait for it to finish; returns the joined cycle detail."""
+    """Start a cycle and wait for it to finish; returns the joined cycle detail.
+
+    /api/cycle returns the *last* cycle in the journal, so this must be the only
+    thing running cycles — see the scheduler parking in main()."""
     r = api("/api/run", "POST", {"dry_run": dry})
     if "_http_error" in r:
         return {"intents": [], "error": r}
     for _ in range(120):
         time.sleep(1)
-        if not api("/api/state")["running"]:
+        st = api("/api/state")
+        if "running" not in st:
+            raise SystemExit(f"  the desk stopped answering: {st}")
+        if not st["running"]:
             break
     return api("/api/cycle")
 
@@ -86,6 +92,13 @@ def main() -> int:
         return 2
 
     original = {f["path"]: f["value"] for f in api("/api/limits")}
+    # The desk runs its own cycles. One firing between a flatten and the next check
+    # would open positions under the test's feet and make the result meaningless,
+    # so the schedule is parked for the duration and restored in the finally block.
+    scheduler_was_on = bool(st.get("ui", {}).get("schedule_enabled"))
+    if scheduler_was_on:
+        api("/api/settings", "PUT", {"schedule_enabled": False})
+        print("  (the desk's scheduler is parked for the duration of this test)\n")
     try:
         print("1. clean slate")
         api("/api/kill", "POST", {"on": False})
@@ -166,6 +179,9 @@ def main() -> int:
             api("/api/limits", "PUT", {"values": original})
             print("\n  (risk limits restored)")
         api("/api/kill", "POST", {"on": False})
+        if scheduler_was_on:
+            api("/api/settings", "PUT", {"schedule_enabled": True})
+            print("  (scheduler restored)")
 
     print()
     if failures:
