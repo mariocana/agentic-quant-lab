@@ -63,21 +63,33 @@ def check(name: str, ok: bool, detail: str = "", intents: list[dict] | None = No
 
 
 def run_cycle(dry: bool) -> dict:
-    """Start a cycle and wait for it to finish; returns the joined cycle detail.
+    """Start a cycle, wait for it, and return *that* cycle's detail.
 
-    /api/cycle returns the *last* cycle in the journal, so this must be the only
-    thing running cycles — see the scheduler parking in main()."""
+    /api/cycle returns the last cycle in the journal. A cycle that raises never
+    writes its record, so without the checks below the caller silently reads the
+    previous cycle and judges the wrong evidence.
+    """
+    before = api("/api/cycle").get("ts")
     r = api("/api/run", "POST", {"dry_run": dry})
     if "_http_error" in r:
-        return {"intents": [], "error": r}
-    for _ in range(120):
+        raise SystemExit(f"\n  the desk refused to start a cycle: {r}")
+    for _ in range(180):
         time.sleep(1)
         st = api("/api/state")
         if "running" not in st:
-            raise SystemExit(f"  the desk stopped answering: {st}")
+            raise SystemExit(f"\n  the desk stopped answering: {st}")
         if not st["running"]:
             break
-    return api("/api/cycle")
+    else:
+        raise SystemExit("\n  the cycle is still running after 3 minutes; aborting.")
+    if st.get("last_error"):
+        raise SystemExit(f"\n  the cycle raised and wrote no record:\n    {st['last_error']}\n"
+                         "  Check the platform logs for the traceback.")
+    cycle = api("/api/cycle")
+    if cycle.get("ts") == before:
+        raise SystemExit("\n  the cycle finished but wrote no new journal record — "
+                         "the desk is reporting a stale cycle. Check the platform logs.")
+    return cycle
 
 
 def set_limit(path: str, value: float):
