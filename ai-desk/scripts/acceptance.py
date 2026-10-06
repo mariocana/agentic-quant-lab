@@ -39,13 +39,27 @@ def api(path: str, method: str = "GET", body: dict | None = None):
         with urllib.request.urlopen(req, timeout=120) as r:
             return json.loads(r.read() or "null")
     except urllib.error.HTTPError as e:
-        return {"_http_error": e.code, "detail": (e.read() or b"").decode()[:200]}
+        body = (e.read() or b"").decode()[:200]
+        if e.code in (401, 403):
+            raise SystemExit(f"\n  {e.code} on {path}: wrong or missing DESK_PASSWORD.")
+        if e.code in (404, 502, 503, 504):
+            raise SystemExit(
+                f"\n  the desk returned {e.code} on {path} — it is restarting or not deployed.\n"
+                "  Wait for the deployment to go green, check /healthz, then run this again."
+            )
+        return {"_http_error": e.code, "detail": body}
+    except urllib.error.URLError as e:
+        raise SystemExit(f"\n  cannot reach {BASE}: {e.reason}")
 
 
-def check(name: str, ok: bool, detail: str = ""):
+def check(name: str, ok: bool, detail: str = "", intents: list[dict] | None = None):
     print(f"  {PASS if ok else FAIL}  {name}" + (f"  — {detail}" if detail else ""))
-    if not ok:
-        failures.append(name)
+    if ok:
+        return
+    failures.append(name)
+    for i in intents or []:                              # a failure is useless without the evidence
+        print(f"        {i['asset']:<10} {i['side']:<5} {i['notional_usd']:>8.0f}"
+              f"  reduce_only={str(i['reduce_only']):<5} -> {i['decision']} {i['rules_fired']}")
 
 
 def run_cycle(dry: bool) -> dict:
@@ -84,6 +98,12 @@ def main() -> int:
         return 2
     if st["mode"] != "paper":
         print("  REFUSING: the desk is in live mode. This test opens and closes positions.")
+        return 2
+    health = api("/healthz")
+    up = health.get("uptime_s")
+    if isinstance(up, (int, float)) and up < 45:
+        print(f"  REFUSING: the desk started {up:.0f}s ago — a deployment is probably still settling.")
+        print("  Wait for it to go green and run this again; a restart mid-test invalidates the result.")
         return 2
     if st.get("stale_code"):
         print("  REFUSING: the running desk is older than the source files on disk.")
@@ -133,7 +153,7 @@ def main() -> int:
         opening = [i for i in verdicts(c) if not i["reduce_only"]]
         check("some opening intents were evaluated", len(opening) > 0, f"{len(opening)} opening intents")
         check("all of them rejected", all(i["decision"] == "reject" for i in opening),
-              ", ".join(sorted({r for i in opening for r in i["rules_fired"]})) or "—")
+              ", ".join(sorted({r for i in opening for r in i["rules_fired"]})) or "—", opening)
         set_limit("max_notional_pct_equity.crypto", original["max_notional_pct_equity.crypto"])
 
         print("\n5. kill switch blocks new risk but never blocks the exit")
@@ -142,16 +162,18 @@ def main() -> int:
         c = run_cycle(dry=True)
         opening = [i for i in verdicts(c) if not i["reduce_only"]]
         closing = [i for i in verdicts(c) if i["reduce_only"]]
-        check("opening intents rejected", opening and all(i["decision"] == "reject" for i in opening),
-              f"{len(opening)} rejected")
+        check("opening intents rejected", bool(opening) and all(i["decision"] == "reject" for i in opening),
+              f"{len(opening)} rejected", opening)
         check("closing intents still allowed", not closing or all(i["decision"] != "reject" for i in closing),
-              f"{len(closing)} closing intents")
+              f"{len(closing)} closing intents", closing)
         api("/api/kill", "POST", {"on": False})
 
         print("\n6. flatten closes everything")
         r = api("/api/flatten", "POST")
         st = api("/api/state")
-        check("no positions left", not st["positions"], f"{r.get('fills', '?')} fills")
+        left = ", ".join(f"{p['asset']} {p['size']:+.6f}" for p in st["positions"])
+        check("no positions left", not st["positions"],
+              f"{r.get('fills', '?')} fills" + (f"; left: {left}" if left else ""))
 
         print("\n7. daily-loss freeze")
         st = api("/api/state")
@@ -166,7 +188,7 @@ def main() -> int:
             opening = [i for i in verdicts(c) if not i["reduce_only"]]
             check("new risk refused while frozen",
                   bool(opening) and all(i["decision"] == "reject" and "daily_loss_freeze" in i["rules_fired"] for i in opening),
-                  f"{len(opening)} opening intents")
+                  f"{len(opening)} opening intents, day {day:+.4%}, freeze at {abs(day) / 2:.6%}", opening)
             set_limit("daily_loss_freeze_pct", original["daily_loss_freeze_pct"])
 
         print("\n8. the journal recorded it all")

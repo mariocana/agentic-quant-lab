@@ -7,6 +7,7 @@ import base64
 import logging
 import os
 import secrets
+import time
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.security import HTTPBasic
@@ -17,6 +18,7 @@ from desk.ui.service import DeskService
 
 log = logging.getLogger(__name__)
 STATIC = Path(__file__).parent / "static"
+_STARTED_AT = time.time()
 app = FastAPI(title="ai-desk")
 svc: DeskService | None = None
 
@@ -67,7 +69,7 @@ async def require_password(request: Request, call_next):
 @app.get("/healthz")
 def healthz():
     """Unauthenticated liveness probe. Says nothing about the account."""
-    return {"ok": True}
+    return {"ok": True, "uptime_s": round(time.time() - _STARTED_AT, 1)}
 
 
 @app.get("/")
