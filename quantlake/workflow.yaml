@@ -56,6 +56,14 @@ sources:
     type: futures 1m bars exported by the ExportBars indicator (MultiCharts in Parallels VM)
     modes: [file]
     docs: data/multicharts/<symbol>_1min.csv
+  planetary_computer:
+    type: Sentinel-2 L2A imagery via STAC (10 m, ~5-day revisit, free, no auth)
+    modes: [rest]
+    docs: https://planetarycomputer.microsoft.com/dataset/sentinel-2-l2a
+  usda_cdl:
+    type: USDA Cropland Data Layer, annual national crop raster (30 m)
+    modes: [rest-bulk]
+    docs: https://www.nass.usda.gov/Research_and_Science/Cropland/Release/
   cftc:
     type: Commitments of Traders, legacy futures only (weekly, free Socrata API)
     modes: [rest]
@@ -150,6 +158,30 @@ bronze:
     partition: [symbol, year, month]
     notes: ES / NQ 1m continuous (@ES unadjusted, 24h), with upticks/downticks for approximate delta
 
+  sentinel2_ndvi:
+    source: planetary_computer
+    grain: per acquisition date (~5 days, cloud-filtered)
+    partition: [symbol, year, month]
+    notes: |
+      symbol = AOI id (applications/symbols.py NDVI_AOIS). NDVI mean/std on
+      the crop pixels only: USDA CDL mask (harvest-year CDL, previous year if
+      unpublished) reprojected onto the S2 grid and eroded 3 px. Reflectances
+      harmonized across ESA baseline 04.00 (+1000 offset since 2022-01-25);
+      SCL no-data/cloud/shadow/snow masked. Stamped acquisition + 1 day.
+      CDL rasters cached under data/bronze/usda_cdl (national + per-AOI clips).
+
+  nass_county_yield:
+    source: usda_nass
+    grain: 1y
+    partition: [symbol, year, month]
+    notes: county yield bu/acre, symbol = STATE_COUNTY, stamped Mar 1 of crop_year + 1 (conservative)
+
+  nass_crop_progress:
+    source: usda_nass
+    grain: 1w
+    partition: [symbol, year, month]
+    notes: "% of crop per stage, symbol = STATE_STAGE, stamped Monday 16:00 ET after week_ending"
+
   cftc_cot:
     source: cftc
     grain: 1w
@@ -208,6 +240,14 @@ silver:
     from: [bronze/usda_nass_planted]
     transforms:
       - passthrough (no OHLCV cleaning) — scalar annual values
+
+  sentinel2_ndvi_anomaly:
+    from: [bronze/sentinel2_ndvi]
+    transforms:
+      - drop dates with valid_frac < 0.5 (AOI cloudy even if the scene passed)
+      - prior seasons interpolated on a daily day-of-season grid (Sept 1 = 0)
+      - per observation - baseline mean/std over PRIOR seasons only, anomaly, anomaly_z
+      - current season never interpolated (no look-ahead); full rebuild, one overwrite by symbol
 
   cftc_cot:
     from: [bronze/cftc_cot]
