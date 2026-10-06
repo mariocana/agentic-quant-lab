@@ -45,6 +45,11 @@ def run_cycle(market: HLMarket, strategy: Strategy, adapter: ExecutionAdapter, l
     if hasattr(adapter, "set_marks"):
         adapter.set_marks(marks)
 
+    if not dry_run and hasattr(adapter, "reconcile"):
+        # Before anything else: a post-only order from yesterday may have filled
+        # overnight. Reading the account before folding that in would show a
+        # position the desk does not recognise.
+        adapter.reconcile()
     if hasattr(adapter, "cancel_stale_orders") and not dry_run:
         adapter.cancel_stale_orders()
     account = adapter.account_state()

@@ -10,16 +10,21 @@ Only run this against testnet until the paper track has weeks of history.
 """
 from __future__ import annotations
 
+import json
 import logging
+import time
 
 import eth_account
 from hyperliquid.exchange import Exchange
 from hyperliquid.info import Info
 from hyperliquid.utils.types import Cloid
 
+from desk.config import VAR
 from desk.data.hl_market import HLMarket
 from desk.execution.base import ExecutionAdapter, round_price, round_size
 from desk.execution.ledger import PositionLedger
+from desk.execution.reconcile import reconcile_fills
+from desk.journal.log import record
 from desk.schemas import AccountState, Fill, OrderIntent, RiskVerdict
 
 log = logging.getLogger(__name__)
@@ -85,6 +90,46 @@ class HyperliquidAdapter(ExecutionAdapter):
             log.warning("cloid lookup failed: %s", e)
             return False
 
+    def reconcile(self) -> list[Fill]:
+        """Fold the exchange's own fill history back in.
+
+        Call at the top of every cycle: a post-only order from yesterday may have
+        filled overnight, and the fees charged are only knowable here.
+        """
+        since = self._fills_since()
+        try:
+            raw = self.info.user_fills(self.address)
+        except Exception as e:                    # noqa: BLE001 - a bad read must not stop the cycle
+            log.warning("could not read fills: %s", e)
+            return []
+        ours, high_water, foreign = reconcile_fills(raw, self.ledger, since)
+        for f in ours:
+            record("fill_reconciled", f)
+            log.info("reconciled %s %s %.2f @ %g, fee %.4f", f.side, f.asset, f.filled_usd, f.fill_px, f.fee_usd)
+        for r in foreign:
+            log.warning("fill this desk did not send: %s %s @ %s (oid %s) — not adopted",
+                        r.get("coin"), r.get("sz"), r.get("px"), r.get("oid"))
+        if foreign:
+            record("foreign_fills", {"n": len(foreign), "assets": sorted({r.get("coin") for r in foreign})})
+        if high_water > since:
+            self._fills_since(high_water)
+        for cloid in self.ledger.stale_pending():
+            log.warning("order sent and never seen again, dropping: %s", cloid)
+            self.ledger.drop_pending(cloid)
+        return ours
+
+    def _fills_since(self, set_to: int | None = None) -> int:
+        """High-water mark for fills already folded in. On disk, so a restart does
+        not replay (or skip) a day of history."""
+        path = VAR / "fills_cursor.json"
+        if set_to is not None:
+            path.write_text(json.dumps({"since_ms": set_to}))
+            return set_to
+        if path.exists():
+            return int(json.loads(path.read_text()).get("since_ms", 0))
+        # first run: start from now, so an old account does not replay its history
+        return int(time.time() * 1000)
+
     def execute(self, intent: OrderIntent, verdict: RiskVerdict, mid_px: float) -> Fill | None:
         if verdict.decision == "reject" or verdict.approved_notional_usd <= 0:
             return None
@@ -117,12 +162,17 @@ class HyperliquidAdapter(ExecutionAdapter):
             log.error("order rejected by exchange: %s", status["error"])
             return None
         if "resting" in status:
-            log.info("resting %s %s %s @ %s oid=%s", intent.side, sz, intent.asset, px, status["resting"]["oid"])
-            return None                                     # ALO resting: fill arrives later via user_fills
+            oid = status["resting"]["oid"]
+            # It may fill in an hour, or tomorrow. Remember why we sent it, or the
+            # fill will arrive with nobody to attribute it to.
+            self.ledger.record_sent(intent, cloid.to_raw(), oid)
+            log.info("resting %s %s %s @ %s oid=%s", intent.side, sz, intent.asset, px, oid)
+            return None                                     # the fill arrives through reconcile()
         filled = status["filled"]
         avg_px, total_sz = float(filled["avgPx"]), float(filled["totalSz"])
         filled_usd = avg_px * total_sz
-        fee = filled_usd * 0.00045                          # taker tier 0; replaced by real fee from user_fills in journal
+        fee = filled_usd * 0.00045                          # an estimate; reconcile() replaces it with the real one
+        self.ledger.record_sent(intent, cloid.to_raw(), filled.get("oid"))
 
         stop_oid = None
         if intent.stop_px and not intent.reduce_only:

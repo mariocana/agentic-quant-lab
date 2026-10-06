@@ -165,12 +165,18 @@ rebalance will not close it, the time stop will not touch it, and the dashboard
 says so in a banner. Opening a position by hand on the same account is therefore
 safe, and so is losing the ledger: the desk stops managing, it does not guess.
 
-Known phase-1 gaps on the live path, in the order they block things:
+**Reconciliation** (`desk/execution/reconcile.py`) runs at the top of every live
+cycle. A post-only order can rest on the book for hours, so its context is stored
+the moment it is sent; when the fill appears in `userFills` it is matched by order
+id (or cloid), the position row is written, and the estimated fee is replaced by
+the one the exchange charged. A fill the desk did not send — a manual trade, a
+stop that triggered — is logged and journalled, never adopted. A high-water mark
+on disk makes a replay harmless, and orders that are never seen again are dropped
+after a day.
 
-1. **Fills are not reconciled.** Fees are estimated at 0.045% instead of read from
-   `user_fills`, and an ALO order that rests is cancelled at the next cycle rather
-   than followed to its fill — so a resting order never reaches the ledger.
-2. **The live adapter has never seen a wallet.** It is written against the SDK
+Known phase-1 gap on the live path:
+
+1. **The live adapter has never seen a wallet.** It is written against the SDK
    signatures and nothing more. Testnet, dry run, then minimum size.
 
 Mainnet asks you to type `MAINNET`; don't, yet.

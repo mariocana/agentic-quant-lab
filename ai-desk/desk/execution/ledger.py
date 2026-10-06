@@ -8,6 +8,11 @@ One row per asset, because the desk reasons in positions, not in orders; each ro
 carries the cloids of the fills that built it, so a position can always be traced
 back to the intents that caused it.
 
+Orders in flight live in a second table. A post-only order can rest on the book
+for hours before it fills, so the context travels with the order from the moment
+it is sent: without that, a resting order that fills overnight would produce a
+position the desk cannot recognise.
+
 The exchange stays the source of truth for size. The ledger only annotates it: a
 row never creates a position, and a position the ledger has never heard of is
 reported as unmanaged rather than adopted.
@@ -27,10 +32,49 @@ LEDGER_PATH = VAR / "position_ledger.json"
 class PositionLedger:
     def __init__(self, path: Path = LEDGER_PATH):
         self.path = path
-        self.rows: dict[str, dict] = json.loads(path.read_text()) if path.exists() else {}
+        raw = json.loads(path.read_text()) if path.exists() else {}
+        # the file used to be a bare {asset: row} map; keep reading those
+        self.rows: dict[str, dict] = raw.get("positions", raw if "pending" not in raw else {})
+        self.pending: dict[str, dict] = raw.get("pending", {})
 
     def _save(self) -> None:
-        self.path.write_text(json.dumps(self.rows, indent=2, sort_keys=True))
+        self.path.write_text(json.dumps({"positions": self.rows, "pending": self.pending},
+                                        indent=2, sort_keys=True))
+
+    # ---- orders in flight ----------------------------------------------------
+
+    def record_sent(self, intent: OrderIntent, cloid: str, oid: str | None) -> None:
+        """An order is on the exchange. Store its context now: it may fill in a
+        second or rest on the book until tomorrow, and either way the fill must be
+        attributable when it arrives."""
+        self.pending[cloid] = {
+            "intent_id": intent.id, "asset": intent.asset, "side": intent.side,
+            "strategy_id": intent.strategy_id, "horizon_hours": intent.horizon_hours,
+            "reduce_only": intent.reduce_only, "oid": str(oid) if oid else None,
+            "sent_at": datetime.now(timezone.utc).isoformat(),
+        }
+        self._save()
+
+    def pending_for(self, *, oid: str | None = None, cloid: str | None = None) -> tuple[str, dict] | None:
+        """Find an in-flight order by either id. Exchanges echo the oid on every
+        fill; the cloid only when the order carried one."""
+        if cloid and cloid in self.pending:
+            return cloid, self.pending[cloid]
+        if oid:
+            for c, row in self.pending.items():
+                if row.get("oid") == str(oid):
+                    return c, row
+        return None
+
+    def drop_pending(self, cloid: str) -> None:
+        if self.pending.pop(cloid, None) is not None:
+            self._save()
+
+    def stale_pending(self, older_than_hours: float = 24.0) -> list[str]:
+        """Orders we sent and never saw again — cancelled, expired, or lost."""
+        cutoff = datetime.now(timezone.utc).timestamp() - older_than_hours * 3600
+        return [c for c, r in self.pending.items()
+                if datetime.fromisoformat(r["sent_at"]).timestamp() < cutoff]
 
     # ---- writing -------------------------------------------------------------
 
