@@ -169,6 +169,9 @@ bronze:
       harmonized across ESA baseline 04.00 (+1000 offset since 2022-01-25);
       SCL no-data/cloud/shadow/snow masked. Stamped acquisition + 1 day.
       CDL rasters cached under data/bronze/usda_cdl (national + per-AOI clips).
+      Live: applications/live/wheat_ndvi.py, daily poll - re-searches the last
+      10 days (Planetary Computer latency 1-5 d), appends only new dates,
+      pulls a newly published CDL once; stored rows keep their cdl_year.
 
   nass_county_yield:
     source: usda_nass
