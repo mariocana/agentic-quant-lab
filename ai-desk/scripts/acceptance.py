@@ -6,6 +6,7 @@ works end to end. The unit tests cover the pieces; this covers the system.
 
     .venv/bin/desk ui                 # in one terminal
     .venv/bin/python scripts/acceptance.py
+    DESK_PASSWORD=... .venv/bin/python scripts/acceptance.py https://your-desk.up.railway.app
 
 Paper mode only - it refuses to run against a live account. It changes the paper
 account and config/limits.yaml while it works, and restores the limits at the end
@@ -14,7 +15,9 @@ again after any change to risk/.
 """
 from __future__ import annotations
 
+import base64
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -27,8 +30,11 @@ failures: list[str] = []
 
 def api(path: str, method: str = "GET", body: dict | None = None):
     data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(BASE + path, data=data, method=method,
-                                 headers={"Content-Type": "application/json"})
+    headers = {"Content-Type": "application/json"}
+    pw = os.environ.get("DESK_PASSWORD", "").strip()
+    if pw:                                              # a deployed desk needs the password
+        headers["Authorization"] = "Basic " + base64.b64encode(f"desk:{pw}".encode()).decode()
+    req = urllib.request.Request(BASE + path, data=data, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=120) as r:
             return json.loads(r.read() or "null")

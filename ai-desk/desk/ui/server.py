@@ -3,9 +3,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import base64
 import logging
+import os
+import secrets
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.security import HTTPBasic
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
@@ -22,6 +26,48 @@ def service() -> DeskService:
     if svc is None:
         svc = DeskService()
     return svc
+
+
+# ---- access control ----------------------------------------------------------
+# This app can close positions, move money between paper and live, and change risk
+# limits. On anything but loopback it must not be reachable without a password.
+
+security = HTTPBasic(auto_error=False)
+OPEN_PATHS = {"/healthz"}
+
+
+def _password() -> str | None:
+    pw = os.environ.get("DESK_PASSWORD", "").strip()
+    return pw or None
+
+
+def _is_loopback(host: str) -> bool:
+    return host in {"127.0.0.1", "::1", "localhost"}
+
+
+@app.middleware("http")
+async def require_password(request: Request, call_next):
+    pw = _password()
+    if pw is None or request.url.path in OPEN_PATHS:
+        return await call_next(request)
+    creds = request.headers.get("authorization", "")
+    ok = False
+    if creds.lower().startswith("basic "):
+        try:
+            user, _, given = base64.b64decode(creds[6:]).decode().partition(":")
+            ok = secrets.compare_digest(given, pw)       # constant time: no timing oracle
+        except Exception:                                # noqa: BLE001 - malformed header
+            ok = False
+    if not ok:
+        return JSONResponse(status_code=401, content={"error": "authentication required"},
+                            headers={"WWW-Authenticate": 'Basic realm="ai-desk"'})
+    return await call_next(request)
+
+
+@app.get("/healthz")
+def healthz():
+    """Unauthenticated liveness probe. Says nothing about the account."""
+    return {"ok": True}
 
 
 @app.get("/")
@@ -185,10 +231,21 @@ def preflight(root: Path | None = None) -> None:
     log.info("preflight ok: %d python files compiled, %s", n, checked)
 
 
-def main(host: str = "127.0.0.1", port: int = 8765, reload: bool = False, skip_preflight: bool = False):
+def main(host: str | None = None, port: int | None = None, reload: bool = False, skip_preflight: bool = False):
     import uvicorn
+    # PORT and HOST are what a platform (Railway, Fly, Render) injects.
+    host = host or os.environ.get("HOST") or "127.0.0.1"
+    port = port or int(os.environ.get("PORT") or 8765)
+    if not _is_loopback(host) and _password() is None:
+        raise SystemExit(
+            f"refusing to listen on {host} without a password.\n"
+            "This dashboard can close positions, switch to live trading and change risk limits.\n"
+            "Set DESK_PASSWORD in the environment, or bind to 127.0.0.1."
+        )
     if not skip_preflight:
         preflight()
+    if not _is_loopback(host):
+        log.info("listening on %s:%s with password auth", host, port)
     if reload:
         log.warning("--reload is for development: the desk restarts on every edit, "
                     "which can interrupt a running cycle. Never use it on a live account.")

@@ -92,6 +92,36 @@ it works and restores the limits afterwards, including after a failure.
 It says nothing about whether the strategy makes money. It says that the risk
 engine has the last word and that no path goes around it.
 
+## Deploy (Railway)
+
+The desk only trades when the process is alive. A laptop that sleeps misses cycles,
+so once the paper track matters, run it on a platform.
+
+1. **New project → Deploy from GitHub repo**, root directory `python/ai-desk`.
+   `railway.json` points at the `Dockerfile`; nothing else to configure.
+2. **Add a volume mounted at `/app/var`.** Without it every deploy wipes the paper
+   account, the risk state and the journal.
+3. **Set `DESK_PASSWORD`** to something long. The desk *refuses to start* on a
+   non-loopback address without it — this dashboard closes positions, switches to
+   live trading and edits risk limits, so it is never served open.
+4. Turn the in-app scheduler on (Desk → Schedule). No cron, no launchd: the server
+   is always up, so it runs its own cycles.
+
+```bash
+DESK_PASSWORD=... .venv/bin/python scripts/acceptance.py https://your-desk.up.railway.app
+```
+
+Run that once after the first deploy: it proves the brakes work on the box that
+will actually be trading, not only on your laptop.
+
+Health check is `/healthz`, the only route that needs no password. Logs in the
+Railway dashboard; the desk's own log ring is in the UI.
+
+**Before going live on a deployed desk:** the `HL_API_WALLET_KEY` env var lets that
+box place orders (it cannot withdraw — that is the point of an API wallet). Anyone
+with the password can also flip the desk to live from the UI. Use a password you do
+not reuse, and keep the account small until the paper track has weeks behind it.
+
 ## The rules that matter
 
 - **Strategies produce `TargetPosition`s. Nothing else.** They never see the account,

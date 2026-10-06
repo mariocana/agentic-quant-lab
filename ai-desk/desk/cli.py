@@ -99,7 +99,7 @@ def cmd_journal(args):
 
 def cmd_ui(args):
     from desk.ui.server import main as serve
-    serve(port=args.port, reload=args.reload, skip_preflight=args.no_preflight)
+    serve(host=args.host, port=args.port, reload=args.reload, skip_preflight=args.no_preflight)
 
 
 def main(argv=None):
@@ -119,7 +119,8 @@ def main(argv=None):
     j = sub.add_parser("journal"); j.add_argument("--kind"); j.add_argument("--last", type=int, default=20)
     j.set_defaults(fn=cmd_journal)
     u = sub.add_parser("ui")
-    u.add_argument("--port", type=int, default=8765)
+    u.add_argument("--port", type=int, default=None, help="default 8765, or $PORT")
+    u.add_argument("--host", default=None, help="default 127.0.0.1, or $HOST. Anything else needs DESK_PASSWORD")
     u.add_argument("--reload", action="store_true", help="restart the desk when a source file changes (development only)")
     u.add_argument("--no-preflight", action="store_true", help="skip the compile/parse check before starting")
     u.set_defaults(fn=cmd_ui)
