@@ -153,9 +153,28 @@ not reuse, and keep the account small until the paper track has weeks behind it.
 
 ## Live (testnet)
 
-1. Create an **API wallet** at app.hyperliquid.xyz/API (it can sign orders, not withdraw).
-2. `.env`: `HL_TESTNET=1`, `HL_ACCOUNT_ADDRESS`, `HL_API_WALLET_KEY`.
-3. In the UI, switch Mode to Live (testnet). Dry run first, then Run cycle.
+1. Create an **API wallet** at app.hyperliquid-testnet.xyz/API. It can sign orders
+   and cannot withdraw — the master key never goes near this repo.
+2. Fund the testnet account at app.hyperliquid-testnet.xyz/drip.
+3. `.env`: `HL_TESTNET=1`, `HL_ACCOUNT_ADDRESS` (the account that holds the funds),
+   `HL_API_WALLET_KEY` (the agent key from step 1).
+4. Smoke test the plumbing before letting a strategy near it:
+
+```bash
+.venv/bin/python scripts/testnet_smoke.py
+```
+
+   One order at the minimum ticket, watched end to end: the wallet signs, the order
+   reaches the book, the stop lands on the exchange and is visible among the open
+   orders, the fill reconciles into the ledger with the fee the exchange charged,
+   and closing leaves no row behind. It asks before the step that costs money and
+   refuses to run against mainnet.
+
+5. Only then, in the UI, switch Mode to Live. Dry run first, then Run cycle.
+
+Orders are priced off the **execution venue's** book, not the mainnet feed the
+strategy reads: the same perp can sit a hundred dollars apart between the two, and
+a limit priced off the wrong book either crosses instantly or never fills.
 
 **The position ledger** (`desk/execution/ledger.py`) holds what the exchange does
 not: which strategy opened a position, when, with what horizon, and the cloids of

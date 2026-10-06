@@ -90,6 +90,26 @@ class HyperliquidAdapter(ExecutionAdapter):
             log.warning("cloid lookup failed: %s", e)
             return False
 
+    def _venue_mid(self, asset: str, fallback: float) -> float:
+        """Price the order against the book it is going to.
+
+        The strategy reads mainnet (testnet has no volume to speak of), but an
+        order has to be priced where it will rest. The two differ — the same perp
+        can sit a hundred dollars apart — and a limit priced off the wrong book is
+        either instantly through the spread or never touched.
+        """
+        try:
+            mid, _ = self.venue.book_depth_10bps(asset)
+        except Exception as e:                    # noqa: BLE001
+            log.warning("no book for %s on the execution venue (%s); pricing off the feed", asset, e)
+            return fallback
+        if mid <= 0:
+            return fallback
+        if fallback > 0 and abs(mid / fallback - 1) > 0.005:
+            log.warning("%s: execution venue %g vs feed %g (%.2f%% apart)",
+                        asset, mid, fallback, (mid / fallback - 1) * 100)
+        return mid
+
     def reconcile(self) -> list[Fill]:
         """Fold the exchange's own fill history back in.
 
@@ -142,6 +162,7 @@ class HyperliquidAdapter(ExecutionAdapter):
         szd = int(meta["szDecimals"])
         is_buy = intent.side == "buy"
         sign = 1 if is_buy else -1
+        mid_px = self._venue_mid(intent.asset, mid_px)
         if intent.limit_px is not None:
             px = intent.limit_px
         elif intent.order_type == "limit_alo":
