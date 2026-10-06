@@ -35,3 +35,5 @@ __pycache__/
 .venv/
 .ipynb_checkpoints/
 .pytest_cache/
+
+.idea/
