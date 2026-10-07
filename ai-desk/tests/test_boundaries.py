@@ -114,7 +114,9 @@ def test_a_bad_configuration_never_kills_the_worker():
     for f in (root / "ui" / "service.py", root / "ui" / "server.py"):
         tree = ast.parse(f.read_text())
         for node in ast.walk(tree):
-            if not isinstance(node, ast.FunctionDef) or node.name == "main":
+            # main() and preflight() run before the port opens: exiting there is how
+            # a bad deploy is supposed to fail. Inside a request handler it is not.
+            if not isinstance(node, ast.FunctionDef) or node.name in ("main", "preflight"):
                 continue
             for sub in ast.walk(node):
                 if isinstance(sub, ast.Raise) and isinstance(sub.exc, ast.Call):
