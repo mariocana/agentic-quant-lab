@@ -170,10 +170,12 @@ class DeskService:
         if UI_SETTINGS_PATH.exists():
             s.update(json.loads(UI_SETTINGS_PATH.read_text()))
         if s["mode"] == "live" and not (self.settings.account_address and self.settings.api_wallet_key):
-            raise SystemExit(
-                "DESK_MODE=live but HL_ACCOUNT_ADDRESS / HL_API_WALLET_KEY are not set.\n"
-                "A desk that starts in live mode without a wallet would look healthy and "
-                "trade nothing; refusing to start says so immediately."
+            # ValueError, not SystemExit: this runs inside a request handler, and
+            # SystemExit is a BaseException — FastAPI's handler does not catch it, so
+            # it killed the worker. Railway restarted, the next request killed it
+            # again, and the service sat in a crash loop answering nothing.
+            raise ValueError(
+                "DESK_MODE=live but HL_ACCOUNT_ADDRESS / HL_API_WALLET_KEY are not set"
             )
         return s
 

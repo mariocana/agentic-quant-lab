@@ -30,6 +30,12 @@ def service() -> DeskService:
     return svc
 
 
+@app.exception_handler(ValueError)
+async def on_bad_config(_, exc):
+    """A misconfigured desk answers, it does not die."""
+    return JSONResponse(status_code=503, content={"error": str(exc)})
+
+
 # ---- access control ----------------------------------------------------------
 # This app can close positions, move money between paper and live, and change risk
 # limits. On anything but loopback it must not be reachable without a password.
@@ -69,7 +75,13 @@ async def require_password(request: Request, call_next):
 @app.get("/healthz")
 def healthz():
     """Unauthenticated liveness probe. Says nothing about the account."""
-    return {"ok": True, "uptime_s": round(time.time() - _STARTED_AT, 1)}
+    try:
+        service()
+        ok, detail = True, None
+    except Exception as e:                        # noqa: BLE001
+        ok, detail = False, f"{type(e).__name__}: {e}"
+    return {"ok": ok, "uptime_s": round(time.time() - _STARTED_AT, 1),
+            **({"error": detail} if detail else {})}
 
 
 @app.get("/")
@@ -246,6 +258,13 @@ def main(host: str | None = None, port: int | None = None, reload: bool = False,
         )
     if not skip_preflight:
         preflight()
+    # Build the service once here: a bad configuration then fails with a readable
+    # line in the deploy log, instead of at the first request on a port that is
+    # already accepting traffic.
+    try:
+        service()
+    except Exception as e:                        # noqa: BLE001
+        raise SystemExit(f"cannot start the desk: {type(e).__name__}: {e}") from None
     if not _is_loopback(host):
         log.info("listening on %s:%s with password auth", host, port)
     if reload:

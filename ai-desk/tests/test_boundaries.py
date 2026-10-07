@@ -101,3 +101,23 @@ def test_market_feed_retries_dropped_connections():
     assert retry.backoff_factor > 0
     assert 500 in retry.status_forcelist and 429 in retry.status_forcelist
     assert m.info.timeout, "a call with no timeout can hang a cycle forever"
+
+
+def test_a_bad_configuration_never_kills_the_worker():
+    """SystemExit is a BaseException, so FastAPI's handler does not catch it: raising
+    one inside a request handler killed the worker, Railway restarted, the next
+    request killed it again. A misconfigured desk must answer, not crash-loop."""
+    import ast
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent / "desk"
+    for f in (root / "ui" / "service.py", root / "ui" / "server.py"):
+        tree = ast.parse(f.read_text())
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.FunctionDef) or node.name == "main":
+                continue
+            for sub in ast.walk(node):
+                if isinstance(sub, ast.Raise) and isinstance(sub.exc, ast.Call):
+                    name = getattr(sub.exc.func, "id", "")
+                    assert name != "SystemExit", \
+                        f"{f.name}:{node.name}() raises SystemExit outside main()"
