@@ -91,6 +91,7 @@ poetry run python applications/live/macro.py           # a live strategy
 poetry run dashboard                                   # http://127.0.0.1:8000
 poetry run maintain                                    # compact + vacuum all tables
 poetry run python examples/reference/seed_instruments.py  # create/update reference/instruments
+poetry run python applications/historical/ohlcv_gold.py  # plain OHLCV gold read by alpha-quant
 ```
 
 `../../start_frontends.sh` starts the dashboard and the COT desk together.
@@ -111,6 +112,10 @@ Install one with:
 cp launchd/com.mario.quantlake.maintain.plist ~/Library/LaunchAgents/
 launchctl load ~/Library/LaunchAgents/com.mario.quantlake.maintain.plist
 ```
+
+Gold tables listed in `reference/instruments` (read by alpha-quant) are
+compacted but never vacuumed, so every Delta version alpha-quant recorded
+stays readable.
 
 Run maintenance while no live runner is writing: a concurrent merge makes
 the compaction of that table fail (it is reported and retried on the next
