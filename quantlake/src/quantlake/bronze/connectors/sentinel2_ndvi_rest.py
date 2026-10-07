@@ -16,8 +16,10 @@ Seasons. Winter wheat is sown in September of N-1 and harvested in June-
 July of N: "season N" runs from Sept 1 of N-1 to Aug 31 of N. fetch()
 splits [start, end] by season because the crop mask comes from the CDL
 of the harvest year (wheat fields move between years). If that CDL is
-not published yet (the current season), the previous year's is used and
-`cdl_year` says so.
+not published yet (the current season), the most recent published one
+among the CDL_FALLBACK_YEARS before it is used and `cdl_year` says so.
+Between Sept and Jan of a live season even N-1 is not out yet (CDL N-1
+lands in Jan-Feb of N), hence the 2-year fallback.
 
 Two fixes vs the notebooks:
 
@@ -57,6 +59,8 @@ _BANDS = ["B04", "B08", "SCL"]
 # SCL: 0 no data, 1 saturated/defective, 3 cloud shadow, 8/9 cloud medium/high,
 # 10 thin cirrus, 11 snow.
 BAD_SCL = [0, 1, 3, 8, 9, 10, 11]
+
+CDL_FALLBACK_YEARS = 2
 
 BASELINE_0400_CUTOFF = np.datetime64("2022-01-25")
 BOA_OFFSET = 1000
@@ -186,13 +190,13 @@ class Sentinel2NDVIConnector(HistoricalConnector):
         )
 
     def _cdl_mask(self, season: int) -> tuple[xr.DataArray, int]:
-        """Crop mask from the harvest-year CDL, or the year before if unpublished."""
-        for year in (season, season - 1):
+        """Crop mask from the harvest-year CDL, else the latest published before it."""
+        for year in range(season, season - CDL_FALLBACK_YEARS - 1, -1):
             try:
                 return self.cdl.crop_mask(self.bbox, year, self.crop_class), year
             except CDLNotPublished:
                 print(f"  CDL {year} not published, trying {year - 1}")
-        raise CDLNotPublished(f"no CDL for {season} or {season - 1}")
+        raise CDLNotPublished(f"no CDL for {season} or the {CDL_FALLBACK_YEARS} years before")
 
 
 # ── Pure raster steps (no network) ────────────────────────────────────────
