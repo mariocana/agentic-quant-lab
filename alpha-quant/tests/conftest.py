@@ -24,7 +24,7 @@ def reference_rows() -> pl.DataFrame:
             "break_start": ["16:00", None],
             "break_end": ["17:00", None],
             "gold_table": ["multicharts_ohlcv", "binance_spot_ohlcv"],
-            "data_symbol": ["ES_1min", "BTCUSDT"],
+            "data_symbol": ["ES", "BTCUSDT"],
             "updated_at": [datetime(2026, 10, 1, tzinfo=UTC)] * 2,
         },
         schema_overrides={"break_start": pl.String, "break_end": pl.String, "updated_at": pl.Datetime("us", "UTC")},

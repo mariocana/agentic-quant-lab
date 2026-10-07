@@ -113,7 +113,7 @@ def test_cme_missing_bars_ignore_closed_market(data_root, costs):
     # Friday 2026-03-13 18:00 UTC (13:00 CDT) -> Sunday 23:00 UTC: only the hours the market is open
     hours = pl.datetime_range(datetime(2026, 3, 13, 18, tzinfo=UTC), datetime(2026, 3, 15, 23, tzinfo=UTC), "1h", time_zone="UTC", eager=True)
     open_hours = hours.filter(es.session.open_mask(hours))
-    bars = gold_bars("ES_1min", datetime(2026, 1, 1, tzinfo=UTC), len(open_hours), timedelta(hours=1)).with_columns(
+    bars = gold_bars("ES", datetime(2026, 1, 1, tzinfo=UTC), len(open_hours), timedelta(hours=1)).with_columns(
         open_hours.alias("timestamp")
     )
     write_delta(bars, path, partition_by=PARTITIONS)

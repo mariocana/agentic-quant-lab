@@ -26,7 +26,7 @@ class DataRef:
     """Where the instrument's bars live in quantlake: gold/<gold_table>/<timeframe>."""
 
     gold_table: str
-    symbol: str  # value of the 'symbol' column in that table (e.g. 'ES_1min')
+    symbol: str  # value of the 'symbol' column in that table (e.g. 'ES', 'BTCUSDT')
 
 
 @dataclass(frozen=True)

@@ -45,7 +45,7 @@ def test_source_builds_instruments(data_root, costs):
     assert es.multiplier == 50.0
     assert es.slippage == 0.25
     assert isinstance(es.session, ExchangeSession)
-    assert es.data.gold_table == "multicharts_ohlcv" and es.data.symbol == "ES_1min"
+    assert es.data.gold_table == "multicharts_ohlcv" and es.data.symbol == "ES"
 
     btc = source.get("BTCUSDT")
     assert btc.session.name == "24/7"
