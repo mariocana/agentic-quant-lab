@@ -41,7 +41,17 @@ class HyperliquidAdapter(ExecutionAdapter):
     name = "hyperliquid"
 
     def __init__(self, base_url: str, account_address: str, api_wallet_key: str):
-        wallet = eth_account.Account.from_key(api_wallet_key)
+        try:
+            wallet = eth_account.Account.from_key(api_wallet_key)
+        except Exception as e:                    # noqa: BLE001 - the message matters more than the type
+            raise SystemExit(
+                "HL_API_WALLET_KEY is not a valid private key "
+                f"({type(e).__name__}). Expected 64 hex characters, with or without the 0x prefix — "
+                "the value from 'Create API Wallet' at app.hyperliquid-testnet.xyz/API, "
+                "not the placeholder from .env.example."
+            ) from None
+        if not account_address.startswith("0x") or len(account_address) != 42:
+            raise SystemExit(f"HL_ACCOUNT_ADDRESS does not look like an address: {account_address!r}")
         self.address = account_address
         self.exchange = Exchange(wallet, base_url, account_address=account_address)
         self.info: Info = self.exchange.info

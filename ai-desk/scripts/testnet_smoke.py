@@ -44,15 +44,17 @@ def main() -> int:
         print("  it can sign orders and cannot withdraw.")
         return 2
 
-    limits = load_limits()
     adapter = HyperliquidAdapter(s.base_url, s.account_address, s.api_wallet_key)
 
     print("1. the wallet can read the account")
     acc = adapter.account_state()
     if not check("account reachable", acc.equity_usd >= 0, f"equity ${acc.equity_usd:,.2f}"):
         return 1
-    if acc.equity_usd < 50:
-        print(f"  {INFO}  fund the testnet account first: https://app.hyperliquid-testnet.xyz/drip")
+    notional = max(load_limits()["min_notional_usd"], 12.0)
+    if acc.equity_usd < notional * 1.2:
+        print(f"  {INFO}  not enough to send the minimum ticket (${notional:.2f}).")
+        print(f"  {INFO}  Get testnet USDC at faucet.circle.com (Arbitrum Sepolia), then send it")
+        print(f"  {INFO}  straight to the bridge 0x08cfc1B6b2dCF36A1480b99353A354AA8AC56f89.")
         return 2
     unmanaged = [p.asset for p in acc.positions if not p.managed]
     print(f"  {INFO}  {len(acc.positions)} open position(s)"
@@ -70,7 +72,6 @@ def main() -> int:
     ctx = adapter.venue.contexts()
     asset = max(ctx, key=lambda a: ctx[a].day_volume_usd)
     mid = ctx[asset].mid_px
-    notional = max(limits["min_notional_usd"], 12.0)
     print(f"  {INFO}  {asset} at {mid:g}, 24h volume ${ctx[asset].day_volume_usd:,.0f}")
 
     stop_px = mid * 0.90                          # far away: this is a plumbing test, not a strategy
