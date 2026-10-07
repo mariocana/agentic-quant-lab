@@ -34,7 +34,7 @@ def _ingest(symbol: str) -> None:
 
     print(f"[{symbol}] bulk {BULK_START.date()} → {bulk_end.date()}")
     df = bronze.ingest(bulk, symbol=symbol, start=BULK_START, end=bulk_end)
-    df_clean = silver.ingest(df, TABLE)
+    df_clean = silver.ingest(df, TABLE, align_1m=True)
     print(f"[{symbol}]   bulk → {len(df):,} rows")
 
     # Binance includes the candle still open when `end` falls inside it; stop
@@ -42,7 +42,7 @@ def _ingest(symbol: str) -> None:
     rest_end = now.replace(second=0, microsecond=0) - timedelta(milliseconds=1)
     print(f"[{symbol}] REST {rest_start.date()} → {rest_end:%H:%M}")
     df = bronze.ingest(rest, symbol=symbol, start=rest_start, end=rest_end)
-    df_clean = silver.ingest(df, TABLE)
+    df_clean = silver.ingest(df, TABLE, align_1m=True)
     print(f"[{symbol}]   REST → {len(df):,} rows")
 
 
