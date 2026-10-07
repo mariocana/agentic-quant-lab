@@ -1,7 +1,8 @@
 import polars as pl
+import pytest
 
 from helpers import minute_bars, utc
-from quantlake.gold.ohlcv import resample
+from quantlake.gold.ohlcv import resample, update_features
 
 
 def test_5m_bars_are_closed_left_label_left():
@@ -64,3 +65,27 @@ def test_input_order_does_not_matter():
 
 def test_empty_df_is_returned_as_is():
     assert resample(minute_bars(utc(2024, 1, 2), 0), "5m").is_empty()
+
+
+class _Echo:
+    def input_names(self):
+        return ["close"]
+
+    def output_names(self):
+        return ["f_close"]
+
+    def update(self, inputs):
+        return [inputs[0]]
+
+
+def test_update_features_appends_one_row_of_features():
+    bar = resample(minute_bars(utc(2024, 1, 2, 9, 0), 5), "5m")
+    out = update_features(bar, _Echo())
+    assert out["f_close"].to_list() == bar["close"].to_list()
+    assert out.schema["f_close"] == pl.Float64
+
+
+def test_update_features_rejects_more_than_one_bar():
+    bars = resample(minute_bars(utc(2024, 1, 2, 9, 0), 10), "5m")
+    with pytest.raises(ValueError):
+        update_features(bars, _Echo())

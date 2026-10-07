@@ -14,6 +14,8 @@ Three things matter here.
 3. The first write creates the table; subsequent writes merge.
 """
 
+from datetime import datetime
+
 import polars as pl
 from deltalake import DeltaTable, write_deltalake
 
@@ -38,3 +40,20 @@ def upsert(df: pl.DataFrame, table_path: str, update_matched: bool = False) -> N
         merge.execute()
     else:
         write_deltalake(table_path, df, mode="overwrite", partition_by=PARTITION_BY)
+
+
+def read_symbol(table_path: str, symbol: str, columns: list[str] | None = None) -> pl.DataFrame | None:
+    """Read one symbol's rows (partition-pruned), or None if the table doesn't exist."""
+    if not DeltaTable.is_deltatable(table_path):
+        return None
+    return pl.from_arrow(
+        DeltaTable(table_path).to_pyarrow_table(columns=columns, filters=[("symbol", "=", symbol)])
+    )
+
+
+def last_timestamp(table_path: str, symbol: str) -> datetime | None:
+    """Latest timestamp stored for symbol, or None if the table or symbol is missing."""
+    df = read_symbol(table_path, symbol, columns=["timestamp"])
+    if df is None or df.is_empty():
+        return None
+    return df["timestamp"].max()
