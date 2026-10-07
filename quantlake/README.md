@@ -87,6 +87,7 @@ the same range never creates duplicates.
 
 ```bash
 poetry run python applications/historical/binance.py   # backfill a source
+poetry run python applications/historical/binance_um.py  # USDⓈ-M perpetual OHLCV + funding
 poetry run python applications/live/macro.py           # a live strategy
 poetry run dashboard                                   # http://127.0.0.1:8000
 poetry run maintain                                    # compact + vacuum all tables

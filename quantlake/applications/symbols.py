@@ -76,6 +76,11 @@ class MCFile:
     chart_tz: str   # time zone of the MultiCharts chart
 
 
+# ── Binance USDⓈ-M perpetuals (historical/binance_um.py) ─────────────────
+# Exchange symbols; reference/instruments names the perpetual "<symbol>-PERP".
+UM_PERPS = ["BTCUSDT"]
+
+
 MC_FILES = [
     MCFile("ES", "ES_1min", "America/Chicago"),
     MCFile("NQ", "NQ_1min", "America/Chicago"),
