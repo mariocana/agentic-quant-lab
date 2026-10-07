@@ -126,3 +126,18 @@ def test_funding_only_when_paying(limits, ctx, account, state):
     assert "funding_halved" not in ev(intent(side="sell"), account(), ctx(funding=hi), limits, state).rules_fired
     v = ev(intent(side="sell"), account(), ctx(funding=-3 * limits["max_abs_funding_hourly"]), limits, state)
     assert v.decision == "reject" and "funding_too_expensive" in v.rules_fired
+
+
+def test_the_kill_switch_also_takes_resting_orders_off_the_book():
+    """The engine refuses new intents, but an order already resting keeps filling:
+    risk still arriving while the switch reads as engaged. Stops stay — they are
+    the protection, not the exposure."""
+    import ast
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parent.parent / "desk" / "ui" / "service.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "kill")
+    body = ast.dump(fn)
+    assert "cancel_orders" in body
+    assert "include_triggers" in body and "False" in body, "stops must survive the kill switch"

@@ -349,7 +349,16 @@ class DeskService:
     def kill(self, on: bool):
         if on:
             RiskState.engage_kill("ui")
-            record("event", {"event": "kill_engaged", "by": "ui"})
+            # The switch promises no new risk. An order already resting on the book
+            # is risk still arriving, so it has to come down — the stops stay, they
+            # are the protection, not the exposure.
+            cancelled = 0
+            if hasattr(self.adapter, "cancel_orders"):
+                try:
+                    cancelled = self.adapter.cancel_orders(include_triggers=False)
+                except Exception as e:                # noqa: BLE001 - the switch must engage regardless
+                    logging.getLogger(__name__).error("kill engaged but orders not cancelled: %s", e)
+            record("event", {"event": "kill_engaged", "by": "ui", "orders_cancelled": cancelled})
         else:
             RiskState.release_kill()
             record("event", {"event": "kill_released", "by": "ui"})

@@ -105,9 +105,18 @@ class HyperliquidAdapter(ExecutionAdapter):
 
     def cancel_stale_orders(self) -> int:
         """Cancel resting limit orders from earlier cycles. Stops (trigger orders) stay."""
+        return self.cancel_orders(include_triggers=False)
+
+    def cancel_orders(self, include_triggers: bool) -> int:
+        """Cancel what is resting on the book.
+
+        Triggers are kept during a normal cycle — a stop must outlive the cycle
+        that placed it — and taken down when flattening, where a stop left behind
+        guards a position that no longer exists.
+        """
         n = 0
         for o in self.info.frontend_open_orders(self.address):
-            if o.get("isTrigger"):
+            if o.get("isTrigger") and not include_triggers:
                 continue
             r = self.exchange.cancel(o["coin"], o["oid"])
             n += 1
@@ -283,6 +292,14 @@ class HyperliquidAdapter(ExecutionAdapter):
         """Close everything. These orders are ours too: without a cloid their fills
         come back unattributable, and a desk that cannot recognise its own closing
         trade will warn about positions it shut itself."""
+        # Cancel first, then close. A resting order keeps filling while the close
+        # is in flight, so the position moves under it and the exchange rejects the
+        # close with "reduce only order would increase position" — five of seven
+        # failed that way. And a stop left behind guards a position that is gone.
+        cancelled = self.cancel_orders(include_triggers=True)
+        if cancelled:
+            log.info("cancelled %d resting order(s) before closing", cancelled)
+
         fills = []
         for p in self.account_state().positions:
             intent = OrderIntent(asset=p.asset, side="sell" if p.size > 0 else "buy",
@@ -300,8 +317,11 @@ class HyperliquidAdapter(ExecutionAdapter):
                                   requested_usd=abs(p.notional_usd), filled_usd=float(f["avgPx"]) * float(f["totalSz"]),
                                   decision_px=p.mark_px, fill_px=float(f["avgPx"]), fee_usd=0.0, partial=False,
                                   exchange_oid=str(f["oid"])))
+            elif status.get("error") in (None, "None"):
+                log.info("flatten %s: nothing to close", p.asset)
+                self.ledger.forget(p.asset)
             else:
-                log.error("flatten %s failed: %s", p.asset, status)
+                log.error("flatten %s failed: %s", p.asset, status.get("error"))
         return fills
 
 

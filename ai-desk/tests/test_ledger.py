@@ -192,3 +192,21 @@ def test_every_order_the_desk_sends_carries_its_context():
             assert "cloid" in body, f"{node.name}() sends an order without a cloid"
             assert "record_sent" in body or "_place_stop" in body, \
                 f"{node.name}() sends an order without recording it in the ledger"
+
+
+def test_flatten_cancels_before_it_closes():
+    """A resting order keeps filling while the close is in flight: the position
+    moves under it and the exchange rejects with "reduce only order would increase
+    position". Five of seven closes failed that way. Triggers go too — a stop left
+    behind guards a position that no longer exists."""
+    import ast
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parent.parent / "desk" / "execution" / "hyperliquid.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "flatten_all")
+    body = ast.dump(fn)
+    assert "cancel_orders" in body, "flatten_all must cancel resting orders first"
+    cancel_at = body.index("cancel_orders")
+    close_at = body.index("market_close")
+    assert cancel_at < close_at, "cancelling has to happen before closing, not after"
