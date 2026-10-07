@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "alphaquant"
+version = "0.1.0"
+description = "Backtest and strategy validation engine reading data from quantlake"
+readme = "README.md"
+packages = [{include = "alphaquant", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "~3.13"
+
+polars = ">=1.20,<3"
+deltalake = "^1.0"
+pyarrow = ">=18"
+pyyaml = "^6.0"
+exchange-calendars = "^4.6"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
