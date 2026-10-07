@@ -21,6 +21,30 @@ from desk.signals.rebalance import intents_from_targets
 log = logging.getLogger(__name__)
 
 
+
+_LAST_CYCLE_AT: dict[str, datetime] = {}
+
+
+def _warn_if_too_soon(strategy: Strategy, min_fraction: float = 0.1) -> None:
+    """Say something when cycles run far closer together than the strategy thinks.
+
+    reversal_v1 reads daily bars and holds for five days: between two cycles an
+    hour apart its targets are the same, but the book still turns over and pays
+    the spread both ways. Twenty minutes of back-to-back cycles cost 0.26% of the
+    account on testnet — real money, spent on nothing.
+    """
+    now = datetime.now(timezone.utc)
+    last = _LAST_CYCLE_AT.get(strategy.id)
+    _LAST_CYCLE_AT[strategy.id] = now
+    if last is None:
+        return
+    gap_h = (now - last).total_seconds() / 3600
+    expected_h = strategy.horizon_hours * min_fraction
+    if gap_h < expected_h:
+        log.warning("cycle %.0f min after the last one; %s holds for %dh. Each turn of the "
+                    "book pays the spread, and the targets have barely moved.",
+                    gap_h * 60, strategy.id, strategy.horizon_hours)
+
 def time_stop_intents(account: AccountState, limits: dict, now: datetime | None = None) -> list[OrderIntent]:
     """Close positions that outlived their horizon (+ grace). Reduce-only, always allowed."""
     now = now or datetime.now(timezone.utc)
@@ -40,6 +64,8 @@ def time_stop_intents(account: AccountState, limits: dict, now: datetime | None 
 def run_cycle(market: HLMarket, strategy: Strategy, adapter: ExecutionAdapter, limits: dict,
               state: RiskState, fetch_depth: bool = True, dry_run: bool = False) -> dict:
     log.info("cycle start: strategy=%s adapter=%s dry_run=%s", strategy.id, adapter.name, dry_run)
+    if not dry_run:
+        _warn_if_too_soon(strategy)
     contexts = market.contexts()
     marks = {a: c.mid_px for a, c in contexts.items()}   # before any filtering: marking is not trading
     if hasattr(adapter, "set_marks"):
