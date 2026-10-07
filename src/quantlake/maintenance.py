@@ -66,7 +66,7 @@ def maintain_table(
     vacuum: bool = True,
 ) -> TableReport:
     dt = DeltaTable(str(path))
-    report = TableReport(path=path, files_before=len(dt.files()), vacuum_skipped=not vacuum)
+    report = TableReport(path=path, files_before=len(dt.file_uris()), vacuum_skipped=not vacuum)
     if dry_run:
         if vacuum:
             report.vacuumed = len(dt.vacuum(retention_hours=retention_hours, dry_run=True,
