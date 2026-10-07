@@ -15,6 +15,10 @@ sources:
     type: exchange (crypto spot)
     modes: [websocket, rest, bulk]
     docs: https://binance-docs.github.io/apidocs/spot/
+  binance_um:
+    type: exchange (crypto USDⓈ-M perpetual futures)
+    modes: [rest, bulk]
+    docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/general-info
   dukascopy:
     type: FX / commodity / index datafeed (spot-like)
     modes: [rest-bulk]
@@ -79,6 +83,18 @@ bronze:
     grain: 1m
     partition: [symbol, year, month]
     notes: raw 1m OHLCV bars, idempotent via Delta merge on (symbol, timestamp)
+
+  binance_um_ohlcv:
+    source: binance_um
+    grain: 1m
+    partition: [symbol, year, month]
+    notes: USDⓈ-M perpetual 1m OHLCV (monthly ZIPs + /fapi/v1/klines), symbol = exchange symbol (BTCUSDT)
+
+  binance_um_funding:
+    source: binance_um
+    grain: per funding settlement (8h for BTCUSDT)
+    partition: [symbol, year, month]
+    notes: /fapi/v1/fundingRate as published (fundingTime can be a few ms late), funding_rate + mark_price
 
   capitalcom_ohlcv:
     source: capitalcom
@@ -210,6 +226,18 @@ silver:
       - invalidate bars where high < low or low < 0
       - invalidate negative volumes
 
+  binance_um_ohlcv:
+    from: [bronze/binance_um_ohlcv]
+    transforms:
+      - same align_to_minute + clean_ohlcv rules as binance_spot_ohlcv
+
+  binance_um_funding:
+    from: [bronze/binance_um_funding]
+    transforms:
+      - timestamp truncated to the second (settlement time)
+      - columns timestamp, symbol, funding_rate (mark_price stays in bronze)
+      - funding_rate inf / null → NaN; duplicates keep the latest ingested row
+
   multicharts_ohlcv:
     from: [bronze/multicharts_ohlcv]
     transforms:
@@ -325,6 +353,42 @@ gold:
       - plain OHLCV for alpha-quant (ES, NQ), windows anchored to the CME day (17:00 America/Chicago, DST-aware)
       - timestamp = window open in UTC; 1d_cme = one Globex session (Sun/Mon-Thu 17:00 → 16:00 next day)
       - only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/1m:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1m UTC; only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/5m:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 5m UTC; only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/15m:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 15m UTC; only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/1h:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1h UTC; only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/4h:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 4h UTC; only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/1d:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1d UTC; only windows fully covered by silver; never vacuumed
 
   binance_spot_ohlcv/1m:
     from: [silver/binance_spot_ohlcv]

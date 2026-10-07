@@ -48,8 +48,9 @@ _POSITIVE = ("tick_size", "multiplier", "qty_step", "min_qty")
 _HHMM = re.compile(r"^([01]\d|2[0-3]):[0-5]\d$")
 
 # Sources: CME contract specs (ES $50 x index, NQ $20 x index, tick 0.25,
-# daily halt 16:00-17:00 America/Chicago); Binance spot exchangeInfo
-# (PRICE_FILTER.tickSize, LOT_SIZE.stepSize / minQty).
+# daily halt 16:00-17:00 America/Chicago); Binance spot / USDⓈ-M
+# exchangeInfo (PRICE_FILTER.tickSize, LOT_SIZE.stepSize / minQty), check
+# with examples/reference/seed_instruments.py --check-binance.
 # MultiCharts bars are stored with symbol "ES"/"NQ" (applications/symbols.py
 # MC_FILES); "ES_1min" is only the CSV file name.
 DEFAULT_INSTRUMENTS: list[dict] = [
@@ -80,6 +81,13 @@ DEFAULT_INSTRUMENTS: list[dict] = [
         "calendar": ALWAYS_OPEN, "break_start": None, "break_end": None,
         "gold_table": "binance_spot_ohlcv", "data_symbol": "ETHUSDT",
         "description": "Ether / Tether, Binance spot",
+    },
+    {
+        "symbol": "BTCUSDT-PERP", "asset_class": "crypto_perp", "exchange": "BINANCE", "quote_ccy": "USDT",
+        "tick_size": 0.1, "multiplier": 1.0, "qty_step": 0.001, "min_qty": 0.001,
+        "calendar": ALWAYS_OPEN, "break_start": None, "break_end": None,
+        "gold_table": "binance_um_ohlcv", "data_symbol": "BTCUSDT",
+        "description": "BTCUSDT USDⓈ-M perpetual, Binance (funding: silver/binance_um_funding)",
     },
 ]
 

@@ -111,8 +111,8 @@ def test_seed_default_creates_table_with_exact_schema(reference_root):
     raw = pl.from_arrow(DeltaTable(str(path)).to_pyarrow_table())
     assert dict(raw.schema) == SCHEMA
     assert list(read_instruments().schema.items()) == list(SCHEMA.items())
-    assert df.height == 4
-    assert df["symbol"].to_list() == ["BTCUSDT", "ES", "ETHUSDT", "NQ"]
+    assert df.height == 5
+    assert df["symbol"].to_list() == ["BTCUSDT", "BTCUSDT-PERP", "ES", "ETHUSDT", "NQ"]
 
 
 def test_seed_values(reference_root):
@@ -126,13 +126,15 @@ def test_seed_values(reference_root):
     eth = df.row(by_predicate=pl.col("symbol") == "ETHUSDT", named=True)
     assert (eth["qty_step"], eth["min_qty"], eth["calendar"]) == (0.0001, 0.0001, "24/7")
     assert eth["break_start"] is None and eth["break_end"] is None
+    perp = df.row(by_predicate=pl.col("symbol") == "BTCUSDT-PERP", named=True)
+    assert (perp["asset_class"], perp["gold_table"], perp["data_symbol"]) == ("crypto_perp", "binance_um_ohlcv", "BTCUSDT")
 
 
 def test_merge_is_idempotent():
     seed_default()
     seed_default()
     df = read_instruments()
-    assert df.height == 4
+    assert df.height == 5
     assert df["symbol"].is_unique().all()
 
 

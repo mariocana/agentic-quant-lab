@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 
 import polars as pl
 from deltalake import DeltaTable
-import pytest
 
 import quantlake.bronze.ingest as bronze
 import quantlake.gold.ingest as gold
@@ -37,16 +36,6 @@ class _EchoPipeline:
     def run_research(self, data):
         self.seen = [list(r) for r in data]
         return [[r[0]] for r in data]
-
-
-@pytest.fixture
-def lake(tmp_path, monkeypatch):
-    roots = {"BRONZE_ROOT": tmp_path / "bronze", "SILVER_ROOT": tmp_path / "silver", "GOLD_ROOT": tmp_path / "gold"}
-    for mod in (bronze, silver, gold, live):
-        for name, path in roots.items():
-            if hasattr(mod, name):
-                monkeypatch.setattr(mod, name, path)
-    return roots
 
 
 def _seed_silver(table: str, start, n: int, symbol: str = SYMBOL) -> pl.DataFrame:

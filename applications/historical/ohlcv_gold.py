@@ -2,6 +2,7 @@
 
     silver/multicharts_ohlcv   -> gold/multicharts_ohlcv/<tf>   (ES, NQ)
     silver/binance_spot_ohlcv  -> gold/binance_spot_ohlcv/<tf>  (every symbol in silver)
+    silver/binance_um_ohlcv    -> gold/binance_um_ohlcv/<tf>    (USDⓈ-M perpetuals)
 
 No features: resampled OHLCV only, one table per timeframe. Incremental
 (gold.update_ohlcv): each run rebuilds the last stored bar and adds the
@@ -22,6 +23,7 @@ TIMEFRAMES = ["1m", "5m", "15m", "1h", "4h", "1d"]
 TABLES = {
     "multicharts_ohlcv":  ("multicharts_ohlcv", TIMEFRAMES + ["4h_cme", "1d_cme"]),
     "binance_spot_ohlcv": ("binance_spot_ohlcv", TIMEFRAMES),
+    "binance_um_ohlcv":   ("binance_um_ohlcv", TIMEFRAMES),
 }
 
 

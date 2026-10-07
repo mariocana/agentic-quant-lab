@@ -2,6 +2,11 @@ from datetime import datetime
 
 import pytest
 
+import quantlake.bronze.ingest as bronze
+import quantlake.gold.ingest as gold
+import quantlake.live as live
+import quantlake.silver.ingest as silver
+
 
 @pytest.fixture
 def freeze_now(monkeypatch):
@@ -14,3 +19,13 @@ def freeze_now(monkeypatch):
 
         monkeypatch.setattr(module, "datetime", FrozenDatetime)
     return _freeze
+
+
+@pytest.fixture
+def lake(tmp_path, monkeypatch):
+    roots = {"BRONZE_ROOT": tmp_path / "bronze", "SILVER_ROOT": tmp_path / "silver", "GOLD_ROOT": tmp_path / "gold"}
+    for mod in (bronze, silver, gold, live):
+        for name, path in roots.items():
+            if hasattr(mod, name):
+                monkeypatch.setattr(mod, name, path)
+    return roots
