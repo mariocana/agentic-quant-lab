@@ -1,0 +1,17 @@
+# Costi di trading per strumento, separati dalle specifiche di mercato
+# (tick, moltiplicatore, orari) che arrivano da quantlake (reference/instruments).
+#
+# fee: per_contract -> per_side = costo per contratto per lato, in valuta di quotazione
+# fee: percent      -> maker / taker = frazione del nozionale (0.001 = 0,10%)
+# slippage_ticks    -> slippage di default sugli ordini a mercato, in tick
+# verified: false   -> valore prudente da sostituire con quello reale del tuo broker/exchange
+#
+# Si sceglie il profilo con load_costs(profile="..."); si possono aggiungere profili
+# (es. "pessimistic") per vedere quanto la strategia regge a costi più alti.
+
+profiles:
+  default:
+    ES:      {fee: per_contract, per_side: 2.50, slippage_ticks: 1, verified: false}
+    NQ:      {fee: per_contract, per_side: 2.50, slippage_ticks: 1, verified: false}
+    BTCUSDT: {fee: percent, maker: 0.001, taker: 0.001, slippage_ticks: 1, verified: false}
+    ETHUSDT: {fee: percent, maker: 0.001, taker: 0.001, slippage_ticks: 1, verified: false}
