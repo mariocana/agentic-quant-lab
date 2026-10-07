@@ -1,5 +1,6 @@
 """Fills come back from the exchange hours after the order was sent. These tests use
 the real shape of a Hyperliquid userFills row."""
+import time
 from datetime import datetime, timezone
 
 import pytest
@@ -93,3 +94,25 @@ def test_an_order_that_never_fills_is_eventually_dropped(ledger):
     ledger.pending["0xold"]["sent_at"] = datetime(2020, 1, 1, tzinfo=timezone.utc).isoformat()
     assert ledger.stale_pending() == ["0xold"]
     assert ledger.stale_pending(older_than_hours=10 ** 6) == []
+
+
+def test_the_fills_cursor_is_pinned_on_first_read(tmp_path, monkeypatch):
+    """Recomputing the start point from the clock on every call looks the same until
+    a fill arrives: it is always older than "now", so it is skipped forever and
+    nothing is ever reconciled. The first read has to pin the mark."""
+    import desk.execution.hyperliquid as hl
+
+    monkeypatch.setattr(hl, "VAR", tmp_path)
+
+    class Stub(hl.HyperliquidAdapter):
+        def __init__(self):                       # no wallet, no network
+            pass
+
+    a = Stub()
+    first = a._fills_since()
+    assert (tmp_path / Stub.FILLS_CURSOR).exists(), "the mark must survive the call that created it"
+    time.sleep(0.01)
+    assert a._fills_since() == first, "a later call must not move the start point forward"
+
+    a._fills_since(first + 5_000)
+    assert a._fills_since() == first + 5_000

@@ -150,17 +150,27 @@ class HyperliquidAdapter(ExecutionAdapter):
             self.ledger.drop_pending(cloid)
         return ours
 
+    FILLS_CURSOR = "fills_cursor.json"
+
     def _fills_since(self, set_to: int | None = None) -> int:
         """High-water mark for fills already folded in. On disk, so a restart does
-        not replay (or skip) a day of history."""
-        path = VAR / "fills_cursor.json"
+        not replay (or skip) a day of history.
+
+        The first run starts from now — an account with history should not replay
+        it — and **writes that immediately**. Deriving it from the clock on every
+        call instead looks identical until a fill happens: it is always in the
+        past relative to "now", so every fill is skipped and nothing is ever
+        reconciled. That is exactly what the testnet smoke test caught.
+        """
+        path = VAR / self.FILLS_CURSOR
         if set_to is not None:
             path.write_text(json.dumps({"since_ms": set_to}))
             return set_to
         if path.exists():
             return int(json.loads(path.read_text()).get("since_ms", 0))
-        # first run: start from now, so an old account does not replay its history
-        return int(time.time() * 1000)
+        now = int(time.time() * 1000)
+        path.write_text(json.dumps({"since_ms": now}))
+        return now
 
     def execute(self, intent: OrderIntent, verdict: RiskVerdict, mid_px: float) -> Fill | None:
         if verdict.decision == "reject" or verdict.approved_notional_usd <= 0:
