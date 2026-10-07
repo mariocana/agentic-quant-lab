@@ -69,6 +69,24 @@ def _current_tf_start(ts: datetime, timeframe: str) -> datetime:
     return datetime.fromtimestamp(aligned, tz=timezone.utc)
 
 
+def _fetch_gap(
+    rest_connector: HistoricalConnector,
+    symbol: str,
+    start: datetime,
+    end: datetime,
+) -> pl.DataFrame:
+    """Fetch the 1m bars missing in [start, end) that are already closed at ``end``.
+
+    REST connectors include ``end`` and may return the candle still in
+    progress (Binance does). Both must be dropped: the bar at ``end`` is about
+    to arrive from the stream, and an open candle would be stored half-built.
+    """
+    df = rest_connector.fetch(symbol, start, end)
+    if df.is_empty():
+        return df
+    return df.filter(pl.col("timestamp") + pl.duration(minutes=1) <= pl.lit(end))
+
+
 def _reconstitute_buffer(
     symbol: str,
     source_table: str,
@@ -159,6 +177,12 @@ def _process_df(
 
     window_schema = silver_df.select(_BUFFER_COLS).schema
     for row in silver_df.select(_BUFFER_COLS).iter_rows(named=True):
+        buf = gold_buffers[symbol]
+        if buf and _current_tf_start(row["timestamp"], timeframe) != _current_tf_start(buf[-1]["timestamp"][0], timeframe):
+            # The previous window never got its closing minute (no trades, or a
+            # gap REST could not fill). Emit it now so it isn't merged with
+            # this window.
+            _emit_gold_bar(symbol, timeframe, gold_buffers, gold_output, pipelines, transform_gold, from_live)
         gold_buffers[symbol].append(pl.DataFrame([row], schema=window_schema))
         if _closes_gold_bar(row["timestamp"], timeframe):
             _emit_gold_bar(symbol, timeframe, gold_buffers, gold_output, pipelines, transform_gold, from_live)
@@ -327,7 +351,7 @@ async def run(
         gap_start = last + timedelta(minutes=1)
         now = datetime.now(timezone.utc)
         if gap_start < now:
-            gap_df = rest_connector.fetch(symbol, gap_start, now)
+            gap_df = _fetch_gap(rest_connector, symbol, gap_start, now)
             if not gap_df.is_empty():
                 _process_df(
                     gap_df, symbol, timeframe,
@@ -351,7 +375,7 @@ async def run(
 
             prev = last_ts.get(symbol)
             if prev is not None and ts - prev > timedelta(minutes=1):
-                gap_df = rest_connector.fetch(symbol, prev + timedelta(minutes=1), ts)
+                gap_df = _fetch_gap(rest_connector, symbol, prev + timedelta(minutes=1), ts)
                 if not gap_df.is_empty():
                     _process_df(
                         gap_df, symbol, timeframe,
