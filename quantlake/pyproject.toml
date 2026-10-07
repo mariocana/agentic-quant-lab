@@ -54,6 +54,7 @@ anthropic = "^1.11"
 
 [tool.poetry.scripts]
 dashboard = "quantlake.dashboard.cli:main"
+maintain = "quantlake.maintenance:main"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.1"
