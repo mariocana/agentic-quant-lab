@@ -16,6 +16,12 @@ source APIs ──▶ bronze  raw rows, one table per source
                 gold    <strategy>/<timeframe>, ready for backtests and live signals
 ```
 
+Next to the three layers, `reference/` holds tables that are not time
+series. `reference/instruments` has one row per instrument with its market
+specs (tick size, multiplier, quantity step, exchange calendar) and the
+gold table holding its bars. alpha-quant reads it read-only, so its schema
+is a contract (`src/quantlake/reference/instruments.py`).
+
 `workflow.yaml` is the full map of sources, tables and the transforms
 between them; the dashboard draws it as a graph.
 
@@ -63,6 +69,7 @@ src/quantlake/
   storage.py           idempotent Delta upsert, partitioned by (symbol, year, month)
   live.py              WebSocket runner: gap fill, crash recovery, in-memory hot path
   maintenance.py       compact + vacuum
+  reference/           instruments table (market specs, read by alpha-quant)
   dashboard/           FastAPI backend of the dashboard
 applications/
   historical/          bootstrap / resumable backfills, one script per source
@@ -83,6 +90,7 @@ poetry run python applications/historical/binance.py   # backfill a source
 poetry run python applications/live/macro.py           # a live strategy
 poetry run dashboard                                   # http://127.0.0.1:8000
 poetry run maintain                                    # compact + vacuum all tables
+poetry run python examples/reference/seed_instruments.py  # create/update reference/instruments
 ```
 
 `../../start_frontends.sh` starts the dashboard and the COT desk together.
