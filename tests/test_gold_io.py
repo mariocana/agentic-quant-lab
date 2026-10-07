@@ -1,5 +1,5 @@
 """gold.ingest Delta round-trips (tmp dir, no network)."""
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
 import polars as pl
 from deltalake import DeltaTable
@@ -224,19 +224,25 @@ def test_ohlcv_gold_script_builds_every_table_and_timeframe(lake, freeze_now, mo
 
     freeze_now(gold, utc(2024, 1, 3, 0, 0))
     _seed_silver("binance_spot_ohlcv", utc(2024, 1, 2, 0, 0), 60)
-    _seed_silver("multicharts_ohlcv", utc(2024, 1, 2, 0, 0), 60, symbol="ES")
+    _seed_silver("multicharts_ohlcv", utc(2024, 1, 2, 0, 0), 5 * 60, symbol="ES")
 
     script = Path(__file__).parents[1] / "applications" / "historical" / "ohlcv_gold.py"
     spec = importlib.util.spec_from_file_location("ohlcv_gold", script)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     monkeypatch.setattr(mod, "SILVER_ROOT", lake["SILVER_ROOT"])
-    monkeypatch.setattr(mod, "TIMEFRAMES", ["1m", "1h"])
+    monkeypatch.setattr(mod, "TABLES", {
+        "multicharts_ohlcv": ("multicharts_ohlcv", ["1h", "4h_cme"]),
+        "binance_spot_ohlcv": ("binance_spot_ohlcv", ["1m", "1h"]),
+    })
     mod.main()
 
     assert _gold("binance_spot_ohlcv", "1m").height == 60
     assert _gold("binance_spot_ohlcv", "1h").height == 1
-    assert _gold("multicharts_ohlcv", "1h", symbol="ES")["timestamp"].to_list() == [utc(2024, 1, 2, 0, 0)]
+    assert _gold("multicharts_ohlcv", "1h", symbol="ES")["timestamp"].to_list() == [utc(2024, 1, 2, h) for h in range(5)]
+    # data 00:00-05:00 UTC = 18:00-23:00 CST: the 17:00-21:00 CST window (23:00-03:00 UTC) is written,
+    # the 21:00-01:00 CST one (03:00-07:00 UTC) is not complete yet
+    assert _gold("multicharts_ohlcv", "4h_cme", symbol="ES")["timestamp"].to_list() == [utc(2024, 1, 1, 23, 0)]
 
 
 # ── binance_realign.py ─────────────────────────────────────────────────────
@@ -292,3 +298,19 @@ def test_binance_realign_rewrites_silver_and_gold(lake, freeze_now, monkeypatch)
     # second run: nothing misaligned left, same result
     again = mod.realign(SYMBOL, utc(2017, 12, 1), utc(2018, 3, 1))
     assert again["silver_misaligned_before"] == 0 and again["silver_rows_after"] == 10
+
+
+def test_update_ohlcv_1d_cme_waits_for_the_session_close(lake, freeze_now):
+    from zoneinfo import ZoneInfo
+    chi = lambda *a: datetime(*a, tzinfo=ZoneInfo("America/Chicago")).astimezone(timezone.utc)  # noqa: E731
+
+    freeze_now(gold, chi(2026, 10, 3, 12, 0))
+    # Wed 17:00 → Thu 15:59 CT (session not over) then Thu 16:00 → 16:59 (last hour)
+    _seed_silver("s", chi(2026, 9, 30, 17, 0), 23 * 60, symbol="ES")
+    assert gold.update_ohlcv("s", "g", "1d_cme", "ES").is_empty()
+
+    _seed_silver("s", chi(2026, 10, 1, 16, 0), 61, symbol="ES")  # 16:00 → 17:00, opens Thu's session
+    out = gold.update_ohlcv("s", "g", "1d_cme", "ES")
+    assert out["timestamp"].to_list() == [chi(2026, 9, 30, 17)]
+    assert out["timestamp_close"].to_list() == [chi(2026, 10, 1, 17)]
+    assert out["volume"].item() > 0

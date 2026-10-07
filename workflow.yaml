@@ -312,6 +312,20 @@ gold:
       - resample 1m → 1d; only windows fully covered by silver, last bar rebuilt each run
       - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
 
+  multicharts_ohlcv/4h_cme:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), windows anchored to the CME day (17:00 America/Chicago, DST-aware)
+      - timestamp = window open in UTC; 1d_cme = one Globex session (Sun/Mon-Thu 17:00 → 16:00 next day)
+      - only windows fully covered by silver; never vacuumed
+
+  multicharts_ohlcv/1d_cme:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), windows anchored to the CME day (17:00 America/Chicago, DST-aware)
+      - timestamp = window open in UTC; 1d_cme = one Globex session (Sun/Mon-Thu 17:00 → 16:00 next day)
+      - only windows fully covered by silver; never vacuumed
+
   binance_spot_ohlcv/1m:
     from: [silver/binance_spot_ohlcv]
     transforms:
