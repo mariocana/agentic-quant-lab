@@ -127,3 +127,20 @@ def test_spot_is_not_margin_unless_declared():
 
     assert classic.equity_usd == 0.0 and classic.spot_usdc == 999.0, "spot must not be sized against"
     assert unified.equity_usd == 999.0
+
+
+def test_a_resting_order_that_filled_is_ours_before_it_is_booked(ledger):
+    """execute() returns None for an order that rests; the fill can land before the
+    next reconcile(). In that window the position has no row yet — but calling it
+    unmanaged would make the desk disown its own trade and warn about it."""
+    i = intent(asset="SUI")
+    ledger.record_sent(i, cloid="0xaaa", oid="1")
+    p = ledger.enrich([position("SUI")])[0]
+    assert p.managed and p.strategy_id == "reversal_v1"
+    assert "SUI" not in ledger.rows, "still not booked, just recognised"
+
+
+def test_truly_foreign_positions_stay_unmanaged(ledger):
+    ledger.record_sent(intent(asset="SUI"), cloid="0xaaa", oid="1")
+    p = ledger.enrich([position("DOGE")])[0]
+    assert p.managed is False

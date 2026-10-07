@@ -62,7 +62,11 @@ class HLMarket:
     def meta(self, asset: str) -> dict:
         if asset not in self._meta_cache:
             self.refresh_meta()
-        return self._meta_cache[asset]
+        try:
+            return self._meta_cache[asset]
+        except KeyError:
+            raise KeyError(f"{asset} is not listed on this venue "
+                           f"({len(self._meta_cache)} perps available)") from None
 
     def contexts(self) -> dict[str, AssetContext]:
         """Funding, OI, mark, mid, 24h volume for every main-dex perp."""

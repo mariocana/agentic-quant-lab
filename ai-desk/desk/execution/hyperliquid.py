@@ -63,6 +63,13 @@ class HyperliquidAdapter(ExecutionAdapter):
         self.ledger = PositionLedger()
         log.info("HL adapter: signing with agent %s for account %s (%s)", wallet.address, account_address, base_url)
 
+    def tradable_assets(self) -> set[str] | None:
+        try:
+            return set(self.venue.refresh_meta())
+        except Exception as e:                    # noqa: BLE001 - better to trade nothing than to guess
+            log.warning("could not read the venue universe: %s", e)
+            return set()
+
     def account_state(self) -> AccountState:
         """Sizes from the exchange, context from the ledger.
 
@@ -79,6 +86,11 @@ class HyperliquidAdapter(ExecutionAdapter):
         if unmanaged:
             log.warning("positions on the exchange that this desk did not open: %s "
                         "(left untouched)", ", ".join(unmanaged))
+        awaiting = [p.asset for p in acc.positions
+                    if p.managed and p.asset not in self.ledger.rows]
+        if awaiting:
+            log.info("filled from a resting order, booked at the next reconcile: %s",
+                     ", ".join(awaiting))
         return acc
 
     # ---- orders --------------------------------------------------------------

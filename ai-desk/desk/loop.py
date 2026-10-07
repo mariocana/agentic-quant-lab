@@ -41,7 +41,7 @@ def run_cycle(market: HLMarket, strategy: Strategy, adapter: ExecutionAdapter, l
               state: RiskState, fetch_depth: bool = True, dry_run: bool = False) -> dict:
     log.info("cycle start: strategy=%s adapter=%s dry_run=%s", strategy.id, adapter.name, dry_run)
     contexts = market.contexts()
-    marks = {a: c.mid_px for a, c in contexts.items()}
+    marks = {a: c.mid_px for a, c in contexts.items()}   # before any filtering: marking is not trading
     if hasattr(adapter, "set_marks"):
         adapter.set_marks(marks)
 
@@ -70,7 +70,14 @@ def run_cycle(market: HLMarket, strategy: Strategy, adapter: ExecutionAdapter, l
     if fired:
         notify(f"Risk state: {fired} (equity {account.equity_usd:.2f})")
 
-    # strategy
+    # strategy — on what this venue can actually trade
+    listed = adapter.tradable_assets() if hasattr(adapter, "tradable_assets") else None
+    if listed is not None:
+        dropped = [a for a in contexts if a not in listed]
+        contexts = {a: c for a, c in contexts.items() if a in listed}
+        if dropped:
+            log.info("%d of the feed's assets are not listed on %s (e.g. %s)",
+                     len(dropped), adapter.name, ", ".join(sorted(dropped)[:5]))
     universe = strategy.universe(contexts)
     candles = {a: market.candles(a, strategy.interval, strategy.bars) for a in universe}
     targets = strategy.targets(candles, contexts, account.equity_usd)

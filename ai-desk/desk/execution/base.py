@@ -21,6 +21,15 @@ class ExecutionAdapter(ABC):
     def flatten_all(self) -> list[Fill]:
         """Close every open position at market. Used by the halt path only."""
 
+    def tradable_assets(self) -> set[str] | None:
+        """What this venue actually lists, or None when it takes anything.
+
+        The strategy ranks on mainnet data because that is where the volume is,
+        but a venue need not list the same perps: testnet is missing 21 of
+        mainnet's names. Without this the desk picks a name it cannot trade and
+        the cycle dies on it."""
+        return None
+
 
 def round_size(sz: float, sz_decimals: int) -> float:
     return round(sz, sz_decimals)

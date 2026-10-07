@@ -66,6 +66,10 @@ class PositionLedger:
                     return c, row
         return None
 
+    def pending_for_asset(self, asset: str) -> dict | None:
+        """An order we sent for this asset that has not come back yet."""
+        return next((r for r in self.pending.values() if r.get("asset") == asset), None)
+
     def drop_pending(self, cloid: str) -> None:
         if self.pending.pop(cloid, None) is not None:
             self._save()
@@ -125,7 +129,15 @@ class PositionLedger:
         for p in positions:
             row = self.rows.get(p.asset)
             if row is None:
-                out.append(p.model_copy(update={"managed": False}))
+                # An order of ours that rested and then filled shows up here before
+                # the next reconcile() promotes it. It is ours, just not booked yet;
+                # calling it unmanaged would be wrong and would raise a false alarm.
+                pending = self.pending_for_asset(p.asset)
+                out.append(p.model_copy(update={
+                    "managed": bool(pending),
+                    "strategy_id": pending.get("strategy_id") if pending else None,
+                    "horizon_hours": pending.get("horizon_hours") if pending else None,
+                }))
                 continue
             opened = row.get("opened_at")
             out.append(p.model_copy(update={
