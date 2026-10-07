@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import collections
 import json
+import os
 import re
 import logging
 import threading
@@ -26,12 +27,25 @@ from desk.risk.state import RiskState, state_path
 from desk.signals.reversal import Reversal
 
 UI_SETTINGS_PATH = VAR / "ui_settings.json"
-DEFAULT_UI_SETTINGS = {
-    "mode": "paper",                 # paper | live
-    "schedule_enabled": False,
-    "schedule_time_utc": "00:05",
-    "snapshot_minutes": 15,
-}
+
+
+def _defaults() -> dict:
+    """Starting settings, overridable from the environment.
+
+    A deployed desk has nobody to click the switches on first boot, and the
+    settings file lives on a volume that starts empty. These are only defaults:
+    once the file exists it wins, so changing a setting in the dashboard is not
+    undone by the next restart.
+    """
+    return {
+        "mode": "live" if os.environ.get("DESK_MODE") == "live" else "paper",
+        "schedule_enabled": os.environ.get("DESK_SCHEDULE", "0") == "1",
+        "schedule_time_utc": os.environ.get("DESK_SCHEDULE_UTC", "00:05"),
+        "snapshot_minutes": int(os.environ.get("DESK_SNAPSHOT_MINUTES", "15")),
+    }
+
+
+DEFAULT_UI_SETTINGS = _defaults()
 
 # Field descriptions for the limits editor. Keys are dotted paths into limits.yaml.
 LIMIT_FIELDS = [
@@ -152,9 +166,15 @@ class DeskService:
     # ---- settings ------------------------------------------------------------
 
     def _load_ui_settings(self) -> dict:
-        s = dict(DEFAULT_UI_SETTINGS)
+        s = _defaults()
         if UI_SETTINGS_PATH.exists():
             s.update(json.loads(UI_SETTINGS_PATH.read_text()))
+        if s["mode"] == "live" and not (self.settings.account_address and self.settings.api_wallet_key):
+            raise SystemExit(
+                "DESK_MODE=live but HL_ACCOUNT_ADDRESS / HL_API_WALLET_KEY are not set.\n"
+                "A desk that starts in live mode without a wallet would look healthy and "
+                "trade nothing; refusing to start says so immediately."
+            )
         return s
 
     def update_ui_settings(self, patch: dict) -> dict:

@@ -63,6 +63,33 @@ and debugging; it drives the same files. Paper state lives in
 `var/paper_account.json`, risk state in `var/risk_state.json`, UI settings in
 `var/ui_settings.json`, the journal in `var/journal.jsonl`. Delete `var/` to start over.
 
+## A second desk, same repo
+
+One deployment runs one desk. A paper desk building a baseline and a live desk on
+testnet are two different accounts with two different risk states, so they are two
+services — same repo and root directory, different environment:
+
+| variable | paper baseline | testnet live |
+|---|---|---|
+| `DESK_MODE` | *(unset)* | `live` |
+| `DESK_SCHEDULE` | `1` | `1` |
+| `DESK_SCHEDULE_UTC` | `00:05` | `00:20` |
+| `HL_TESTNET` | — | `1` |
+| `HL_ACCOUNT_ADDRESS` | — | the account holding the funds |
+| `HL_API_WALLET_KEY` | — | the agent key (cannot withdraw) |
+| `HL_UNIFIED_COLLATERAL` | — | `1` if the account is Unified |
+| `DESK_PASSWORD` | its own | its own |
+
+Each service needs **its own volume** on `/app/var`: the ledger, the journal and the
+risk state are per-desk, and sharing them would have one desk reading the other's
+positions. Stagger the schedules so the two are not hitting the same API at once.
+
+These are defaults for the first boot only — a deployed desk has nobody to click
+its switches, and the volume starts empty. Once the settings file exists it wins,
+so a change made in the dashboard survives the next restart. Starting in live mode
+without a wallet is refused outright rather than running healthy and trading
+nothing.
+
 ## Acceptance
 
 The unit tests cover the pieces. This drives the running desk through its own API
