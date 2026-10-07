@@ -22,7 +22,7 @@ from desk.data.hl_market import HLMarket
 from desk.execution.paper import PAPER_PATH, PaperAdapter
 from desk.journal.log import read as read_journal, record
 from desk.loop import run_cycle
-from desk.risk.state import RiskState
+from desk.risk.state import RiskState, state_path
 from desk.signals.reversal import Reversal
 
 UI_SETTINGS_PATH = VAR / "ui_settings.json"
@@ -183,6 +183,12 @@ class DeskService:
                 self._adapter = PaperAdapter()
         return self._adapter
 
+    def risk_state(self) -> RiskState:
+        """Risk state for the context we are actually trading in. Paper and live
+        hold different amounts of money; sharing a peak equity between them makes
+        a mode switch look like a crash."""
+        return RiskState.load(state_path(self.ui["mode"], self.settings.account_address))
+
     def venue_label(self) -> str:
         if self.ui["mode"] == "paper":
             return "paper"
@@ -225,7 +231,7 @@ class DeskService:
         if hasattr(adapter, "set_marks"):
             adapter.set_marks({a: c.mid_px for a, c in ctx.items()})
         acc = adapter.account_state()
-        rs = RiskState.load()
+        rs = self.risk_state()
         limits = load_limits()
         equity = acc.equity_usd
         day_pnl = rs.day_pnl_pct(equity)
@@ -317,7 +323,7 @@ class DeskService:
             raise RuntimeError("a cycle is already running")
         self.running, self.last_error = True, None
         try:
-            summary = run_cycle(self.market, self.strategy, self.adapter, load_limits(), RiskState.load(),
+            summary = run_cycle(self.market, self.strategy, self.adapter, load_limits(), self.risk_state(),
                                 fetch_depth=fetch_depth, dry_run=dry_run)
             summary["dry_run"] = dry_run
             summary["ts"] = datetime.now(timezone.utc).isoformat()
@@ -349,7 +355,7 @@ class DeskService:
             record("event", {"event": "kill_released", "by": "ui"})
 
     def unlock(self):
-        st = RiskState.load()
+        st = self.risk_state()
         reason = st.halt_reason
         st.unlock()
         st.save()
@@ -359,7 +365,7 @@ class DeskService:
         if self.ui["mode"] != "paper":
             raise ValueError("not in paper mode")
         PAPER_PATH.unlink(missing_ok=True)
-        st = RiskState.load()
+        st = self.risk_state()
         st.day, st.day_start_equity, st.peak_equity = "", 0.0, 0.0
         st.unlock()
         st.save()

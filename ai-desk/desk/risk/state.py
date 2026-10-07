@@ -14,6 +14,21 @@ from desk.config import KILL_FILE, VAR
 STATE_PATH = VAR / "risk_state.json"
 
 
+def state_path(mode: str, account: str | None = None) -> Path:
+    """Where the risk state for one trading context lives.
+
+    Paper and live are different pots of money with different equity, so they
+    cannot share a peak: switching modes would otherwise read as a crash. A paper
+    account at 10,000 and a testnet account at 999 produced a -90% drawdown and
+    halted the desk, which is exactly the behaviour you want from the drawdown
+    rule and exactly the wrong input.
+    """
+    if mode == "paper":
+        return STATE_PATH                      # unchanged, so existing history is kept
+    tag = (account or "unknown")[2:10].lower()
+    return VAR / f"risk_state_live_{tag}.json"
+
+
 @dataclass
 class RiskState:
     day: str = ""                      # UTC date "YYYY-MM-DD"
@@ -28,12 +43,13 @@ class RiskState:
 
     @classmethod
     def load(cls, path: Path = STATE_PATH) -> "RiskState":
-        if path.exists():
-            return cls(**json.loads(path.read_text()))
-        return cls()
+        st = cls(**json.loads(path.read_text())) if path.exists() else cls()
+        st._path = path                        # so save() goes back where it came from
+        return st
 
-    def save(self, path: Path = STATE_PATH) -> None:
-        path.write_text(json.dumps(asdict(self), indent=2))
+    def save(self, path: Path | None = None) -> None:
+        (path or getattr(self, "_path", None) or STATE_PATH).write_text(
+            json.dumps(asdict(self), indent=2))
 
     # ---- updates -------------------------------------------------------------
 

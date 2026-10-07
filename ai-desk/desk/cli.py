@@ -20,11 +20,16 @@ import sys
 
 from desk.config import load_limits, settings
 from desk.data.hl_market import HLMarket
-from desk.risk.state import RiskState
+from desk.risk.state import RiskState, state_path
 
 
 def _market() -> HLMarket:
     return HLMarket(settings().data_url)
+
+
+def _risk_state(live: bool) -> RiskState:
+    s = settings()
+    return RiskState.load(state_path("live" if live else "paper", s.account_address))
 
 
 def _adapter(live: bool):
@@ -47,7 +52,7 @@ def cmd_status(args):
     if hasattr(adapter, "set_marks"):
         adapter.set_marks({a: c.mid_px for a, c in _market().contexts().items()})
     acc = adapter.account_state()
-    st = RiskState.load()
+    st = _risk_state(args.live)
     print(f"adapter      {adapter.name}   exec: {'testnet' if settings().testnet else 'MAINNET'}   data: mainnet")
     print(f"equity       {acc.equity_usd:,.2f}   gross {acc.gross_notional_usd:,.2f}   day {st.day_pnl_pct(acc.equity_usd):+.2%}")
     print(f"peak         {st.peak_equity:,.2f}   halted={st.halted} {st.halt_reason}   kill={RiskState.kill_engaged()}")
@@ -58,7 +63,7 @@ def cmd_status(args):
 def cmd_run(args):
     from desk.loop import run_cycle
     from desk.signals.reversal import Reversal
-    summary = run_cycle(_market(), Reversal(), _adapter(args.live), load_limits(), RiskState.load(),
+    summary = run_cycle(_market(), Reversal(), _adapter(args.live), load_limits(), _risk_state(args.live),
                         fetch_depth=not args.no_depth, dry_run=args.dry_run)
     print(json.dumps(summary, indent=2))
 
@@ -83,7 +88,7 @@ def cmd_unkill(args):
 
 
 def cmd_unlock(args):
-    st = RiskState.load()
+    st = _risk_state(getattr(args, "live", False))
     print(f"was: halted={st.halted} {st.halt_reason}")
     st.unlock()
     st.save()
@@ -115,7 +120,7 @@ def main(argv=None):
     sub.add_parser("universe").set_defaults(fn=cmd_universe)
     sub.add_parser("kill").set_defaults(fn=cmd_kill)
     sub.add_parser("unkill").set_defaults(fn=cmd_unkill)
-    sub.add_parser("unlock").set_defaults(fn=cmd_unlock)
+    ul = sub.add_parser("unlock"); ul.add_argument("--live", action="store_true"); ul.set_defaults(fn=cmd_unlock)
     j = sub.add_parser("journal"); j.add_argument("--kind"); j.add_argument("--last", type=int, default=20)
     j.set_defaults(fn=cmd_journal)
     u = sub.add_parser("ui")

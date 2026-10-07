@@ -35,3 +35,38 @@ def test_roundtrip(tmp_path, limits):
     st.observe(10_000, limits)
     st.save(tmp_path / "s.json")
     assert RiskState.load(tmp_path / "s.json") == st
+
+
+def test_paper_and_live_do_not_share_a_peak(tmp_path, monkeypatch):
+    """Switching mode must not read as a crash. A paper account at 10,000 and a
+    testnet account at 999 share nothing but a desk; with one state file the
+    switch produced a -90% drawdown and halted trading."""
+    import desk.risk.state as mod
+
+    monkeypatch.setattr(mod, "VAR", tmp_path)
+    monkeypatch.setattr(mod, "STATE_PATH", tmp_path / "risk_state.json")
+
+    paper = mod.state_path("paper")
+    live = mod.state_path("live", "0x566d819b945421b09b33f91ae9a3b2cbd7195094")
+    assert paper != live
+
+    st = RiskState.load(paper)
+    st.observe(10_000, limits_for_test())
+    st.save()
+
+    fresh = RiskState.load(live)
+    fired = fresh.observe(999, limits_for_test())
+    assert fired == [], f"a fresh live account must not inherit the paper peak: {fired}"
+    assert fresh.peak_equity == 999
+    assert RiskState.load(paper).peak_equity == 10_000, "and the paper history must survive"
+
+
+def test_two_live_accounts_keep_separate_state():
+    import desk.risk.state as mod
+    a = mod.state_path("live", "0xaaaaaaaabbbbbbbbccccccccdddddddd11111111")
+    b = mod.state_path("live", "0xeeeeeeeeffffffff0000000011111111222222222")
+    assert a != b
+
+
+def limits_for_test():
+    return {"daily_loss_flatten_pct": 0.05, "max_drawdown_pct": 0.15}
