@@ -23,7 +23,7 @@ import polars as pl
 from oryon import FeaturePipeline
 
 from quantlake.config import GOLD_ROOT, SILVER_ROOT
-from quantlake.gold.ohlcv import compute_features, resample, update_features
+from quantlake.gold.ohlcv import bar_close, bar_open, compute_features, parse_timeframe, resample, update_features
 from quantlake.helper import TF_SECONDS
 from quantlake.storage import last_timestamp, read_symbol, upsert
 
@@ -64,10 +64,9 @@ def ingest(
     if pipeline is not None:
         df = compute_features(df, pipeline)
 
-    tf_sec = TF_SECONDS[timeframe]
     now = datetime.now(timezone.utc)
     df = df.with_columns(
-        (pl.col("timestamp") + pl.duration(seconds=tf_sec)).alias("timestamp_close"),
+        bar_close(timeframe).alias("timestamp_close"),
         pl.lit(now).cast(pl.Datetime("us", "UTC")).alias("ingested_at"),
         pl.lit(None).cast(pl.Int64).alias("latency_ms"),
         pl.lit(False).alias("live"),
@@ -97,8 +96,9 @@ def update_ohlcv(silver_table: str, gold_table: str, timeframe: str, symbol: str
         return pl.DataFrame()
 
     covered_until = df["timestamp"].max() + timedelta(minutes=1)
-    window_end = pl.col("timestamp").dt.truncate(timeframe) + pl.duration(seconds=TF_SECONDS[timeframe])
-    return ingest(df.filter(window_end <= covered_until), gold_table, timeframe)
+    window_end = bar_close(timeframe, "_open")
+    df = df.with_columns(bar_open(timeframe).alias("_open")).filter(window_end <= covered_until).drop("_open")
+    return ingest(df, gold_table, timeframe)
 
 
 # ── Historical rebuild (live-script startup) ───────────────────────────────
@@ -220,11 +220,10 @@ def _gold_path(gold_table: str, timeframe: str) -> str:
 
 
 def _drop_incomplete_tail(df: pl.DataFrame, timeframe: str) -> pl.DataFrame:
-    tf_sec = TF_SECONDS.get(timeframe)
-    if not tf_sec:
+    """Keep bars whose window has closed (in wall-clock time)."""
+    try:
+        parse_timeframe(timeframe)
+    except ValueError:
         return df
-    now = datetime.now(timezone.utc)
-    last_complete_open = datetime.fromtimestamp(
-        int(now.timestamp()) // tf_sec * tf_sec - tf_sec, tz=timezone.utc
-    )
-    return df.filter(pl.col("timestamp") <= pl.lit(last_complete_open))
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    return df.filter(bar_close(timeframe) <= pl.lit(now).cast(pl.Datetime("us", "UTC")))
