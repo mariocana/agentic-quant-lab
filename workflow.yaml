@@ -204,6 +204,7 @@ silver:
   binance_spot_ohlcv:
     from: [bronze/binance_spot_ohlcv]
     transforms:
+      - align_to_minute — truncate open time to the minute (archives 2017-12 → 2018-02 are shifted by seconds), keep the larger-volume row on collision
       - replace inf / -inf with NaN on Float64 columns
       - replace null with NaN on Float64 columns
       - invalidate bars where high < low or low < 0
@@ -213,7 +214,7 @@ silver:
     from: [bronze/multicharts_ohlcv]
     transforms:
       - incremental copy of bronze bars newer than the last silver bar (historical/multicharts.py)
-      - same clean_ohlcv rules as binance_spot_ohlcv
+      - same align_to_minute + clean_ohlcv rules as binance_spot_ohlcv
 
   fred:
     from: [bronze/fred]

@@ -33,7 +33,7 @@ def sync_silver(symbol: str) -> None:
     df = read_symbol(str(BRONZE_ROOT / TABLE), symbol, since=since)
     if df is None or df.is_empty():
         return
-    silver.ingest(df.sort("timestamp"), TABLE)
+    silver.ingest(df.sort("timestamp"), TABLE, align_1m=True)
     print(f"[{symbol}] silver +{len(df):,} bars")
 
 

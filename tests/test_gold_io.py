@@ -237,3 +237,58 @@ def test_ohlcv_gold_script_builds_every_table_and_timeframe(lake, freeze_now, mo
     assert _gold("binance_spot_ohlcv", "1m").height == 60
     assert _gold("binance_spot_ohlcv", "1h").height == 1
     assert _gold("multicharts_ohlcv", "1h", symbol="ES")["timestamp"].to_list() == [utc(2024, 1, 2, 0, 0)]
+
+
+# ── binance_realign.py ─────────────────────────────────────────────────────
+
+def _load_script(name: str):
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).parents[1] / "applications" / "historical" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_binance_realign_rewrites_silver_and_gold(lake, freeze_now, monkeypatch):
+    freeze_now(gold, utc(2018, 3, 1))
+    shift = timedelta(seconds=20, milliseconds=799)
+    raw = minute_bars(utc(2017, 12, 4, 6, 0), 10).drop("symbol")
+    # minutes 1..9 shifted; minute 2 also present aligned with lower volume → collision
+    raw = raw.with_columns(
+        pl.when(pl.int_range(pl.len()) > 0).then(pl.col("timestamp") + shift).otherwise(pl.col("timestamp"))
+    )
+    dup = minute_bars(utc(2017, 12, 4, 6, 2), 1).drop("symbol").with_columns(pl.lit(0.5).alias("volume"))
+    raw = bronze.add_partition_columns(pl.concat([raw, dup]), SYMBOL)
+    bronze.save(raw, "binance_spot_ohlcv")
+    # silver as written before the fix: shifted timestamps
+    silver.ingest(raw, "binance_spot_ohlcv")
+    gold.update_ohlcv("binance_spot_ohlcv", "binance_spot_ohlcv", "5m", SYMBOL)
+
+    mod = _load_script("binance_realign")
+    for name, path in (("BRONZE_ROOT", lake["BRONZE_ROOT"]), ("SILVER_ROOT", lake["SILVER_ROOT"]),
+                       ("GOLD_ROOT", lake["GOLD_ROOT"])):
+        monkeypatch.setattr(mod, name, path)
+
+    dry = mod.realign(SYMBOL, utc(2017, 12, 1), utc(2018, 3, 1), dry_run=True)
+    assert dry == {"bronze_rows": 11, "bronze_misaligned": 9,
+                   "silver_rows_before": 11, "silver_misaligned_before": 9}
+
+    stats = mod.realign(SYMBOL, utc(2017, 12, 1), utc(2018, 3, 1))
+    assert stats["silver_deleted"] == 11 and stats["silver_rows_after"] == 10
+    assert stats["gold_5m"] == 2
+
+    from quantlake.storage import read_symbol
+    s = read_symbol(str(lake["SILVER_ROOT"] / "binance_spot_ohlcv"), SYMBOL).sort("timestamp")
+    assert s["timestamp"].to_list() == [utc(2017, 12, 4, 6, m) for m in range(10)]
+    assert s.filter(pl.col("timestamp") == utc(2017, 12, 4, 6, 2))["volume"].to_list() == [3.0]
+
+    g = _gold("binance_spot_ohlcv", "5m")
+    assert g["timestamp"].to_list() == [utc(2017, 12, 4, 6, 0), utc(2017, 12, 4, 6, 5)]
+    assert g["volume"].to_list() == [1 + 2 + 3 + 4 + 5, 6 + 7 + 8 + 9 + 10]  # duplicate no longer summed
+
+    # second run: nothing misaligned left, same result
+    again = mod.realign(SYMBOL, utc(2017, 12, 1), utc(2018, 3, 1))
+    assert again["silver_misaligned_before"] == 0 and again["silver_rows_after"] == 10

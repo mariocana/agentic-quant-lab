@@ -1,8 +1,9 @@
 import math
+from datetime import datetime, timedelta, timezone
 
 import polars as pl
 
-from quantlake.silver.ohlcv import clean_ohlcv
+from quantlake.silver.ohlcv import align_to_minute, clean_ohlcv
 
 
 def _bars(**cols) -> pl.DataFrame:
@@ -85,3 +86,70 @@ def test_works_without_volume_column():
     out = clean_ohlcv(df)
     assert "volume" not in out.columns
     assert out.equals(df)
+
+
+# ── align_to_minute ────────────────────────────────────────────────────────
+
+def _ts(h, m, s=0, us=0):
+    return datetime(2017, 12, 4, h, m, s, us, tzinfo=timezone.utc)
+
+
+def _shifted(rows):
+    """rows: (open_ts, volume, close) → binance-like 1m bars."""
+    ts = [r[0] for r in rows]
+    return pl.DataFrame({
+        "timestamp": pl.Series(ts, dtype=pl.Datetime("us", "UTC")),
+        "timestamp_close": pl.Series([t + timedelta(seconds=59, milliseconds=999) for t in ts],
+                                     dtype=pl.Datetime("us", "UTC")),
+        "symbol": ["BTCUSDT"] * len(rows),
+        "open":  [r[2] for r in rows],
+        "high":  [r[2] for r in rows],
+        "low":   [r[2] for r in rows],
+        "close": [r[2] for r in rows],
+        "volume": [r[1] for r in rows],
+    })
+
+
+def test_shifted_open_times_are_truncated_to_the_minute():
+    df = _shifted([
+        (_ts(6, 0), 0.0, 100.0),                       # halt filler bar, already aligned
+        (_ts(6, 1, 20, 799_000), 3.0, 101.0),          # +20.799 s
+        (_ts(6, 2, 14, 789_000), 4.0, 102.0),          # +14.789 s
+    ])
+    out = align_to_minute(df)
+    assert out["timestamp"].to_list() == [_ts(6, 0), _ts(6, 1), _ts(6, 2)]
+    assert out["timestamp_close"].to_list() == [
+        _ts(6, m) + timedelta(seconds=59, milliseconds=999) for m in (0, 1, 2)
+    ]
+    assert out["close"].to_list() == [100.0, 101.0, 102.0]
+    assert out.row(0, named=True)["volume"] == 0.0  # filler bar kept as is
+
+
+def test_collision_keeps_the_row_with_larger_volume():
+    df = _shifted([
+        (_ts(6, 5), 2.0, 105.0),
+        (_ts(6, 5, 20, 799_000), 7.0, 106.0),   # truncates onto 06:05, larger volume → wins
+        (_ts(6, 6, 14, 789_000), 1.0, 107.0),
+    ])
+    out = align_to_minute(df)
+    assert out["timestamp"].to_list() == [_ts(6, 5), _ts(6, 6)]
+    assert out["close"].to_list() == [106.0, 107.0]
+    assert out["volume"].to_list() == [7.0, 1.0]
+
+
+def test_collision_tie_keeps_earliest_original_timestamp():
+    df = _shifted([(_ts(6, 5, 20, 799_000), 5.0, 106.0), (_ts(6, 5), 5.0, 105.0)])
+    assert align_to_minute(df)["close"].to_list() == [105.0]
+
+
+def test_collisions_are_per_symbol():
+    a = _shifted([(_ts(6, 5), 1.0, 1.0)])
+    b = _shifted([(_ts(6, 5, 20, 799_000), 2.0, 2.0)]).with_columns(pl.lit("ETHUSDT").alias("symbol"))
+    out = align_to_minute(pl.concat([a, b]))
+    assert out.height == 2
+    assert out["timestamp"].to_list() == [_ts(6, 5), _ts(6, 5)]
+
+
+def test_aligned_input_is_unchanged():
+    df = _shifted([(_ts(6, m), float(m), float(m)) for m in range(5)])
+    assert align_to_minute(df).equals(df)

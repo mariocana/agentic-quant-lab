@@ -59,3 +59,40 @@ def clean_ohlcv(df: pl.DataFrame) -> pl.DataFrame:
         )
 
     return df
+
+
+def align_to_minute(df: pl.DataFrame) -> pl.DataFrame:
+    """Snap 1m bars to the minute and drop the duplicates that creates.
+
+    For 1-minute bar sources only (binance_spot_ohlcv, multicharts_ohlcv),
+    never for tables with other grains or keys. Some Binance archives carry
+    open times shifted by a few seconds (e.g. +20.799 s / +14.789 s between
+    2017-12-04 and 2018-02-10, after the exchange halts).
+
+      1. timestamp is truncated to the minute; timestamp_close (if present)
+         moves by the same amount.
+      2. Rows that now share (symbol, timestamp) collapse to one: the row
+         with the largest volume is kept; on a tie (or without a volume
+         column) the one with the earliest original timestamp.
+
+    This is the only rule in silver that removes rows. Zero-volume filler
+    bars (O=H=L=C, volume 0) are real rows and are left as they are.
+    """
+    if df.is_empty() or "timestamp" not in df.columns:
+        return df
+
+    shift = pl.col("timestamp") - pl.col("timestamp").dt.truncate("1m")
+    out = df.with_columns(
+        pl.col("timestamp").alias("_original_ts"),
+        *([(pl.col("timestamp_close") - shift).alias("timestamp_close")] if "timestamp_close" in df.columns else []),
+    ).with_columns(pl.col("timestamp").dt.truncate("1m"))
+
+    keys = [c for c in ("symbol", "timestamp") if c in out.columns]
+    order = (["volume"] if "volume" in out.columns else []) + ["_original_ts"]
+    descending = [c == "volume" for c in order]
+    return (
+        out.sort(order, descending=descending, nulls_last=True)
+        .unique(subset=keys, keep="first", maintain_order=True)
+        .sort(keys)
+        .drop("_original_ts")
+    )

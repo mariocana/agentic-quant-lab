@@ -76,3 +76,15 @@ def last_timestamp(table_path: str, symbol: str) -> datetime | None:
     if df is None or df.is_empty():
         return None
     return df["timestamp"].max()
+
+
+
+def delete_range(table_path: str, symbol: str, start: datetime, end: datetime) -> int:
+    """Delete symbol's rows with start <= timestamp < end; returns the number of rows deleted."""
+    if not DeltaTable.is_deltatable(table_path):
+        return 0
+    iso = "%Y-%m-%dT%H:%M:%S.%fZ"
+    predicate = (
+        f"symbol = '{symbol}' AND timestamp >= '{start:{iso}}' AND timestamp < '{end:{iso}}'"
+    )
+    return DeltaTable(table_path).delete(predicate)["num_deleted_rows"]
