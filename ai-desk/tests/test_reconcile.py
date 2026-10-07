@@ -116,3 +116,32 @@ def test_the_fills_cursor_is_pinned_on_first_read(tmp_path, monkeypatch):
 
     a._fills_since(first + 5_000)
     assert a._fills_since() == first + 5_000
+
+
+def test_every_tranche_of_a_partial_fill_is_ours(ledger):
+    """An order fills in pieces — 20 units, then 2, on the same oid. If the first
+    fill consumes the order's context, every later tranche reads as a stranger's
+    trade. Seven of eight positions were misattributed this way on testnet."""
+    i = intent(asset="GRAM")
+    ledger.record_sent(i, cloid="0xaaa", oid="62105591876")
+
+    first, hw, foreign = reconcile_fills(
+        [raw_fill(coin="GRAM", sz="20.0", px="1.4407", oid=62105591876, t=1000)], ledger, since_ms=0)
+    assert len(first) == 1 and not foreign
+
+    second, hw, foreign = reconcile_fills(
+        [raw_fill(coin="GRAM", sz="2.0", px="1.4407", oid=62105591876, t=2000)], ledger, since_ms=hw)
+    assert len(second) == 1, "the second tranche belongs to the same order"
+    assert not foreign, f"reported as foreign: {foreign}"
+    assert ledger.rows["GRAM"]["strategy_id"] == "reversal_v1"
+
+
+def test_settled_orders_are_eventually_forgotten(ledger):
+    from datetime import datetime, timedelta, timezone
+
+    ledger.record_sent(intent(), cloid="0xaaa", oid="1")
+    ledger.settle_pending("0xaaa")
+    assert ledger.pending_for(oid="1") is not None
+    ledger.settled["0xaaa"]["settled_at"] = (datetime.now(timezone.utc) - timedelta(days=5)).isoformat()
+    assert ledger.prune_settled() == 1
+    assert ledger.pending_for(oid="1") is None

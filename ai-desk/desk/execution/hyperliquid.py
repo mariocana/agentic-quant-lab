@@ -61,6 +61,8 @@ class HyperliquidAdapter(ExecutionAdapter):
         self.venue = HLMarket(base_url)
         self.unified_collateral = unified_collateral
         self.ledger = PositionLedger()
+        self._said_unmanaged: frozenset[str] = frozenset()
+        self._said_awaiting: frozenset[str] = frozenset()
         log.info("HL adapter: signing with agent %s for account %s (%s)", wallet.address, account_address, base_url)
 
     def tradable_assets(self) -> set[str] | None:
@@ -82,15 +84,21 @@ class HyperliquidAdapter(ExecutionAdapter):
         if gone:
             log.info("ledger: closed on the exchange, dropping %s", ", ".join(gone))
         acc.positions = self.ledger.enrich(acc.positions)
-        unmanaged = [p.asset for p in acc.positions if not p.managed]
-        if unmanaged:
+        # The dashboard reads the account every 15s. Say these things when they
+        # change, not on every read: a line repeated 200 times is not a log, it is
+        # a wall, and the one line that matters hides behind it.
+        unmanaged = frozenset(p.asset for p in acc.positions if not p.managed)
+        if unmanaged and unmanaged != self._said_unmanaged:
             log.warning("positions on the exchange that this desk did not open: %s "
-                        "(left untouched)", ", ".join(unmanaged))
-        awaiting = [p.asset for p in acc.positions
-                    if p.managed and p.asset not in self.ledger.rows]
-        if awaiting:
+                        "(left untouched)", ", ".join(sorted(unmanaged)))
+        self._said_unmanaged = unmanaged
+
+        awaiting = frozenset(p.asset for p in acc.positions
+                             if p.managed and p.asset not in self.ledger.rows)
+        if awaiting and awaiting != self._said_awaiting:
             log.info("filled from a resting order, booked at the next reconcile: %s",
-                     ", ".join(awaiting))
+                     ", ".join(sorted(awaiting)))
+        self._said_awaiting = awaiting
         return acc
 
     # ---- orders --------------------------------------------------------------
@@ -157,6 +165,7 @@ class HyperliquidAdapter(ExecutionAdapter):
             record("foreign_fills", {"n": len(foreign), "assets": sorted({r.get("coin") for r in foreign})})
         if high_water > since:
             self._fills_since(high_water)
+        self.ledger.prune_settled()
         for cloid in self.ledger.stale_pending():
             log.warning("order sent and never seen again, dropping: %s", cloid)
             self.ledger.drop_pending(cloid)

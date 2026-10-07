@@ -74,7 +74,7 @@ def reconcile_fills(raw_fills: list[dict], ledger: PositionLedger, since_ms: int
         # A closing fill still writes its row: account_state() drops it on the next
         # read if the exchange no longer reports the position.
         ledger.record(fill, intent, cloid=cloid)
-        ledger.drop_pending(cloid)
+        ledger.settle_pending(cloid)
         ours.append(fill)
 
     return ours, high_water, foreign

@@ -36,10 +36,15 @@ class PositionLedger:
         # the file used to be a bare {asset: row} map; keep reading those
         self.rows: dict[str, dict] = raw.get("positions", raw if "pending" not in raw else {})
         self.pending: dict[str, dict] = raw.get("pending", {})
+        # Orders that have produced at least one fill. An order fills in tranches —
+        # 20 units, then 2, on the same oid — so its context has to outlive the
+        # first fill or every later tranche looks like somebody else's trade.
+        self.settled: dict[str, dict] = raw.get("settled", {})
 
     def _save(self) -> None:
-        self.path.write_text(json.dumps({"positions": self.rows, "pending": self.pending},
-                                        indent=2, sort_keys=True))
+        self.path.write_text(json.dumps(
+            {"positions": self.rows, "pending": self.pending, "settled": self.settled},
+            indent=2, sort_keys=True))
 
     # ---- orders in flight ----------------------------------------------------
 
@@ -58,21 +63,41 @@ class PositionLedger:
     def pending_for(self, *, oid: str | None = None, cloid: str | None = None) -> tuple[str, dict] | None:
         """Find an in-flight order by either id. Exchanges echo the oid on every
         fill; the cloid only when the order carried one."""
-        if cloid and cloid in self.pending:
-            return cloid, self.pending[cloid]
-        if oid:
-            for c, row in self.pending.items():
-                if row.get("oid") == str(oid):
-                    return c, row
+        for table in (self.pending, self.settled):
+            if cloid and cloid in table:
+                return cloid, table[cloid]
+            if oid:
+                for c, row in table.items():
+                    if row.get("oid") == str(oid):
+                        return c, row
         return None
 
     def pending_for_asset(self, asset: str) -> dict | None:
         """An order we sent for this asset that has not come back yet."""
         return next((r for r in self.pending.values() if r.get("asset") == asset), None)
 
-    def drop_pending(self, cloid: str) -> None:
-        if self.pending.pop(cloid, None) is not None:
+    def settle_pending(self, cloid: str) -> None:
+        """A fill arrived for this order. Keep its context: more tranches may follow
+        on the same order id."""
+        row = self.pending.pop(cloid, None)
+        if row is not None:
+            self.settled[cloid] = {**row, "settled_at": datetime.now(timezone.utc).isoformat()}
             self._save()
+
+    def drop_pending(self, cloid: str) -> None:
+        if self.pending.pop(cloid, None) is not None or self.settled.pop(cloid, None) is not None:
+            self._save()
+
+    def prune_settled(self, older_than_hours: float = 48.0) -> int:
+        """Settled orders cannot fill forever; forget them so the file stays small."""
+        cutoff = datetime.now(timezone.utc).timestamp() - older_than_hours * 3600
+        gone = [c for c, r in self.settled.items()
+                if datetime.fromisoformat(r["settled_at"]).timestamp() < cutoff]
+        for c in gone:
+            self.settled.pop(c)
+        if gone:
+            self._save()
+        return len(gone)
 
     def stale_pending(self, older_than_hours: float = 24.0) -> list[str]:
         """Orders we sent and never saw again — cancelled, expired, or lost."""
