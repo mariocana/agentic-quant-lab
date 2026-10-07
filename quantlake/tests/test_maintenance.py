@@ -34,7 +34,7 @@ def test_find_tables_walks_nested_gold(tmp_path):
 def test_compacts_and_vacuums_without_changing_data(tmp_path):
     path = tmp_path / "bronze" / "t"
     expected = _many_small_writes(path)
-    before = len(DeltaTable(str(path)).files())
+    before = len(DeltaTable(str(path)).file_uris())
     assert before == 6
 
     reports = maintenance.run(layers=("bronze",), retention_hours=0, data_root=tmp_path)
@@ -42,7 +42,7 @@ def test_compacts_and_vacuums_without_changing_data(tmp_path):
     assert r.error is None
     assert r.files_removed == 6 and r.files_added == 1
     assert r.vacuumed == 6
-    assert len(DeltaTable(str(path)).files()) == 1
+    assert len(DeltaTable(str(path)).file_uris()) == 1
     assert len(list(path.rglob("*.parquet"))) == 1
     assert _read(path).equals(expected.select(_read(path).columns))
 
@@ -52,7 +52,7 @@ def test_dry_run_changes_nothing(tmp_path):
     _many_small_writes(path, 3)
     (r,) = maintenance.run(layers=("silver",), retention_hours=0, dry_run=True, data_root=tmp_path)
     assert r.files_before == 3 and r.files_added == 0
-    assert len(DeltaTable(str(path)).files()) == 3
+    assert len(DeltaTable(str(path)).file_uris()) == 3
 
 
 def test_broken_table_is_reported_not_raised(tmp_path):
