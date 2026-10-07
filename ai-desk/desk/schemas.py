@@ -154,9 +154,10 @@ class AssetContext(BaseModel):
 
 
 class AccountState(BaseModel):
-    equity_usd: float
+    equity_usd: float                   # what the risk engine sizes against
     margin_used_usd: float
     positions: list[Position]
+    spot_usdc: float = 0.0              # separate balance; margin only on a unified account
     as_of: datetime = Field(default_factory=_now)
 
     @property

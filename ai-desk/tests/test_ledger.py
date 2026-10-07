@@ -108,3 +108,22 @@ def test_time_stop_ignores_unmanaged_positions(limits):
         "managed": False, "horizon_hours": 24, "opened_at": now - timedelta(hours=40)})
     out = time_stop_intents(_account([old_mine, old_yours]), limits, now=now)
     assert [i.asset for i in out] == ["BTC"]
+
+
+def test_spot_is_not_margin_unless_declared():
+    """A Unified account lets spot USDC back perp margin and the app shows the sum.
+    The API never says which mode the account is in, so the desk is told — guessing
+    would mean sizing every limit off a number that might not be collateral."""
+    from unittest.mock import patch
+
+    from desk.data.hl_market import HLMarket
+
+    empty_perps = {"marginSummary": {"accountValue": "0.0", "totalMarginUsed": "0.0"}, "assetPositions": []}
+    m = HLMarket("https://api.hyperliquid-testnet.xyz")
+    with patch.object(m.info, "user_state", return_value=empty_perps), \
+         patch.object(m, "spot_usdc", return_value=999.0):
+        classic = m.account_state("0xabc", unified_collateral=False)
+        unified = m.account_state("0xabc", unified_collateral=True)
+
+    assert classic.equity_usd == 0.0 and classic.spot_usdc == 999.0, "spot must not be sized against"
+    assert unified.equity_usd == 999.0

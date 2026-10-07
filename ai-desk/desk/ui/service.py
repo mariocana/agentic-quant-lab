@@ -177,7 +177,8 @@ class DeskService:
             if self.ui["mode"] == "live":
                 from desk.execution.hyperliquid import HyperliquidAdapter
                 self._adapter = HyperliquidAdapter(self.settings.base_url, self.settings.account_address,
-                                                   self.settings.api_wallet_key)
+                                                   self.settings.api_wallet_key,
+                                                   self.settings.unified_collateral)
             else:
                 self._adapter = PaperAdapter()
         return self._adapter

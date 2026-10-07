@@ -19,6 +19,7 @@ load_dotenv(ROOT / ".env")
 @dataclass(frozen=True)
 class Settings:
     testnet: bool
+    unified_collateral: bool            # spot USDC counts as margin (Unified account)
     account_address: str | None
     api_wallet_key: str | None
     telegram_token: str | None
@@ -46,6 +47,7 @@ def settings() -> Settings:
 
     return Settings(
         testnet=os.environ.get("HL_TESTNET", "1") != "0",
+        unified_collateral=os.environ.get("HL_UNIFIED_COLLATERAL", "0") == "1",
         account_address=opt("HL_ACCOUNT_ADDRESS"),
         api_wallet_key=opt("HL_API_WALLET_KEY"),
         telegram_token=opt("TELEGRAM_BOT_TOKEN"),

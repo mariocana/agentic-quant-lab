@@ -39,7 +39,7 @@ def _adapter(live: bool):
         if input().strip() != "MAINNET":
             sys.exit("aborted")
     from desk.execution.hyperliquid import HyperliquidAdapter
-    return HyperliquidAdapter(s.base_url, s.account_address, s.api_wallet_key)
+    return HyperliquidAdapter(s.base_url, s.account_address, s.api_wallet_key, s.unified_collateral)
 
 
 def cmd_status(args):

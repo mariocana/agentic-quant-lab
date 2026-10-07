@@ -40,7 +40,8 @@ def cloid_for(intent_id: str) -> Cloid:
 class HyperliquidAdapter(ExecutionAdapter):
     name = "hyperliquid"
 
-    def __init__(self, base_url: str, account_address: str, api_wallet_key: str):
+    def __init__(self, base_url: str, account_address: str, api_wallet_key: str,
+                 unified_collateral: bool = False):
         try:
             wallet = eth_account.Account.from_key(api_wallet_key)
         except Exception as e:                    # noqa: BLE001 - the message matters more than the type
@@ -58,6 +59,7 @@ class HyperliquidAdapter(ExecutionAdapter):
         # account reads and asset metadata come from the venue we execute on,
         # not from the (mainnet) data feed the strategy looks at
         self.venue = HLMarket(base_url)
+        self.unified_collateral = unified_collateral
         self.ledger = PositionLedger()
         log.info("HL adapter: signing with agent %s for account %s (%s)", wallet.address, account_address, base_url)
 
@@ -68,7 +70,7 @@ class HyperliquidAdapter(ExecutionAdapter):
         who opened it and when. A position with no ledger row comes back with
         managed=False, and the rest of the desk leaves it alone.
         """
-        acc = self.venue.account_state(self.address)
+        acc = self.venue.account_state(self.address, self.unified_collateral)
         gone = self.ledger.reconcile({p.asset for p in acc.positions})
         if gone:
             log.info("ledger: closed on the exchange, dropping %s", ", ".join(gone))

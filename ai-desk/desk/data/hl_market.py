@@ -116,7 +116,16 @@ class HLMarket:
 
     # ---- account (read-only, needs only the address) -------------------------
 
-    def account_state(self, address: str) -> AccountState:
+    def spot_usdc(self, address: str) -> float:
+        """USDC on the spot balance. On a Unified account it backs perp margin; on a
+        classic one it is money the desk cannot touch until it is moved across."""
+        try:
+            st = self.info.post("/info", {"type": "spotClearinghouseState", "user": address})
+            return sum(float(b["total"]) for b in st.get("balances", []) if b.get("coin") == "USDC")
+        except Exception:                 # noqa: BLE001 - informational
+            return 0.0
+
+    def account_state(self, address: str, unified_collateral: bool = False) -> AccountState:
         st = self.info.user_state(address)
         ms = st["marginSummary"]
         positions = []
@@ -132,9 +141,17 @@ class HLMarket:
                 asset=p["coin"], notional_usd=notional, size=size, entry_px=entry,
                 mark_px=mark, unrealized_pnl_usd=float(p["unrealizedPnl"]),
             ))
+        spot = self.spot_usdc(address)
+        equity = float(ms["accountValue"])
         return AccountState(
-            equity_usd=float(ms["accountValue"]),
+            # On a Unified account the exchange lets spot USDC back perp margin, and
+            # the app shows the sum as "Available to Trade". The API reports the two
+            # separately and nothing in it says which mode the account is in, so this
+            # is a declared setting: inferring it would mean guessing how much capital
+            # the desk has, and sizing every limit off that guess.
+            equity_usd=equity + spot if unified_collateral else equity,
             margin_used_usd=float(ms["totalMarginUsed"]),
             positions=positions,
+            spot_usdc=spot,
             as_of=datetime.now(timezone.utc),
         )

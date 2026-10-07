@@ -38,15 +38,6 @@ def _notional_arg() -> float:
     return MIN_EXCHANGE_NOTIONAL + 1
 
 
-def _spot_usdc(adapter) -> float:
-    """The faucet credits spot; perps is a different balance. Worth saying so."""
-    try:
-        st = adapter.info.post("/info", {"type": "spotClearinghouseState", "user": adapter.address})
-        return sum(float(b["total"]) for b in st.get("balances", []) if b.get("coin") == "USDC")
-    except Exception:                             # noqa: BLE001 - a hint, not a requirement
-        return 0.0
-
-
 def check(name: str, ok: bool, detail: str = "") -> bool:
     print(f"  {PASS if ok else FAIL}  {name}" + (f"  — {detail}" if detail else ""))
     if not ok:
@@ -67,7 +58,7 @@ def main() -> int:
         print("  it can sign orders and cannot withdraw.")
         return 2
 
-    adapter = HyperliquidAdapter(s.base_url, s.account_address, s.api_wallet_key)
+    adapter = HyperliquidAdapter(s.base_url, s.account_address, s.api_wallet_key, s.unified_collateral)
 
     print("1. the wallet can read the account")
     acc = adapter.account_state()
@@ -76,16 +67,22 @@ def main() -> int:
     notional = _notional_arg()
     if acc.equity_usd < notional * 1.2:
         print(f"  {INFO}  perps equity is ${acc.equity_usd:.2f}; this test needs about ${notional * 1.2:.2f}.")
-        spot = _spot_usdc(adapter)
-        if spot > 0:
-            print(f"  {INFO}  You have ${spot:,.2f} on the SPOT account. Spot and perps are separate")
-            print(f"  {INFO}  balances: move it across in the app (the Transfer control on the")
-            print(f"  {INFO}  balance panel), then run this again.")
+        spot = acc.spot_usdc
+        if spot > 0 and not s.unified_collateral:
+            print(f"  {INFO}  ${spot:,.2f} sits on the SPOT balance, which perps cannot use as margin")
+            print(f"  {INFO}  unless the account is Unified — the app then shows the sum as")
+            print(f"  {INFO}  'Available to Trade'. If it does, set HL_UNIFIED_COLLATERAL=1 in .env;")
+            print(f"  {INFO}  otherwise switch Account Type to classic and move the funds to perps.")
+        elif spot > 0:
+            print(f"  {INFO}  ${spot:,.2f} on spot is already counted (HL_UNIFIED_COLLATERAL=1).")
         else:
             print(f"  {INFO}  Claim mock USDC at app.hyperliquid-testnet.xyz/drip with the wallet")
             print(f"  {INFO}  that owns this API wallet, then transfer it from spot to perps.")
         return 2
     unmanaged = [p.asset for p in acc.positions if not p.managed]
+    print(f"  {INFO}  perps ${acc.equity_usd - (acc.spot_usdc if s.unified_collateral else 0):,.2f}"
+          f" + spot ${acc.spot_usdc:,.2f}"
+          f"{' (counted as collateral)' if s.unified_collateral else ' (not margin)'}")
     print(f"  {INFO}  {len(acc.positions)} open position(s)"
           + (f", not opened by this desk: {', '.join(unmanaged)}" if unmanaged else ""))
 
