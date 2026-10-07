@@ -64,3 +64,32 @@ def test_broken_table_is_reported_not_raised(tmp_path):
     reports = {r.path.name: r for r in maintenance.run(layers=("gold",), retention_hours=0, data_root=tmp_path)}
     assert reports["a"].error is None
     assert reports["b"].error is not None
+
+
+def test_gold_tables_read_by_alpha_quant_are_not_vacuumed(tmp_path, monkeypatch):
+    import quantlake.reference.instruments as ref
+    from quantlake.reference.instruments import DEFAULT_INSTRUMENTS, instruments_frame, upsert_instruments
+
+    monkeypatch.setattr(ref, "REFERENCE_ROOT", tmp_path / "reference")
+    upsert_instruments(instruments_frame([dict(DEFAULT_INSTRUMENTS[2])]))  # BTCUSDT → binance_spot_ohlcv
+    assert maintenance.protected_gold_tables(tmp_path) == {"binance_spot_ohlcv"}
+
+    kept = tmp_path / "gold" / "binance_spot_ohlcv" / "5m"
+    other = tmp_path / "gold" / "some_strategy" / "5m"
+    expected = _many_small_writes(kept, 3)
+    _many_small_writes(other, 3)
+
+    reports = {r.path: r for r in maintenance.run(layers=("gold",), retention_hours=0, data_root=tmp_path)}
+    assert reports[kept].vacuum_skipped and reports[kept].vacuumed == 0
+    assert reports[kept].files_added == 1  # still compacted
+    assert len(list(kept.rglob("*.parquet"))) == 4  # old files kept on disk
+    assert not reports[other].vacuum_skipped and reports[other].vacuumed == 3
+
+    # every old version of the protected table is still readable
+    for v in range(DeltaTable(str(kept)).version() + 1):
+        DeltaTable(str(kept), version=v).to_pyarrow_table()
+    assert _read(kept).equals(expected.select(_read(kept).columns))
+
+
+def test_no_reference_table_protects_nothing(tmp_path):
+    assert maintenance.protected_gold_tables(tmp_path) == set()

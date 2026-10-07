@@ -42,13 +42,32 @@ def upsert(df: pl.DataFrame, table_path: str, update_matched: bool = False) -> N
         write_deltalake(table_path, df, mode="overwrite", partition_by=PARTITION_BY)
 
 
-def read_symbol(table_path: str, symbol: str, columns: list[str] | None = None) -> pl.DataFrame | None:
-    """Read one symbol's rows (partition-pruned), or None if the table doesn't exist."""
+def read_symbol(
+    table_path: str,
+    symbol: str,
+    columns: list[str] | None = None,
+    since: datetime | None = None,
+) -> pl.DataFrame | None:
+    """Read one symbol's rows (partition-pruned), or None if the table doesn't exist.
+
+    ``since`` keeps rows with timestamp >= since and prunes older year partitions.
+    """
     if not DeltaTable.is_deltatable(table_path):
         return None
-    return pl.from_arrow(
-        DeltaTable(table_path).to_pyarrow_table(columns=columns, filters=[("symbol", "=", symbol)])
-    )
+    filters = [("symbol", "=", symbol)]
+    if since is not None:
+        filters.append(("year", ">=", since.year))
+    df = pl.from_arrow(DeltaTable(table_path).to_pyarrow_table(columns=columns, filters=filters))
+    if since is not None:
+        df = df.filter(pl.col("timestamp") >= since)
+    return df
+
+
+def symbols(table_path: str) -> list[str]:
+    """Distinct symbols of a table partitioned by symbol (read from the Delta log, no data scan)."""
+    if not DeltaTable.is_deltatable(table_path):
+        return []
+    return sorted({p["symbol"] for p in DeltaTable(table_path).partitions()})
 
 
 def last_timestamp(table_path: str, symbol: str) -> datetime | None:

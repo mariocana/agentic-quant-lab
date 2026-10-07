@@ -6,6 +6,11 @@ down. Compaction rewrites them into larger ones; vacuum deletes the files
 no longer referenced once they are older than the retention window (time
 travel within that window keeps working).
 
+Gold tables listed in reference/instruments (gold_table column) are read
+by alpha-quant, which records the Delta version it used and may reopen it
+later: those are compacted but never vacuumed, so every old version stays
+readable (they keep growing on disk; vacuum them by hand if needed).
+
 Run it while no live runner is writing: a concurrent merge makes the
 compaction commit fail. Such a table is reported and skipped, the next
 run picks it up.
@@ -18,6 +23,7 @@ import argparse
 from dataclasses import dataclass
 from pathlib import Path
 
+import polars as pl
 from deltalake import DeltaTable
 
 from quantlake.config import DATA_ROOT
@@ -33,6 +39,7 @@ class TableReport:
     files_removed: int = 0
     files_added: int = 0
     vacuumed: int = 0
+    vacuum_skipped: bool = False
     error: str | None = None
 
 
@@ -43,23 +50,35 @@ def find_tables(root: Path) -> list[Path]:
     return sorted(log.parent for log in root.rglob("_delta_log") if log.is_dir())
 
 
+def protected_gold_tables(data_root: Path = DATA_ROOT) -> set[str]:
+    """Gold tables alpha-quant reads: the gold_table values in reference/instruments."""
+    path = str(data_root / "reference" / "instruments")
+    if not DeltaTable.is_deltatable(path):
+        return set()
+    df = pl.from_arrow(DeltaTable(path).to_pyarrow_table(columns=["gold_table"]))
+    return set(df["gold_table"].drop_nulls().to_list())
+
+
 def maintain_table(
     path: Path,
     retention_hours: int = DEFAULT_RETENTION_HOURS,
     dry_run: bool = False,
+    vacuum: bool = True,
 ) -> TableReport:
     dt = DeltaTable(str(path))
-    report = TableReport(path=path, files_before=len(dt.files()))
+    report = TableReport(path=path, files_before=len(dt.files()), vacuum_skipped=not vacuum)
     if dry_run:
-        report.vacuumed = len(dt.vacuum(retention_hours=retention_hours, dry_run=True,
-                                        enforce_retention_duration=False))
+        if vacuum:
+            report.vacuumed = len(dt.vacuum(retention_hours=retention_hours, dry_run=True,
+                                            enforce_retention_duration=False))
         return report
 
     metrics = dt.optimize.compact()
     report.files_removed = metrics.get("numFilesRemoved", 0)
     report.files_added = metrics.get("numFilesAdded", 0)
-    report.vacuumed = len(dt.vacuum(retention_hours=retention_hours, dry_run=False,
-                                    enforce_retention_duration=False))
+    if vacuum:
+        report.vacuumed = len(dt.vacuum(retention_hours=retention_hours, dry_run=False,
+                                        enforce_retention_duration=False))
     return report
 
 
@@ -69,11 +88,13 @@ def run(
     dry_run: bool = False,
     data_root: Path = DATA_ROOT,
 ) -> list[TableReport]:
+    protected = protected_gold_tables(data_root)
     reports = []
     for layer in layers:
         for path in find_tables(data_root / layer):
+            keep_versions = layer == "gold" and path.relative_to(data_root / "gold").parts[0] in protected
             try:
-                reports.append(maintain_table(path, retention_hours, dry_run))
+                reports.append(maintain_table(path, retention_hours, dry_run, vacuum=not keep_versions))
             except Exception as exc:  # one bad table must not stop the others
                 reports.append(TableReport(path=path, files_before=-1, error=f"{type(exc).__name__}: {exc}"))
     return reports
@@ -95,10 +116,13 @@ def main() -> None:
         if r.error:
             failed += 1
             print(f"FAIL {name}: {r.error}")
-        elif args.dry_run:
-            print(f"     {name}: {r.files_before} files, {r.vacuumed} to vacuum")
         else:
-            print(f"ok   {name}: {r.files_removed} -> {r.files_added} files compacted, {r.vacuumed} vacuumed")
+            vac = "vacuum skipped (read by alpha-quant)" if r.vacuum_skipped else f"{r.vacuumed} vacuumed"
+            if args.dry_run:
+                vac = "no vacuum (read by alpha-quant)" if r.vacuum_skipped else f"{r.vacuumed} to vacuum"
+                print(f"     {name}: {r.files_before} files, {vac}")
+            else:
+                print(f"ok   {name}: {r.files_removed} -> {r.files_added} files compacted, {vac}")
     print(f"{len(reports)} tables, {failed} failed")
     if failed:
         raise SystemExit(1)

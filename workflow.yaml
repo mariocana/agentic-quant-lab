@@ -209,6 +209,12 @@ silver:
       - invalidate bars where high < low or low < 0
       - invalidate negative volumes
 
+  multicharts_ohlcv:
+    from: [bronze/multicharts_ohlcv]
+    transforms:
+      - incremental copy of bronze bars newer than the last silver bar (historical/multicharts.py)
+      - same clean_ohlcv rules as binance_spot_ohlcv
+
   fred:
     from: [bronze/fred]
     transforms:
@@ -263,6 +269,90 @@ silver:
       - nc_net_pct_oi = 100 * nc_net / open_interest (null when OI <= 0)
 
 gold:
+  multicharts_ohlcv/1m:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/5m:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 5m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/15m:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 15m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/1h:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1h; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/4h:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 4h; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/1d:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1d; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/1m:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/5m:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 5m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/15m:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 15m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/1h:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1h; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/4h:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 4h; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/1d:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1d; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
   top_10_momentum_crypto/5m:
     from: [silver/binance_spot_ohlcv]
     transforms:

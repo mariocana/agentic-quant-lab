@@ -8,9 +8,9 @@ names and dtypes must not change without changing the reader too. Costs
 `gold_table` / `data_symbol` point at the bars: gold/<gold_table>/<tf>,
 rows where symbol == data_symbol.
 
-The table is small and unpartitioned; writes merge on `symbol`. It is not
-vacuumed by quantlake.maintenance, so alpha-quant can always reopen the
-exact version it recorded.
+The table is small and unpartitioned; writes merge on `symbol`. Neither it
+nor the gold tables it points to are vacuumed by quantlake.maintenance, so
+alpha-quant can always reopen the exact version it recorded.
 """
 import re
 from datetime import datetime, timezone

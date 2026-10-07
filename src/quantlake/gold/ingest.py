@@ -28,7 +28,7 @@ from quantlake.helper import TF_SECONDS
 from quantlake.storage import last_timestamp, read_symbol, upsert
 
 __all__ = [
-    "ingest", "save",
+    "ingest", "save", "update_ohlcv",
     "warmup_pipeline", "build_live_bar", "rebuild_from_silver",
 ]
 
@@ -79,6 +79,26 @@ def ingest(
 def save(df: pl.DataFrame, table_name: str, timeframe: str) -> None:
     """Upsert a pre-built gold df into its Delta table."""
     upsert(df, _gold_path(table_name, timeframe), update_matched=True)
+
+
+# ── Plain OHLCV gold (incremental, read by alpha-quant) ────────────────────
+
+def update_ohlcv(silver_table: str, gold_table: str, timeframe: str, symbol: str) -> pl.DataFrame:
+    """Extend gold/<gold_table>/<timeframe> for ``symbol`` with new silver bars, no features.
+
+    Reads silver from the last stored gold bar onward (that bar is rebuilt
+    and overwritten) and writes only bars whose whole window is covered by
+    silver: a bar is never built from minutes that haven't been ingested
+    yet. Re-running is safe. Returns the bars written.
+    """
+    last = last_timestamp(_gold_path(gold_table, timeframe), symbol)
+    df = read_symbol(str(SILVER_ROOT / silver_table), symbol, since=last)
+    if df is None or df.is_empty():
+        return pl.DataFrame()
+
+    covered_until = df["timestamp"].max() + timedelta(minutes=1)
+    window_end = pl.col("timestamp").dt.truncate(timeframe) + pl.duration(seconds=TF_SECONDS[timeframe])
+    return ingest(df.filter(window_end <= covered_until), gold_table, timeframe)
 
 
 # ── Historical rebuild (live-script startup) ───────────────────────────────

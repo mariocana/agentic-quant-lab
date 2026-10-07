@@ -2,6 +2,7 @@
 from datetime import timedelta
 
 import polars as pl
+from deltalake import DeltaTable
 import pytest
 
 import quantlake.bronze.ingest as bronze
@@ -9,6 +10,7 @@ import quantlake.gold.ingest as gold
 import quantlake.live as live
 import quantlake.silver.ingest as silver
 from helpers import minute_bars, utc
+from quantlake.gold.ohlcv import resample
 
 SYMBOL = "BTCUSDT"
 
@@ -146,3 +148,92 @@ def test_reconstitute_buffer_reloads_current_window(lake):
     empty = {SYMBOL: []}
     live._reconstitute_buffer(SYMBOL, "s", "5m", utc(2024, 1, 2, 9, 4), empty)  # window complete
     assert empty[SYMBOL] == []
+
+
+# ── plain OHLCV gold (update_ohlcv) ────────────────────────────────────────
+
+def _gold(table: str, tf: str, symbol: str = SYMBOL) -> pl.DataFrame:
+    from quantlake.storage import read_symbol
+    return read_symbol(str(gold.GOLD_ROOT / table / tf), symbol).sort("timestamp")
+
+
+def test_read_symbol_since_and_symbols(lake):
+    from quantlake.storage import read_symbol, symbols
+    _seed_silver("s", utc(2023, 12, 31, 23, 58), 4)
+    _seed_silver("s", utc(2024, 1, 2, 9, 0), 2, symbol="ETHUSDT")
+    path = str(lake["SILVER_ROOT"] / "s")
+    got = read_symbol(path, SYMBOL, since=utc(2024, 1, 1, 0, 0))
+    assert got["timestamp"].to_list() == [utc(2024, 1, 1, 0, 0), utc(2024, 1, 1, 0, 1)]
+    assert symbols(path) == ["BTCUSDT", "ETHUSDT"]
+    assert symbols(str(lake["SILVER_ROOT"] / "missing")) == []
+
+
+def test_update_ohlcv_writes_only_fully_covered_windows(lake, freeze_now):
+    freeze_now(gold, utc(2024, 1, 2, 12, 0))
+    _seed_silver("s", utc(2024, 1, 2, 9, 0), 13)  # 09:00..09:12 → 09:10 window incomplete
+
+    out = gold.update_ohlcv("s", "g", "5m", SYMBOL)
+    assert out["timestamp"].to_list() == [utc(2024, 1, 2, 9, 0), utc(2024, 1, 2, 9, 5)]
+
+    # 09:13..09:14 arrive: the 09:10 bar is now complete; 09:05 is rebuilt, not duplicated
+    _seed_silver("s", utc(2024, 1, 2, 9, 13), 2)
+    out = gold.update_ohlcv("s", "g", "5m", SYMBOL)
+    assert out["timestamp"].to_list() == [utc(2024, 1, 2, 9, 5), utc(2024, 1, 2, 9, 10)]
+
+    g = _gold("g", "5m")
+    assert g["timestamp"].to_list() == [utc(2024, 1, 2, 9, m) for m in (0, 5, 10)]
+    assert g["volume"].to_list() == [1 + 2 + 3 + 4 + 5, 6 + 7 + 8 + 9 + 10, 11 + 12 + 13 + 1 + 2]
+
+    # nothing new → nothing but the last bar rewritten, still 3 rows
+    gold.update_ohlcv("s", "g", "5m", SYMBOL)
+    assert _gold("g", "5m").height == 3
+
+
+def test_update_ohlcv_matches_batch_resample(lake, freeze_now):
+    freeze_now(gold, utc(2024, 1, 3, 12, 0))
+    df = _seed_silver("s", utc(2024, 1, 2, 0, 0), 24 * 60)  # one full UTC day
+    for tf in ("1m", "15m", "4h", "1d"):
+        gold.update_ohlcv("s", "g", tf, SYMBOL)
+        got = _gold("g", tf).select("timestamp", "open", "high", "low", "close", "volume")
+        want = resample(df, tf).select("timestamp", "open", "high", "low", "close", "volume")
+        assert got.equals(want), tf
+
+
+def test_update_ohlcv_output_fits_alpha_quant_loader(lake, freeze_now):
+    freeze_now(gold, utc(2024, 1, 2, 12, 0))
+    _seed_silver("s", utc(2024, 1, 2, 9, 0), 30)
+    _seed_silver("s", utc(2024, 1, 2, 9, 0), 30, symbol="ETHUSDT")
+    gold.update_ohlcv("s", "g", "5m", SYMBOL)
+    gold.update_ohlcv("s", "g", "5m", "ETHUSDT")
+    g = pl.from_arrow(DeltaTable(str(gold.GOLD_ROOT / "g" / "5m")).to_pyarrow_table())
+    assert g.schema["timestamp"] == pl.Datetime("us", "UTC")
+    assert g.schema["symbol"] == pl.String
+    for c in ("open", "high", "low", "close"):
+        assert g.schema[c] == pl.Float64
+    assert g.group_by("symbol").agg(pl.col("timestamp").is_duplicated().any())["timestamp"].to_list() == [False, False]
+    assert g["live"].unique().to_list() == [False]
+
+
+def test_update_ohlcv_without_silver(lake):
+    assert gold.update_ohlcv("missing", "g", "5m", SYMBOL).is_empty()
+
+
+def test_ohlcv_gold_script_builds_every_table_and_timeframe(lake, freeze_now, monkeypatch):
+    import importlib.util
+    from pathlib import Path
+
+    freeze_now(gold, utc(2024, 1, 3, 0, 0))
+    _seed_silver("binance_spot_ohlcv", utc(2024, 1, 2, 0, 0), 60)
+    _seed_silver("multicharts_ohlcv", utc(2024, 1, 2, 0, 0), 60, symbol="ES")
+
+    script = Path(__file__).parents[1] / "applications" / "historical" / "ohlcv_gold.py"
+    spec = importlib.util.spec_from_file_location("ohlcv_gold", script)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    monkeypatch.setattr(mod, "SILVER_ROOT", lake["SILVER_ROOT"])
+    monkeypatch.setattr(mod, "TIMEFRAMES", ["1m", "1h"])
+    mod.main()
+
+    assert _gold("binance_spot_ohlcv", "1m").height == 60
+    assert _gold("binance_spot_ohlcv", "1h").height == 1
+    assert _gold("multicharts_ohlcv", "1h", symbol="ES")["timestamp"].to_list() == [utc(2024, 1, 2, 0, 0)]
