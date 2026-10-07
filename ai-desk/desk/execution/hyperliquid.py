@@ -245,7 +245,8 @@ class HyperliquidAdapter(ExecutionAdapter):
 
         stop_oid = None
         if intent.stop_px and not intent.reduce_only:
-            stop_oid = self._place_stop(intent.asset, is_buy, total_sz, intent.stop_px, szd)
+            stop_oid = self._place_stop(intent.asset, is_buy, total_sz, intent.stop_px, szd,
+                                        intent.strategy_id, intent.horizon_hours)
 
         fill = Fill(intent_id=intent.id, asset=intent.asset, side=intent.side, requested_usd=intent.notional_usd,
                     filled_usd=filled_usd, decision_px=mid_px, fill_px=avg_px, fee_usd=fee,
@@ -256,27 +257,46 @@ class HyperliquidAdapter(ExecutionAdapter):
         self.ledger.record(fill, intent, cloid=cloid.to_raw())
         return fill
 
-    def _place_stop(self, asset: str, entry_is_buy: bool, sz: float, stop_px: float, szd: int) -> int | None:
+    def _place_stop(self, asset: str, entry_is_buy: bool, sz: float, stop_px: float, szd: int,
+                    strategy_id: str = "risk", horizon_hours: int = 0) -> int | None:
         trigger = round_price(stop_px, szd)
-        # a stop for a long is a sell; execute as market on trigger, reduce-only
+        # A stop fires hours later, unattended. It carries a cloid and a ledger row
+        # like any other order, or the fill it produces reads as a stranger's trade
+        # and the desk decides a position it closed itself was never its own.
+        intent = OrderIntent(asset=asset, side="sell" if entry_is_buy else "buy",
+                             notional_usd=max(sz * trigger, 0.01), reduce_only=True,
+                             order_type="limit_ioc", strategy_id=strategy_id,
+                             horizon_hours=horizon_hours, reason="exchange-side stop")
+        cloid = cloid_for(intent.id)
         resp = self.exchange.order(asset, not entry_is_buy, sz, trigger,
                                    {"trigger": {"triggerPx": trigger, "isMarket": True, "tpsl": "sl"}},
-                                   reduce_only=True)
+                                   reduce_only=True, cloid=cloid)
         status = _first_status(resp)
         if "error" in status:
             log.error("STOP NOT PLACED for %s: %s", asset, status["error"])
             return None
-        return status.get("resting", {}).get("oid")
+        oid = status.get("resting", {}).get("oid")
+        self.ledger.record_sent(intent, cloid.to_raw(), oid)
+        return oid
 
     def flatten_all(self) -> list[Fill]:
+        """Close everything. These orders are ours too: without a cloid their fills
+        come back unattributable, and a desk that cannot recognise its own closing
+        trade will warn about positions it shut itself."""
         fills = []
         for p in self.account_state().positions:
-            resp = self.exchange.market_close(p.asset)
+            intent = OrderIntent(asset=p.asset, side="sell" if p.size > 0 else "buy",
+                                 notional_usd=max(abs(p.notional_usd), 0.01), reduce_only=True,
+                                 order_type="limit_ioc", strategy_id=p.strategy_id or "risk",
+                                 horizon_hours=0, reason="flatten_all")
+            cloid = cloid_for(intent.id)
+            self.ledger.record_sent(intent, cloid.to_raw(), None)
+            resp = self.exchange.market_close(p.asset, cloid=cloid)
             status = _first_status(resp)
             if "filled" in status:
                 f = status["filled"]
                 self.ledger.forget(p.asset)
-                fills.append(Fill(intent_id="flatten", asset=p.asset, side="sell" if p.size > 0 else "buy",
+                fills.append(Fill(intent_id=intent.id, asset=p.asset, side="sell" if p.size > 0 else "buy",
                                   requested_usd=abs(p.notional_usd), filled_usd=float(f["avgPx"]) * float(f["totalSz"]),
                                   decision_px=p.mark_px, fill_px=float(f["avgPx"]), fee_usd=0.0, partial=False,
                                   exchange_oid=str(f["oid"])))

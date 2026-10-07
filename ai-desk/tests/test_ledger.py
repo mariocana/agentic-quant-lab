@@ -169,3 +169,26 @@ def test_the_file_is_never_left_half_written(tmp_path):
         led.record_sent(intent(asset=f"A{n}"), cloid=f"0x{n:02d}", oid=str(n))
         json.loads(path.read_text())            # readable after every single write
     assert len(PositionLedger(path).pending) == 20
+
+
+def test_every_order_the_desk_sends_carries_its_context():
+    """Orders sent outside execute() — the exchange-side stop, and flatten_all —
+    used to go out with no cloid and no ledger row. Their fills then came back as
+    "a fill this desk did not send", so the desk disowned trades it had made
+    itself: eight of them after one Close all positions."""
+    import ast
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parent.parent / "desk" / "execution" / "hyperliquid.py").read_text()
+    tree = ast.parse(src)
+    senders = {"order", "market_close", "market_open"}
+
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.FunctionDef):
+            continue
+        body = ast.dump(node)
+        sends = any(f"attr='{m}'" in body for m in senders)
+        if sends and node.name != "cancel_stale_orders":
+            assert "cloid" in body, f"{node.name}() sends an order without a cloid"
+            assert "record_sent" in body or "_place_stop" in body, \
+                f"{node.name}() sends an order without recording it in the ledger"
