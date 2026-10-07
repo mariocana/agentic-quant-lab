@@ -68,6 +68,10 @@ sources:
     type: Commitments of Traders, legacy futures only (weekly, free Socrata API)
     modes: [rest]
     docs: https://publicreporting.cftc.gov/resource/6dca-aqww.json
+  manual:
+    type: hand-maintained reference data (exchange contract specs)
+    modes: [code]
+    docs: src/quantlake/reference/instruments.py
 
 bronze:
   binance_spot_ohlcv:
@@ -309,3 +313,19 @@ gold:
       - category (FX / Crypto / Index / Rates / Commodity) from applications/symbols.py
       - keeps the Friday-release timestamp — as-of joins onto price bars stay look-ahead free
       - "UI: applications/cot_desk (Flask, local) — pairs, matrices, top-3, Claude review"
+
+# Reference tables: no time series, no partitions, one row per key.
+# Not shown in the dashboard graph (it only draws bronze/silver/gold).
+reference:
+  instruments:
+    source: manual
+    grain: one row per instrument
+    key: symbol
+    partition: none
+    notes: |
+      Market specs (tick_size, multiplier, qty_step, min_qty, exchange
+      calendar + daily break) and the pointer to the bars: gold/<gold_table>
+      rows with symbol = data_symbol. Read-only contract with alpha-quant
+      (QuantlakeInstrumentSource): do not rename columns or change types.
+      Written by reference.instruments.upsert_instruments (merge on symbol);
+      initial rows from seed_default(). Costs stay in alpha-quant.
