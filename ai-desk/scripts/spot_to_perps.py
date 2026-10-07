@@ -9,7 +9,8 @@ which tab you are on.
     .venv/bin/python scripts/spot_to_perps.py            # moves everything but $1
     .venv/bin/python scripts/spot_to_perps.py 500        # moves $500
 
-Testnet only. It asks before moving anything.
+Testnet only, and it may well be refused: Hyperliquid allows an API wallet to
+trade but not to move funds. When that happens it says so and points at the app.
 """
 from __future__ import annotations
 
@@ -53,11 +54,18 @@ def main() -> int:
     exchange = Exchange(eth_account.Account.from_key(s.api_wallet_key), s.base_url,
                         account_address=s.account_address)
     res = exchange.usd_class_transfer(want, True)
-    print("  ->", res)
     if res.get("status") != "ok":
-        print("\n  The API wallet may not be allowed to move funds between classes;")
-        print("  in that case use the app: Portfolio > Balances > the USDC row.")
+        detail = str(res.get("response", res))
+        print(f"  -> refused: {detail}\n")
+        if "Must deposit" in detail:
+            # Not a funding problem: Hyperliquid lets an agent wallet trade, never
+            # move money. That is the whole reason its key is safe to keep on disk.
+            print("  An API wallet can sign orders but cannot move funds between balances —")
+            print("  the restriction that makes it safe to keep this key in .env.")
+            print("  Do this one in the app, signed by the wallet that owns the account:")
+            print("    Portfolio > Balances tab > the USDC row, or the account panel on the Trade page.")
         return 1
+    print("  ->", res)
     perps = float(info.user_state(s.account_address)["marginSummary"]["accountValue"])
     print(f"\n  perps now ${perps:,.2f}\n")
     return 0
