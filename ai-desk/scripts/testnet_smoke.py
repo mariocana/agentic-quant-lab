@@ -6,9 +6,9 @@ the API wallet can sign, that an order reaches the book, that the stop lands on 
 exchange and survives this process, that the fill reconciles into the ledger, and
 that closing leaves nothing behind.
 
-    HL_TESTNET=1 .venv/bin/python scripts/testnet_smoke.py
+    HL_TESTNET=1 .venv/bin/python scripts/testnet_smoke.py [--notional 11] [--yes]
 
-It sends exactly one order, at the minimum ticket, and closes it. It refuses to run
+It sends exactly one order, just over the exchange's $10 floor, and closes it. It refuses to run
 against mainnet. It asks before the one step that costs money.
 """
 from __future__ import annotations
@@ -16,12 +16,35 @@ from __future__ import annotations
 import sys
 import time
 
-from desk.config import load_limits, settings
+from desk.config import settings
 from desk.execution.hyperliquid import HyperliquidAdapter, cloid_for
 from desk.schemas import OrderIntent, RiskVerdict
 
 PASS, FAIL, INFO = "\033[32mPASS\033[0m", "\033[31mFAIL\033[0m", "\033[33m····\033[0m"
 failures: list[str] = []
+
+
+
+MIN_EXCHANGE_NOTIONAL = 10.0          # Hyperliquid rejects anything smaller: MinTradeNtl
+
+
+def _notional_arg() -> float:
+    """Size of the single test order. Deliberately not the desk's min_notional_usd:
+    that limit exists so fees do not eat a *strategy*, while this only has to be
+    large enough for the exchange to accept it."""
+    for i, a in enumerate(sys.argv):
+        if a == "--notional" and i + 1 < len(sys.argv):
+            return max(float(sys.argv[i + 1]), MIN_EXCHANGE_NOTIONAL + 1)
+    return MIN_EXCHANGE_NOTIONAL + 1
+
+
+def _spot_usdc(adapter) -> float:
+    """The faucet credits spot; perps is a different balance. Worth saying so."""
+    try:
+        st = adapter.info.post("/info", {"type": "spotClearinghouseState", "user": adapter.address})
+        return sum(float(b["total"]) for b in st.get("balances", []) if b.get("coin") == "USDC")
+    except Exception:                             # noqa: BLE001 - a hint, not a requirement
+        return 0.0
 
 
 def check(name: str, ok: bool, detail: str = "") -> bool:
@@ -50,11 +73,17 @@ def main() -> int:
     acc = adapter.account_state()
     if not check("account reachable", acc.equity_usd >= 0, f"equity ${acc.equity_usd:,.2f}"):
         return 1
-    notional = max(load_limits()["min_notional_usd"], 12.0)
+    notional = _notional_arg()
     if acc.equity_usd < notional * 1.2:
-        print(f"  {INFO}  not enough to send the minimum ticket (${notional:.2f}).")
-        print(f"  {INFO}  Get testnet USDC at faucet.circle.com (Arbitrum Sepolia), then send it")
-        print(f"  {INFO}  straight to the bridge 0x08cfc1B6b2dCF36A1480b99353A354AA8AC56f89.")
+        print(f"  {INFO}  perps equity is ${acc.equity_usd:.2f}; this test needs about ${notional * 1.2:.2f}.")
+        spot = _spot_usdc(adapter)
+        if spot > 0:
+            print(f"  {INFO}  You have ${spot:,.2f} on the SPOT account. Spot and perps are separate")
+            print(f"  {INFO}  balances: move it across in the app (the Transfer control on the")
+            print(f"  {INFO}  balance panel), then run this again.")
+        else:
+            print(f"  {INFO}  Claim mock USDC at app.hyperliquid-testnet.xyz/drip with the wallet")
+            print(f"  {INFO}  that owns this API wallet, then transfer it from spot to perps.")
         return 2
     unmanaged = [p.asset for p in acc.positions if not p.managed]
     print(f"  {INFO}  {len(acc.positions)} open position(s)"
