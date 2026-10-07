@@ -32,7 +32,16 @@ LEDGER_PATH = VAR / "position_ledger.json"
 class PositionLedger:
     def __init__(self, path: Path = LEDGER_PATH):
         self.path = path
-        raw = json.loads(path.read_text()) if path.exists() else {}
+        self._reload()
+
+    def _reload(self) -> None:
+        """Read the file back before trusting what is in memory.
+
+        The dashboard, a cycle and a script can all hold a ledger at once, and a
+        whole-file write from one of them would otherwise erase what another just
+        recorded — which is how eight positions lost their context in one evening.
+        """
+        raw = json.loads(self.path.read_text()) if self.path.exists() else {}
         # the file used to be a bare {asset: row} map; keep reading those
         self.rows: dict[str, dict] = raw.get("positions", raw if "pending" not in raw else {})
         self.pending: dict[str, dict] = raw.get("pending", {})
@@ -42,9 +51,12 @@ class PositionLedger:
         self.settled: dict[str, dict] = raw.get("settled", {})
 
     def _save(self) -> None:
-        self.path.write_text(json.dumps(
+        """Atomic: a reader never sees a half-written ledger."""
+        tmp = self.path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(
             {"positions": self.rows, "pending": self.pending, "settled": self.settled},
             indent=2, sort_keys=True))
+        tmp.replace(self.path)
 
     # ---- orders in flight ----------------------------------------------------
 
@@ -52,6 +64,7 @@ class PositionLedger:
         """An order is on the exchange. Store its context now: it may fill in a
         second or rest on the book until tomorrow, and either way the fill must be
         attributable when it arrives."""
+        self._reload()
         self.pending[cloid] = {
             "intent_id": intent.id, "asset": intent.asset, "side": intent.side,
             "strategy_id": intent.strategy_id, "horizon_hours": intent.horizon_hours,
@@ -79,12 +92,14 @@ class PositionLedger:
     def settle_pending(self, cloid: str) -> None:
         """A fill arrived for this order. Keep its context: more tranches may follow
         on the same order id."""
+        self._reload()
         row = self.pending.pop(cloid, None)
         if row is not None:
             self.settled[cloid] = {**row, "settled_at": datetime.now(timezone.utc).isoformat()}
             self._save()
 
     def drop_pending(self, cloid: str) -> None:
+        self._reload()
         if self.pending.pop(cloid, None) is not None or self.settled.pop(cloid, None) is not None:
             self._save()
 
@@ -111,6 +126,7 @@ class PositionLedger:
         """Note a fill. The first fill that opens a position sets `opened_at`;
         later fills on the same side only append their cloid, so adding to a
         position does not restart its time stop."""
+        self._reload()
         row = self.rows.get(fill.asset)
         if row is None or intent.reduce_only is False and row.get("closed"):
             row = {"opened_at": datetime.now(timezone.utc).isoformat(), "cloids": []}
@@ -128,6 +144,7 @@ class PositionLedger:
     def forget(self, asset: str) -> None:
         """The position is gone from the exchange: drop the row so a later position
         in the same asset starts its own clock."""
+        self._reload()
         if self.rows.pop(asset, None) is not None:
             self._save()
 
@@ -150,6 +167,7 @@ class PositionLedger:
         by a desk whose ledger was lost. Either way it is not ours to manage, and
         saying so is safer than adopting it.
         """
+        self._reload()
         out = []
         for p in positions:
             row = self.rows.get(p.asset)

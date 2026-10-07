@@ -111,6 +111,11 @@ class HyperliquidAdapter(ExecutionAdapter):
                 continue
             r = self.exchange.cancel(o["coin"], o["oid"])
             n += 1
+            # the order is gone, so no fill can arrive for it: drop the context too,
+            # or the in-flight table grows a tail of orders that will never return
+            match = self.ledger.pending_for(oid=str(o["oid"]))
+            if match and match[0] in self.ledger.pending:
+                self.ledger.drop_pending(match[0])
             log.info("cancelled stale %s %s oid=%s -> %s", o["side"], o["coin"], o["oid"], _first_status(r))
         return n
 

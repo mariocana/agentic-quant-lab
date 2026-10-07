@@ -144,3 +144,28 @@ def test_truly_foreign_positions_stay_unmanaged(ledger):
     ledger.record_sent(intent(asset="SUI"), cloid="0xaaa", oid="1")
     p = ledger.enrich([position("DOGE")])[0]
     assert p.managed is False
+
+
+def test_two_ledgers_on_one_file_do_not_erase_each_other(tmp_path):
+    """The dashboard, a cycle and a script can each hold a ledger. A whole-file
+    write from one erased what another had just recorded — eight positions lost
+    their context that way in a single evening."""
+    path = tmp_path / "l.json"
+    ui, script = PositionLedger(path), PositionLedger(path)
+
+    ui.record_sent(intent(asset="SUI"), cloid="0xui", oid="1")
+    script.record_sent(intent(asset="BTC"), cloid="0xscript", oid="2")
+
+    fresh = PositionLedger(path)
+    assert set(fresh.pending) == {"0xui", "0xscript"}, "a writer dropped the other's order"
+
+
+def test_the_file_is_never_left_half_written(tmp_path):
+    import json
+
+    path = tmp_path / "l.json"
+    led = PositionLedger(path)
+    for n in range(20):
+        led.record_sent(intent(asset=f"A{n}"), cloid=f"0x{n:02d}", oid=str(n))
+        json.loads(path.read_text())            # readable after every single write
+    assert len(PositionLedger(path).pending) == 20
