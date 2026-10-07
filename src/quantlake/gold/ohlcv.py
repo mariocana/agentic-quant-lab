@@ -7,7 +7,8 @@ The mantra: closed='left', label='left'. The 09:00 bar contains the
 the next 5-minute bar. If you mix this up, your backtest is shifted by
 one timeframe and your trades fire one bar too late.
 
-compute_features comes in v3.3 — for now this module is resample-only.
+compute_features runs a pipeline over a whole history (batch);
+update_features pushes a single live bar through it.
 """
 import polars as pl
 from oryon import FeaturePipeline
@@ -87,3 +88,19 @@ def compute_features(df: pl.DataFrame, pipeline: FeaturePipeline) -> pl.DataFram
         parts.append(pl.concat([symbol_df, feature_df], how="horizontal"))
 
     return pl.concat(parts, how="vertical").sort("timestamp")
+
+
+def update_features(bar: pl.DataFrame, pipeline: FeaturePipeline) -> pl.DataFrame:
+    """Live counterpart of compute_features: one bar through pipeline.update.
+
+    The pipeline is stateful, so exactly one bar per call — anything else
+    would silently skip bars and leave the state behind.
+    """
+    if bar.height != 1:
+        raise ValueError(f"update_features expects exactly one bar, got {bar.height}")
+    outputs = pipeline.update(list(bar.select(pipeline.input_names()).row(0)))
+    feats = pl.DataFrame(
+        {name: [outputs[i]] for i, name in enumerate(pipeline.output_names())},
+        schema={name: pl.Float64 for name in pipeline.output_names()},
+    )
+    return pl.concat([bar, feats], how="horizontal")

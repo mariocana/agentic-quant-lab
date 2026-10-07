@@ -14,19 +14,18 @@ Plus a poll-driven equivalent of live._emit_gold_bar:
                        apply transform_gold + pipeline.update, save
                        (used by Module 6's poll-based live scripts)
 
-The batch path (ingest, save, _drop_incomplete_tail) is unchanged from v0.3.3.
+rebuild_from_silver is the batch ingest() fed with the symbol's silver rows.
 """
 from datetime import datetime, timedelta, timezone
 from typing import Callable
 
 import polars as pl
-from deltalake import DeltaTable
 from oryon import FeaturePipeline
 
 from quantlake.config import GOLD_ROOT, SILVER_ROOT
-from quantlake.gold.ohlcv import compute_features, resample
+from quantlake.gold.ohlcv import compute_features, resample, update_features
 from quantlake.helper import TF_SECONDS
-from quantlake.storage import upsert
+from quantlake.storage import last_timestamp, read_symbol, upsert
 
 __all__ = [
     "ingest", "save",
@@ -43,8 +42,12 @@ def ingest(
     table_name: str,
     timeframe: str,
     pipeline: FeaturePipeline | None = None,
+    transform_gold: TransformGold | None = None,
 ) -> pl.DataFrame:
-    """Resample a silver OHLCV df, optionally compute features, persist to gold."""
+    """Resample a silver OHLCV df, optionally transform + compute features, persist to gold.
+
+    ``transform_gold`` is called per symbol, after resample and before features.
+    """
     if df.is_empty():
         return df
 
@@ -52,6 +55,11 @@ def ingest(
     df = _drop_incomplete_tail(df, timeframe)
     if df.is_empty():
         return df
+
+    if transform_gold is not None:
+        df = pl.concat(
+            [transform_gold(part, symbol) for (symbol,), part in df.group_by("symbol", maintain_order=True)]
+        ).sort("timestamp")
 
     if pipeline is not None:
         df = compute_features(df, pipeline)
@@ -70,7 +78,7 @@ def ingest(
 
 def save(df: pl.DataFrame, table_name: str, timeframe: str) -> None:
     """Upsert a pre-built gold df into its Delta table."""
-    upsert(df, str(GOLD_ROOT / table_name / timeframe), update_matched=True)
+    upsert(df, _gold_path(table_name, timeframe), update_matched=True)
 
 
 # ── Historical rebuild (live-script startup) ───────────────────────────────
@@ -98,40 +106,11 @@ def rebuild_from_silver(
     state sits at end-of-history. The live runner's own warmup then
     re-seeds its own pipeline instance from the stored gold.
     """
-    silver_path = str(SILVER_ROOT / silver_table)
-    if not DeltaTable.is_deltatable(silver_path):
+    df = read_symbol(str(SILVER_ROOT / silver_table), symbol)
+    if df is None or df.is_empty():
         return None
-
-    df = (
-        pl.from_arrow(
-            DeltaTable(silver_path).to_pyarrow_table(filters=[("symbol", "=", symbol)])
-        )
-        .sort("timestamp")
-    )
-    if df.is_empty():
-        return None
-
-    df = resample(df, timeframe)
-    df = _drop_incomplete_tail(df, timeframe)
-    if df.is_empty():
-        return None
-
-    if transform_gold is not None:
-        df = transform_gold(df, symbol)
-
-    if pipeline is not None:
-        df = compute_features(df, pipeline)
-
-    tf_sec = TF_SECONDS[timeframe]
-    now = datetime.now(timezone.utc)
-    df = df.with_columns(
-        (pl.col("timestamp") + pl.duration(seconds=tf_sec)).alias("timestamp_close"),
-        pl.lit(now).cast(pl.Datetime("us", "UTC")).alias("ingested_at"),
-        pl.lit(None).cast(pl.Int64).alias("latency_ms"),
-        pl.lit(False).alias("live"),
-    )
-    save(df, gold_table, timeframe)
-    return df
+    df = ingest(df, gold_table, timeframe, pipeline, transform_gold)
+    return None if df.is_empty() else df
 
 
 # ── Live path (poll-driven) ────────────────────────────────────────────────
@@ -150,15 +129,10 @@ def warmup_pipeline(
     n = pipeline.warm_up_period()
     if n == 0:
         return
-    path = str(GOLD_ROOT / gold_table / timeframe)
-    if not DeltaTable.is_deltatable(path):
+    df = read_symbol(_gold_path(gold_table, timeframe), symbol)
+    if df is None or df.is_empty():
         return
-    df = (
-        pl.from_arrow(DeltaTable(path).to_pyarrow_table(filters=[("symbol", "=", symbol)]))
-        .sort("timestamp").tail(n).select(pipeline.input_names())
-    )
-    if df.is_empty():
-        return
+    df = df.sort("timestamp").tail(n).select(pipeline.input_names())
     pipeline.run_research(df.to_numpy().tolist())
 
 
@@ -180,18 +154,15 @@ def build_live_bar(
     bar_open  = datetime.fromtimestamp((int(now.timestamp()) // tf_sec - 1) * tf_sec, tz=timezone.utc)
     bar_close = bar_open + timedelta(seconds=tf_sec)
 
-    if _last_gold_ts(gold_table, timeframe, symbol) is not None \
-            and _last_gold_ts(gold_table, timeframe, symbol) >= bar_open:
+    last_gold = last_timestamp(_gold_path(gold_table, timeframe), symbol)
+    if last_gold is not None and last_gold >= bar_open:
         return None
 
-    silver_path = str(SILVER_ROOT / silver_table)
-    if not DeltaTable.is_deltatable(silver_path):
+    silver_df = read_symbol(str(SILVER_ROOT / silver_table), symbol)
+    if silver_df is None:
         return None
-
     window_1m = (
-        pl.from_arrow(
-            DeltaTable(silver_path).to_pyarrow_table(filters=[("symbol", "=", symbol)])
-        )
+        silver_df
         .filter((pl.col("timestamp") >= bar_open) & (pl.col("timestamp") < bar_close))
         .sort("timestamp")
     )
@@ -206,13 +177,7 @@ def build_live_bar(
         tf_df = transform_gold(tf_df, symbol)
 
     if pipeline is not None:
-        inputs = list(tf_df.select(pipeline.input_names()).row(0))
-        outputs = pipeline.update(inputs)
-        feats = pl.DataFrame(
-            {name: [outputs[i]] for i, name in enumerate(pipeline.output_names())},
-            schema={name: pl.Float64 for name in pipeline.output_names()},
-        )
-        tf_df = pl.concat([tf_df, feats], how="horizontal")
+        tf_df = update_features(tf_df, pipeline)
 
     now_ts = datetime.now(timezone.utc)
     tf_df = tf_df.with_columns(
@@ -230,6 +195,10 @@ def build_live_bar(
 
 # ── Helpers ────────────────────────────────────────────────────────────────
 
+def _gold_path(gold_table: str, timeframe: str) -> str:
+    return str(GOLD_ROOT / gold_table / timeframe)
+
+
 def _drop_incomplete_tail(df: pl.DataFrame, timeframe: str) -> pl.DataFrame:
     tf_sec = TF_SECONDS.get(timeframe)
     if not tf_sec:
@@ -239,13 +208,3 @@ def _drop_incomplete_tail(df: pl.DataFrame, timeframe: str) -> pl.DataFrame:
         int(now.timestamp()) // tf_sec * tf_sec - tf_sec, tz=timezone.utc
     )
     return df.filter(pl.col("timestamp") <= pl.lit(last_complete_open))
-
-
-def _last_gold_ts(gold_table: str, timeframe: str, symbol: str) -> datetime | None:
-    path = str(GOLD_ROOT / gold_table / timeframe)
-    if not DeltaTable.is_deltatable(path):
-        return None
-    df = pl.from_arrow(
-        DeltaTable(path).to_pyarrow_table(filters=[("symbol", "=", symbol)], columns=["timestamp"])
-    )
-    return df["timestamp"].max() if not df.is_empty() else None

@@ -32,17 +32,17 @@ from datetime import datetime, timedelta, timezone
 from typing import Callable
 
 import polars as pl
-from deltalake import DeltaTable
 from oryon import FeaturePipeline
 
 import quantlake.bronze.ingest as bronze
 import quantlake.gold.ingest as gold
 import quantlake.silver.ingest as silver
 from quantlake.bronze.base import HistoricalConnector, StreamConnector
-from quantlake.config import GOLD_ROOT, SILVER_ROOT
-from quantlake.gold.ohlcv import resample
+from quantlake.config import SILVER_ROOT
+from quantlake.gold.ohlcv import resample, update_features
 from quantlake.helper import TF_SECONDS
 from quantlake.silver.ohlcv import clean_ohlcv
+from quantlake.storage import last_timestamp, read_symbol
 
 FLUSH_INTERVAL = 60  # seconds between background Delta flushes
 
@@ -54,13 +54,7 @@ TransformGold = Callable[[pl.DataFrame, str], pl.DataFrame]
 # ── Startup helpers ────────────────────────────────────────────────────────
 
 def _last_silver_ts(source_table: str, symbol: str) -> datetime | None:
-    path = str(SILVER_ROOT / source_table)
-    if not DeltaTable.is_deltatable(path):
-        return None
-    df = pl.from_arrow(
-        DeltaTable(path).to_pyarrow_table(filters=[("symbol", "=", symbol)], columns=["timestamp"])
-    )
-    return df["timestamp"].max() if not df.is_empty() else None
+    return last_timestamp(str(SILVER_ROOT / source_table), symbol)
 
 
 def _current_tf_start(ts: datetime, timeframe: str) -> datetime:
@@ -103,33 +97,12 @@ def _reconstitute_buffer(
     tf_start = _current_tf_start(last + timedelta(minutes=1), timeframe)
     if tf_start > last:
         return
-    path = str(SILVER_ROOT / source_table)
-    if not DeltaTable.is_deltatable(path):
+    df = read_symbol(str(SILVER_ROOT / source_table), symbol)
+    if df is None:
         return
-    df = (
-        pl.from_arrow(DeltaTable(path).to_pyarrow_table(filters=[("symbol", "=", symbol)]))
-        .filter((pl.col("timestamp") >= tf_start) & (pl.col("timestamp") <= last))
-        .sort("timestamp")
-    )
+    df = df.filter((pl.col("timestamp") >= tf_start) & (pl.col("timestamp") <= last)).sort("timestamp")
     if not df.is_empty():
         gold_buffers[symbol].append(df.select(_BUFFER_COLS))
-
-
-def _warmup_pipeline(pipeline: FeaturePipeline, gold_table: str, timeframe: str, symbol: str) -> None:
-    """Seed Oryon state with the last warm_up_period gold bars."""
-    n = pipeline.warm_up_period()
-    if n == 0:
-        return
-    path = str(GOLD_ROOT / gold_table / timeframe)
-    if not DeltaTable.is_deltatable(path):
-        return
-    df = (
-        pl.from_arrow(DeltaTable(path).to_pyarrow_table(filters=[("symbol", "=", symbol)]))
-        .sort("timestamp").tail(n).select(pipeline.input_names())
-    )
-    if df.is_empty():
-        return
-    pipeline.run_research(df.to_numpy().tolist())
 
 
 # ── Hot path ───────────────────────────────────────────────────────────────
@@ -207,14 +180,7 @@ def _emit_gold_bar(
         gold_bar = transform_gold(gold_bar, symbol)
 
     if pipelines and symbol in pipelines:
-        pipeline = pipelines[symbol]
-        inputs = list(gold_bar.select(pipeline.input_names()).row(0))
-        outputs = pipeline.update(inputs)
-        feats = pl.DataFrame(
-            {name: [outputs[i]] for i, name in enumerate(pipeline.output_names())},
-            schema={name: pl.Float64 for name in pipeline.output_names()},
-        )
-        gold_bar = pl.concat([gold_bar, feats], how="horizontal")
+        gold_bar = update_features(gold_bar, pipelines[symbol])
 
     now = datetime.now(timezone.utc)
     latency_ms = int((now - timestamp_close).total_seconds() * 1000)
@@ -337,7 +303,7 @@ async def run(
     # 1. Pipeline warmup
     if pipelines:
         for symbol, pipeline in pipelines.items():
-            _warmup_pipeline(pipeline, gold_table, timeframe, symbol)
+            gold.warmup_pipeline(pipeline, gold_table, timeframe, symbol)
 
     # 2 + 3. Buffer reconstitution + gap fill
     for symbol in symbols:
