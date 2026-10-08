@@ -1,82 +1,99 @@
 #!/usr/bin/env python3
-"""Costruisce un sito statico in un solo file con tutto il lavoro del repo.
+"""Costruisce il banco di lavoro: un sito statico in un solo file con tutto il lavoro del repo.
 
 Uso:  python3 mc/docs/build_site.py   ->  scrive mc/docs/index.html
 
 Un unico HTML autonomo: nessuna rete, nessun CDN, si apre con doppio clic e
-funziona anche da chiavetta. Dentro ci sono la dashboard della pipeline (da
-pipeline_status.json), tutti i documenti markdown del repo convertiti, la ricerca
-full-text e un indice per documento.
+funziona anche da chiavetta. Le sezioni della barra laterale:
+
+  Oggi           panoramica + contesto della sessione (numeri da quantlake)
+  Prop           board della pipeline, prossimi passi, diario, protocolli
+  Strategie      una pagina per strategia (stato + note + SPEC/README/...),
+                 le chiuse nel cimitero
+  Discrezionale  playbook, calibrazione, schede di sessione, diario trade
+  Ricerca, Archivio
+
+Lo stato della pipeline viene da pipeline_status.json. Il contesto di sessione
+viene da quantlake (quantlake.context_card, letto con il python del venv): è una
+fotografia al momento della build, che rifanno nuova_sessione.sh e
+start_frontends.sh. Senza quantlake la pagina dice che non è disponibile.
 
 Dipendenza: `markdown` (pip3 install --user markdown).
 """
+import glob
 import html
 import json
 import os
 import re
+import subprocess
 import sys
+from datetime import datetime
 
 try:
     import markdown
 except ImportError:
     sys.exit("Manca il pacchetto markdown.  pip3 install --user markdown")
 
+try:
+    from zoneinfo import ZoneInfo
+    ROME = ZoneInfo("Europe/Rome")
+except Exception:  # python senza zoneinfo: ora locale
+    ROME = None
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 OUT = os.path.join(HERE, "index.html")
 STATUS = os.path.join(HERE, "pipeline_status.json")
+QL = os.path.join(ROOT, "python", "quantlake")
 
 # ---------------------------------------------------------------- documenti
-# (sezione, titolo, percorso relativo alla radice del repo)
-# L'ordine qui è l'ordine nella barra laterale: è la mappa del lavoro, non un
-# elenco alfabetico.
-DOCS = [
-    ("Pipeline", "Il protocollo prop", "mc/docs/pipeline_prop.md"),
-    ("Pipeline", "Digest del corso", "mc/docs/institutional_protocol_digest.md"),
-    ("Pipeline", "Protocollo di test MC", "mc/docs/protocollo_test_mc.md"),
-    ("Pipeline", "Setup TradeStation", "mc/docs/setup_tradestation.md"),
-
-    ("Strategie", "NQ First5 — spec", "mc/strategies/NQ_First5/SPEC.md"),
-    ("Strategie", "NQ First5 — checklist Stage 1", "mc/strategies/NQ_First5/CHECKLIST_Stage1.md"),
-    ("Strategie", "NQ First5 — readme", "mc/strategies/NQ_First5/README_F5.md"),
-    ("Strategie", "ORB Breakout — spec †", "mc/strategies/ORB_Breakout/SPEC.md"),
-    ("Strategie", "ORB Breakout — readme †", "mc/strategies/ORB_Breakout/README_ORB.md"),
-    ("Strategie", "VaultBreak — spec †", "mc/strategies/VaultBreak/SPEC.md"),
-    ("Strategie", "VaultBreak — readme †", "mc/strategies/VaultBreak/README_VB.md"),
-    ("Strategie", "VWAP Pullback — spec", "mc/strategies/VWAP_Pullback/SPEC.md"),
-    ("Strategie", "VWAP Pullback — readme", "mc/strategies/VWAP_Pullback/README_VWAP.md"),
-    ("Strategie", "Gold Asian Range — spec", "mc/strategies/GoldAsianRange/SPEC.md"),
-    ("Strategie", "Gold Asian Range — readme", "mc/strategies/GoldAsianRange/README_GAR.md"),
-    ("Strategie", "DriftPullback — spec", "mc/strategies/DriftPullback/SPEC.md"),
-    ("Strategie", "DriftPullback — readme", "mc/strategies/DriftPullback/README_DPB.md"),
-    ("Strategie", "Quant VWAP — note", "mc/strategies/Quant_VWAP/NOTES.md"),
-
-    ("Ricerca e ingest", "Journal degli ingest", "mc/docs/ingest_journal.md"),
-    ("Ricerca e ingest", "Morpheus — modelli intraday 1-5", "education/morpheus/ANALISI_modelli_intraday_1-5.md"),
-    ("Ricerca e ingest", "Unger — i due PDF", "education/unger/NOTES_unger_pdf.md"),
-    ("Ricerca e ingest", "SSRN — i tre paper scartati", "ideas/NOTES_ssrn_batch.md"),
-    ("Ricerca e ingest", "GEX / Freddy", "ideas/NOTES_gex_freddy.md"),
-    ("Ricerca e ingest", "MOC — scheda di ricerca", "ideas/MOC_ricerca.md"),
-    ("Ricerca e ingest", "Elder — Vivere di trading", "education/books/NOTES_elder.md"),
-    ("Ricerca e ingest", "Palmquist — candlestick", "education/books/NOTES_palmquist_candlestick.md"),
-
-    ("Discrezionale", "Playbook orderflow Londra", "education/enrico_stucchi/PLAYBOOK.md"),
-    ("Discrezionale", "Calibrazione del contesto", "education/enrico_stucchi/CALIBRAZIONE_contesto.md"),
-    ("Discrezionale", "Template sessione Londra", "education/enrico_stucchi/sessioni/TEMPLATE_london.md"),
-    ("Discrezionale", "Template sessione NY", "education/enrico_stucchi/sessioni/TEMPLATE_ny.md"),
-    ("Discrezionale", "Diario trade", "journal/journal_swing/README.md"),
-
-    ("Archivio MQL5", "Fase 2 — testing", "mql5/docs/fase2_testing.md"),
-    ("Archivio MQL5", "Protocollo IVB / ORB", "mql5/docs/protocols/ivb_orb.md"),
-    ("Archivio MQL5", "Protocollo ORB breakout", "mql5/docs/protocols/orb_breakout.md"),
-    ("Archivio MQL5", "Protocollo Turtle", "mql5/docs/protocols/turtle_breakout.md"),
+# (titolo, percorso relativo alla radice del repo). L'ordine è quello della
+# barra laterale: è la mappa del lavoro, non un elenco alfabetico.
+PROP_DOCS = [
+    ("Il protocollo prop", "mc/docs/pipeline_prop.md"),
+    ("Protocollo di test MC", "mc/docs/protocollo_test_mc.md"),
+    ("Setup TradeStation", "mc/docs/setup_tradestation.md"),
+    ("Digest del corso", "mc/docs/institutional_protocol_digest.md"),
 ]
+DISCR_DOCS = [
+    ("Playbook orderflow Londra", "education/enrico_stucchi/PLAYBOOK.md"),
+    ("Calibrazione del contesto", "education/enrico_stucchi/CALIBRAZIONE_contesto.md"),
+    ("Scheda sessione Londra", "education/enrico_stucchi/sessioni/TEMPLATE_london.md"),
+    ("Scheda sessione NY", "education/enrico_stucchi/sessioni/TEMPLATE_ny.md"),
+    ("Diario trade", "journal/journal_swing/README.md"),
+]
+RESEARCH_DOCS = [
+    ("Journal degli ingest", "mc/docs/ingest_journal.md"),
+    ("MOC — scheda di ricerca", "ideas/MOC_ricerca.md"),
+    ("GEX / Freddy", "ideas/NOTES_gex_freddy.md"),
+    ("Morpheus — modelli intraday 1-5", "education/morpheus/ANALISI_modelli_intraday_1-5.md"),
+    ("Unger — i due PDF", "education/unger/NOTES_unger_pdf.md"),
+    ("SSRN — i tre paper scartati", "ideas/NOTES_ssrn_batch.md"),
+    ("Elder — Vivere di trading", "education/books/NOTES_elder.md"),
+    ("Palmquist — candlestick", "education/books/NOTES_palmquist_candlestick.md"),
+]
+ARCHIVE_DOCS = [
+    ("Fase 2 — testing", "mql5/docs/fase2_testing.md"),
+    ("Protocollo IVB / ORB", "mql5/docs/protocols/ivb_orb.md"),
+    ("Protocollo ORB breakout", "mql5/docs/protocols/orb_breakout.md"),
+    ("Protocollo Turtle", "mql5/docs/protocols/turtle_breakout.md"),
+]
+# Strategie con una cartella ma senza riga in pipeline_status.json (idee, note).
+EXTRA_STRATEGIES = [
+    {"name": "Quant VWAP", "family": "idea", "instrument": "", "path": "mc/strategies/Quant_VWAP"},
+]
+# Ordine dei documenti dentro la pagina di una strategia.
+STRATEGY_FILES = ["SPEC.md", "CHECKLIST*.md", "README*.md", "NOTES*.md"]
+DOC_LABEL = {"SPEC": "Spec", "CHECKLIST": "Checklist", "README": "Readme", "NOTES": "Note"}
 
 LABEL = {"pass": "passato", "waiver": "passato per override registrato",
          "active": "in corso", "blocked": "bloccato",
          "fail": "fallito", "pending": "da fare", "na": "n/a"}
 SYMBOL = {"pass": "✓", "waiver": "!", "active": "●", "blocked": "■", "fail": "✕",
           "pending": "·", "na": "—"}
+GIORNI = ["lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato", "domenica"]
+MESI = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio",
+        "agosto", "settembre", "ottobre", "novembre", "dicembre"]
 
 
 def esc(s):
@@ -94,6 +111,10 @@ def inline(text):
     out = re.sub(r"\*(.+?)\*", r"<em>\1</em>", out)      # poi quello singolo
     out = re.sub(r"`(.+?)`", r"<code>\1</code>", out)
     return out
+
+
+def exists(rel):
+    return os.path.exists(os.path.join(ROOT, rel))
 
 
 # ---------------------------------------------------------------- markdown
@@ -140,94 +161,343 @@ def headings(body, doc_id):
     return body, items
 
 
-# ---------------------------------------------------------------- dashboard
-def dashboard(st):
-    stages = st["stages"]
+def doc_body(rel, by_path, demote=False):
+    """Markdown del repo -> HTML con link interni e tabelle scorrevoli."""
+    with open(os.path.join(ROOT, rel), encoding="utf8") as f:
+        body = render_md(f.read())
+    body = rewrite_links(body, rel, by_path)
+    # immagini: il percorso nel markdown è relativo al documento, il sito sta in mc/docs
+    body = re.sub(r'src="(?!https?:|data:|/)([^"]+)"',
+                  lambda m: 'src="%s"' % os.path.relpath(os.path.join(ROOT, os.path.dirname(rel), m.group(1)), HERE),
+                  body)
+    # tabelle in un contenitore scorrevole: su schermo stretto una tabella
+    # larga farebbe scorrere l'intera pagina, tagliando il testo a sinistra
+    body = body.replace("<table>", '<div class="scroll"><table>')
+    body = body.replace("</table>", "</table></div>")
+    if demote:  # documento dentro la pagina di una strategia: h1 -> h3, h2 -> h3, h3 -> h4
+        body = re.sub(r"<(/?)h3([ >])", r"<\1h4\2", body)
+        body = re.sub(r"<(/?)h[12]([ >])", r"<\1h3\2", body)
+    return body
+
+
+# ---------------------------------------------------------------- pipeline
+def is_dead(s):
+    return "fail" in (s.get("stages") or {}).values()
+
+
+def strategy_id(name):
+    return "strategia-" + slug(name)
+
+
+def board(st, link=True):
     rows = []
     for s in st["strategies"]:
         if not s.get("stages"):
             continue
         cells = []
-        for g in stages:
+        for g in st["stages"]:
             v = s["stages"].get(str(g["id"]), "na")
             cells.append(
                 '<td><span class="chip %s" title="%s: %s">%s</span></td>'
                 % (v, esc(g["name"]), LABEL.get(v, v), SYMBOL.get(v, "?")))
-        rows.append(
-            '<tr><th>%s<span class="sub">%s</span></th>%s</tr>'
-            % (esc(s["name"]), esc(s.get("instrument", "")), "".join(cells)))
-
+        name = esc(s["name"]) + (" †" if is_dead(s) else "")
+        if link and s.get("path"):
+            name = '<a href="#%s">%s</a>' % (strategy_id(s["name"]), name)
+        rows.append('<tr><th>%s<span class="sub">%s</span></th>%s</tr>'
+                    % (name, esc(s.get("instrument", "")), "".join(cells)))
     head = "".join('<th title="%s"><span>%s</span></th>'
-                   % (esc(g["gate"]), esc(g["short"])) for g in stages)
-
-    blockers = "".join("<li>%s</li>" % inline(b) for b in st.get("blockers", []))
-
-    td = st.get("todo")
-    todo = ""
-    if td:
-        groups = "".join(
-            '<div class="tg"><h3>%s%s</h3><ul>%s</ul></div>'
-            % (esc(g["title"]),
-               ' <span class="note">%s</span>' % esc(g["note"]) if g.get("note") else "",
-               "".join("<li>%s</li>" % inline(i) for i in g["items"]))
-            for g in td["groups"])
-        todo = ('<section class="todo"><h2>Prossimi passi '
-                '<span class="note">memo del %s</span></h2>%s</section>'
-                % (esc(td.get("updated", "")), groups))
-    entries = st.get("log", [])
-    item = lambda e: ('<li><time>%s</time><div>%s</div></li>'
-                      % (esc(e["date"]), inline(e["text"])))
-    log = "".join(item(e) for e in entries[:10])
-    rest = entries[10:]
-    more = ('<details class="more"><summary>Le altre %d voci</summary>'
-            '<ol class="log">%s</ol></details>'
-            % (len(rest), "".join(item(e) for e in rest))) if rest else ""
-
+                   % (esc(g["gate"]), esc(g["short"])) for g in st["stages"])
     return """
-<header class="hero">
-  <p class="eyebrow">Aggiornato al %s</p>
-  <h1>Il banco di lavoro</h1>
-  <p class="goal">%s</p>
-</header>
+<div class="scroll">
+ <table class="board"><thead><tr><th></th>%s</tr></thead><tbody>%s</tbody></table>
+</div>
+<p class="legend">
+  <span class="chip pass">✓</span> passato
+  <span class="chip waiver">!</span> override
+  <span class="chip active">●</span> in corso
+  <span class="chip blocked">■</span> bloccato
+  <span class="chip fail">✕</span> fallito
+  <span class="chip pending">·</span> da fare
+  &nbsp;· † nel cimitero
+</p>""" % (head, "".join(rows))
 
-%s
 
-<section>
-  <h2>Board della pipeline</h2>
-  <div class="scroll">
-   <table class="board"><thead><tr><th></th>%s</tr></thead><tbody>%s</tbody></table>
-  </div>
-  <p class="legend">
-    <span class="chip pass">✓</span> passato
-    <span class="chip waiver">!</span> override
-    <span class="chip active">●</span> in corso
-    <span class="chip blocked">■</span> bloccato
-    <span class="chip fail">✕</span> fallito
-    <span class="chip pending">·</span> da fare
-    &nbsp;· † strategia chiusa
-  </p>
-</section>
+def todo_groups(td, groups=None):
+    gs = td["groups"] if groups is None else groups
+    return "".join(
+        '<div class="tg"><h3>%s%s</h3><ul>%s</ul></div>'
+        % (esc(g["title"]),
+           ' <span class="note">%s</span>' % esc(g["note"]) if g.get("note") else "",
+           "".join("<li>%s</li>" % inline(i) for i in g["items"]))
+        for g in gs)
 
+
+def log_items(entries):
+    return "".join('<li><time>%s</time><div>%s</div></li>' % (esc(e["date"]), inline(e["text"]))
+                   for e in entries)
+
+
+def pipeline_page(st):
+    blockers = "".join("<li>%s</li>" % inline(b) for b in st.get("blockers", []))
+    return """
+<header class="hero"><p class="eyebrow">Prop · aggiornato al %s</p><h1>Pipeline prop</h1>
+<p class="goal">%s</p></header>
+<h2>Board</h2>%s
 <section class="cols">
-  <div>
-    <h2>Profilo cercato</h2>
-    <p>%s</p>
-    <h2>Conto</h2>
-    <p>%s</p>
-  </div>
-  <div>
-    <h2>Blocchi aperti</h2>
-    <ul class="blockers">%s</ul>
-  </div>
+  <div><h2>Profilo cercato</h2><p>%s</p><h2>Conto</h2><p>%s</p></div>
+  <div><h2>Blocchi aperti</h2><ul class="blockers">%s</ul></div>
 </section>
+<p class="more-links"><a href="#prossimi-passi">Prossimi passi →</a> · <a href="#diario">Diario di bordo →</a>
+ · <a href="#%s">Il protocollo →</a></p>
+""" % (esc(st["updated"]), esc(st["goal"]), board(st), inline(st.get("profile", "")),
+       inline(st.get("prop", "")), blockers, slug("mc/docs/pipeline_prop.md"))
 
-<section>
-  <h2>Diario di bordo</h2>
-  <ol class="log">%s</ol>
-  %s
-</section>
-""" % (esc(st["updated"]), esc(st["goal"]), todo, head, "".join(rows),
-       inline(st.get("profile", "")), inline(st.get("prop", "")), blockers, log, more)
+
+def todo_page(st):
+    td = st.get("todo") or {"groups": []}
+    return ('<header class="hero"><p class="eyebrow">Prop · memo del %s</p><h1>Prossimi passi</h1></header>'
+            '<section class="todo">%s</section>' % (esc(td.get("updated", "")), todo_groups(td)))
+
+
+def diary_page(st):
+    return ('<header class="hero"><p class="eyebrow">Prop · %d voci</p><h1>Diario di bordo</h1></header>'
+            '<ol class="log">%s</ol>' % (len(st.get("log", [])), log_items(st.get("log", []))))
+
+
+def strategy_docs(path):
+    seen, out = set(), []
+    for pat in STRATEGY_FILES:
+        for f in sorted(glob.glob(os.path.join(ROOT, path, pat))):
+            rel = os.path.relpath(f, ROOT)
+            if rel not in seen:
+                seen.add(rel)
+                out.append(rel)
+    return out
+
+
+def strategy_page(s, st, by_path):
+    """Stato dalla pipeline + tutti i markdown della cartella della strategia."""
+    pid = strategy_id(s["name"])
+    parts = ['<header class="hero"><p class="eyebrow">Strategia%s%s</p><h1>%s%s</h1></header>'
+             % (" · " + esc(s["family"]) if s.get("family") else "",
+                " · " + esc(s["instrument"]) if s.get("instrument") else "",
+                esc(s["name"]), ' <span class="tag dead">cimitero</span>' if is_dead(s) else "")]
+    toc = []
+    if s.get("stages"):
+        chips = "".join(
+            '<span class="stage"><span class="chip %s" title="%s">%s</span><small>%s</small></span>'
+            % (s["stages"].get(str(g["id"]), "na"), esc(g["gate"]),
+               SYMBOL.get(s["stages"].get(str(g["id"]), "na"), "?"), esc(g["short"]))
+            for g in st["stages"])
+        parts.append('<div class="stages">%s</div>' % chips)
+    if s.get("note"):
+        parts.append("<p>%s</p>" % inline(s["note"]))
+    if s.get("next"):
+        parts.append('<blockquote><b>Prossimo:</b> %s</blockquote>' % inline(s["next"]))
+    if s.get("metrics"):
+        rows = "".join("<tr><th>%s</th><td>%s</td></tr>" % (esc(k), inline(v)) for k, v in s["metrics"].items())
+        parts.append('<div class="scroll"><table class="kv">%s</table></div>' % rows)
+    if s.get("log"):
+        hid = pid + "-log"
+        toc.append(("2", hid, "Diario della strategia"))
+        parts.append('<h2 id="%s">Diario della strategia</h2><ol class="log">%s</ol>' % (hid, log_items(s["log"])))
+    for rel in strategy_docs(s["path"]):
+        base = os.path.basename(rel).split("_")[0].split(".")[0].upper()
+        title = DOC_LABEL.get(base, os.path.basename(rel))
+        did = slug(rel)
+        body, items = headings(doc_body(rel, by_path, demote=True), did)
+        toc.append(("2", did, title))
+        toc += [("3", hid, txt) for lvl, hid, txt in items if lvl == "3"]
+        parts.append('<h2 id="%s">%s <span class="note"><code>%s</code></span></h2>%s' % (did, esc(title), esc(rel), body))
+    return pid, "".join(parts), toc
+
+
+# ---------------------------------------------------------------- contesto
+def context_card():
+    """Il contesto di sessione calcolato da quantlake, o (None, motivo)."""
+    py = os.path.join(QL, ".venv", "bin", "python")
+    if not os.path.exists(py):
+        return None, "python di quantlake non trovato (%s)" % py
+    code = "import json; from quantlake.context_card import card; print(json.dumps(card(), default=str))"
+    try:
+        r = subprocess.run([py, "-c", code], cwd=QL, capture_output=True, text=True, timeout=120)
+    except Exception as e:
+        return None, str(e)
+    if r.returncode != 0:
+        lines = r.stderr.strip().splitlines()
+        return None, lines[-1] if lines else "errore sconosciuto"
+    return json.loads(r.stdout), None
+
+
+def num(x, d=0):
+    if x is None:
+        return "–"
+    s = "{:,.{}f}".format(x, d)
+    return s.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def pct(x):
+    return "–" if x is None else "%d%%" % round(x * 100)
+
+
+def when(iso, day=False):
+    if not iso:
+        return "–"
+    t = datetime.fromisoformat(iso)
+    if ROME is not None and t.tzinfo is not None:
+        t = t.astimezone(ROME)
+    return t.strftime("%d/%m %H:%M" if day else "%H:%M")
+
+
+IT = {"low": "bassa", "high": "alta", "up": "su", "down": "giù", "positive": "positivo", "negative": "negativo"}
+
+
+def it(x):
+    return "–" if x is None else IT.get(x, x)
+
+
+def stat(label, value, sub="", warn=False):
+    return ('<div class="stat%s"><small>%s</small><b>%s</b><span>%s</span></div>'
+            % (" warn" if warn else "", esc(label), esc(value), esc(sub)))
+
+
+def big(label, value, unit="pt", sub="", accent=False):
+    return ('<div class="big%s"><small>%s</small><b>%s<i>%s</i></b><span>%s</span></div>'
+            % (" accent" if accent else "", esc(label), esc(value), esc(unit), sub))
+
+
+def rows(items):
+    return '<dl class="rows">%s</dl>' % "".join("<div><dt>%s</dt><dd>%s</dd></div>" % (esc(k), esc(v)) for k, v in items)
+
+
+def range_bar(q):
+    if not q or any(v is None for v in q):
+        return ""
+    p25, p50, p75 = q
+    top = p75 * 1.25
+    w = lambda x: "%.1f%%" % (x / top * 100)
+    return ('<div class="rbar"><small>Range Londra atteso (punti)</small>'
+            '<div class="track"><div class="band" style="left:%s;width:calc(%s - %s)"></div>'
+            '<div class="mid" style="left:%s"></div></div>'
+            '<div class="ticks"><span>p25 %s</span><span><b>mediana %s</b></span><span>p75 %s</span></div></div>'
+            % (w(p25), w(p75), w(p25), w(p50), num(p25), num(p50), num(p75)))
+
+
+def context_page(c, err):
+    if c is None:
+        return ('<header class="hero"><p class="eyebrow">Oggi</p><h1>Contesto sessione</h1></header>'
+                '<div class="warn">Contesto non disponibile: %s. Si genera con quantlake '
+                '(<code>python/quantlake/applications/contesto.py</code>).</div>' % esc(err))
+    d = datetime.fromisoformat(c["session_date"])
+    g, inst, e = c["regime"], c["instruments"], c["em_0dte"]
+    out = ['<header class="hero"><p class="eyebrow">Oggi · calcolato alle %s</p><h1>%s %d %s</h1>'
+           '<p class="goal">I numeri della sezione 0 delle schede di sessione. Si aggiornano con '
+           '<code>nuova_sessione.sh</code> e a ogni avvio di <code>start_frontends.sh</code>.</p></header>'
+           % (when(c["generated_at"], day=True), GIORNI[d.weekday()].capitalize(), d.day, MESI[d.month - 1]),
+           '<div class="warn stale" data-generated="%s" hidden>Questi numeri hanno più di 12 ore: '
+           'aggiornali con <code>nuova_sessione.sh</code>.</div>' % esc(c["generated_at"])]
+    out += ['<div class="warn">%s</div>' % esc(w) for w in c["warnings"]]
+    stress = (g["term_9d"] or 0) > 1
+    out.append('<div class="stats">%s%s%s%s</div>' % (
+        stat("Volatilità", it(g["vol_regime"]), "%s dell'anno" % pct(g["iv_pct"])),
+        stat("Trend 20 giorni", it(g["trend20"]), "quadrante %s" % (g["quadrant"] or "–")),
+        stat("GEX", "BASSO" if g["gex_low"] else it(g["gex_regime"]), "%s dell'anno" % pct(g["gex_pct"]), g["gex_low"]),
+        stat("VIX9D / VIX", num(g["term_9d"], 2), "stress a breve" if stress else "struttura normale", stress)))
+    if g["gex_low"]:
+        out.append('<div class="alert">GEX basso: i trend day sono %s contro %s. Londra: interruttore trend day '
+                   'con un solo segnale. NY: trend più probabile, ma il setup C resta legato all\'accettazione '
+                   'fuori IB.</div>' % (pct(g["trend_rate_gex_low"]), pct(g["trend_rate_gex_high"])))
+
+    out.append('<h2 id="ctx-london">Londra · 09:00</h2><div class="cards">')
+    for s in ("ES", "NQ"):
+        x = inst[s]
+        out.append('<section class="card"><h4>%s</h4><div class="bigs">%s%s</div>%s%s</section>' % (
+            s,
+            big("EM giornaliero", num(x["em"]), sub="IV %s (%s), %s dell'anno"
+                % (num(x["iv"], 1), "VIX" if s == "ES" else "VXN", pct(x["iv_pct"]))),
+            big("Mercato fermo se stop >", num(x["stop_max"], 1), sub="oltre: si guarda e basta", accent=True),
+            range_bar(x["london_range_q"]),
+            rows([("Ieri RTH high", num(x["prev_high"], 2)), ("Ieri RTH low", num(x["prev_low"], 2)),
+                  ("Ieri RTH close", num(x["prev_close"], 2)),
+                  ("Asia high / low", "%s / %s" % (num(x["asia_high"], 2), num(x["asia_low"], 2))),
+                  ("Range asiatico", "%s pt" % num(x["asia_range"], 2)), ("Prezzo", num(x["price"], 2))])))
+    out.append('</div><ul class="notes"><li>Mercato fermo (§1.3): in un quarto delle mattine Londra fa meno del '
+               'p25. Se il tuo stop supera la soglia, l\'oscillazione attesa non arriva a 2× lo stop.</li>'
+               '<li>Il regime della mattina (rotazionale o direzionale) non si prevede da questi numeri: si legge '
+               'live dall\'accettazione.</li></ul>')
+
+    out.append('<h2 id="ctx-ny">New York · 15:30</h2><div class="cards">')
+    for s in ("ES", "NQ"):
+        x = inst[s]
+        f = x["gap_fill"]
+        band = ""
+        if f:
+            band = ("gap %s–%s EM" % (num(f["lo"], 2), num(f["hi"], 2)) if f["hi"] else "gap > %s EM" % num(f["lo"], 2))
+            band += ", %d giorni" % f["days"]
+        em0 = x["em_0dte"]
+        out.append('<section class="card"><h4>%s</h4><div class="bigs">%s%s</div>%s</section>' % (
+            s,
+            big("EM 0DTE" + (" (stima)" if x["em_0dte_estimated"] else ""), num(em0, 1), accent=True,
+                sub=("dall'open ±%s / ±%s / ±%s" % (num(em0), num(1.5 * em0), num(2 * em0))) if em0 is not None
+                else "nessuna foto di oggi"),
+            big("Gap si chiude in RTH", pct(f["rate"]) if f else "–", unit="", sub=esc(band)),
+            rows([("Gap vs chiusura ieri", "%s pt (%s EM)" % (num(x["gap"], 2), num(x["gap_em"], 2))),
+                  ("Ieri RTH close", num(x["prev_close"], 2)), ("Prezzo", num(x["price"], 2)),
+                  ("Range Londra", "%s pt (%s EM)" % (num(x["london_range"], 2), num(x["london_range_em"], 2))),
+                  ("Londra high / low", "%s / %s" % (num(x["london_high"], 2), num(x["london_low"], 2))),
+                  ("EM giornaliero (VIX/VXN)", "%s pt" % num(x["em"]))])))
+    stats = c["stucchi_em_stats"]
+    em_note = ("EM 0DTE = straddle ATM SPX dalla foto delle %s, %s l'apertura cash (%s minuti alla chiusura). "
+               "Per NQ è scalato con VXN/VIX." % (when(e["timestamp"], day=True), "prima del" if e["pre_open"] else "dopo",
+                                                 num(e["minutes_to_close"])) if e else
+               "Nessuna foto 0DTE di oggi: la scatta il job Railway o <code>nuova_sessione.sh ny</code>.")
+    out.append('</div><ul class="notes"><li>%s</li><li>Statistica Stucchi, verificata su ES: ±1 EM toccato nel ~%s '
+               'delle sessioni, oltre ±2 EM nel ~%s, chiusura entro ±2 EM nel ~%s.</li><li>Il GEX da solo non '
+               'accende il setup C: serve accettazione fuori IB con CVD concorde (§5.1).</li></ul>'
+               % (em_note, pct(stats["touch_1"]), pct(stats["beyond_2"]), pct(stats["close_within_2"])))
+    toc = [("2", "ctx-london", "Londra · 09:00"), ("2", "ctx-ny", "New York · 15:30")]
+    return "".join(out), toc
+
+
+# ---------------------------------------------------------------- panoramica
+def home_page(st, c, by_path):
+    td = st.get("todo") or {"groups": []}
+    alive = [s for s in st["strategies"] if s.get("stages") and not is_dead(s)]
+    dead = [s for s in st["strategies"] if is_dead(s)]
+    if c:
+        es = c["instruments"]["ES"]
+        g = c["regime"]
+        ctx = ('<p class="tile-num">EM ES <b>%s pt</b> · mercato fermo oltre <b>%s pt</b></p>'
+               '<p>GEX %s · volatilità %s</p><p class="note">calcolato alle %s</p>'
+               % (num(es["em"]), num(es["stop_max"], 1), "basso" if g["gex_low"] else it(g["gex_regime"]),
+                  it(g["vol_regime"]), when(c["generated_at"], day=True)))
+    else:
+        ctx = "<p>non disponibile</p>"
+    first = td["groups"][:1]
+    return """
+<header class="hero"><p class="eyebrow">Aggiornato al %s</p><h1>Banco di lavoro</h1>
+<p class="goal">%s</p></header>
+<div class="tiles">
+  <a class="tile" href="#contesto"><small>Oggi</small><h4>Contesto sessione →</h4>%s</a>
+  <a class="tile" href="#pipeline"><small>Prop</small><h4>Pipeline →</h4>
+    <p class="tile-num"><b>%d</b> strategie in gara · <b>%d</b> nel cimitero</p>
+    <p>%s</p></a>
+  <div class="tile"><small>Discrezionale</small><h4>Sessione</h4>
+    <p><a href="#%s">Playbook</a> · <a href="#%s">Scheda Londra</a> · <a href="#%s">Scheda NY</a></p>
+    <p><a href="#%s">Calibrazione del contesto</a></p></div>
+</div>
+<h2>Pipeline prop</h2>%s
+<h2>Prossimo passo <span class="note">memo del %s</span></h2>
+<section class="todo">%s<p class="more-links"><a href="#prossimi-passi">Tutti i prossimi passi →</a></p></section>
+<h2>Ultime voci del diario</h2>
+<ol class="log">%s</ol>
+<p class="more-links"><a href="#diario">Tutto il diario →</a></p>
+""" % (esc(st["updated"]), esc(st["goal"]), ctx, len(alive), len(dead),
+       esc(first[0]["title"]) if first else "",
+       slug("education/enrico_stucchi/PLAYBOOK.md"), slug("education/enrico_stucchi/sessioni/TEMPLATE_london.md"),
+       slug("education/enrico_stucchi/sessioni/TEMPLATE_ny.md"),
+       slug("education/enrico_stucchi/CALIBRAZIONE_contesto.md"),
+       board(st), esc(td.get("updated", "")), todo_groups(td, first), log_items(st.get("log", [])[:3]))
 
 
 # ---------------------------------------------------------------- pagina
@@ -414,6 +684,69 @@ main{overflow-x:hidden}
   aside,.toc,.topbar{display:none}
   article{display:block !important; max-width:none; page-break-after:always}
 }
+
+/* ---- navigazione a gruppi ---- */
+nav details{margin:10px 0 0}
+nav summary{
+  cursor:pointer; list-style:none; padding:4px 20px; font-size:.68rem; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--muted); font-family:var(--mono); font-weight:600;
+}
+nav summary::-webkit-details-marker{display:none}
+nav summary::before{content:"▸ "; color:var(--dim)}
+nav details[open] summary::before{content:"▾ "}
+nav details.sub summary{text-transform:none; letter-spacing:0; font-size:.8rem; font-family:var(--sans); font-weight:400}
+nav details.sub a{padding-left:32px; color:var(--muted)}
+nav.filtering summary{display:none}
+
+/* ---- pagine: panoramica, contesto, strategie ---- */
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin:0 0 1em}
+.tile{display:block; background:var(--panel); border:1px solid var(--line); border-radius:4px;
+      padding:14px 16px; color:var(--ink)!important; border-bottom:1px solid var(--line)}
+a.tile:hover{border-color:var(--accent)}
+.tile small,.stat small,.big small,.rbar small{display:block; font-family:var(--mono); font-size:.66rem;
+      letter-spacing:.09em; text-transform:uppercase; color:var(--muted)}
+.tile h4{margin:.3em 0 .5em; font-size:1rem; color:var(--accent)}
+.tile p{margin:.25em 0; font-size:.86rem}
+.tile-num b{font-family:var(--mono)}
+.more-links{font-size:.86rem; margin-top:.8em}
+.warn,.alert{border:1px solid color-mix(in srgb,var(--active) 55%,transparent); background:var(--accent-soft);
+      border-radius:4px; padding:9px 13px; margin:8px 0; font-size:.88rem}
+.alert{border-color:color-mix(in srgb,var(--fail) 60%,transparent); background:color-mix(in srgb,var(--fail) 10%,transparent)}
+.warn::before{content:"⚠ "; color:var(--accent)}
+.stats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:14px 0}
+.stat{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:10px 14px}
+.stat b{display:block; font-size:1.15rem; margin:.15em 0}
+.stat span{font-size:.78rem; color:var(--muted)}
+.stat.warn{border-color:color-mix(in srgb,var(--fail) 60%,transparent)} .stat.warn::before{content:none}
+.stat.warn b{color:var(--fail)}
+.cards{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:16px 18px}
+.card h4{margin:0 0 12px; font-family:var(--mono); color:var(--accent); letter-spacing:.06em}
+.bigs{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px}
+.big b{display:block; font-family:var(--mono); font-size:1.9rem; font-weight:600; line-height:1.2; margin:.15em 0}
+.big b i{font-style:normal; font-size:.9rem; color:var(--muted); margin-left:4px; font-weight:400}
+.big.accent b{color:var(--accent)}
+.big span{font-size:.76rem; color:var(--muted)}
+.rbar{margin:4px 0 14px}
+.rbar .track{position:relative; height:8px; background:var(--elev); border-radius:4px; margin-top:8px}
+.rbar .band{position:absolute; top:0; bottom:0; background:color-mix(in srgb,var(--accent) 35%,transparent); border-radius:4px}
+.rbar .mid{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--accent)}
+.rbar .ticks{display:flex; justify-content:space-between; font-family:var(--mono); font-size:.74rem; color:var(--muted); margin-top:5px}
+.rbar .ticks b{color:var(--ink); font-weight:500}
+.rows{margin:0; border-top:1px solid var(--line); font-size:.86rem}
+.rows div{display:flex; justify-content:space-between; gap:12px; padding:5px 0; border-bottom:1px solid var(--line)}
+.rows dt{color:var(--muted)} .rows dd{margin:0; font-family:var(--mono); text-align:right}
+.notes{font-size:.86rem; color:var(--muted); background:var(--panel); border:1px solid var(--line);
+       border-radius:4px; padding:10px 14px 10px 30px; margin:12px 0}
+.notes li{margin:.25em 0}
+.stages{display:flex; flex-wrap:wrap; gap:6px; margin:0 0 1.2em}
+.stage{display:flex; flex-direction:column; align-items:center; gap:3px}
+.stage small{font-family:var(--mono); font-size:.62rem; color:var(--muted)}
+.tag{font-family:var(--mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; vertical-align:middle;
+     padding:2px 7px; border-radius:3px; border:1px solid var(--line-strong); color:var(--muted)}
+.tag.dead{color:var(--fail); border-color:color-mix(in srgb,var(--fail) 50%,transparent)}
+.kv th{width:30%}
+@media (max-width:860px){ .stats{grid-template-columns:1fr 1fr} .cards{grid-template-columns:1fr} }
 """
 
 JS = """
@@ -433,6 +766,7 @@ JS = """
     if(!found){ show('home'); return; }
     links.forEach(function(l){ l.classList.toggle('on', l.getAttribute('href') === '#'+id); });
     var t = document.querySelector('nav a.on');
+    if(t && t.closest('details')) t.closest('details').open = true;
     document.getElementById('crumb').textContent = t ? t.textContent : 'Banco di lavoro';
     toc.innerHTML = '';
     var items = tocs[id] || [];
@@ -476,6 +810,7 @@ JS = """
   box.addEventListener('input', function(){
     var q = box.value.trim().toLowerCase();
     nav.classList.toggle('filtering', q.length > 0);
+    if(q) nav.querySelectorAll('details').forEach(function(d){ d.open = true; });
     links.forEach(function(l){
       var id = l.getAttribute('href').slice(1);
       var title = l.dataset.title.toLowerCase();
@@ -502,6 +837,10 @@ JS = """
   document.getElementById('menu').addEventListener('click', function(){
     document.body.classList.toggle('nav-open');
   });
+  document.querySelectorAll('[data-generated]').forEach(function(el){
+    var t0 = Date.parse(el.dataset.generated.replace(' ', 'T'));
+    if(t0 && Date.now() - t0 > 12 * 3600 * 1000) el.hidden = false;
+  });
   var t = document.getElementById('theme');
   t.addEventListener('click', function(){
     var cur = document.documentElement.getAttribute('data-theme');
@@ -517,45 +856,61 @@ JS = """
 """
 
 
+def nav_link(pid, title):
+    return '<a href="#%s" data-title="%s">%s</a>' % (pid, esc(title), esc(title))
+
+
 def build():
     with open(STATUS, encoding="utf8") as f:
         st = json.load(f)
+    c, err = context_card()
 
-    present = [(sec, title, rel) for sec, title, rel in DOCS
-               if os.path.exists(os.path.join(ROOT, rel))]
-    missing = [rel for _, _, rel in DOCS
-               if not os.path.exists(os.path.join(ROOT, rel))]
-    by_path = {rel: slug(rel) for _, _, rel in present}
+    sections = [("Prop", PROP_DOCS), ("Discrezionale", DISCR_DOCS),
+                ("Ricerca", RESEARCH_DOCS), ("Archivio MQL5", ARCHIVE_DOCS)]
+    docs = {sec: [(t, rel) for t, rel in lst if exists(rel)] for sec, lst in sections}
+    missing = [rel for _, lst in sections for _, rel in lst if not exists(rel)]
+    strategies = [s for s in st["strategies"] if s.get("path") and exists(s["path"])]
+    strategies += [s for s in EXTRA_STRATEGIES if exists(s["path"])]
 
-    articles = ['<article id="home" class="on">%s</article>' % dashboard(st)]
-    tocs = {"home": []}
-    texts = {}
-    nav_parts = []
-    last_sec = None
+    # ogni markdown -> l'ancora che lo mostra (pagina propria, o sezione della strategia)
+    by_path = {rel: slug(rel) for lst in docs.values() for _, rel in lst}
+    for s in strategies:
+        for rel in strategy_docs(s["path"]):
+            by_path[rel] = slug(rel)
 
-    for sec, title, rel in present:
-        doc_id = by_path[rel]
-        with open(os.path.join(ROOT, rel), encoding="utf8") as f:
-            raw = f.read()
-        body = render_md(raw)
-        body = rewrite_links(body, rel, by_path)
-        # tabelle in un contenitore scorrevole: su schermo stretto una tabella
-        # larga farebbe scorrere l'intera pagina, tagliando il testo a sinistra
-        body = body.replace("<table>", '<div class="scroll"><table>')
-        body = body.replace("</table>", "</table></div>")
-        body, items = headings(body, doc_id)
-        tocs[doc_id] = items
-        texts[doc_id] = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", body)).lower()
+    pages = [("home", home_page(st, c, by_path), [])]
+    ctx_html, ctx_toc = context_page(c, err)
+    pages += [("contesto", ctx_html, ctx_toc), ("pipeline", pipeline_page(st), []),
+              ("prossimi-passi", todo_page(st), []), ("diario", diary_page(st), [])]
+    for sec, lst in docs.items():
+        for title, rel in lst:
+            body, items = headings(doc_body(rel, by_path), slug(rel))
+            pages.append((slug(rel), '<p class="eyebrow">%s · <code>%s</code></p>%s' % (esc(sec), esc(rel), body), items))
+    for s in strategies:
+        pages.append(strategy_page(s, st, by_path))
 
-        articles.append(
-            '<article id="%s"><p class="eyebrow">%s · <code>%s</code></p>%s</article>'
-            % (doc_id, esc(sec), esc(rel), body))
+    alive = [s for s in strategies if not is_dead(s)]
+    dead = [s for s in strategies if is_dead(s)]
+    nav = ["<h3>Oggi</h3>", nav_link("home", "Panoramica"), nav_link("contesto", "Contesto sessione"),
+           "<h3>Prop</h3>", nav_link("pipeline", "Pipeline"), nav_link("prossimi-passi", "Prossimi passi"),
+           nav_link("diario", "Diario di bordo")]
+    nav += [nav_link(slug(rel), t) for t, rel in docs["Prop"]]
+    nav.append("<h3>Strategie</h3>")
+    nav += [nav_link(strategy_id(s["name"]), s["name"]) for s in alive]
+    if dead:
+        nav.append('<details class="sub"><summary>Cimitero (%d)</summary>%s</details>'
+                   % (len(dead), "".join(nav_link(strategy_id(s["name"]), s["name"] + " †") for s in dead)))
+    for sec in ("Discrezionale", "Ricerca"):
+        nav.append("<h3>%s</h3>" % sec)
+        nav += [nav_link(slug(rel), t) for t, rel in docs[sec]]
+    if docs["Archivio MQL5"]:
+        nav.append('<details><summary>Archivio MQL5</summary>%s</details>'
+                   % "".join(nav_link(slug(rel), t) for t, rel in docs["Archivio MQL5"]))
 
-        if sec != last_sec:
-            nav_parts.append("<h3>%s</h3>" % esc(sec))
-            last_sec = sec
-        nav_parts.append('<a href="#%s" data-title="%s">%s</a>'
-                         % (doc_id, esc(title), esc(title)))
+    articles = "".join('<article id="%s"%s>%s</article>' % (pid, ' class="on"' if pid == "home" else "", body)
+                       for pid, body, _ in pages)
+    tocs = {pid: toc for pid, _, toc in pages}
+    texts = {pid: re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", body)).lower() for pid, body, _ in pages}
 
     page = """<!doctype html>
 <html lang="it">
@@ -575,7 +930,7 @@ def build():
     <div class="brand"><b><a href="#home" style="color:inherit">Banco di lavoro</a></b>
       <span>%s</span></div>
     <div class="search"><input id="q" type="search" placeholder="Cerca  (/)" autocomplete="off"></div>
-    <nav><a href="#home" data-title="Dashboard">Dashboard</a>%s</nav>
+    <nav>%s</nav>
   </aside>
   <main>%s</main>
   <div class="toc" id="toc"></div>
@@ -587,14 +942,16 @@ window.__TEXT__ = %s;
 </script>
 </body>
 </html>
-""" % (CSS, esc(st["updated"]), "".join(nav_parts), "".join(articles),
+""" % (CSS, esc(st["updated"]), "".join(nav), articles,
        json.dumps(tocs, ensure_ascii=False), json.dumps(texts, ensure_ascii=False), JS)
 
     with open(OUT, "w", encoding="utf8") as f:
         f.write(page)
 
     kb = os.path.getsize(OUT) / 1024
-    print("scritto %s  (%d documenti, %.0f KB)" % (OUT, len(present), kb))
+    print("scritto %s  (%d pagine, %.0f KB)" % (OUT, len(pages), kb))
+    if c is None:
+        print("  ! contesto di sessione non disponibile: %s" % err)
     for m in missing:
         print("  ! mancante, saltato: %s" % m)
 

@@ -56,7 +56,7 @@ automatica (whisper), ripulita solo della punteggiatura. "mock in balance" = MOC
 
 ### Il collegamento con il GEX (Masterclass parte 2, slide 139–140)
 
-<img src="img/moc/gexbot_spx_1556.jpg" width="49%"> <img src="img/moc/gexbot_spx_close_attrattori.jpg" width="49%">
+<img src="../education/enrico_stucchi/img/moc/gexbot_spx_1556.jpg" width="49%"> <img src="../education/enrico_stucchi/img/moc/gexbot_spx_close_attrattori.jpg" width="49%">
 
 *SPX il 12/12/25 alle 15:56 ET e in chiusura. Nota sulla slide: "Negli ultimi 10 minuti i
 livelli più colmi fanno da attrattori del prezzo". Gli strike 0DTE con più gamma tirano
@@ -64,7 +64,7 @@ il prezzo in chiusura, quando il gamma delle opzioni in scadenza è massimo.*
 
 ### Lo stesso fenomeno su un altro mercato: il settlement del petrolio (Bootcamp 165–166)
 
-<img src="img/moc/cl_settlement_pattern_cet.jpg" width="49%"> <img src="img/moc/cl_settlement_range_per_minute_et.jpg" width="49%">
+<img src="../education/enrico_stucchi/img/moc/cl_settlement_pattern_cet.jpg" width="49%"> <img src="../education/enrico_stucchi/img/moc/cl_settlement_range_per_minute_et.jpg" width="49%">
 
 *Sinistra: CL, movimento iniziale alle 14:15 ET e continuazione fino al settlement delle
 14:30 ET. Destra: range medio per minuto del CL negli ultimi 16 anni (ET), con picchi
