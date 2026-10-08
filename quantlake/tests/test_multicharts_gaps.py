@@ -1,9 +1,15 @@
+import importlib.util
+import sys
 from datetime import date, datetime, time, timedelta, timezone
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import polars as pl
 
+import quantlake.gold.ingest as gold
+from helpers import utc
 from quantlake.silver.gaps import early_fridays, find_gaps, recurring_gaps, summarize
+from quantlake.storage import read_symbol
 
 CHI = ZoneInfo("America/Chicago")
 
@@ -88,3 +94,66 @@ def test_correct_template_and_scattered_holes_pass():
     assert find_gaps(bars).height > 0  # there are holes...
     assert recurring_gaps(bars).is_empty()  # ...but never the same window
     assert early_fridays(bars).is_empty()
+
+
+# ── multicharts.py: --full vs --replace ────────────────────────────────────
+
+def _load_multicharts():
+    path = Path(__file__).parents[1] / "applications" / "historical" / "multicharts.py"
+    spec = importlib.util.spec_from_file_location("multicharts_script", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def _export(path: Path, minutes: list[datetime], price) -> None:
+    lines = ["date,time,open,high,low,close,volume,ticks,upticks,downticks"]
+    for t in minutes:
+        c = (t + timedelta(minutes=1)).astimezone(CHI)
+        p = price(t)
+        lines.append(f"{c:%Y%m%d},{c:%H%M},{p},{p + 0.25},{p - 0.25},{p},10,5,6,4")
+    path.write_text("\n".join(lines) + "\n")
+
+
+def test_reexport_needs_replace(lake, freeze_now, monkeypatch, tmp_path):
+    import quantlake.storage as storage
+    freeze_now(gold, utc(2026, 1, 1))
+    folder = tmp_path / "multicharts"
+    folder.mkdir()
+    mod = _load_multicharts()
+    for name in ("BRONZE_ROOT", "SILVER_ROOT", "GOLD_ROOT"):
+        monkeypatch.setattr(mod, name, lake[name])
+    sys.argv = ["multicharts.py"]
+
+    day1 = [chi(2025, 6, 2, 14, 0) + timedelta(minutes=i) for i in range(120)]   # Mon 14:00-15:59
+    day2 = [chi(2025, 6, 3, 14, 0) + timedelta(minutes=i) for i in range(120)]   # Tue
+    hole = lambda t: time(15, 15) <= t.astimezone(CHI).time() < time(15, 30)  # noqa: E731
+    _export(folder / "ES_1min.csv", [t for t in day1 + day2 if not hole(t)], lambda t: 5000.0)
+    mod.main([], folder=folder)
+    gold.update_ohlcv("multicharts_ohlcv", "multicharts_ohlcv", "1h", "ES")
+
+    # new export: no 15:15 hole, history starts on day2, TradeStation re-adjusted prices (+10)
+    _export(folder / "ES_1min.csv", day2, lambda t: 5010.0)
+
+    def silver_es():
+        return read_symbol(str(lake["SILVER_ROOT"] / "multicharts_ohlcv"), "ES").sort("timestamp")
+
+    mod.main([], folder=folder)  # incremental: nothing after the last bar → the holes stay
+    assert silver_es().height == 2 * 105
+
+    mod.main(["--full"], folder=folder)  # holes filled, day2 re-priced, day1 left with old prices
+    s = silver_es()
+    assert s.height == 120 + 105
+    assert s.filter(pl.col("timestamp") < chi(2025, 6, 3, 0, 0))["close"].unique().to_list() == [5000.0]
+
+    mod.main(["--replace"], folder=folder)  # exactly the new export
+    s = silver_es()
+    assert s["timestamp"].to_list() == day2 and s["close"].unique().to_list() == [5010.0]
+    b = read_symbol(str(lake["BRONZE_ROOT"] / "multicharts_ohlcv"), "ES")
+    assert b.height == 120
+    assert storage.read_symbol(str(lake["GOLD_ROOT"] / "multicharts_ohlcv" / "1h"), "ES").is_empty()
+
+    gold.update_ohlcv("multicharts_ohlcv", "multicharts_ohlcv", "1h", "ES")  # rebuilt from scratch
+    g = storage.read_symbol(str(lake["GOLD_ROOT"] / "multicharts_ohlcv" / "1h"), "ES").sort("timestamp")
+    assert g["timestamp"].to_list() == [chi(2025, 6, 3, 14), chi(2025, 6, 3, 15)]
+    assert g["close"].to_list() == [5010.0, 5010.0] and g["volume"].to_list() == [600.0, 600.0]

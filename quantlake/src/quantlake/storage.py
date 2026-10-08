@@ -96,3 +96,11 @@ def delete_range(table_path: str, symbol: str, start: datetime, end: datetime) -
         f"symbol = '{symbol}' AND timestamp >= '{start:{iso}}' AND timestamp < '{end:{iso}}'"
     )
     return DeltaTable(table_path).delete(predicate)["num_deleted_rows"]
+
+
+
+def delete_symbol(table_path: str, symbol: str) -> int:
+    """Delete every row of symbol; returns the number of rows deleted."""
+    if not DeltaTable.is_deltatable(table_path):
+        return 0
+    return DeltaTable(table_path).delete(f"symbol = '{symbol}'")["num_deleted_rows"]
