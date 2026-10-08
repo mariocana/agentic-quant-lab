@@ -4,7 +4,10 @@ Reads data/multicharts/<file>.csv written by the ExportBars indicator
 (see the connector docstring) and merges the bars into bronze, then copies
 into silver (clean_ohlcv) every bronze bar newer than the last silver one,
 so an existing bronze is backfilled into silver on the first run.
-Resumable: only new bars are added.
+Resumable: only new bars are added. --full re-reads the whole CSV and
+overwrites every bronze + silver bar (after a connector change, or when the
+back-adjusted continuous contract shifts history at a rollover); gold is
+then rebuilt from silver by ohlcv_gold.py.
 
 Gold is built by applications/historical/ohlcv_gold.py.
 
@@ -29,12 +32,12 @@ FULL = "--full" in sys.argv
 
 
 def sync_silver(symbol: str) -> None:
-    last = last_timestamp(str(SILVER_ROOT / TABLE), symbol)
+    last = None if FULL else last_timestamp(str(SILVER_ROOT / TABLE), symbol)
     since = last + timedelta(minutes=1) if last else None
     df = read_symbol(str(BRONZE_ROOT / TABLE), symbol, since=since)
     if df is None or df.is_empty():
         return
-    silver.ingest(df.sort("timestamp"), TABLE, align_1m=True)
+    silver.ingest(df.sort("timestamp"), TABLE, align_1m=True, update_matched=FULL)
     print(f"[{symbol}] silver +{len(df):,} bars")
 
 
@@ -43,13 +46,13 @@ def ingest_csv(f) -> None:
     if not (connector.folder / f"{f.file}.csv").exists():
         print(f"[{f.symbol}] {f.file}.csv not found in {connector.folder}")
         return
-    last = bronze.last_bronze_ts(TABLE, f.symbol)
+    last = None if FULL else bronze.last_bronze_ts(TABLE, f.symbol)
     df = connector.fetch(symbol=f.file, start=last + timedelta(minutes=1) if last else None)
     if df.is_empty():
         print(f"[{f.symbol}] bronze up to date")
         return
     df = bronze.add_partition_columns(df, symbol=f.symbol)
-    bronze.save(df, TABLE)
+    bronze.save(df, TABLE, update_matched=FULL)
     print(f"[{f.symbol}] bronze +{len(df):,} bars, {df['timestamp'].min()} -> {df['timestamp'].max()}")
 
 

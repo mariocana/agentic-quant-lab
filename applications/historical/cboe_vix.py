@@ -1,6 +1,6 @@
 """CBOE volatility indices daily history -> bronze/cboe_index_daily.
 
-VIX (1990-), VIX9D (2011-), VIX1D (2022-), VIX3M (2006-). The CSV is the
+VIX (1990-), VIX9D (2011-), VIX1D (2022-), VIX3M (2006-), VXN (2009-). The CSV is the
 full history every time: the Delta merge on (symbol, timestamp) only adds
 the new days, so re-running is cheap and safe.
 
