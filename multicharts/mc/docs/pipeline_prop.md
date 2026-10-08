@@ -156,6 +156,13 @@ non voluto (half‑day: annotare).
 ## Stage 2 — Backtest IS (1 contratto, costi on)
 Costi: $2.50/lato + 1 tick. Solo il periodo IS.
 
+> **Come si impostano davvero in MultiCharts** (stessa regola dello Stage 3, scoperta il
+> 29/09/2026): lo slippage impostato nel campo apposito viene addebitato solo per una
+> frazione del dovuto, perché MC lo limita al range della barra e con Bar Magnifier a 1
+> minuto non resta spazio. Quindi lo slippage si **incorpora nella commissione** e il campo
+> slippage si lascia a zero: su NQ `$2,50 + 1 tick da $5,00` = **`7.5$ per Contract`,
+> slippage `0 ticks`**. Su ES sarebbe $15,00/lato.
+
 **Gate 2** (tutti):
 | Metrica | Soglia |
 |---|---|

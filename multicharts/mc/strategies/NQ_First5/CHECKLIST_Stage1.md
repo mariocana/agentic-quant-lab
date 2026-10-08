@@ -123,6 +123,109 @@ che la strategia apre sempre, non dipende dallo stato di riempimento.
 
 C e D vanno **rifatti** dopo la ricompilazione. A e B restano validi.
 
+#### Secondo giro (08/10/2026) — C e D **passati**, correzione verificata
+
+Rifatti dopo la ricompilazione, su Globex 24h con `ShowLog` True.
+
+| metrica | C (`StopPts 200` × 1) | D (× 10) | D/C |
+|---|---|---|---|
+| Net Profit | 44.620 | 446.200 | **10,000000** |
+| Gross Profit | 196.675 | 1.966.750 | **10,000000** |
+| Gross Loss | −152.055 | −1.520.550 | **10,000000** |
+| Max Strategy Drawdown | −30.190 | −301.900 | **10,000000** |
+| Max Close To Close DD | −25.135 | −251.350 | **10,000000** |
+| Commission Paid | 1.492,50 | 14.925 | **10,000000** |
+| Trade · % Prof · PF | 99 · 50,5% · 1,293 | 99 · 50,5% · 1,293 | identici |
+
+Ma il numero che chiude davvero la questione sta nella lista trade: **34 uscite a stop in
+entrambi i run, tutte a −200,00 punti esatti**, minimo e massimo coincidenti. Peggior trade
+−$4.015 con 1 contratto e −$40.150 con 10. Nel run bugato D aveva 71 uscite a −20 punti.
+
+> Due numeri **non** scalano: `Open Position P/L` (−507,50 contro −8.975) e `Avg Monthly
+> Return`. La causa non è il codice: l'ultimo trade era **ancora aperto** all'export e i due
+> report sono stati generati a cinque minuti di distanza — il `Trading Period` lo dice
+> («4 Mths, 19 Dys, 13 Hrs» contro «…13 Hrs, 5 Mins»). I 99 trade chiusi sono identici.
+
+Attenzione a una cosa per il seguito: **A/B e C/D girano su finestre diverse** (14/05→30/09
+contro 22/05→08/10). Ogni coppia è coerente al suo interno, che è quello che il Gate 1
+chiede, ma i net delle due coppie non si confrontano fra loro.
+
+#### Check 10 — ADR: verificato
+
+Le righe `F5 EOD` ci sono, una per sessione, da `sessioni= 1` a `sessioni= 99`. ADR20 e
+ADR100 in centinaia di punti e plausibili per NQ: parte a 258, sale a 651 a fine giugno,
+scende a 310 a ottobre. `ratio` resta 1,000 fino alla sessione 20 — corretto per
+costruzione, perché finché `rN ≤ 20` le due finestre mediano gli stessi dati — e poi si
+stacca (1,21 al picco di giugno, 0,60 a settembre).
+
+La prima riga `F5 SIG` del 22/05 ha `ADR= 0.00`: è la prima sessione, il rollover non è
+ancora avvenuto. Non è un difetto.
+
+> **Conseguenza da tenere a mente per lo Stage 2.** Il run arriva a 99 sessioni e
+> `regimeOK` richiede `rN >= VolRegimeLongLen` = 100. Con `UseFilters 1` su questa finestra
+> la strategia farebbe **zero trade**. Non è un bug: è il warm‑up, ed è esattamente il
+> motivo per cui esiste il gate date.
+
+**Restano solo** i controlli 1‑9 sulla lista trade — già verificati meccanicamente su C e D
+(100 ingressi tutti alle 08:35, uno al giorno, nessun doppione, nessun overnight, 20 per
+giorno della settimana, 47 long / 53 short, 4 uscite `End of Day Exit` nelle mezze
+giornate) — e il **gate date** `TradeStartEL` / `TradeEndEL`.
+
+#### Gate date (08/10/2026) — **passato**
+
+Config del run A (`StopPts 0`, 1 contratto, `UseFilters 0`) con le sole due date cambiate:
+`TradeStartEL 1260615`, `TradeEndEL 1260831` — cioè 15/06 → 31/08/2026, due giorni di borsa
+interni al periodo caricato. **Gli attesi sono stati scritti prima del run.**
+
+| # | Controllo | Atteso | Ottenuto |
+|---|---|---|---|
+| 1 | Numero di trade | 56 | **56** ✔ |
+| 2 | Primo ingresso | 15/06 08:35 | **15/06 08:35** ✔ |
+| 3 | Ultimo ingresso | 31/08 08:35 | **31/08 08:35** ✔ |
+| 4 | Ingressi fuori finestra | zero | **zero** ✔ |
+| 5 | Uscita dell'ultimo trade | 31/08 15:00, normale | **31/08 15:00**, `F5.LX` ✔ |
+| 6 | Righe `F5 SIG` | 56 | **56**, dal 15/06 al 31/08 ✔ |
+| 7 | Righe `F5 EOD` fuori finestra | continuano | **continuano**: dal 25/05 al 07/10 ✔ |
+
+Il controllo 7 è quello che conta: l'ADR si aggiorna anche nei giorni in cui il gate
+impedisce di entrare. Se si fermasse dentro la finestra, il warm‑up dello Stage 2 sarebbe
+inservibile — ed è l'unico motivo per cui questo input esiste.
+
+Uscite: 54 alle 15:00, **2 anticipate** alle 12:00 — 19/06 (Juneteenth) e 03/07 (vigilia del
+4 luglio). Entrambe mezze giornate vere, gestite da `SetExitOnClose`.
+
+> **Una differenza rispetto al previsto, da registrare.** Avevo scritto che le righe
+> `F5 EOD` sarebbero arrivate a `sessioni= 99` come nel run C/D. Sono **98**, e la prima è
+> del **25/05** invece che del 22/05: in questo export la sessione del 22/05 non esiste. Non
+> è il gate — il blocco dell'ADR non è gatato e infatti continua a stampare fuori finestra —
+> ma il **grafico caricato**, che stavolta comincia dopo le 15:00 del 22/05 e quindi non ha
+> barre nella finestra 08:30‑15:00 di quel giorno. Conseguenza: gli ADR100 differiscono di
+> poco da quelli del run C/D (sessione 21: 509,77 contro 499,95). Non cambia nessuna
+> conclusione, ma conferma che **il range del grafico va fissato e verificato a ogni run**.
+
+Da annotare per la variante `StopPts` (non è un gate): **peggior trade −621,50 punti** =
+−$12.445 su 1 mini, cioè **$1.244 per micro** su una finestra di soli due mesi e mezzo.
+Il budget che conosciamo è ~$200/micro. Senza stop la strategia non è deployabile, come
+dichiarato nella spec.
+
+---
+
+## ✅ Gate 1 — **passato** (08/10/2026)
+
+Tutti i controlli della sezione 4, lo scaling ×10 con lo stop acceso e il gate date.
+Report in `reports/`:
+
+| File | Cos'è |
+|---|---|
+| `F5_S1_A_base_x1.xlsx` · `F5_S1_B_base_x10.xlsx` | base case, ×10 esatto |
+| `F5_S1_C_stop200_x1_BUG.xlsx` · `F5_S1_D_stop200_x10_BUG.xlsx` | il run che ha trovato il bug dello stop, tenuti come prova |
+| `F5_S1_C_stop200_x1_FIX.xlsx` · `F5_S1_D_stop200_x10_FIX.xlsx` | dopo la correzione, ×10 esatto |
+| `F5_S1_gate_date_1260615-1260831.xlsx` | gate date |
+
+**Prossimo passo: Stage 2.** Con `UseFilters 1` servono **più di 100 sessioni caricate**,
+perché `regimeOK` richiede `rN ≥ VolRegimeLongLen` = 100. Il gate date serve proprio a
+questo: si carica storico abbondante e si fanno partire gli ingressi dopo il warm‑up.
+
 ### 5b. Gate date `TradeStartEL` / `TradeEndEL`
 
 Serve allo Stage 2 per separare il warm-up (100 sessioni di `VolRegimeLongLen`) dal periodo
