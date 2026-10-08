@@ -68,3 +68,94 @@ direzionale con stop da ~$200/micro.
 fattori di amplificazione misurati (1,67× su VaultBreak, 2,56× sull'ORB) significa puntare a
 un **drawdown storico di $10.000–12.000 con 1 mini**. Va deciso allo Stage 0 della variante
 `StopPts`, non scoperto al Gate 3 — è esattamente l'errore che abbiamo già pagato due volte.
+
+---
+
+# Stage 2 — IS 2020‑2024: **Gate 2 fallito**
+
+Sei run, 08/10/2026. Chart @NQ 5 min Globex 24h CT, dati dal 01/01/2019 (warm‑up) al
+31/12/2024, costi `7.5$ per Contract` + slippage 0, 1 contratto, `StopPts 0`.
+Periodo valutato con il gate date: `1200101` → `1241231`.
+Report in `reports/`.
+
+| run | trade | net | avg trade | WR | PF | DD close‑to‑close | peggior trade |
+|---|---|---|---|---|---|---|---|
+| **1 — IS base** | 1.291 | 112.095 | $86,83 | 51,4% | 1,076 | −87.975 | −$10.845 |
+| **2 — IS filtrata** | 294 | 107.780 | **$366,60** | 53,1% | 1,275 | −50.045 | −$10.445 |
+| 3 — 1ª metà base | 645 | 26.220 | $40,65 | 51,5% | 1,034 | −78.770 | — |
+| 4 — 1ª metà filtrata | 177 | 61.450 | **$347,18** | 53,1% | 1,241 | −50.045 | — |
+| 5 — 2ª metà base | 646 | 85.875 | $132,93 | 51,4% | 1,121 | −55.295 | — |
+| 6 — 2ª metà filtrata | 117 | 46.330 | **$395,98** | 53,0% | 1,341 | −19.910 | — |
+
+## I filtri funzionano, e questo era pre‑registrato
+
+La regola scritta allo Stage 0 era: la filtrata entra **solo se batte il base sull'avg trade
+in entrambe le metà**. Lo fa, e non di poco — **$347 contro $41** nella prima metà, **$396
+contro $133** nella seconda. Il filtro di regime taglia il 77% dei trade e quasi raddoppia
+il profit factor. **La versione filtrata diventa la candidata.**
+
+Vale la pena notare *come* lo fa: non alzando il win rate (51,4% → 53,1%, quasi nulla) ma
+scegliendo giornate con escursione più ampia. L'avg win passa da $2.387 a $3.199.
+
+## Ma il Gate 2 non passa, e non passa per il motivo di sempre
+
+Giudicato sulla candidata (run 2):
+
+| metrica | soglia | ottenuto | |
+|---|---|---|---|
+| n. trade | ≥ 200 | 294 | ✔ |
+| avg trade netto | ≥ $70 | $366,60 | ✔ |
+| profit factor | ≥ 1.2 | 1,275 | ✔ |
+| win rate | ≥ 55% | 53,1% | ✘ |
+| **max DD ÷ 10** | **≤ $1.000** | **$5.784** | ✘ **5,8×** |
+| **peggior trade ÷ 10** | **≤ $500** | **$1.044** | ✘ **2,1×** |
+| tabella annuale | nessun anno > 50% | 2020 = 64,9% | ✘ |
+| segno stabile | — | 2021 = **−32,7%** | ✘ |
+
+Il base case va peggio su tutto tranne il numero di trade: PF 1,076, DD per micro $8.950.
+
+Lo Stage 0 aveva già scritto il bersaglio: *«puntare a un drawdown storico di $10.000–12.000
+con 1 mini»*. Siamo a **$50.045**. Non è un margine, è un ordine di grandezza.
+
+## La variante `StopPts` non può salvarla — calcolato prima di spendere un run
+
+`StopPts` era pre‑registrata allo Stage 0 come **obbligatoria per l'uso prop**, quindi
+provarla non sarebbe un ripescaggio post‑hoc. Prima di lanciarla ho però ricostruito dalla
+lista trade un **limite massimo ottimistico**: ogni perdita tagliata allo stop, e **nessun
+vincente toccato** dallo stop intrabar. La realtà sta sotto questa riga, mai sopra.
+
+| stop (pt) | net | avg | PF | DD ÷ 10 | trade tagliati |
+|---|---|---|---|---|---|
+| nessuno | 107.780 | $367 | 1,275 | **$5.004** | — |
+| 300 | 134.130 | $456 | 1,367 | **$4.614** | 12 |
+| 200 | 174.835 | $595 | 1,539 | **$3.430** | 35 |
+| 150 | 218.325 | $743 | 1,778 | **$2.527** | 52 |
+| **100** | 280.200 | $953 | 2,280 | **$1.342** | 71 |
+
+Anche con uno stop da **100 punti** — stretto al punto da essere rumore su uno strumento il
+cui ADR di sessione sta fra 300 e 600 punti — il limite *ottimistico* resta sopra la soglia
+di $1.000. E il valore vero sarebbe peggiore, perché uno stop così stretto trasformerebbe in
+perdite un buon numero dei vincenti che qui ho lasciato intatti.
+
+Il vincolo che non si sposta: **avg loss $2.836, cioè $284 per micro**. Tenere una posizione
+per l'intera sessione su NQ senza stop costa questo, e il filtro di regime — che seleziona
+apposta le giornate più ampie — lo **aumenta**, non lo riduce.
+
+## Verdetto
+
+**Gate 2 fallito.** Il Monte Carlo dello Stage 3 non si lancia: gira su un report che già
+sfonda di 5,8× la soglia di drawdown, e il 95° percentile è per costruzione peggiore del
+drawdown storico.
+
+L'edge esiste — $366 di avg trade netto su 294 trade con PF 1,275 non è rumore. Non entra
+nel conto. È la **terza volta di fila**, con la stessa causa:
+
+| strategia | drawdown per micro | dove è morta |
+|---|---|---|
+| ORB Breakout | $3.121 (95° pct MC) | Gate 3 |
+| VaultBreak | $3.109 (95° pct MC) | Gate 3 |
+| **NQ First5** | **$5.004 (storico)** | **Gate 2** |
+
+Tre logiche indipendenti sullo stesso strumento, tutte con un edge misurabile, tutte fuori
+budget per la stessa ragione. Vedi la domanda aperta sul Gate 3 in `pipeline_prop.md`: il
+trigger che avevo fissato parlava del Gate 3, ma la causa è la stessa e ora i casi sono tre.

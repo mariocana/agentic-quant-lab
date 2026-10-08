@@ -7,14 +7,13 @@
   "updated": "2026-10-08",
   "groups": [
    {
-    "title": "1. NQ First5 — Stage 1 chiuso ✅, ora lo Stage 2",
-    "note": "Gate 1 passato l'08/10",
+    "title": "1. NQ First5 — Gate 2 fallito, decisione da prendere",
+    "note": "Stage 1 chiuso, Stage 2 bocciato l'08/10",
     "items": [
-     "Backtest **IS 2020-01-01 → 2024-12-31**, base case (`UseFilters 0`) contro filtrata (`UseFilters 1`) **dalla stessa data**",
-     "⚠️ Caricare **oltre 100 sessioni di storico prima** dell'inizio valutato: `regimeOK` richiede `rN ≥ 100`, altrimenti la filtrata fa zero trade",
-     "Usare `TradeStartEL` per far partire gli ingressi dopo il warm-up — è il motivo per cui quell'input esiste",
-     "Costi `7.5$ per Contract`, slippage 0. **Fissare e verificare il range del grafico**: nell'ultimo run mancava una sessione perché il chart partiva a metà giornata",
-     "Soglie Gate 2: n ≥ 200 · avg trade ≥ $70 · PF ≥ 1.2 · WR ≥ 55% · DD÷10 ≤ $1.250 · peggior trade÷10 ≤ $500 · nessun anno > 50%"
+     "La filtrata è la candidata (regola pre-registrata soddisfatta in entrambe le metà), ma **$5.784 di drawdown per micro contro $1.000** di soglia",
+     "Verificato che `StopPts` **non** la salva: anche a 100 punti il limite ottimistico resta a $1.342/micro",
+     "**Scelta**: cimitero con causa B, oppure si affronta la domanda strutturale — **tre su tre** su @NQ con edge e fuori budget (ORB $3.121, VaultBreak $3.109, First5 $5.004 per micro)",
+     "Nessun altro run su First5 finché la scelta non è presa"
     ]
    },
    {
@@ -285,10 +284,23 @@
    "path": "mc/strategies/NQ_First5",
    "stages": {
     "0": "pass",
-    "1": "pass"
+    "1": "pass",
+    "2": "fail"
    },
-   "note": "Codice pronto (`NQ_First5.txt`, base e filtrata in un solo signal). Direzione della prima barra NY (08:35 CT) vs EMA(12), tenuta fino alle 15:00. **L'unica candidata con lato short reale.** Senza stop non è deployabile per la prop: `StopPts` è la variante obbligatoria dello Stage 4. Da misurare presto la correlazione con l'ORB (stesso strumento e stessa ora). Stage 1 chiuso l'08/10: base case pulito, scaling ×10 esatto con lo stop acceso dopo una correzione al codice, gate date verificato.",
+   "note": "Codice pronto (`NQ_First5.txt`, base e filtrata in un solo signal). Direzione della prima barra NY (08:35 CT) vs EMA(12), tenuta fino alle 15:00. **L'unica candidata con lato short reale.** Senza stop non è deployabile per la prop: `StopPts` è la variante obbligatoria dello Stage 4. Da misurare presto la correlazione con l'ORB (stesso strumento e stessa ora). Stage 1 chiuso l'08/10: base case pulito, scaling ×10 esatto con lo stop acceso dopo una correzione al codice, gate date verificato. **Gate 2 fallito l'08/10**: edge presente (avg $366 netto, PF 1,275 sulla filtrata) ma drawdown $5.784/micro contro $1.000.",
    "log": [
+    {
+     "date": "2026-10-08",
+     "text": "**Gate 2 fallito.** Sei run sull'IS 2020‑2024. I filtri funzionano e la regola pre‑registrata è soddisfatta — la filtrata batte il base sull'avg trade in **entrambe** le metà, $347 contro $41 e $396 contro $133 — quindi la candidata è la versione filtrata: 294 trade, avg **$366,60**, PF 1,275. Ma il drawdown è **$5.784 per micro** contro una soglia di $1.000, il peggior trade $1.044 contro $500, il win rate 53,1% contro 55%, e il 2020 vale il 64,9% del profitto con il 2021 a −32,7%. Lo Stage 0 aveva scritto il bersaglio: drawdown storico $10.000–12.000 con 1 mini. Siamo a **$50.045**."
+    },
+    {
+     "date": "2026-10-08",
+     "text": "**La variante `StopPts` non la salva, e l'ho verificato prima di spendere un run.** Ricostruito dalla lista trade un limite *ottimistico* (ogni perdita tagliata allo stop, nessun vincente toccato intrabar): anche con uno stop da **100 punti** — rumore, su uno strumento con ADR di sessione fra 300 e 600 — il drawdown per micro resta a **$1.342**, sopra soglia. Il vincolo che non si sposta è l'avg loss: **$2.836, cioè $284 per micro**, e il filtro di regime lo aumenta perché seleziona apposta le giornate più ampie. Stage 3 non lanciato: girerebbe su un report che sfonda di 5,8×."
+    },
+    {
+     "date": "2026-10-08",
+     "text": "**Terza volta di fila, stessa causa.** ORB $3.121/micro e VaultBreak $3.109/micro al 95° percentile MC, First5 **$5.004/micro già storico**. Tre logiche indipendenti su @NQ, tutte con un edge misurabile, tutte fuori budget per il rischio per micro. Il trigger che avevo fissato in `pipeline_prop.md` parlava del Gate 3: la causa è la stessa e ora i casi sono tre."
+    },
     {
      "date": "2026-10-08",
      "text": "**Gate 1 passato — Stage 1 chiuso.** Gate date verificato con `TradeStartEL 1260615` / `TradeEndEL 1260831`: **56 trade** esatti come previsto prima del run, primo ingresso 15/06 08:35, ultimo 31/08 08:35, **zero ingressi fuori finestra**, ultimo trade chiuso regolarmente alle 15:00. Il controllo che conta: le righe `F5 EOD` **continuano fuori dalla finestra** (dal 25/05 al 07/10), quindi l'ADR si aggiorna anche nei giorni senza ingressi — senza questo il warm-up dello Stage 2 sarebbe inservibile. Due uscite anticipate alle 12:00, 19/06 (Juneteenth) e 03/07: mezze giornate vere."
@@ -322,7 +334,7 @@
      "text": "Spec + codice dai template 18 del corso (dichiarati non validati dall'autore). BASE e FILTERED uniti con `UseFilters` per confrontarli nello stesso run; aggiunto `StopPts` (off di default) come variante prop pre‑registrata."
     }
    ],
-   "next": "**Stage 2** — backtest IS 2020-01-01 → 2024-12-31, base case contro versione filtrata dalla stessa data. Caricare **più di 100 sessioni di storico prima dell'inizio valutato** (`regimeOK` richiede `rN ≥ 100`) e usare `TradeStartEL` per far partire gli ingressi dopo il warm-up. Costi: `7.5$ per Contract`, slippage 0."
+   "next": "**Decisione da prendere**: cimitero con causa di morte B (non entra nel conto), oppure si apre la domanda strutturale — tre strategie su tre con edge e fuori budget sullo stesso strumento. Nel frattempo nessun altro run su First5."
   },
   {
    "name": "DriftPullback",
