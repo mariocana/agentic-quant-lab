@@ -188,6 +188,12 @@ bronze:
     partition: [symbol, year, month]
     notes: ES / NQ 1m continuous (@ES back-adjusted, 24h), volume = upticks + downticks (approximate delta); --full re-reads the CSV
 
+  multicharts_contracts:
+    source: multicharts
+    grain: 1m
+    partition: [symbol, year, month]
+    notes: single ES / NQ contracts (symbol = TradeStation code, ESZ25), one ExportBars CSV each (<code>_1min.csv), partial history allowed; re-read whole each run
+
   sentinel2_ndvi:
     source: planetary_computer
     grain: per acquisition date (~5 days, cloud-filtered)
@@ -256,6 +262,11 @@ silver:
     transforms:
       - incremental copy of bronze bars newer than the last silver bar (historical/multicharts.py)
       - same align_to_minute + clean_ohlcv rules as binance_spot_ohlcv
+
+  multicharts_contracts:
+    from: [bronze/multicharts_contracts]
+    transforms:
+      - align_to_minute + clean_ohlcv, rows overwritten on every run (historical/multicharts_rolls.py)
 
   fred:
     from: [bronze/fred]
@@ -366,6 +377,48 @@ gold:
       - plain OHLCV for alpha-quant (ES, NQ), windows anchored to the CME day (17:00 America/Chicago, DST-aware)
       - timestamp = window open in UTC; 1d_cme = one Globex session (Sun/Mon-Thu 17:00 → 16:00 next day)
       - only windows fully covered by silver; never vacuumed
+
+  multicharts_continuous/1m:
+    from: [silver/multicharts_contracts]
+    transforms:
+      - contract active in [previous roll_ts, own roll_ts) per reference/rolls, unadjusted OHLCV
+      - contract + adj_offset (sum of later gap_points; adjusted = price + adj_offset, null if a later gap is unknown)
+      - resample 1m → 1m per contract; no window straddles a roll (17:00 CT); rebuilt whole each run
+
+  multicharts_continuous/5m:
+    from: [silver/multicharts_contracts]
+    transforms:
+      - contract active in [previous roll_ts, own roll_ts) per reference/rolls, unadjusted OHLCV
+      - contract + adj_offset (sum of later gap_points; adjusted = price + adj_offset, null if a later gap is unknown)
+      - resample 1m → 5m per contract; no window straddles a roll (17:00 CT); rebuilt whole each run
+
+  multicharts_continuous/15m:
+    from: [silver/multicharts_contracts]
+    transforms:
+      - contract active in [previous roll_ts, own roll_ts) per reference/rolls, unadjusted OHLCV
+      - contract + adj_offset (sum of later gap_points; adjusted = price + adj_offset, null if a later gap is unknown)
+      - resample 1m → 15m per contract; no window straddles a roll (17:00 CT); rebuilt whole each run
+
+  multicharts_continuous/1h:
+    from: [silver/multicharts_contracts]
+    transforms:
+      - contract active in [previous roll_ts, own roll_ts) per reference/rolls, unadjusted OHLCV
+      - contract + adj_offset (sum of later gap_points; adjusted = price + adj_offset, null if a later gap is unknown)
+      - resample 1m → 1h per contract; no window straddles a roll (17:00 CT); rebuilt whole each run
+
+  multicharts_continuous/4h_cme:
+    from: [silver/multicharts_contracts]
+    transforms:
+      - contract active in [previous roll_ts, own roll_ts) per reference/rolls, unadjusted OHLCV
+      - contract + adj_offset (sum of later gap_points; adjusted = price + adj_offset, null if a later gap is unknown)
+      - resample 1m → 4h_cme per contract; no window straddles a roll (17:00 CT); rebuilt whole each run
+
+  multicharts_continuous/1d_cme:
+    from: [silver/multicharts_contracts]
+    transforms:
+      - contract active in [previous roll_ts, own roll_ts) per reference/rolls, unadjusted OHLCV
+      - contract + adj_offset (sum of later gap_points; adjusted = price + adj_offset, null if a later gap is unknown)
+      - resample 1m → 1d_cme per contract; no window straddles a roll (17:00 CT); rebuilt whole each run
 
   binance_um_ohlcv/1m:
     from: [silver/binance_um_ohlcv]
@@ -520,3 +573,16 @@ reference:
       (QuantlakeInstrumentSource): do not rename columns or change types.
       Written by reference.instruments.upsert_instruments (merge on symbol);
       initial rows from seed_default(). Costs stay in alpha-quant.
+
+  rolls:
+    source: multicharts
+    grain: one row per roll event
+    key: [symbol, roll_ts]
+    partition: none
+    notes: |
+      ES / NQ roll calendar, read by alpha-quant: symbol, roll_ts, from_contract,
+      to_contract, gap_points. Fixed rule: third-Friday expiry - 8 days, 17:00
+      America/Chicago. gap_points = to close - from close at the last common
+      minute before roll_ts (null when the contracts' data is missing).
+      Rebuilt whole by historical/multicharts_rolls.py, which also reports where
+      TradeStation's @ES / @NQ rolls on another day.
