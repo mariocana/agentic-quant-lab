@@ -5,7 +5,8 @@
 //     cartella python/quantlake/data/multicharts. Su Windows apri \\<IP del Mac>\multicharts
 //     una volta con le credenziali del Mac. Il FilePath sotto punta lì: il file è sempre aggiornato.
 //  B) cartella locale (es. C:\Dati) e copia a mano sul Mac in python/quantlake/data/multicharts.
-// Applicare a @ES 1 minuto, sessione 24h, con tutta la storia caricata.
+// Applicare a @ES 1 minuto, sessione 17:00-16:00 CT senza pause, Time Zone Exchange,
+// con tutta la storia caricata. Passo passo e controlli: applications/MULTICHARTS_EXPORT.md
 // Lasciarlo attivo: ad ogni barra chiusa aggiunge una riga. Per NQ cambiare FilePath.
 Inputs: FilePath("\\192.168.1.X\multicharts\ES_1min.csv"); // IP del Mac al posto di X, oppure "C:\Dati\ES_1min.csv"
 Vars: riga("");
