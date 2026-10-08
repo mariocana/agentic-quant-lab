@@ -204,3 +204,37 @@ def test_history_plus_recent(lake, freeze_now, monkeypatch, tmp_path):
     b = bronze_es()
     assert b["timestamp"].is_unique().all() and b.height == 5 * 120
     assert b.filter(pl.col("timestamp") >= chi(2025, 6, 5, 0, 0))["close"].unique().to_list() == [5002.0]
+
+
+def test_recent_rewrite_reaches_gold(lake, freeze_now, monkeypatch, tmp_path):
+    freeze_now(gold, utc(2026, 1, 1))
+    folder = tmp_path / "multicharts"
+    folder.mkdir()
+    mod = _load_multicharts()
+    for name in ("BRONZE_ROOT", "SILVER_ROOT", "GOLD_ROOT"):
+        monkeypatch.setattr(mod, name, lake[name])
+    path = Path(__file__).parents[1] / "applications" / "historical" / "ohlcv_gold.py"
+    spec = importlib.util.spec_from_file_location("ohlcv_gold", path)
+    og = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(og)
+    monkeypatch.setattr(og, "SILVER_ROOT", lake["SILVER_ROOT"])
+    monkeypatch.setattr(og, "TABLES", {"multicharts_ohlcv": ("multicharts_ohlcv", ["1h", "1d_cme"])})
+
+    def day(d):
+        return [chi(2025, 6, d, 14, 0) + timedelta(minutes=i) for i in range(120)]
+
+    _export(folder / "ES_1min.csv", day(2) + day(3) + day(4), lambda t: 5000.0)
+    mod.main([], folder=folder)
+    og.main()
+    # roll: the recent export comes back re-adjusted for Wed 4 → Thu 5
+    _export(folder / "ES_recent.csv", day(4) + day(5), lambda t: 5050.0)
+    mod.main([], folder=folder)
+    og.main()
+
+    for tf in ("1h", "1d_cme"):
+        g = read_symbol(str(lake["GOLD_ROOT"] / "multicharts_ohlcv" / tf), "ES").sort("timestamp")
+        assert g["timestamp"].is_unique().all()
+        recent = g.filter(pl.col("timestamp") >= chi(2025, 6, 3, 17, 0))  # sessions of Wed 4 and Thu 5
+        old = g.filter(pl.col("timestamp") < chi(2025, 6, 3, 17, 0))
+        assert recent["close"].unique().to_list() == [5050.0], tf
+        assert old["close"].unique().to_list() == [5000.0], tf

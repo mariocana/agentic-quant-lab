@@ -82,7 +82,13 @@ def save(df: pl.DataFrame, table_name: str, timeframe: str) -> None:
 
 # ── Plain OHLCV gold (incremental, read by alpha-quant) ────────────────────
 
-def update_ohlcv(silver_table: str, gold_table: str, timeframe: str, symbol: str) -> pl.DataFrame:
+def update_ohlcv(
+    silver_table: str,
+    gold_table: str,
+    timeframe: str,
+    symbol: str,
+    lookback: timedelta | None = None,
+) -> pl.DataFrame:
     """Extend gold/<gold_table>/<timeframe> for ``symbol`` with new silver bars, no features.
 
     Tail: reads silver from the last stored gold bar onward (that bar is
@@ -93,6 +99,9 @@ def update_ohlcv(silver_table: str, gold_table: str, timeframe: str, symbol: str
     start of silver after the gold was built, e.g. binance_um 2019 from
     REST) are built and written too; when there are none it costs one read
     pruned to the years up to the first gold bar.
+    lookback: rebuild the tail from `lookback` before the last gold bar
+    (from the open of the window holding that instant), for silvers whose
+    last days get rewritten (multicharts ES_recent, re-adjusted after a roll).
     Re-running is safe. Returns the bars written.
     """
     gold_path = _gold_path(gold_table, timeframe)
@@ -107,6 +116,9 @@ def update_ohlcv(silver_table: str, gold_table: str, timeframe: str, symbol: str
             written.append(ingest(head, gold_table, timeframe))
 
     last = last_timestamp(gold_path, symbol)
+    if last is not None and lookback is not None:
+        start = pl.DataFrame({"timestamp": [last - lookback]}, schema={"timestamp": pl.Datetime("us", "UTC")})
+        last = start.select(bar_open(timeframe)).item()
     df = read_symbol(silver_path, symbol, since=last)
     if df is not None and not df.is_empty():
         covered_until = df["timestamp"].max() + timedelta(minutes=1)
