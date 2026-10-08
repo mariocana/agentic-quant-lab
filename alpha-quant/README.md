@@ -27,6 +27,10 @@ legacy/            codice originale del corso, solo come riferimento
 | Specifiche degli strumenti | `<QUANTLAKE_DATA_ROOT>/reference/instruments` | quantlake |
 | Costi (commissioni, slippage) | `config/costs.yaml` | tu |
 
+I timeframe sono allineati a UTC (`15m`, `1d`) oppure, per i futures CME, alla
+sessione Globex con il suffisso `_cme`: `1d_cme` ha una barra per sessione, aperta
+alle 17:00 di Chicago, e il report di qualità conta le sessioni mancanti.
+
 `QUANTLAKE_DATA_ROOT` ha come default `../quantlake/data`. Ogni lettura registra la
 versione Delta, così un test si può rifare identico con `version=...`.
 

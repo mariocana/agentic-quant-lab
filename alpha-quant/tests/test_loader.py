@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 import polars as pl
 import pytest
 
-from alphaquant.data import SchemaError, load_bars, parse_timeframe
+from alphaquant.data import SchemaError, is_session_anchored, load_bars, parse_timeframe
 from alphaquant.instruments import QuantlakeInstrumentSource
 
 from conftest import gold_bars, write_delta
@@ -33,8 +33,12 @@ def test_parse_timeframe():
     assert parse_timeframe("15m") == timedelta(minutes=15)
     assert parse_timeframe("4h") == timedelta(hours=4)
     assert parse_timeframe("1d") == timedelta(days=1)
+    assert parse_timeframe("1d_cme") == timedelta(days=1)
+    assert is_session_anchored("1d_cme") and is_session_anchored("4h_cme") and not is_session_anchored("1d")
     with pytest.raises(ValueError):
         parse_timeframe("15min")
+    with pytest.raises(ValueError):
+        parse_timeframe("1d_nyse")
 
 
 def test_loads_one_symbol_with_version_and_quality(data_root, btc, gold_15m):
@@ -122,3 +126,29 @@ def test_cme_missing_bars_ignore_closed_market(data_root, costs):
     assert quality.missing_bars == 0
     # Fri 18:00, 19:00, 20:00 UTC (break from 16:00 CDT) + Sun 22:00, 23:00 UTC after the reopen
     assert len(open_hours) == 5
+
+
+def test_cme_session_bars(data_root, costs):
+    es = QuantlakeInstrumentSource(data_root, costs=costs).get("ES")
+    path = data_root / "gold" / "multicharts_ohlcv" / "1d_cme"
+    # 2026-03-02 -> 2026-04-10: crosses the US DST change (session open 23:00 -> 22:00 UTC)
+    opens = es.session.session_opens(datetime(2026, 3, 1, tzinfo=UTC), datetime(2026, 4, 10, tzinfo=UTC))
+    assert datetime(2026, 3, 5, 23, tzinfo=UTC) in opens.to_list() and datetime(2026, 3, 9, 22, tzinfo=UTC) in opens.to_list()
+    dropped = datetime(2026, 3, 18, 22, tzinfo=UTC)
+    good_friday = datetime(2026, 4, 2, 22, tzinfo=UTC)  # CME opens a short session, exchange_calendars says closed
+    assert good_friday not in opens.to_list()
+    ts = pl.concat([opens.filter(opens != dropped), pl.Series("timestamp", [good_friday], dtype=opens.dtype)]).sort()
+    bars = gold_bars("ES", datetime(2026, 1, 1, tzinfo=UTC), len(ts), timedelta(days=1)).with_columns(
+        ts.alias("timestamp"), ts.dt.year().cast(pl.Int32).alias("year"), ts.dt.month().cast(pl.Int8).alias("month"),
+    )
+    write_delta(bars, path, partition_by=PARTITIONS)
+
+    quality = load_bars(es, "1d_cme", data_root=data_root).quality
+    assert quality.missing_bars == 1 and quality.missing_sample == (dropped,)
+    assert quality.off_calendar_bars == 1
+    assert "off-calendar bars: 1" in quality.summary()
+
+
+def test_cme_timeframe_needs_cme_instrument(data_root, btc):
+    with pytest.raises(ValueError, match="anchored to the CME session"):
+        load_bars(btc, "1d_cme", data_root=data_root)
