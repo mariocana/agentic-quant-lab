@@ -159,3 +159,38 @@ nel conto. È la **terza volta di fila**, con la stessa causa:
 Tre logiche indipendenti sullo stesso strumento, tutte con un edge misurabile, tutte fuori
 budget per la stessa ragione. Vedi la domanda aperta sul Gate 3 in `pipeline_prop.md`: il
 trigger che avevo fissato parlava del Gate 3, ma la causa è la stessa e ora i casi sono tre.
+
+---
+
+# Chiusa — cimitero, causa di morte **B** (08/10/2026)
+
+**Decisione presa dopo il Gate 2 fallito.** Causa **B — non entra nel conto**: l'edge c'è,
+l'unità di rischio è troppo grande per un MLL da $2.000.
+
+Non è causa A. La versione filtrata fa **$366,60 di avg trade netto su 294 trade** con
+PF 1,275, i filtri battono il base case in **entrambe** le metà dell'IS come richiesto dalla
+regola pre‑registrata, e il profitto è positivo in tre anni su cinque. È una strategia che
+guadagna; non è una strategia che si può dimensionare su questo conto.
+
+**Il numero che la chiude**: drawdown $5.004 per micro contro $1.000 di soglia, e avg loss
+$2.836 (**$284 per micro**). La variante `StopPts`, pre‑registrata allo Stage 0 come
+obbligatoria, è stata verificata per calcolo prima di spendere un run e **non basta**:
+neppure a 100 punti il limite ottimistico scende sotto soglia.
+
+**Cosa la riaprirebbe** (regola del cimitero — si ri‑testa in minuti, non si ricostruisce):
+
+- un conto con **MLL molto più alto** rispetto al target, tale da assorbire $284 per micro
+  di perdita media;
+- lo **stesso schema su uno strumento meno volatile per tick** — MES invece di MNQ è il
+  candidato naturale, ma attenzione: il porting ES di VaultBreak è stato bocciato perché
+  l'edge in R si indeboliva del 26%, quindi va misurato, non assunto;
+- una **riscrittura dell'uscita**, non dello stop: il costo sta nel tenere la posizione per
+  l'intera sessione. Un'uscita a tempo più corta o a obiettivo sarebbe un'altra strategia,
+  cioè una **nuova Stage 0**, non una riapertura di questa.
+
+**Resta il lato short.** First5 era l'unica candidata con uno short reale, e questo non è
+cambiato: il basket ne ha ancora bisogno. Il lato short ha fatto **$30.125 su 53 trade** nel
+run del gate date e nel base IS è il lato migliore — informazione da portare alla prossima
+strategia long‑short, non da usare per riaprire questa.
+
+Report completi in `reports/` — Stage 1 (sette file) e Stage 2 (sei file).

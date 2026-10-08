@@ -415,6 +415,44 @@ che ci siamo impegnati a non fare. Ma si fissa il **trigger**:
 
 Due su due sono già causa B. Il terzo dato lo darà NQ First5.
 
+### Il terzo dato è arrivato — e non fa scattare il trigger (08/10/2026)
+
+**NQ First5 è chiusa, causa B**, ma è morta al **Gate 2**, non al Gate 3: drawdown storico
+**$5.004 per micro** contro una soglia di $1.000, con un edge chiaro sopra (294 trade, avg
+$366,60 netto, PF 1,275 sulla versione filtrata). Il Monte Carlo non è stato lanciato: su un
+report che sfonda di 5,8× sarebbe stato una formalità, visto che il 95° percentile è per
+costruzione peggiore del drawdown storico.
+
+| strategia | drawdown per micro | gate | causa |
+|---|---|---|---|
+| ORB Breakout | $3.121 — 95° pct MC | 3 | B |
+| VaultBreak | $3.109 — 95° pct MC | 3 | B |
+| **NQ First5** | **$5.004 — già storico** | **2** | **B** |
+
+**Il trigger non scatta, e vale la pena essere precisi sul perché.** Dice *«tutte le
+candidate rimaste»*: ne restano tre mai testate (VWAP Pullback, Gold Asian Range,
+DriftPullback). Tre su tre fra quelle arrivate in fondo è un indizio forte, non la
+condizione che avevamo scritto. Il trigger resta armato, invariato.
+
+E c'è una ragione in più per non muoverlo adesso: **First5 non mette alla prova il Gate 3**.
+Ha fallito una soglia diversa — il 50% dell'MLL sul drawdown *storico*, non l'MLL sul 95°
+percentile — e l'obiezione metodologica che abbiamo scritto riguarda il secondo, non il
+primo. Usarla come terza prova contro il Gate 3 sarebbe comodo e sbagliato.
+
+**Quello che il terzo caso aggiunge davvero** è un dato nuovo, e peggiore della somma dei
+primi due: per la prima volta la correzione **pre‑registrata come obbligatoria** si è
+dimostrata insufficiente *prima ancora di girarla*. Il limite ottimistico calcolato sulla
+lista trade — ogni perdita tagliata allo stop, nessun vincente toccato intrabar — resta
+sopra soglia perfino con uno stop da 100 punti, che su uno strumento con ADR di sessione fra
+300 e 600 è rumore. Non è che lo stop fosse tarato male: è che **tenere una posizione
+direzionale per l'intera sessione su NQ costa $284 per micro di perdita media**, e il filtro
+di regime che migliora l'edge lo aumenta, perché seleziona apposta le giornate più ampie.
+
+La domanda che resta aperta non è quindi «il Gate 3 è troppo severo» ma una più scomoda:
+**esiste su @NQ un edge intraday direzionale la cui unità di rischio stia sotto $200 per
+micro?** Le tre candidate rimaste non sono tutte su NQ — Gold Asian Range è su GC — ed è un
+motivo in più per testarle prima di toccare qualsiasi soglia.
+
 ## Riaprire una strategia chiusa: quando sì e quando no (01/10/2026)
 
 Domanda emersa dopo la chiusura di ORB e VaultBreak: **conviene rifarle long *e* short?**
