@@ -32,6 +32,7 @@ NY = ZoneInfo("America/New_York")
 SYMBOLS = ("ES", "NQ")
 STALE = timedelta(minutes=30)   # bars older than this = MultiCharts CSV not refreshed
 GEX_LOW = 0.3
+EM_0DTE_MIN_LEFT = 360  # minutes to the 16:00 ET close: snapshots up to 10:00 ET (the straddle decays to 0)
 GAP_EDGES = [0, 0.1, 0.25, 0.5, 1.0, 99]
 
 LOADERS = {
@@ -70,8 +71,12 @@ def _em_0dte() -> dict | None:
     if not DeltaTable.is_deltatable(path):
         return None
     e = pl.from_arrow(DeltaTable(path).to_pyarrow_table()).sort("timestamp")
-    e = e.filter(pl.col("expiry") == datetime.now(NY).date())
-    return None if e.is_empty() else e.row(-1, named=True)
+    e = e.filter((pl.col("expiry") == datetime.now(NY).date()) & (pl.col("minutes_to_close") >= EM_0DTE_MIN_LEFT))
+    if e.is_empty():
+        return None
+    pre = e.filter(pl.col("pre_open"))
+    # the last snapshot before the cash open; otherwise the earliest one after it
+    return pre.row(-1, named=True) if not pre.is_empty() else e.row(0, named=True)
 
 
 def _gap_fill(h: pl.DataFrame, symbol: str, gap_em: float) -> dict:
@@ -131,7 +136,8 @@ def card() -> dict:
     r = today["ES"]
     gex_low = r["gex_pct"] is not None and r["gex_pct"] < GEX_LOW
     if e is None:
-        warnings.append("nessuna foto 0DTE di oggi nella catena SPX: EM live non disponibile")
+        warnings.append("nessuna foto 0DTE di oggi prima delle 10:00 ET (16:00 a Roma): EM 0DTE non disponibile. "
+                        "Lo straddle si sgonfia durante la giornata, le foto più tarde non valgono come EM")
     return {
         "generated_at": now,
         "session_date": r["date"],
