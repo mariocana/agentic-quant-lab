@@ -5,7 +5,9 @@ Mac imports them into the local Delta tables (applications/cloud_sync.py).
 Only one writer per Delta table, the Mac: the cloud never touches the lake.
 
 Configuration from the environment (.env locally, variables on Railway):
-    R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET
+    R2_ENDPOINT (S3 API URL, https://<account>.r2.cloudflarestorage.com)
+        or R2_ACCOUNT_ID,
+    R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET
 or, for tests, QUANTLAKE_REMOTE_DIR=/some/folder (local folder, same layout).
 """
 import io
@@ -21,13 +23,16 @@ def store() -> tuple[pafs.FileSystem, str] | None:
     """(filesystem, base path) or None when nothing is configured."""
     if local := os.getenv("QUANTLAKE_REMOTE_DIR"):
         return pafs.LocalFileSystem(), local.rstrip("/")
-    keys = ("R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET")
-    if not all(os.getenv(k) for k in keys):
+    endpoint = os.getenv("R2_ENDPOINT") or (
+        f"https://{os.environ['R2_ACCOUNT_ID']}.r2.cloudflarestorage.com" if os.getenv("R2_ACCOUNT_ID") else None
+    )
+    keys = ("R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET")
+    if not endpoint or not all(os.getenv(k) for k in keys):
         return None
     fs = pafs.S3FileSystem(
         access_key=os.environ["R2_ACCESS_KEY_ID"],
         secret_key=os.environ["R2_SECRET_ACCESS_KEY"],
-        endpoint_override=f"https://{os.environ['R2_ACCOUNT_ID']}.r2.cloudflarestorage.com",
+        endpoint_override=endpoint.rstrip("/"),
         region="auto",
     )
     return fs, os.environ["R2_BUCKET"]

@@ -42,11 +42,15 @@ modifiche. Il cron di Railway gira ogni 5 minuti solo nelle ore UTC che contengo
 Metti i quattro valori in `python/quantlake/.env` (è in `.gitignore`):
 
 ```
-R2_ACCOUNT_ID=...
+R2_ENDPOINT=https://<account id>.r2.cloudflarestorage.com
 R2_ACCESS_KEY_ID=...
 R2_SECRET_ACCESS_KEY=...
 R2_BUCKET=quantlake
 ```
+
+(`R2_ENDPOINT` è l'URL "S3 API" che Cloudflare mostra con le chiavi; in alternativa
+`R2_ACCOUNT_ID` con il solo account id.) Il token "Account API token" non serve: non
+metterlo nel `.env`.
 
 Poi, da `python/quantlake`:
 
