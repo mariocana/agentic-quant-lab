@@ -24,6 +24,7 @@ import quantlake.bronze.ingest as bronze
 import quantlake.silver.ingest as silver
 from quantlake.bronze.connectors.multicharts import MultiChartsCSVConnector
 from quantlake.config import BRONZE_ROOT, SILVER_ROOT
+from quantlake.silver.gaps import early_fridays, recurring_gaps
 from quantlake.storage import last_timestamp, read_symbol
 from symbols import MC_FILES
 
@@ -56,6 +57,20 @@ def ingest_csv(f) -> None:
     print(f"[{f.symbol}] bronze +{len(df):,} bars, {df['timestamp'].min()} -> {df['timestamp'].max()}")
 
 
+def report_session_problems(symbol: str) -> None:
+    """Flag holes that repeat at the same time of day and Fridays ending early (session template)."""
+    bars = read_symbol(str(SILVER_ROOT / TABLE), symbol, columns=["timestamp"])
+    if bars is None or bars.is_empty():
+        return
+    recurring, fridays = recurring_gaps(bars), early_fridays(bars)
+    if recurring.is_empty() and fridays.is_empty():
+        return
+    print(f"[{symbol}] WARNING session template? recurring holes: {recurring.height} month-windows, "
+          f"Fridays ending before 15:59 CT: {fridays.height} months "
+          f"(details: applications/diagnostics/multicharts_gaps.py {symbol})")
+
+
 for f in MC_FILES:
     ingest_csv(f)
     sync_silver(f.symbol)  # also when the CSV is missing: bronze may already hold bars
+    report_session_problems(f.symbol)
