@@ -7,13 +7,14 @@
   "updated": "2026-10-08",
   "groups": [
    {
-    "title": "1. Chiudere lo Stage 1 di NQ First5",
-    "note": "manca solo il gate date",
+    "title": "1. NQ First5 — Stage 1 chiuso ✅, ora lo Stage 2",
+    "note": "Gate 1 passato l'08/10",
     "items": [
-     "✅ **Fatto**: C e D rifatti, **D/C = 10,000000 su ogni metrica**, 34 uscite a stop tutte a −200,00 punti esatti. La correzione dello stop è verificata",
-     "✅ **Fatto**: check 10, le righe `F5 EOD` ci sono e l'ADR è plausibile (258 → 651 → 310 punti)",
-     "⬜ **Gate date** `TradeStartEL` / `TradeEndEL`: nessun ingresso fuori finestra, e una posizione aperta l'ultimo giorno utile si chiude comunque alle 15:00",
-     "Poi lo Stage 1 è chiuso e si passa allo **Stage 2** — ricordando che con `UseFilters 1` servono più di 100 sessioni caricate, o il warm-up azzera i trade"
+     "Backtest **IS 2020-01-01 → 2024-12-31**, base case (`UseFilters 0`) contro filtrata (`UseFilters 1`) **dalla stessa data**",
+     "⚠️ Caricare **oltre 100 sessioni di storico prima** dell'inizio valutato: `regimeOK` richiede `rN ≥ 100`, altrimenti la filtrata fa zero trade",
+     "Usare `TradeStartEL` per far partire gli ingressi dopo il warm-up — è il motivo per cui quell'input esiste",
+     "Costi `7.5$ per Contract`, slippage 0. **Fissare e verificare il range del grafico**: nell'ultimo run mancava una sessione perché il chart partiva a metà giornata",
+     "Soglie Gate 2: n ≥ 200 · avg trade ≥ $70 · PF ≥ 1.2 · WR ≥ 55% · DD÷10 ≤ $1.250 · peggior trade÷10 ≤ $500 · nessun anno > 50%"
     ]
    },
    {
@@ -284,10 +285,18 @@
    "path": "mc/strategies/NQ_First5",
    "stages": {
     "0": "pass",
-    "1": "active"
+    "1": "pass"
    },
-   "note": "Codice pronto (`NQ_First5.txt`, base e filtrata in un solo signal). Direzione della prima barra NY (08:35 CT) vs EMA(12), tenuta fino alle 15:00. **L'unica candidata con lato short reale.** Senza stop non è deployabile per la prop: `StopPts` è la variante obbligatoria dello Stage 4. Da misurare presto la correlazione con l'ORB (stesso strumento e stessa ora). Stage 1 in corso: base case pulito, la variante `StopPts` ha richiesto una correzione al codice (vedi log).",
+   "note": "Codice pronto (`NQ_First5.txt`, base e filtrata in un solo signal). Direzione della prima barra NY (08:35 CT) vs EMA(12), tenuta fino alle 15:00. **L'unica candidata con lato short reale.** Senza stop non è deployabile per la prop: `StopPts` è la variante obbligatoria dello Stage 4. Da misurare presto la correlazione con l'ORB (stesso strumento e stessa ora). Stage 1 chiuso l'08/10: base case pulito, scaling ×10 esatto con lo stop acceso dopo una correzione al codice, gate date verificato.",
    "log": [
+    {
+     "date": "2026-10-08",
+     "text": "**Gate 1 passato — Stage 1 chiuso.** Gate date verificato con `TradeStartEL 1260615` / `TradeEndEL 1260831`: **56 trade** esatti come previsto prima del run, primo ingresso 15/06 08:35, ultimo 31/08 08:35, **zero ingressi fuori finestra**, ultimo trade chiuso regolarmente alle 15:00. Il controllo che conta: le righe `F5 EOD` **continuano fuori dalla finestra** (dal 25/05 al 07/10), quindi l'ADR si aggiorna anche nei giorni senza ingressi — senza questo il warm-up dello Stage 2 sarebbe inservibile. Due uscite anticipate alle 12:00, 19/06 (Juneteenth) e 03/07: mezze giornate vere."
+    },
+    {
+     "date": "2026-10-08",
+     "text": "Da annotare per la variante `StopPts`: **peggior trade −621,50 punti** = −$12.445 su 1 mini, **$1.244 per micro** in due mesi e mezzo, contro un budget di ~$200/micro. E una nota di metodo: in questo export manca la sessione del 22/05 (98 sessioni invece di 99) perché il grafico partiva dopo le 15:00 di quel giorno — **il range del grafico va fissato e verificato a ogni run**."
+    },
     {
      "date": "2026-10-08",
      "text": "**Correzione dello stop verificata: C e D passano.** Rifatti su Globex 24h: net 44.620 e 446.200, **D/C = 10,000000 su ogni metrica di trade**, e in entrambi i run le 34 uscite a stop sono tutte a **−200,00 punti esatti** (nel run bugato D ne aveva 71 a −20). Verificato anche il check 10: le righe `F5 EOD` ci sono, ADR20/ADR100 in centinaia di punti e plausibili. Restano **solo il gate date** `TradeStartEL`/`TradeEndEL` e poi lo Stage 1 è chiuso."
@@ -313,7 +322,7 @@
      "text": "Spec + codice dai template 18 del corso (dichiarati non validati dall'autore). BASE e FILTERED uniti con `UseFilters` per confrontarli nello stesso run; aggiunto `StopPts` (off di default) come variante prop pre‑registrata."
     }
    ],
-   "next": "Ultimo passo dello Stage 1: il **gate date**. Metti `TradeStartEL` e `TradeEndEL` su una finestra interna al periodo caricato e verifica (a) nessun ingresso fuori dalla finestra, (b) una posizione aperta l'ultimo giorno utile viene comunque chiusa alle 15:00 — il gate agisce solo sugli ingressi. Poi Stage 2."
+   "next": "**Stage 2** — backtest IS 2020-01-01 → 2024-12-31, base case contro versione filtrata dalla stessa data. Caricare **più di 100 sessioni di storico prima dell'inizio valutato** (`regimeOK` richiede `rN ≥ 100`) e usare `TradeStartEL` per far partire gli ingressi dopo il warm-up. Costi: `7.5$ per Contract`, slippage 0."
   },
   {
    "name": "DriftPullback",

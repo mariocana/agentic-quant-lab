@@ -171,6 +171,61 @@ ancora avvenuto. Non è un difetto.
 giorno della settimana, 47 long / 53 short, 4 uscite `End of Day Exit` nelle mezze
 giornate) — e il **gate date** `TradeStartEL` / `TradeEndEL`.
 
+#### Gate date (08/10/2026) — **passato**
+
+Config del run A (`StopPts 0`, 1 contratto, `UseFilters 0`) con le sole due date cambiate:
+`TradeStartEL 1260615`, `TradeEndEL 1260831` — cioè 15/06 → 31/08/2026, due giorni di borsa
+interni al periodo caricato. **Gli attesi sono stati scritti prima del run.**
+
+| # | Controllo | Atteso | Ottenuto |
+|---|---|---|---|
+| 1 | Numero di trade | 56 | **56** ✔ |
+| 2 | Primo ingresso | 15/06 08:35 | **15/06 08:35** ✔ |
+| 3 | Ultimo ingresso | 31/08 08:35 | **31/08 08:35** ✔ |
+| 4 | Ingressi fuori finestra | zero | **zero** ✔ |
+| 5 | Uscita dell'ultimo trade | 31/08 15:00, normale | **31/08 15:00**, `F5.LX` ✔ |
+| 6 | Righe `F5 SIG` | 56 | **56**, dal 15/06 al 31/08 ✔ |
+| 7 | Righe `F5 EOD` fuori finestra | continuano | **continuano**: dal 25/05 al 07/10 ✔ |
+
+Il controllo 7 è quello che conta: l'ADR si aggiorna anche nei giorni in cui il gate
+impedisce di entrare. Se si fermasse dentro la finestra, il warm‑up dello Stage 2 sarebbe
+inservibile — ed è l'unico motivo per cui questo input esiste.
+
+Uscite: 54 alle 15:00, **2 anticipate** alle 12:00 — 19/06 (Juneteenth) e 03/07 (vigilia del
+4 luglio). Entrambe mezze giornate vere, gestite da `SetExitOnClose`.
+
+> **Una differenza rispetto al previsto, da registrare.** Avevo scritto che le righe
+> `F5 EOD` sarebbero arrivate a `sessioni= 99` come nel run C/D. Sono **98**, e la prima è
+> del **25/05** invece che del 22/05: in questo export la sessione del 22/05 non esiste. Non
+> è il gate — il blocco dell'ADR non è gatato e infatti continua a stampare fuori finestra —
+> ma il **grafico caricato**, che stavolta comincia dopo le 15:00 del 22/05 e quindi non ha
+> barre nella finestra 08:30‑15:00 di quel giorno. Conseguenza: gli ADR100 differiscono di
+> poco da quelli del run C/D (sessione 21: 509,77 contro 499,95). Non cambia nessuna
+> conclusione, ma conferma che **il range del grafico va fissato e verificato a ogni run**.
+
+Da annotare per la variante `StopPts` (non è un gate): **peggior trade −621,50 punti** =
+−$12.445 su 1 mini, cioè **$1.244 per micro** su una finestra di soli due mesi e mezzo.
+Il budget che conosciamo è ~$200/micro. Senza stop la strategia non è deployabile, come
+dichiarato nella spec.
+
+---
+
+## ✅ Gate 1 — **passato** (08/10/2026)
+
+Tutti i controlli della sezione 4, lo scaling ×10 con lo stop acceso e il gate date.
+Report in `reports/`:
+
+| File | Cos'è |
+|---|---|
+| `F5_S1_A_base_x1.xlsx` · `F5_S1_B_base_x10.xlsx` | base case, ×10 esatto |
+| `F5_S1_C_stop200_x1_BUG.xlsx` · `F5_S1_D_stop200_x10_BUG.xlsx` | il run che ha trovato il bug dello stop, tenuti come prova |
+| `F5_S1_C_stop200_x1_FIX.xlsx` · `F5_S1_D_stop200_x10_FIX.xlsx` | dopo la correzione, ×10 esatto |
+| `F5_S1_gate_date_1260615-1260831.xlsx` | gate date |
+
+**Prossimo passo: Stage 2.** Con `UseFilters 1` servono **più di 100 sessioni caricate**,
+perché `regimeOK` richiede `rN ≥ VolRegimeLongLen` = 100. Il gate date serve proprio a
+questo: si carica storico abbondante e si fanno partire gli ingressi dopo il warm‑up.
+
 ### 5b. Gate date `TradeStartEL` / `TradeEndEL`
 
 Serve allo Stage 2 per separare il warm-up (100 sessioni di `VolRegimeLongLen`) dal periodo
