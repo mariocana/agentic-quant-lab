@@ -46,7 +46,7 @@ Inputs:
 Variables:
     inWindow(false),
     rHi(0), rLo(0), rng(0), sd(0),
-    armed(false), tradeDone(false),
+    armed(false), tradeDone(false), rBars(0),
     longStop(0), longTgt(0), shortStop(0), shortTgt(0),
     posSL(0), posTP(0), wasIn(false);
 
@@ -58,7 +58,7 @@ else
 
 { ===== RESET sulla prima barra di una nuova finestra ===== }
 if inWindow and inWindow[1] = false then begin
-    rHi = 0; rLo = 999999; rng = 0; sd = 0;
+    rHi = 0; rLo = 999999; rng = 0; sd = 0; rBars = 0;
     armed = false; tradeDone = false;
 end;
 
@@ -66,6 +66,7 @@ end;
 if inWindow then begin
     if High > rHi then rHi = High;
     if Low  < rLo then rLo = Low;
+    rBars = rBars + 1;
 end;
 
 { ===== CHIUSURA DEL RANGE: si arma ===== }
@@ -76,8 +77,9 @@ if inWindow = false and inWindow[1] and rng = 0 and rHi > 0 then begin
         and (MinRangePts = 0 or rng >= MinRangePts)
         and (MaxRangePts = 0 or rng <= MaxRangePts);
     if ShowLog = 1 then
-        Print("GAR ", Date:8:0, " range=", rng:8:2, " hi=", rHi:8:2,
-              " lo=", rLo:8:2, " armed=", armed:2:0);
+        Print("GAR RNG ", Date:8:0, " armTime=", Time:5:0, " barre=", rBars:3:0,
+              " range=", rng:8:2, " hi=", rHi:9:2,
+              " lo=", rLo:9:2, " armed=", armed:2:0);
 end;
 
 { ===== ORDINI STOP AI BORDI (OCO: solo da flat) ===== }
@@ -101,8 +103,9 @@ if MarketPosition <> 0 and wasIn = false then begin
         if TP_RR > 0 then posTP = EntryPrice - TP_RR * sd else posTP = 0;
     end;
     if ShowLog = 1 then
-        Print("GAR ", Date:8:0, " ", Time:4:0, " entry=", EntryPrice:8:2,
-              " SL=", posSL:8:2, " TP=", posTP:8:2);
+        Print("GAR ENT ", Date:8:0, " ", Time:5:0, " dir=", MarketPosition:3:0,
+              " entry=", EntryPrice:9:2, " SL=", posSL:9:2, " TP=", posTP:9:2,
+              " rischio_pt=", sd:7:2);
 end;
 wasIn = MarketPosition <> 0;
 
