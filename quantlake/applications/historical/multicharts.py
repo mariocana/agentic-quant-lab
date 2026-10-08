@@ -4,7 +4,10 @@ Reads data/multicharts/<file>.csv written by the ExportBars indicator
 (see the connector docstring) and merges the bars into bronze, then copies
 into silver (clean_ohlcv) every bronze bar newer than the last silver one,
 so an existing bronze is backfilled into silver on the first run.
-Resumable: only new bars are added. --full re-reads the whole CSV and
+Resumable: only new bars are added. A "recent" file (ES_recent.csv: a short
+chart of the last days, exported in the morning) is always upserted whole, in
+bronze and silver: after a quarterly roll the back-adjusted last days are
+rewritten on the new contract, so yesterday's close matches today's prices. --full re-reads the whole CSV and
 overwrites every bronze + silver bar (after a connector change, or when the
 back-adjusted continuous contract shifts history at a rollover); gold is
 then rebuilt from silver by ohlcv_gold.py.
@@ -15,7 +18,7 @@ Run:
     .venv/bin/python applications/historical/multicharts.py [--full]
 """
 import sys
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -31,31 +34,39 @@ TABLE = MultiChartsCSVConnector.TABLE_NAME
 FULL = "--full" in sys.argv
 
 
-def sync_silver(symbol: str) -> None:
+def sync_silver(symbol: str, rewrite_from: datetime | None = None) -> None:
+    """Copy new bronze bars to silver; from rewrite_from on, overwrite what silver has."""
     last = None if FULL else last_timestamp(str(SILVER_ROOT / TABLE), symbol)
     since = last + timedelta(minutes=1) if last else None
+    if rewrite_from is not None and since is not None:
+        since = min(since, rewrite_from)
     df = read_symbol(str(BRONZE_ROOT / TABLE), symbol, since=since)
     if df is None or df.is_empty():
         return
-    silver.ingest(df.sort("timestamp"), TABLE, align_1m=True, update_matched=FULL)
-    print(f"[{symbol}] silver +{len(df):,} bars")
+    silver.ingest(df.sort("timestamp"), TABLE, align_1m=True, update_matched=FULL or rewrite_from is not None)
+    print(f"[{symbol}] silver {len(df):,} bars from {df['timestamp'].min()}")
 
 
-def ingest_csv(f) -> None:
+def ingest_csv(f) -> datetime | None:
+    """Merge one CSV into bronze. A 'recent' file is upserted whole (it is short):
+    returns its first timestamp so silver rewrites the same range."""
     connector = MultiChartsCSVConnector(chart_tz=f.chart_tz)
     if not (connector.folder / f"{f.file}.csv").exists():
         print(f"[{f.symbol}] {f.file}.csv not found in {connector.folder}")
-        return
-    last = None if FULL else bronze.last_bronze_ts(TABLE, f.symbol)
+        return None
+    rewrite = FULL or f.recent
+    last = None if rewrite else bronze.last_bronze_ts(TABLE, f.symbol)
     df = connector.fetch(symbol=f.file, start=last + timedelta(minutes=1) if last else None)
     if df.is_empty():
-        print(f"[{f.symbol}] bronze up to date")
-        return
+        print(f"[{f.symbol}] {f.file}: bronze up to date")
+        return None
     df = bronze.add_partition_columns(df, symbol=f.symbol)
-    bronze.save(df, TABLE, update_matched=FULL)
-    print(f"[{f.symbol}] bronze +{len(df):,} bars, {df['timestamp'].min()} -> {df['timestamp'].max()}")
+    bronze.save(df, TABLE, update_matched=rewrite)
+    print(f"[{f.symbol}] {f.file}: bronze {len(df):,} bars, {df['timestamp'].min()} -> {df['timestamp'].max()}")
+    return df["timestamp"].min() if f.recent else None
 
 
-for f in MC_FILES:
-    ingest_csv(f)
-    sync_silver(f.symbol)  # also when the CSV is missing: bronze may already hold bars
+for symbol in dict.fromkeys(f.symbol for f in MC_FILES):
+    starts = [ingest_csv(f) for f in MC_FILES if f.symbol == symbol]
+    rewrite_from = min((s for s in starts if s is not None), default=None)
+    sync_silver(symbol, rewrite_from)  # also when the CSVs are missing: bronze may already hold bars
