@@ -10,7 +10,7 @@ Two calendars cover crypto and CME futures:
                    16:00-17:00 maintenance halt, so the break is added here.
 """
 from dataclasses import dataclass
-from datetime import date, time, timedelta
+from datetime import date, datetime, time, timedelta
 from functools import lru_cache
 from typing import Protocol
 
@@ -67,6 +67,11 @@ class ExchangeSession:
         in_session = (pl.col("ts") >= pl.col("open")) & (pl.col("ts") < pl.col("close"))
         mask = in_session.fill_null(False) & ~self._in_break()
         return frame.sort("pos").select(mask.alias("open")).to_series()
+
+    def session_opens(self, first: datetime, last: datetime) -> pl.Series:
+        """UTC open of every session that opens in [first, last]."""
+        opens = _schedule(self.calendar, first.year, last.year)["open"]
+        return opens.filter(opens.is_between(first, last)).alias("timestamp")
 
     def _in_break(self) -> pl.Expr:
         if self.break_start is None or self.break_end is None:
