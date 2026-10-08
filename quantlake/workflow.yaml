@@ -56,8 +56,12 @@ sources:
     type: SPX DIX / GEX daily (free CSV)
     modes: [rest]
     docs: https://squeezemetrics.com/monitor/dix
+  nasdaq:
+    type: NDX cash index daily OHLC (api.nasdaq.com, free, no key)
+    modes: [rest]
+    docs: https://api.nasdaq.com/api/quote/NDX/historical?assetclass=index
   multicharts:
-    type: futures 1m bars exported by the ExportBars indicator (MultiCharts in Parallels VM)
+    type: futures 1m bars exported by the ExportBars indicator (MultiCharts on the Windows PC)
     modes: [file]
     docs: data/multicharts/<symbol>_1min.csv
   planetary_computer:
@@ -155,7 +159,7 @@ bronze:
     source: cboe
     grain: 1d
     partition: [symbol, year, month]
-    notes: VIX, VIX9D, VIX1D, VIX3M daily OHLC, stamped 16:15 ET (no look-ahead)
+    notes: VIX, VIX9D, VIX1D, VIX3M, VXN daily OHLC, stamped 16:15 ET (no look-ahead)
 
   cboe_option_chain:
     source: cboe
@@ -172,11 +176,17 @@ bronze:
     partition: [symbol, year, month]
     notes: SPX close, DIX, GEX since 2011, stamped 18:00 ET
 
+  nasdaq_index_daily:
+    source: nasdaq
+    grain: 1d
+    partition: [symbol, year, month]
+    notes: NDX real level since 2015 (the NQ continuous is back-adjusted), stamped 16:15 ET, holidays dropped
+
   multicharts_ohlcv:
     source: multicharts
     grain: 1m
     partition: [symbol, year, month]
-    notes: ES / NQ 1m continuous (@ES unadjusted, 24h), with upticks/downticks for approximate delta
+    notes: ES / NQ 1m continuous (@ES back-adjusted, 24h), volume = upticks + downticks (approximate delta); --full re-reads the CSV
 
   sentinel2_ndvi:
     source: planetary_computer
@@ -485,6 +495,15 @@ gold:
       - category (FX / Crypto / Index / Rates / Commodity) from applications/symbols.py
       - keeps the Friday-release timestamp — as-of joins onto price bars stay look-ahead free
       - "UI: applications/cot_desk (Flask, local) — pairs, matrices, top-3, Claude review"
+
+  daily_context/1d:
+    from: [silver/multicharts_ohlcv, bronze/cboe_index_daily, bronze/squeezemetrics, bronze/nasdaq_index_daily]
+    transforms:
+      - one row per (ES|NQ, cash trading day), full rebuild each run (historical/daily_context.py)
+      - session windows asia / london (09:00-13:30 Rome) / overnight / IB / RTH (08:30-15:00 CT) / MOC (14:50-15:00 CT)
+      - previous-day VIX/VIX9D/VIX1D/VIX3M/VXN + GEX/DIX via as-of join on date - 1 (no look-ahead), percentiles vs prior 252 days
+      - em = real cash close (SPX / NDX) x IV / sqrt(252); points from back-adjusted bars are exact (additive shift)
+      - columns grouped by availability (before London / before NY / outcomes); filter complete = true for studies
 
 # Reference tables: no time series, no partitions, one row per key.
 # Not shown in the dashboard graph (it only draws bronze/silver/gold).

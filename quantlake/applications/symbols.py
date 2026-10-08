@@ -64,7 +64,8 @@ WHEAT_STATES = {
 
 
 # ── Volatility / options context (Stucchi playbook) ──────────────────────
-VOL_INDICES = ["VIX", "VIX9D", "VIX1D", "VIX3M"]
+VOL_INDICES = ["VIX", "VIX9D", "VIX1D", "VIX3M", "VXN"]  # VXN = Nasdaq-100, EM for NQ
+CASH_INDICES = ["NDX"]  # real level from nasdaq.com (futures are back-adjusted); SPX close comes from squeezemetrics
 CHAIN_UNDERLYINGS = ["SPX"]
 
 
