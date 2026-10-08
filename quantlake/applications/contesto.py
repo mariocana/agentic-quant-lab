@@ -8,7 +8,7 @@ VIX/GEX/NDX, barre MultiCharts, gold/daily_context; per NY anche una foto della
 catena SPX adesso, per l'EM 0DTE), poi stampa in markdown un blocco che
 sessioni/nuova_sessione.sh inserisce in cima alla scheda. --no-update salta
 l'aggiornamento. I numeri vengono da quantlake.context_card, gli stessi della
-pagina Contesto della dashboard.
+pagina "Contesto sessione" del banco di lavoro (mc/docs/index.html).
 """
 import sys
 from datetime import datetime
