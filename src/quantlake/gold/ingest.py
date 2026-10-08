@@ -25,7 +25,7 @@ from oryon import FeaturePipeline
 from quantlake.config import GOLD_ROOT, SILVER_ROOT
 from quantlake.gold.ohlcv import bar_close, bar_open, compute_features, parse_timeframe, resample, update_features
 from quantlake.helper import TF_SECONDS
-from quantlake.storage import last_timestamp, read_symbol, upsert
+from quantlake.storage import first_timestamp, last_timestamp, read_symbol, upsert
 
 __all__ = [
     "ingest", "save", "update_ohlcv",
@@ -82,23 +82,52 @@ def save(df: pl.DataFrame, table_name: str, timeframe: str) -> None:
 
 # ── Plain OHLCV gold (incremental, read by alpha-quant) ────────────────────
 
-def update_ohlcv(silver_table: str, gold_table: str, timeframe: str, symbol: str) -> pl.DataFrame:
+def update_ohlcv(
+    silver_table: str,
+    gold_table: str,
+    timeframe: str,
+    symbol: str,
+    lookback: timedelta | None = None,
+) -> pl.DataFrame:
     """Extend gold/<gold_table>/<timeframe> for ``symbol`` with new silver bars, no features.
 
-    Reads silver from the last stored gold bar onward (that bar is rebuilt
-    and overwritten) and writes only bars whose whole window is covered by
-    silver: a bar is never built from minutes that haven't been ingested
-    yet. Re-running is safe. Returns the bars written.
+    Tail: reads silver from the last stored gold bar onward (that bar is
+    rebuilt and overwritten) and writes only bars whose whole window is
+    covered by silver: a bar is never built from minutes that haven't been
+    ingested yet.
+    Head: silver rows older than the first gold bar (history added at the
+    start of silver after the gold was built, e.g. binance_um 2019 from
+    REST) are built and written too; when there are none it costs one read
+    pruned to the years up to the first gold bar.
+    lookback: rebuild the tail from `lookback` before the last gold bar
+    (from the open of the window holding that instant), for silvers whose
+    last days get rewritten (multicharts ES_recent, re-adjusted after a roll).
+    Re-running is safe. Returns the bars written.
     """
-    last = last_timestamp(_gold_path(gold_table, timeframe), symbol)
-    df = read_symbol(str(SILVER_ROOT / silver_table), symbol, since=last)
-    if df is None or df.is_empty():
-        return pl.DataFrame()
+    gold_path = _gold_path(gold_table, timeframe)
+    silver_path = str(SILVER_ROOT / silver_table)
+    written = []
 
-    covered_until = df["timestamp"].max() + timedelta(minutes=1)
-    window_end = bar_close(timeframe, "_open")
-    df = df.with_columns(bar_open(timeframe).alias("_open")).filter(window_end <= covered_until).drop("_open")
-    return ingest(df, gold_table, timeframe)
+    first = first_timestamp(gold_path, symbol)
+    if first is not None:
+        head = read_symbol(silver_path, symbol, until=first)
+        if head is not None and not head.is_empty():
+            # head rows end before `first`, a window boundary: their windows are complete
+            written.append(ingest(head, gold_table, timeframe))
+
+    last = last_timestamp(gold_path, symbol)
+    if last is not None and lookback is not None:
+        start = pl.DataFrame({"timestamp": [last - lookback]}, schema={"timestamp": pl.Datetime("us", "UTC")})
+        last = start.select(bar_open(timeframe)).item()
+    df = read_symbol(silver_path, symbol, since=last)
+    if df is not None and not df.is_empty():
+        covered_until = df["timestamp"].max() + timedelta(minutes=1)
+        window_end = bar_close(timeframe, "_open")
+        df = df.with_columns(bar_open(timeframe).alias("_open")).filter(window_end <= covered_until).drop("_open")
+        written.append(ingest(df, gold_table, timeframe))
+
+    written = [w for w in written if not w.is_empty()]
+    return pl.concat(written, how="diagonal_relaxed").sort("timestamp") if written else pl.DataFrame()
 
 
 # ── Historical rebuild (live-script startup) ───────────────────────────────

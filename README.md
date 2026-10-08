@@ -92,6 +92,7 @@ poetry run python applications/live/macro.py           # a live strategy
 poetry run dashboard                                   # http://127.0.0.1:8000
 poetry run maintain                                    # compact + vacuum all tables
 poetry run python examples/reference/seed_instruments.py  # create/update reference/instruments
+poetry run python applications/historical/multicharts.py [--full | --replace]  # @ES/@NQ export; --replace after a re-export
 poetry run python applications/historical/ohlcv_gold.py  # plain OHLCV gold read by alpha-quant
 poetry run python applications/historical/multicharts_rolls.py  # ES/NQ contracts → rolls + continuous gold, check vs @ES
 ```

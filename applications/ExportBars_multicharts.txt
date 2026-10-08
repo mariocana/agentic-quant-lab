@@ -5,9 +5,11 @@
 //     cartella python/quantlake/data/multicharts. Su Windows apri \\<IP del Mac>\multicharts
 //     una volta con le credenziali del Mac. Il FilePath sotto punta lì: il file è sempre aggiornato.
 //  B) cartella locale (es. C:\Dati) e copia a mano sul Mac in python/quantlake/data/multicharts.
-// Due usi, stesso indicatore (cambia solo FilePath e la storia caricata nel grafico):
-//  1) STORICO (una volta, e dopo ogni rollover trimestrale): @ES 1 minuto, sessione 24h,
-//     storia dal 2016, FilePath ...\ES_1min.csv. Poi sul Mac: multicharts.py --full
+// Due usi, stesso indicatore (cambia solo FilePath e la storia caricata nel grafico).
+// Sessione sempre 17:00-16:00 CT senza pause, Time Zone Exchange. Passo passo: applications/MULTICHARTS_EXPORT.md
+//  1) STORICO (una volta, e dopo ogni rollover trimestrale): @ES 1 minuto, storia dal 2016,
+//     FilePath ...\ES_1min.csv (NQ: ...\NQ_1min.csv). Poi sul Mac: multicharts.py --replace,
+//     poi ohlcv_gold.py (con --full le righe del vecchio export resterebbero sul vecchio aggiustamento).
 //  2) RECENTE (ogni giorno, workspace "Export"): @ES e @NQ 1 minuto, Format Instrument >
 //     Data Range "5 days back", FilePath ...\ES_recent.csv e ...\NQ_recent.csv.
 //     Si scrive in pochi secondi all'apertura del workspace; resta attivo finché il grafico
