@@ -13,6 +13,10 @@ same window every day, and each hole looks unremarkable. Two rules catch it:
                   the pause CME removed on 2021-06-28)
   early_fridays   months where more than `threshold` of the Fridays end
                   before 15:59 CT (Globex closes at 16:00 CT on Friday)
+
+Both only judge months with enough data (MIN_DAYS trading days, MIN_FRIDAYS
+Fridays): a short export (the 5-day recent file, a partial first/last
+month) can't tell a template from chance.
 """
 from datetime import time
 
@@ -23,6 +27,8 @@ TICK = 0.25
 RTH = (time(8, 30), time(15, 15))
 HALT = (time(16, 0), time(17, 0))
 FRIDAY_LAST_BAR = time(15, 59)
+MIN_DAYS = 10      # trading days a month needs before recurring_gaps judges it
+MIN_FRIDAYS = 3    # Fridays a month needs before early_fridays judges it
 
 
 def holes(bars: pl.DataFrame) -> pl.DataFrame:
@@ -71,14 +77,15 @@ def find_gaps(bars: pl.DataFrame, tick: float = TICK) -> pl.DataFrame:
     )
 
 
-def recurring_gaps(bars: pl.DataFrame, threshold: float = 0.5) -> pl.DataFrame:
+def recurring_gaps(bars: pl.DataFrame, threshold: float = 0.5, min_days: int = MIN_DAYS) -> pl.DataFrame:
     """Time-of-day windows missing in more than `threshold` of a month's trading days.
 
     Columns: month ("2021-07"), window_start_ct / window_end_ct (first and
     last missing minute, "HH:MM"), days_missing, trading_days, share.
     """
     days = (bars.select(_trade_date().alias("day")).unique()
-            .group_by(pl.col("day").dt.strftime("%Y-%m").alias("month")).agg(pl.len().alias("trading_days")))
+            .group_by(pl.col("day").dt.strftime("%Y-%m").alias("month")).agg(pl.len().alias("trading_days"))
+            .filter(pl.col("trading_days") >= min_days))
     h = holes(bars)
     if h.is_empty():
         return pl.DataFrame(schema={"month": pl.String, "window_start_ct": pl.String, "window_end_ct": pl.String,
@@ -109,7 +116,7 @@ def recurring_gaps(bars: pl.DataFrame, threshold: float = 0.5) -> pl.DataFrame:
                           "days_missing", "trading_days", "share").sort("month", "window_start_ct")
 
 
-def early_fridays(bars: pl.DataFrame, threshold: float = 0.5) -> pl.DataFrame:
+def early_fridays(bars: pl.DataFrame, threshold: float = 0.5, min_fridays: int = MIN_FRIDAYS) -> pl.DataFrame:
     """Months where more than `threshold` of the Fridays end before 15:59 CT.
 
     Columns: month, fridays, early, share, typical_last_ct (most common last bar).
@@ -125,7 +132,7 @@ def early_fridays(bars: pl.DataFrame, threshold: float = 0.5) -> pl.DataFrame:
         .agg(pl.len().alias("fridays"), (pl.col("last") < FRIDAY_LAST_BAR).sum().alias("early"),
              pl.col("last").mode().first().dt.strftime("%H:%M").alias("typical_last_ct"))
         .with_columns((pl.col("early") / pl.col("fridays")).round(3).alias("share"))
-        .filter(pl.col("share") > threshold)
+        .filter((pl.col("fridays") >= min_fridays) & (pl.col("share") > threshold))
         .select("month", "fridays", "early", "share", "typical_last_ct")
         .sort("month")
     )

@@ -27,6 +27,12 @@ before it existed:
     london_*      09:00 -> 13:30 Rome; london_range_em = range / em
     on_high on_low  whole overnight, Globex open -> 08:30 Chicago
     rth_open, gap = rth_open - prev_close, gap_em, open_location
+    vix1d_open    VIX1D at the cash open (ES only, from 2022-05)
+    em_open       1-sigma move from the open = SPX open x vix1d_open / 100 / sqrt(252),
+                  SPX open estimated as index_close + gap (ES only)
+    em_stucchi    STUCCHI_K x em_open: the EM that reproduces Stucchi's SPX RTH
+                  stats (touch +-1 EM ~75%, beyond +-2 EM ~21%), roughly the
+                  0DTE ATM straddle at the open
 
   after the close (outcomes, for studies only)
     ib_*          first hour 08:30 -> 09:30 Chicago, ib_break up/down/both/none
@@ -70,6 +76,7 @@ VOL_COLS = ["VIX", "VIX9D", "VIX1D", "VIX3M", "VXN"]
 PCT_LOOKBACK, PCT_MIN = 252, 60
 TREND_CLV = 0.15        # close in the top / bottom 15% of the RTH range
 TREND_RANGE_EM = 1.0    # ... and a range of at least one expected move
+STUCCHI_K = 0.7         # em_stucchi / em_open, fitted on 2022-05..2025 (research/calibrazione_contesto.py)
 SQRT252 = math.sqrt(252)
 
 
@@ -148,7 +155,10 @@ def daily_sources(vol: pl.DataFrame, sm: pl.DataFrame, cash: pl.DataFrame) -> di
     g = _by_et_date(sm.select("timestamp", "spx_close", "gex", "dix"))
     g = g.with_columns(pl.Series("gex_pct", _prior_pct(g["gex"].fill_null(np.nan).to_numpy())))
     c = _by_et_date(cash.filter(pl.col("symbol") == "NDX").select("timestamp", pl.col("close").alias("ndx_close")))
-    return {"vol": v.fill_nan(None), "gex": g.fill_nan(None), "cash": c}
+    vo = _by_et_date(
+        vol.filter(pl.col("symbol") == "VIX1D").select("timestamp", pl.col("open").alias("vix1d_open"))
+    ).rename({"src_date": "date"})
+    return {"vol": v.fill_nan(None), "gex": g.fill_nan(None), "cash": c, "vol_open": vo}
 
 
 def build(symbol: str, bars: pl.DataFrame, sources: dict[str, pl.DataFrame]) -> pl.DataFrame:
@@ -178,6 +188,7 @@ def build(symbol: str, bars: pl.DataFrame, sources: dict[str, pl.DataFrame]) -> 
         s.join_asof(sources["vol"], left_on="src_date", right_on="src_date", strategy="backward")
         .join_asof(sources["gex"], left_on="src_date", right_on="src_date", strategy="backward")
         .join_asof(sources["cash"], left_on="src_date", right_on="src_date", strategy="backward")
+        .join(sources["vol_open"], on="date", how="left")  # same day: known at the cash open
     )
     index_close = pl.col("spx_close") if cash_name == "SPX" else pl.col("ndx_close")
     iv = pl.col(iv_name)
@@ -197,6 +208,8 @@ def build(symbol: str, bars: pl.DataFrame, sources: dict[str, pl.DataFrame]) -> 
         (pl.col("london_close") - pl.col("london_open")).alias("london_move"),
         (pl.col("asia_high") - pl.col("asia_low")).alias("asia_range"),
         (pl.col("rth_open") - pl.col("prev_close")).alias("gap"),
+        (((pl.col("spx_close") + pl.col("rth_open") - pl.col("prev_close")) * pl.col("vix1d_open") / 100 / SQRT252)
+         if symbol == "ES" else pl.lit(None, pl.Float64)).alias("em_open"),
         ((pl.col("rth_close") - pl.col("rth_low")) / pl.col("rth_range")).alias("rth_clv"),
         (pl.col("rth_bars").is_not_null() & (
             (pl.col("date") < last)
@@ -206,6 +219,7 @@ def build(symbol: str, bars: pl.DataFrame, sources: dict[str, pl.DataFrame]) -> 
         pl.when(pl.col("iv_pct") >= 0.5).then(pl.lit("high")).when(pl.col("iv_pct") < 0.5).then(pl.lit("low")).alias("vol_regime"),
         (pl.col("london_range") / em).alias("london_range_em"),
         (pl.col("gap") / em).alias("gap_em"),
+        (pl.col("em_open") * STUCCHI_K).alias("em_stucchi"),
         (pl.col("rth_range") / em).alias("rth_range_em"),
         pl.when(pl.col("rth_open") > pl.col("prev_high")).then(pl.lit("above"))
         .when(pl.col("rth_open") < pl.col("prev_low")).then(pl.lit("below"))
@@ -248,6 +262,7 @@ def build(symbol: str, bars: pl.DataFrame, sources: dict[str, pl.DataFrame]) -> 
         "london_high", "london_low", "london_close", "london_range", "london_range_em",
         "london_move", "london_volume", "london_delta",
         "on_high", "on_low", "rth_open", "gap", "gap_em", "open_location",
+        "vix1d_open", "em_open", "em_stucchi",
         # outcomes
         "ib_high", "ib_low", "ib_break",
         "rth_high", "rth_low", "rth_close", "rth_range", "rth_range_em", "rth_clv",
