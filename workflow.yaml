@@ -163,12 +163,14 @@ bronze:
 
   cboe_option_chain:
     source: cboe
-    grain: snapshot (launchd, fixed times)
+    grain: snapshot (Railway cron 02:20 / 09:20 / 10:00 / 15:40 ET + on demand)
     partition: [symbol, year, month]
     notes: |
       SPX/SPXW chain, expiries <= 90d, strikes +-20% of spot. One timestamp
       per snapshot (download time UTC). CBOE serves only the current chain:
       this table IS our option history. Basis for GEX levels and EM.
+      Cloud job cloud/chain_job.py writes parquet to R2; applications/cloud_sync.py
+      merges them here (also run by contesto.py). The Mac is the only Delta writer.
 
   squeezemetrics:
     source: squeezemetrics
@@ -186,7 +188,7 @@ bronze:
     source: multicharts
     grain: 1m
     partition: [symbol, year, month]
-    notes: ES / NQ 1m continuous (@ES back-adjusted, 24h), volume = upticks + downticks (approximate delta); --full re-reads the CSV
+    notes: ES / NQ 1m continuous (@ES back-adjusted, 24h), volume = upticks + downticks (approximate delta); ES_recent / NQ_recent (last 5 days) rewritten whole every run; --replace reloads the history after a re-export
 
   multicharts_contracts:
     source: multicharts
@@ -548,6 +550,13 @@ gold:
       - category (FX / Crypto / Index / Rates / Commodity) from applications/symbols.py
       - keeps the Friday-release timestamp — as-of joins onto price bars stay look-ahead free
       - "UI: applications/cot_desk (Flask, local) — pairs, matrices, top-3, Claude review"
+
+  em_0dte/snapshot:
+    from: [bronze/cboe_option_chain]
+    transforms:
+      - one row per snapshot with a same-day SPXW expiry, full rebuild (gold/options.py)
+      - forward from put-call parity (pre-open `spot` is yesterday's close), ATM straddle interpolated at the forward
+      - em_pct = straddle / forward; pre_open = before 09:30 ET
 
   daily_context/1d:
     from: [silver/multicharts_ohlcv, bronze/cboe_index_daily, bronze/squeezemetrics, bronze/nasdaq_index_daily]

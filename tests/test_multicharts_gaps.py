@@ -157,3 +157,50 @@ def test_reexport_needs_replace(lake, freeze_now, monkeypatch, tmp_path):
     g = storage.read_symbol(str(lake["GOLD_ROOT"] / "multicharts_ohlcv" / "1h"), "ES").sort("timestamp")
     assert g["timestamp"].to_list() == [chi(2025, 6, 3, 14), chi(2025, 6, 3, 15)]
     assert g["close"].to_list() == [5010.0, 5010.0] and g["volume"].to_list() == [600.0, 600.0]
+
+
+def test_short_exports_never_trigger_the_monthly_rules():
+    bars = _month(2021, 7, cut_1515=True, friday_end=time(15, 14))
+    five_days = bars.filter(pl.col("timestamp") < chi(2021, 7, 8, 0, 0))   # Thu 1 → Wed 7 July: 5 trading days
+    assert recurring_gaps(five_days).is_empty()
+    assert early_fridays(five_days).is_empty()                              # one Friday only
+    assert not recurring_gaps(bars).is_empty()                              # the full month still fires
+
+
+def test_history_plus_recent(lake, freeze_now, monkeypatch, tmp_path):
+    freeze_now(gold, utc(2026, 1, 1))
+    folder = tmp_path / "multicharts"
+    folder.mkdir()
+    mod = _load_multicharts()
+    for name in ("BRONZE_ROOT", "SILVER_ROOT", "GOLD_ROOT"):
+        monkeypatch.setattr(mod, name, lake[name])
+
+    def day(d):  # 14:00-15:59 CT
+        return [chi(2025, 6, d, 14, 0) + timedelta(minutes=i) for i in range(120)]
+
+    def silver_es():
+        return read_symbol(str(lake["SILVER_ROOT"] / "multicharts_ohlcv"), "ES").sort("timestamp")
+
+    def bronze_es():
+        return read_symbol(str(lake["BRONZE_ROOT"] / "multicharts_ohlcv"), "ES").sort("timestamp")
+
+    # history Mon 2 → Wed 4, recent Wed 4 → Thu 5 on TradeStation's new adjustment (+1)
+    _export(folder / "ES_1min.csv", day(2) + day(3) + day(4), lambda t: 5000.0)
+    _export(folder / "ES_recent.csv", day(4) + day(5), lambda t: 5001.0)
+    mod.main(["--replace"], folder=folder)
+    s = silver_es()
+    assert s["timestamp"].is_unique().all() and s.height == 4 * 120
+    assert s.group_by(s["timestamp"].dt.day().alias("d")).agg(pl.col("close").unique()).sort("d").rows() == [
+        (2, [5000.0]), (3, [5000.0]), (4, [5001.0]), (5, [5001.0])]
+    assert bronze_es()["timestamp"].is_unique().all() and bronze_es().height == 4 * 120
+
+    # next morning: a new recent, Thu 5 → Fri 6, re-adjusted again (+2)
+    _export(folder / "ES_recent.csv", day(5) + day(6), lambda t: 5002.0)
+    mod.main([], folder=folder)
+    s = silver_es()
+    assert s["timestamp"].is_unique().all() and s.height == 5 * 120
+    assert s.group_by(s["timestamp"].dt.day().alias("d")).agg(pl.col("close").unique()).sort("d").rows() == [
+        (2, [5000.0]), (3, [5000.0]), (4, [5001.0]), (5, [5002.0]), (6, [5002.0])]
+    b = bronze_es()
+    assert b["timestamp"].is_unique().all() and b.height == 5 * 120
+    assert b.filter(pl.col("timestamp") >= chi(2025, 6, 5, 0, 0))["close"].unique().to_list() == [5002.0]

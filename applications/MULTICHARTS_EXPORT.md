@@ -4,6 +4,20 @@ Vale per i continui @ES / @NQ (`ES_1min.csv`, `NQ_1min.csv`) e per i singoli
 contratti (`ESZ25_1min.csv`, `NQH26_1min.csv`). L'indicatore è
 `applications/ExportBars_multicharts.txt`.
 
+## Due export per simbolo
+
+| Uso | Quando | Grafico | File | Sul Mac |
+|-----|--------|---------|------|---------|
+| **STORICO** | una volta, e dopo ogni rollover trimestrale | @ES / @NQ 1 minuto, storia dal 2016 | `ES_1min.csv`, `NQ_1min.csv` | `multicharts.py --replace`, poi `ohlcv_gold.py` |
+| **RECENTE** | ogni giorno (workspace "Export") | @ES / @NQ 1 minuto, Format Instrument → Data Range "5 days back" | `ES_recent.csv`, `NQ_recent.csv` | `multicharts.py` (riscrive per intero gli ultimi giorni) |
+
+Per lo storico usa `--replace`, non `--full`: dopo un rollover TradeStation
+ricalcola l'aggiustamento all'indietro di tutta la serie, e con `--full` le
+righe che c'erano solo nel vecchio export resterebbero sul vecchio
+aggiustamento. `--replace` cancella il simbolo (bronze, silver, gold
+`multicharts_ohlcv`), carica lo storico e poi il recente come al solito;
+`ohlcv_gold.py` ricostruisce il gold da zero.
+
 ## Sessione
 
 Usa una sessione **17:00–16:00 CT senza pause** (domenica–venerdì), non un
@@ -24,11 +38,13 @@ sola assenza attesa.
    - **Time Zone**: **Exchange** (Chicago). quantlake legge i CSV come ora di
      Chicago (`chart_tz` in `applications/symbols.py`); con il fuso del PC i
      timestamp sono sfasati.
-   - **Range**: "From date". Per @ES tutta la storia; per un contratto almeno
-     dalle 3 settimane prima del suo roll fino a qualche giorno dopo.
+   - **Range**: "From date". Per lo storico di @ES tutta la storia (dal 2016),
+     per il recente Data Range "5 days back"; per un contratto almeno dalle 3
+     settimane prima del suo roll fino a qualche giorno dopo.
 3. **Insert → Study → ExportBars**. In **Format Study → Inputs** imposta
    `FilePath` a `\\<IP del Mac>\multicharts\<nome>_1min.csv`, con `<nome>` =
-   `ES`, `NQ` o il codice del contratto (`ESZ25`).
+   `ES`, `NQ` o il codice del contratto (`ESZ25`); per il recente
+   `ES_recent.csv` / `NQ_recent.csv`.
 4. Aspetta che tutta la storia sia caricata: l'indicatore scrive ogni barra
    chiusa. Per un contratto scaduto il file è completo a fine caricamento:
    togli l'indicatore o chiudi il grafico (ExportBars cancella il file quando
@@ -44,9 +60,11 @@ sola assenza attesa.
    - per un contratto: prima e ultima data coprono il roll (ESZ25: giorno di
      roll giovedì 11/12/2025, cambio mercoledì 10/12 alle 17:00 CT).
 6. Sul Mac:
-   - @ES / @NQ riesportati: `.venv/bin/python applications/historical/multicharts.py --replace`
+   - storico @ES / @NQ riesportato: `.venv/bin/python applications/historical/multicharts.py --replace`
      poi `.venv/bin/python applications/historical/ohlcv_gold.py` (ricostruisce
-     il gold da zero) e `daily_context.py`. Lo script avvisa se trova ancora
+     il gold da zero) e `daily_context.py`;
+   - recente di ogni giorno: `.venv/bin/python applications/historical/multicharts.py`
+     (o `raccolta.sh gold`). Lo script avvisa se trova ancora
      buchi ricorrenti o venerdì corti; il dettaglio è in
      `applications/diagnostics/multicharts_gaps.py ES`.
    - contratti: `.venv/bin/python applications/historical/multicharts_rolls.py`.

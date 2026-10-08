@@ -75,6 +75,7 @@ class MCFile:
     symbol: str     # canonical name in bronze
     file: str       # file stem written by the indicator
     chart_tz: str   # time zone of the MultiCharts chart
+    recent: bool = False  # short export (last days): always rewrites the range it covers
 
 
 # ── Binance USDⓈ-M perpetuals (historical/binance_um.py) ─────────────────
@@ -82,9 +83,13 @@ class MCFile:
 UM_PERPS = ["BTCUSDT"]
 
 
+# Full history (exported once, and again after each quarterly roll: multicharts.py --replace)
+# + a short chart of the last days, exported in the morning / before NY.
 MC_FILES = [
     MCFile("ES", "ES_1min", "America/Chicago"),
+    MCFile("ES", "ES_recent", "America/Chicago", recent=True),
     MCFile("NQ", "NQ_1min", "America/Chicago"),
+    MCFile("NQ", "NQ_recent", "America/Chicago", recent=True),
 ]
 
 
