@@ -123,6 +123,54 @@ che la strategia apre sempre, non dipende dallo stato di riempimento.
 
 C e D vanno **rifatti** dopo la ricompilazione. A e B restano validi.
 
+#### Secondo giro (08/10/2026) — C e D **passati**, correzione verificata
+
+Rifatti dopo la ricompilazione, su Globex 24h con `ShowLog` True.
+
+| metrica | C (`StopPts 200` × 1) | D (× 10) | D/C |
+|---|---|---|---|
+| Net Profit | 44.620 | 446.200 | **10,000000** |
+| Gross Profit | 196.675 | 1.966.750 | **10,000000** |
+| Gross Loss | −152.055 | −1.520.550 | **10,000000** |
+| Max Strategy Drawdown | −30.190 | −301.900 | **10,000000** |
+| Max Close To Close DD | −25.135 | −251.350 | **10,000000** |
+| Commission Paid | 1.492,50 | 14.925 | **10,000000** |
+| Trade · % Prof · PF | 99 · 50,5% · 1,293 | 99 · 50,5% · 1,293 | identici |
+
+Ma il numero che chiude davvero la questione sta nella lista trade: **34 uscite a stop in
+entrambi i run, tutte a −200,00 punti esatti**, minimo e massimo coincidenti. Peggior trade
+−$4.015 con 1 contratto e −$40.150 con 10. Nel run bugato D aveva 71 uscite a −20 punti.
+
+> Due numeri **non** scalano: `Open Position P/L` (−507,50 contro −8.975) e `Avg Monthly
+> Return`. La causa non è il codice: l'ultimo trade era **ancora aperto** all'export e i due
+> report sono stati generati a cinque minuti di distanza — il `Trading Period` lo dice
+> («4 Mths, 19 Dys, 13 Hrs» contro «…13 Hrs, 5 Mins»). I 99 trade chiusi sono identici.
+
+Attenzione a una cosa per il seguito: **A/B e C/D girano su finestre diverse** (14/05→30/09
+contro 22/05→08/10). Ogni coppia è coerente al suo interno, che è quello che il Gate 1
+chiede, ma i net delle due coppie non si confrontano fra loro.
+
+#### Check 10 — ADR: verificato
+
+Le righe `F5 EOD` ci sono, una per sessione, da `sessioni= 1` a `sessioni= 99`. ADR20 e
+ADR100 in centinaia di punti e plausibili per NQ: parte a 258, sale a 651 a fine giugno,
+scende a 310 a ottobre. `ratio` resta 1,000 fino alla sessione 20 — corretto per
+costruzione, perché finché `rN ≤ 20` le due finestre mediano gli stessi dati — e poi si
+stacca (1,21 al picco di giugno, 0,60 a settembre).
+
+La prima riga `F5 SIG` del 22/05 ha `ADR= 0.00`: è la prima sessione, il rollover non è
+ancora avvenuto. Non è un difetto.
+
+> **Conseguenza da tenere a mente per lo Stage 2.** Il run arriva a 99 sessioni e
+> `regimeOK` richiede `rN >= VolRegimeLongLen` = 100. Con `UseFilters 1` su questa finestra
+> la strategia farebbe **zero trade**. Non è un bug: è il warm‑up, ed è esattamente il
+> motivo per cui esiste il gate date.
+
+**Restano solo** i controlli 1‑9 sulla lista trade — già verificati meccanicamente su C e D
+(100 ingressi tutti alle 08:35, uno al giorno, nessun doppione, nessun overnight, 20 per
+giorno della settimana, 47 long / 53 short, 4 uscite `End of Day Exit` nelle mezze
+giornate) — e il **gate date** `TradeStartEL` / `TradeEndEL`.
+
 ### 5b. Gate date `TradeStartEL` / `TradeEndEL`
 
 Serve allo Stage 2 per separare il warm-up (100 sessioni di `VolRegimeLongLen`) dal periodo

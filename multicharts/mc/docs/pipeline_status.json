@@ -1,20 +1,19 @@
 {
- "updated": "2026-10-03",
+ "updated": "2026-10-08",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
-  "updated": "2026-10-03",
+  "updated": "2026-10-08",
   "groups": [
    {
     "title": "1. Chiudere lo Stage 1 di NQ First5",
-    "note": "il grosso",
+    "note": "manca solo il gate date",
     "items": [
-     "Ricompila `NQ_First5.txt` — i due fix sono committati (stop che non scalava, ADR a zero su chart RTH)",
-     "Rifai **solo C e D**: `StopPts 200` × 1 e × 10. **A e B restano validi**",
-     "Chart **Globex 24h**, `ShowLog` **True** — servono le righe `F5 EOD` per verificare l'ADR, che non abbiamo ancora mai visto",
-     "**D deve dare ×10 esatto su C.** Se non scala, non si prosegue",
-     "Poi il gate date `TradeStartEL` / `TradeEndEL`"
+     "✅ **Fatto**: C e D rifatti, **D/C = 10,000000 su ogni metrica**, 34 uscite a stop tutte a −200,00 punti esatti. La correzione dello stop è verificata",
+     "✅ **Fatto**: check 10, le righe `F5 EOD` ci sono e l'ADR è plausibile (258 → 651 → 310 punti)",
+     "⬜ **Gate date** `TradeStartEL` / `TradeEndEL`: nessun ingresso fuori finestra, e una posizione aperta l'ultimo giorno utile si chiude comunque alle 15:00",
+     "Poi lo Stage 1 è chiuso e si passa allo **Stage 2** — ricordando che con `UseFilters 1` servono più di 100 sessioni caricate, o il warm-up azzera i trade"
     ]
    },
    {
@@ -290,6 +289,14 @@
    "note": "Codice pronto (`NQ_First5.txt`, base e filtrata in un solo signal). Direzione della prima barra NY (08:35 CT) vs EMA(12), tenuta fino alle 15:00. **L'unica candidata con lato short reale.** Senza stop non è deployabile per la prop: `StopPts` è la variante obbligatoria dello Stage 4. Da misurare presto la correlazione con l'ORB (stesso strumento e stessa ora). Stage 1 in corso: base case pulito, la variante `StopPts` ha richiesto una correzione al codice (vedi log).",
    "log": [
     {
+     "date": "2026-10-08",
+     "text": "**Correzione dello stop verificata: C e D passano.** Rifatti su Globex 24h: net 44.620 e 446.200, **D/C = 10,000000 su ogni metrica di trade**, e in entrambi i run le 34 uscite a stop sono tutte a **−200,00 punti esatti** (nel run bugato D ne aveva 71 a −20). Verificato anche il check 10: le righe `F5 EOD` ci sono, ADR20/ADR100 in centinaia di punti e plausibili. Restano **solo il gate date** `TradeStartEL`/`TradeEndEL` e poi lo Stage 1 è chiuso."
+    },
+    {
+     "date": "2026-10-08",
+     "text": "Nota per lo Stage 2: la finestra di 100 sessioni arriva a `rN = 99` e `regimeOK` ne chiede 100 — con `UseFilters 1` su questo periodo la strategia farebbe **zero trade**. È il warm-up, non un difetto, ed è il motivo per cui serve il gate date."
+    },
+    {
      "date": "2026-09-30",
      "text": "Stage 1, primo giro: **A/B passati** (`StopPts 0`, ×10 esatto trade per trade, 100 trade su ~100 sessioni, ingressi tutti alle 08:35, uscite 15:00, 4 mezze giornate, 48 long / 52 short). **C/D bocciati**: con 10 contratti lo stop valeva 200/10 sulla prima barra dopo l'ingresso (`CurrentContracts`=0 quando la posizione non è ancora aperta) — 71 trade su 100 chiusi a −20,00 pt. Corretto con `NumContracts`."
     },
@@ -306,7 +313,7 @@
      "text": "Spec + codice dai template 18 del corso (dichiarati non validati dall'autore). BASE e FILTERED uniti con `UseFilters` per confrontarli nello stesso run; aggiunto `StopPts` (off di default) come variante prop pre‑registrata."
     }
    ],
-   "next": "Ricompilare e rifare **C** (`StopPts 200` × 1) e **D** (× 10) su chart Globex 24h con `ShowLog` True: D deve dare ×10 esatto su C, e il log deve mostrare le righe `F5 EOD` con ADR in centinaia di punti. Poi il gate date `TradeStartEL`/`TradeEndEL`."
+   "next": "Ultimo passo dello Stage 1: il **gate date**. Metti `TradeStartEL` e `TradeEndEL` su una finestra interna al periodo caricato e verifica (a) nessun ingresso fuori dalla finestra, (b) una posizione aperta l'ultimo giorno utile viene comunque chiusa alle 15:00 — il gate agisce solo sugli ingressi. Poi Stage 2."
   },
   {
    "name": "DriftPullback",
