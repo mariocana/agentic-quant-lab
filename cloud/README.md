@@ -23,7 +23,7 @@ Il cloud scrive solo file parquet; le tabelle Delta le scrive solo il Mac.
 
 Il job ragiona sull'orologio di New York, quindi i cambi di ora legale non richiedono
 modifiche. Il cron di Railway gira ogni 5 minuti solo nelle ore UTC che contengono gli slot
-(`railway.json`); fuori slot il job esce subito.
+(`python/quantlake/railway.json`); fuori slot il job esce subito.
 
 ## 1. Cloudflare R2 (una volta)
 
@@ -71,7 +71,10 @@ chiavi e il bucket sono a posto.
    di Railway sul repository privato).
 2. Nel servizio → **Settings**:
    - **Root Directory**: `python/quantlake`
-   - **Config file** (Config-as-code): `python/quantlake/cloud/railway.json`
+   - il file di configurazione è `python/quantlake/railway.json`: Railway lo legge da solo
+     nella Root Directory (se nel campo *Config file* c'è un altro percorso, svuotalo o metti
+     `python/quantlake/railway.json`). Senza, Railway usa Railpack e fallisce con "no start
+     command"
    - controlla che compaiano **Builder: Dockerfile** con `cloud/Dockerfile` e **Cron
      Schedule** `*/5 6,7,13,14,15,19,20 * * 1-5`
 3. **Variables**: le stesse quattro `R2_*` del `.env`.
