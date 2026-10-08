@@ -70,6 +70,14 @@ def symbols(table_path: str) -> list[str]:
     return sorted({p["symbol"] for p in DeltaTable(table_path).partitions()})
 
 
+def first_timestamp(table_path: str, symbol: str) -> datetime | None:
+    """Earliest timestamp stored for symbol, or None if the table or symbol is missing."""
+    df = read_symbol(table_path, symbol, columns=["timestamp"])
+    if df is None or df.is_empty():
+        return None
+    return df["timestamp"].min()
+
+
 def last_timestamp(table_path: str, symbol: str) -> datetime | None:
     """Latest timestamp stored for symbol, or None if the table or symbol is missing."""
     df = read_symbol(table_path, symbol, columns=["timestamp"])

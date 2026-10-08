@@ -15,6 +15,7 @@ import quantlake.bronze.connectors.binance_um as um
 import quantlake.silver.ingest as silver
 from helpers import utc
 from quantlake.bronze.connectors.binance_spot_bulk import parse_kline_zip
+from quantlake.helper import empty_ohlcv_df
 from quantlake.silver.funding import SCHEMA as FUNDING_SCHEMA, clean_funding
 from quantlake.storage import read_symbol
 
@@ -187,3 +188,39 @@ def test_binance_um_script_fills_bronze_and_silver(lake, monkeypatch):
     f = read_symbol(str(silver.SILVER_ROOT / "binance_um_funding"), "BTCUSDT").sort("timestamp")
     assert f["timestamp"].to_list() == [utc(2024, 1, 31), utc(2024, 1, 31, 8), utc(2024, 1, 31, 16)]
     assert set(f.columns) == set(FUNDING_SCHEMA)
+
+
+def test_binance_um_fills_the_head_without_zips_from_rest(lake, monkeypatch):
+    listing = utc(2019, 9, 8, 17, 57)
+
+    def rest_fetch(self, symbol, start, end):
+        rest_calls.append((start, end))
+        rows = [_kline_row(listing + timedelta(minutes=i)) for i in range(3)
+                if start <= listing + timedelta(minutes=i) <= end]
+        return parse_kline_zip(_zip(rows, header=False)) if rows else empty_ohlcv_df()
+
+    rest_calls = []
+    monkeypatch.setattr(um.BinanceUMOHLCVRestConnector, "fetch", rest_fetch)
+
+    path = Path(__file__).parents[1] / "applications" / "historical" / "binance_um.py"
+    spec = importlib.util.spec_from_file_location("binance_um_script", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    monkeypatch.setattr(mod, "BRONZE_ROOT", lake["BRONZE_ROOT"])
+
+    mod.fill_head("BTCUSDT")  # empty table: nothing to do (ingest_ohlcv starts from FIRST_MONTH)
+    assert rest_calls == []
+
+    # bronze starts 2020-01 (ZIPs), as on the Mac
+    import quantlake.bronze.ingest as bronze
+    jan = parse_kline_zip(_zip([_kline_row(utc(2020, 1, 1))], header=True))
+    bronze.save(bronze.add_partition_columns(jan, "BTCUSDT"), "binance_um_ohlcv")
+
+    mod.fill_head("BTCUSDT")
+    assert rest_calls == [(utc(2019, 9, 1), utc(2020, 1, 1) - timedelta(milliseconds=1))]
+    s = read_symbol(str(silver.SILVER_ROOT / "binance_um_ohlcv"), "BTCUSDT").sort("timestamp")
+    assert s["timestamp"].to_list() == [listing + timedelta(minutes=i) for i in range(3)]
+
+    # next run: only the stretch before the listing is asked again (empty answer)
+    mod.fill_head("BTCUSDT")
+    assert rest_calls[-1] == (utc(2019, 9, 1), listing - timedelta(milliseconds=1))

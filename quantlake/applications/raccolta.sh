@@ -12,7 +12,7 @@ case "$1" in
   daily) $PY applications/historical/cboe_vix.py && $PY applications/historical/squeezemetrics.py \
          && $PY applications/historical/nasdaq_index.py && $PY applications/historical/daily_context.py ;;
   gold) $PY applications/historical/multicharts.py && $PY applications/historical/ohlcv_gold.py \
-        && $PY applications/historical/daily_context.py ;;
+        && $PY applications/historical/daily_context.py && $PY applications/historical/multicharts_rolls.py ;;
   maintain) $PY -m quantlake.maintenance ;;
   *) echo "uso: $0 chain|daily|gold|maintain"; exit 1 ;;
 esac
