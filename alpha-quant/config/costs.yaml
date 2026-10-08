@@ -15,3 +15,6 @@ profiles:
     NQ:      {fee: per_contract, per_side: 2.50, slippage_ticks: 1, verified: false}
     BTCUSDT: {fee: percent, maker: 0.001, taker: 0.001, slippage_ticks: 1, verified: false}
     ETHUSDT: {fee: percent, maker: 0.001, taker: 0.001, slippage_ticks: 1, verified: false}
+    # USDⓈ-M perpetual, livello base VIP 0 (0,02% maker, 0,05% taker); il funding non è un costo
+    # di commissione e arriva come evento da quantlake (silver/binance_um_funding)
+    BTCUSDT-PERP: {fee: percent, maker: 0.0002, taker: 0.0005, slippage_ticks: 1, verified: false}

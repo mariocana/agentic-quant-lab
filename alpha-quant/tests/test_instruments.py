@@ -26,6 +26,7 @@ def test_load_costs_default_file_and_errors(tmp_path):
     costs = load_costs()
     assert costs["ES"].fee == PerContractFee(per_side=2.5)
     assert costs["BTCUSDT"].verified is False
+    assert costs["BTCUSDT-PERP"].fee == PercentFee(maker=0.0002, taker=0.0005)
 
     bad = tmp_path / "costs.yaml"
     bad.write_text("profiles:\n  default:\n    ES: {fee: flat}\n")
