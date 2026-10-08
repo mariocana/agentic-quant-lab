@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Database, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Database, Gauge, Search } from "lucide-react";
 import { api, type Layer, type TableInfo } from "@/lib/api";
 import { cn, formatNumber, formatTimestamp } from "@/lib/cn";
 import type { Selection } from "@/App";
@@ -14,11 +14,12 @@ const LAYERS: { id: Layer; label: string; accent: string }[] = [
 interface Props {
   selection: Selection | null;
   onSelect: (s: Selection) => void;
+  onHome: () => void;
   collapsed: boolean;
   onToggleCollapsed: () => void;
 }
 
-export function Sidebar({ selection, onSelect, collapsed, onToggleCollapsed }: Props) {
+export function Sidebar({ selection, onSelect, onHome, collapsed, onToggleCollapsed }: Props) {
   const [open, setOpen] = useState<Record<Layer, boolean>>({
     bronze: true,
     silver: true,
@@ -60,6 +61,17 @@ export function Sidebar({ selection, onSelect, collapsed, onToggleCollapsed }: P
           <ChevronLeft className="h-3.5 w-3.5" />
         </button>
       </div>
+
+      <button
+        onClick={onHome}
+        className={cn(
+          "flex items-center gap-2 border-b border-border px-4 py-2.5 text-left font-mono text-xs tracking-wide transition-colors",
+          selection === null ? "bg-bg-elevated text-accent" : "text-fg-muted hover:bg-bg-elevated hover:text-fg",
+        )}
+      >
+        <Gauge className="h-3.5 w-3.5" />
+        CONTESTO SESSIONE
+      </button>
 
       <div className="border-b border-border px-3 py-2">
         <div className="relative">
