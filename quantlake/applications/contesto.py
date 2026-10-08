@@ -3,8 +3,9 @@
     contesto.py london   -> blocco per la scheda di Londra (prima delle 09:00)
     contesto.py ny       -> blocco per la scheda di NY (parte A, prima delle 15:30)
 
-Prima aggiorna i dati (VIX/GEX/NDX, barre MultiCharts, gold/daily_context; per
-NY anche una foto della catena SPX per l'EM 0DTE), poi stampa in markdown un
+Prima aggiorna i dati (foto della catena scattate dal job Railway su R2,
+VIX/GEX/NDX, barre MultiCharts, gold/daily_context; per NY anche una foto della
+catena SPX adesso, per l'EM 0DTE), poi stampa in markdown un
 blocco che sessioni/nuova_sessione.sh inserisce in cima alla scheda.
 --no-update salta l'aggiornamento. I log dei loader vanno in data/logs/contesto.log.
 
@@ -33,9 +34,9 @@ IT = {"low": "bassa", "high": "alta", "up": "su", "down": "giù", "positive": "p
 EM_STUCCHI = "±1 EM toccato nel ~75% delle sessioni, oltre ±2 EM nel ~21%, chiusura entro ±2 EM nell'~89-91%"
 
 LOADERS = {
-    "london": ["historical/cboe_vix.py", "historical/squeezemetrics.py", "historical/nasdaq_index.py",
+    "london": ["cloud_sync.py", "historical/cboe_vix.py", "historical/squeezemetrics.py", "historical/nasdaq_index.py",
                "historical/multicharts.py", "historical/daily_context.py"],
-    "ny": ["historical/multicharts.py", "historical/daily_context.py", "spx_chain_snapshot.py"],
+    "ny": ["cloud_sync.py", "historical/multicharts.py", "historical/daily_context.py", "spx_chain_snapshot.py"],
 }
 
 
