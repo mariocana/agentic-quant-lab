@@ -15,6 +15,10 @@ sources:
     type: exchange (crypto spot)
     modes: [websocket, rest, bulk]
     docs: https://binance-docs.github.io/apidocs/spot/
+  binance_um:
+    type: exchange (crypto USDⓈ-M perpetual futures)
+    modes: [rest, bulk]
+    docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/general-info
   dukascopy:
     type: FX / commodity / index datafeed (spot-like)
     modes: [rest-bulk]
@@ -68,6 +72,10 @@ sources:
     type: Commitments of Traders, legacy futures only (weekly, free Socrata API)
     modes: [rest]
     docs: https://publicreporting.cftc.gov/resource/6dca-aqww.json
+  manual:
+    type: hand-maintained reference data (exchange contract specs)
+    modes: [code]
+    docs: src/quantlake/reference/instruments.py
 
 bronze:
   binance_spot_ohlcv:
@@ -75,6 +83,18 @@ bronze:
     grain: 1m
     partition: [symbol, year, month]
     notes: raw 1m OHLCV bars, idempotent via Delta merge on (symbol, timestamp)
+
+  binance_um_ohlcv:
+    source: binance_um
+    grain: 1m
+    partition: [symbol, year, month]
+    notes: USDⓈ-M perpetual 1m OHLCV (monthly ZIPs + /fapi/v1/klines), symbol = exchange symbol (BTCUSDT)
+
+  binance_um_funding:
+    source: binance_um
+    grain: per funding settlement (8h for BTCUSDT)
+    partition: [symbol, year, month]
+    notes: /fapi/v1/fundingRate as published (fundingTime can be a few ms late), funding_rate + mark_price
 
   capitalcom_ohlcv:
     source: capitalcom
@@ -203,10 +223,29 @@ silver:
   binance_spot_ohlcv:
     from: [bronze/binance_spot_ohlcv]
     transforms:
+      - align_to_minute — truncate open time to the minute (archives 2017-12 → 2018-02 are shifted by seconds), keep the larger-volume row on collision
       - replace inf / -inf with NaN on Float64 columns
       - replace null with NaN on Float64 columns
       - invalidate bars where high < low or low < 0
       - invalidate negative volumes
+
+  binance_um_ohlcv:
+    from: [bronze/binance_um_ohlcv]
+    transforms:
+      - same align_to_minute + clean_ohlcv rules as binance_spot_ohlcv
+
+  binance_um_funding:
+    from: [bronze/binance_um_funding]
+    transforms:
+      - timestamp truncated to the second (settlement time)
+      - columns timestamp, symbol, funding_rate (mark_price stays in bronze)
+      - funding_rate inf / null → NaN; duplicates keep the latest ingested row
+
+  multicharts_ohlcv:
+    from: [bronze/multicharts_ohlcv]
+    transforms:
+      - incremental copy of bronze bars newer than the last silver bar (historical/multicharts.py)
+      - same align_to_minute + clean_ohlcv rules as binance_spot_ohlcv
 
   fred:
     from: [bronze/fred]
@@ -262,6 +301,140 @@ silver:
       - nc_net_pct_oi = 100 * nc_net / open_interest (null when OI <= 0)
 
 gold:
+  multicharts_ohlcv/1m:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/5m:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 5m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/15m:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 15m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/1h:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1h; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/4h:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 4h; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/1d:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1d; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  multicharts_ohlcv/4h_cme:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), windows anchored to the CME day (17:00 America/Chicago, DST-aware)
+      - timestamp = window open in UTC; 1d_cme = one Globex session (Sun/Mon-Thu 17:00 → 16:00 next day)
+      - only windows fully covered by silver; never vacuumed
+
+  multicharts_ohlcv/1d_cme:
+    from: [silver/multicharts_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (ES, NQ), windows anchored to the CME day (17:00 America/Chicago, DST-aware)
+      - timestamp = window open in UTC; 1d_cme = one Globex session (Sun/Mon-Thu 17:00 → 16:00 next day)
+      - only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/1m:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1m UTC; only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/5m:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 5m UTC; only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/15m:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 15m UTC; only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/1h:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1h UTC; only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/4h:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 4h UTC; only windows fully covered by silver; never vacuumed
+
+  binance_um_ohlcv/1d:
+    from: [silver/binance_um_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (BTCUSDT-PERP), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1d UTC; only windows fully covered by silver; never vacuumed
+
+  binance_spot_ohlcv/1m:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/5m:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 5m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/15m:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 15m; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/1h:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1h; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/4h:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 4h; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
+  binance_spot_ohlcv/1d:
+    from: [silver/binance_spot_ohlcv]
+    transforms:
+      - plain OHLCV for alpha-quant (every symbol in silver), no features (historical/ohlcv_gold.py)
+      - resample 1m → 1d; only windows fully covered by silver, last bar rebuilt each run
+      - daily bars are UTC days; never vacuumed (alpha-quant pins Delta versions)
+
   top_10_momentum_crypto/5m:
     from: [silver/binance_spot_ohlcv]
     transforms:
@@ -312,3 +485,19 @@ gold:
       - category (FX / Crypto / Index / Rates / Commodity) from applications/symbols.py
       - keeps the Friday-release timestamp — as-of joins onto price bars stay look-ahead free
       - "UI: applications/cot_desk (Flask, local) — pairs, matrices, top-3, Claude review"
+
+# Reference tables: no time series, no partitions, one row per key.
+# Not shown in the dashboard graph (it only draws bronze/silver/gold).
+reference:
+  instruments:
+    source: manual
+    grain: one row per instrument
+    key: symbol
+    partition: none
+    notes: |
+      Market specs (tick_size, multiplier, qty_step, min_qty, exchange
+      calendar + daily break) and the pointer to the bars: gold/<gold_table>
+      rows with symbol = data_symbol. Read-only contract with alpha-quant
+      (QuantlakeInstrumentSource): do not rename columns or change types.
+      Written by reference.instruments.upsert_instruments (merge on symbol);
+      initial rows from seed_default(). Costs stay in alpha-quant.
