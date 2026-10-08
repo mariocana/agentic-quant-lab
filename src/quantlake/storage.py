@@ -47,19 +47,25 @@ def read_symbol(
     symbol: str,
     columns: list[str] | None = None,
     since: datetime | None = None,
+    until: datetime | None = None,
 ) -> pl.DataFrame | None:
     """Read one symbol's rows (partition-pruned), or None if the table doesn't exist.
 
-    ``since`` keeps rows with timestamp >= since and prunes older year partitions.
+    ``since`` keeps rows with timestamp >= since, ``until`` rows with
+    timestamp < until; both prune the year partitions outside the range.
     """
     if not DeltaTable.is_deltatable(table_path):
         return None
     filters = [("symbol", "=", symbol)]
     if since is not None:
         filters.append(("year", ">=", since.year))
+    if until is not None:
+        filters.append(("year", "<=", until.year))
     df = pl.from_arrow(DeltaTable(table_path).to_pyarrow_table(columns=columns, filters=filters))
     if since is not None:
         df = df.filter(pl.col("timestamp") >= since)
+    if until is not None:
+        df = df.filter(pl.col("timestamp") < until)
     return df
 
 
