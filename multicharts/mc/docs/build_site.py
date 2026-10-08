@@ -61,6 +61,7 @@ DOCS = [
     ("Ricerca e ingest", "Palmquist — candlestick", "education/books/NOTES_palmquist_candlestick.md"),
 
     ("Discrezionale", "Playbook orderflow Londra", "education/enrico_stucchi/PLAYBOOK.md"),
+    ("Discrezionale", "Calibrazione del contesto", "education/enrico_stucchi/CALIBRAZIONE_contesto.md"),
     ("Discrezionale", "Template sessione Londra", "education/enrico_stucchi/sessioni/TEMPLATE_london.md"),
     ("Discrezionale", "Template sessione NY", "education/enrico_stucchi/sessioni/TEMPLATE_ny.md"),
     ("Discrezionale", "Diario trade", "journal/journal_swing/README.md"),

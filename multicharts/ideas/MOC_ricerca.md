@@ -113,6 +113,14 @@ Ordinate dalla più semplice (bastano i tuoi dati ES/NQ a 1 minuto) alla più co
    on close, 10 minuti prima della chiusura, il 75% delle volte la direzione è la stessa
    della direzione principale della giornata: è una continuazione». Da verificare: cosa
    si intende per "direzione principale" (apertura→15:50? VWAP?) e se il 75% regge su ES.
+   **Verifica 2026-10-08** (`education/enrico_stucchi/CALIBRAZIONE_contesto.md`, ES e NQ
+   2016–2026, ~2.700 giorni): gli ultimi 10 minuti (15:50–16:00 ET) vanno nella stessa
+   direzione della giornata nel **45–51%** dei casi, sia con apertura→15:50 sia con
+   chiusura di ieri→15:50, anche limitandosi ai giorni con movimento ≥ 0,5 EM. Il 75% non
+   si ritrova: nessun trade MOC su questa base. Resta da provare la definizione con il
+   VWAP e, se trovo una fonte, il segno dell'imbalance (domanda 4). Nei trend day definiti
+   a fine giornata la continuazione sale a 70–85%, ma è circolare: il trend day si
+   riconosce dalla chiusura stessa.
 3. **Giorni speciali.** Fine mese, scadenza trimestrale e ribilanciamento, ricostituzione
    Russell rispetto ai giorni normali: range e direzione degli ultimi 10 minuti.
 4. **Imbalance noto.** Con il segno e la dimensione del MOC imbalance delle 15:50 (se
