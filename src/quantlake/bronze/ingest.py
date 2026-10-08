@@ -1,10 +1,9 @@
 from datetime import datetime, timezone
 import polars as pl
-from deltalake import DeltaTable
 
 from quantlake.bronze.base import HistoricalConnector
 from quantlake.config import BRONZE_ROOT
-from quantlake.storage import upsert
+from quantlake.storage import last_timestamp, upsert
 
 
 def last_bronze_ts(table_name: str, symbol: str) -> datetime | None:
@@ -13,18 +12,7 @@ def last_bronze_ts(table_name: str, symbol: str) -> datetime | None:
     Used to make historical scripts resumable: callers pull only from
     `last_bronze_ts(...) + 1 unit` onward instead of re-downloading everything.
     """
-    path = str(BRONZE_ROOT / table_name)
-    if not DeltaTable.is_deltatable(path):
-        return None
-    df = pl.from_arrow(
-        DeltaTable(path).to_pyarrow_table(
-            columns=["timestamp"],
-            filters=[("symbol", "=", symbol)],
-        )
-    )
-    if df.is_empty():
-        return None
-    return df["timestamp"].max()
+    return last_timestamp(str(BRONZE_ROOT / table_name), symbol)
 
 
 def ingest(connector: HistoricalConnector, symbol, start, end):

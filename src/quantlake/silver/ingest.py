@@ -12,22 +12,27 @@ design — once a bar is cleaned and stored, it doesn't change.
 import polars as pl
 
 from quantlake.config import SILVER_ROOT
-from quantlake.silver.ohlcv import clean_ohlcv
+from quantlake.silver.ohlcv import align_to_minute, clean_ohlcv
 from quantlake.storage import upsert
 
 
-def ingest(df: pl.DataFrame, table_name: str) -> pl.DataFrame:
+def ingest(df: pl.DataFrame, table_name: str, align_1m: bool = False) -> pl.DataFrame:
     """Clean OHLCV bars and persist them to the silver Delta table.
 
     Expects df to already carry symbol/year/month partition columns
     (added by bronze.ingest). Re-ingesting the same range is safe: merges
     on (symbol, timestamp) so no duplicates are created.
 
+    ``align_1m=True`` (1-minute bar sources only) first snaps timestamps to
+    the minute and collapses the resulting duplicates, see align_to_minute.
+
     Returns the cleaned DataFrame.
     """
     if df.is_empty():
         return df
 
+    if align_1m:
+        df = align_to_minute(df)
     df = clean_ohlcv(df)
     save(df, table_name)
     return df

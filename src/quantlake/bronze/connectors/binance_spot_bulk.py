@@ -36,29 +36,7 @@ class BinanceSpotOHLCVBulkConnector(HistoricalConnector):
                     continue  # symbol not listed yet for this month
                 resp.raise_for_status()
 
-                with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
-                    csv_name = zf.namelist()[0]
-                    with zf.open(csv_name) as f:
-                        df = pl.read_csv(
-                            f.read(),
-                            has_header=False,
-                            new_columns=["timestamp", "open", "high", "low", "close", "volume",
-                                         "close_time", "quote_volume", "trades",
-                                         "taker_buy_volume", "taker_buy_quote_volume", "ignore"],
-                        )
-                # Binance changed timestamp unit over time: old files use ms (13 digits), recent use us (16 digits)
-                time_unit = "us" if df["timestamp"].max() > 10 ** 15 else "ms"
-                df = (
-                    df.select(["timestamp", "close_time", "open", "high", "low", "close", "volume"])
-                    .rename({"close_time": "timestamp_close"})
-                    .with_columns(
-                        pl.from_epoch("timestamp", time_unit=time_unit).dt.replace_time_zone("UTC").cast(
-                            pl.Datetime("us", "UTC")),
-                        pl.from_epoch("timestamp_close", time_unit=time_unit).dt.replace_time_zone("UTC").cast(
-                            pl.Datetime("us", "UTC")),
-                    )
-                )
-                parts.append(df)
+                parts.append(parse_kline_zip(resp.content))
 
         if not parts:
             return empty_ohlcv_df()
@@ -68,6 +46,36 @@ class BinanceSpotOHLCVBulkConnector(HistoricalConnector):
             .filter(pl.col("timestamp").is_between(pl.lit(start_utc), pl.lit(end_utc)))
             .sort("timestamp")
         )
+
+
+_KLINE_COLUMNS = ["timestamp", "open", "high", "low", "close", "volume",
+                  "close_time", "quote_volume", "trades",
+                  "taker_buy_volume", "taker_buy_quote_volume", "ignore"]
+
+
+def parse_kline_zip(content: bytes) -> pl.DataFrame:
+    """Parse one data.binance.vision kline ZIP (spot or futures).
+
+    Spot CSVs have no header; USD-M futures CSVs start with one
+    (open_time,open,...). Rows whose first field isn't a number are dropped.
+    Binance changed the timestamp unit over time: old files use ms
+    (13 digits), recent spot files us (16 digits).
+    """
+    with zipfile.ZipFile(io.BytesIO(content)) as zf:
+        with zf.open(zf.namelist()[0]) as f:
+            raw = pl.read_csv(f.read(), has_header=False, new_columns=_KLINE_COLUMNS, infer_schema=False)
+    df = raw.filter(pl.col("timestamp").str.contains(r"^\d+$")).select(
+        pl.col("timestamp").cast(pl.Int64),
+        pl.col("close_time").cast(pl.Int64).alias("timestamp_close"),
+        *[pl.col(c).cast(pl.Float64) for c in ("open", "high", "low", "close", "volume")],
+    )
+    if df.is_empty():
+        return empty_ohlcv_df()
+    time_unit = "us" if df["timestamp"].max() > 10 ** 15 else "ms"
+    return df.with_columns(
+        pl.from_epoch(c, time_unit=time_unit).dt.replace_time_zone("UTC").cast(pl.Datetime("us", "UTC"))
+        for c in ("timestamp", "timestamp_close")
+    )
 
 
 def _month_range(start: datetime, end: datetime) -> list[tuple[int, int]]:
