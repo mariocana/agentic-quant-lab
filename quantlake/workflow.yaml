@@ -188,7 +188,7 @@ bronze:
     source: multicharts
     grain: 1m
     partition: [symbol, year, month]
-    notes: ES / NQ 1m continuous (@ES back-adjusted, 24h), volume = upticks + downticks (approximate delta); --full re-reads the CSV
+    notes: ES / NQ 1m continuous (@ES back-adjusted, 24h), volume = upticks + downticks (approximate delta); ES_recent / NQ_recent (last 5 days) rewritten whole every run; --replace reloads the history after a re-export
 
   multicharts_contracts:
     source: multicharts
@@ -590,8 +590,9 @@ reference:
     partition: none
     notes: |
       ES / NQ roll calendar, read by alpha-quant: symbol, roll_ts, from_contract,
-      to_contract, gap_points. Fixed rule: third-Friday expiry - 8 days, 17:00
-      America/Chicago. gap_points = to close - from close at the last common
+      to_contract, gap_points. Fixed rule: roll day = third-Friday expiry - 8 days
+      (Thursday), switch at the open of its session (Wednesday 17:00 America/Chicago,
+      ROLL_AT_SESSION_OPEN). gap_points = to close - from close at the last common
       minute before roll_ts (null when the contracts' data is missing).
       Rebuilt whole by historical/multicharts_rolls.py, which also reports where
       TradeStation's @ES / @NQ rolls on another day.

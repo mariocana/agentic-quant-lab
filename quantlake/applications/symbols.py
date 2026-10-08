@@ -83,7 +83,7 @@ class MCFile:
 UM_PERPS = ["BTCUSDT"]
 
 
-# Full history (exported once, and again after each quarterly roll with --full)
+# Full history (exported once, and again after each quarterly roll: multicharts.py --replace)
 # + a short chart of the last days, exported in the morning / before NY.
 MC_FILES = [
     MCFile("ES", "ES_1min", "America/Chicago"),

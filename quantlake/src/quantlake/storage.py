@@ -47,19 +47,27 @@ def read_symbol(
     symbol: str,
     columns: list[str] | None = None,
     since: datetime | None = None,
+    until: datetime | None = None,
 ) -> pl.DataFrame | None:
     """Read one symbol's rows (partition-pruned), or None if the table doesn't exist.
 
-    ``since`` keeps rows with timestamp >= since and prunes older year partitions.
+    ``since`` keeps rows with timestamp >= since, ``until`` rows with
+    timestamp < until. Both prune the year partitions outside the range and
+    are pushed down on timestamp, so Parquet row-group statistics skip the
+    rest (reading the head before a recent first bar stays cheap).
     """
     if not DeltaTable.is_deltatable(table_path):
         return None
     filters = [("symbol", "=", symbol)]
     if since is not None:
-        filters.append(("year", ">=", since.year))
+        filters += [("year", ">=", since.year), ("timestamp", ">=", since)]
+    if until is not None:
+        filters += [("year", "<=", until.year), ("timestamp", "<", until)]
     df = pl.from_arrow(DeltaTable(table_path).to_pyarrow_table(columns=columns, filters=filters))
     if since is not None:
         df = df.filter(pl.col("timestamp") >= since)
+    if until is not None:
+        df = df.filter(pl.col("timestamp") < until)
     return df
 
 
@@ -96,3 +104,11 @@ def delete_range(table_path: str, symbol: str, start: datetime, end: datetime) -
         f"symbol = '{symbol}' AND timestamp >= '{start:{iso}}' AND timestamp < '{end:{iso}}'"
     )
     return DeltaTable(table_path).delete(predicate)["num_deleted_rows"]
+
+
+
+def delete_symbol(table_path: str, symbol: str) -> int:
+    """Delete every row of symbol; returns the number of rows deleted."""
+    if not DeltaTable.is_deltatable(table_path):
+        return 0
+    return DeltaTable(table_path).delete(f"symbol = '{symbol}'")["num_deleted_rows"]

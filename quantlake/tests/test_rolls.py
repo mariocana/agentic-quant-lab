@@ -20,8 +20,8 @@ from quantlake.reference.rolls import (
 from quantlake.storage import read_symbol
 
 CHI = ZoneInfo("America/Chicago")
-Z25_ROLL = utc(2025, 12, 11, 23, 0)   # Thu 17:00 CST
-H26_ROLL = utc(2026, 3, 12, 22, 0)    # Thu 17:00 CDT
+Z25_ROLL = utc(2025, 12, 10, 23, 0)   # Wed 17:00 CST, opens Thu 2025-12-11 (expiry 12-19 - 8)
+H26_ROLL = utc(2026, 3, 11, 22, 0)    # Wed 17:00 CDT, opens Thu 2026-03-12
 
 
 def chi(*a) -> datetime:
@@ -53,14 +53,21 @@ def test_parse_contract():
 @pytest.mark.parametrize("code, expiry, roll", [
     ("ESZ25", date(2025, 12, 19), Z25_ROLL),
     ("ESH26", date(2026, 3, 20), H26_ROLL),
-    ("ESU25", date(2025, 9, 19), utc(2025, 9, 11, 22, 0)),
-    ("ESH20", date(2020, 3, 20), utc(2020, 3, 12, 22, 0)),
+    ("ESU25", date(2025, 9, 19), utc(2025, 9, 10, 22, 0)),
+    ("ESH20", date(2020, 3, 20), utc(2020, 3, 11, 22, 0)),
 ])
 def test_expiry_and_roll(code, expiry, roll):
     c = parse_contract(code)
     assert c.expiry == expiry and c.expiry.weekday() == 4
+    assert c.roll_day == expiry - timedelta(days=8) and c.roll_day.weekday() == 3  # Thursday
     assert c.roll_ts == roll
-    assert c.roll_ts.astimezone(CHI).hour == 17 and (c.expiry - c.roll_ts.astimezone(CHI).date()).days == 8
+    local = c.roll_ts.astimezone(CHI)
+    assert local.hour == 17 and local.weekday() == 2 and local.date() == c.roll_day - timedelta(days=1)
+
+
+def test_roll_at_end_of_roll_day_when_constant_is_off(monkeypatch):
+    monkeypatch.setattr(rolls_mod, "ROLL_AT_SESSION_OPEN", False)
+    assert parse_contract("ESZ25").roll_ts == utc(2025, 12, 11, 23, 0)  # Thu 17:00 CST
 
 
 def test_roll_calendar_covers_missing_contracts_and_roots():
@@ -142,7 +149,7 @@ def test_write_continuous_gold(lake, freeze_now):
     written = write_continuous(s, ["1h", "1d_cme"])
     assert written == {"1h": 4, "1d_cme": 2}
     g = read_symbol(str(lake["GOLD_ROOT"] / "multicharts_continuous" / "1d_cme"), "ES").sort("timestamp")
-    assert g["timestamp"].to_list() == [chi(2025, 12, 10, 17), Z25_ROLL]
+    assert g["timestamp"].to_list() == [chi(2025, 12, 9, 17), Z25_ROLL]
     assert g["contract"].to_list() == ["ESZ25", "ESH26"]
     assert g["adj_offset"].to_list() == [50.0, 0.0]
     assert g.schema["timestamp"] == pl.Datetime("us", "UTC") and g.schema["close"] == pl.Float64
@@ -151,8 +158,8 @@ def test_write_continuous_gold(lake, freeze_now):
 # ── check vs @ES ───────────────────────────────────────────────────────────
 
 def test_compare_with_reference_finds_a_later_tradestation_roll():
-    # three sessions: Wed (ours Z25), Thu = our roll (ours H26), Sun→Mon (ours H26)
-    opens = [chi(2025, 12, 10, 17), chi(2025, 12, 11, 17), chi(2025, 12, 14, 17)]
+    # sessions opening Tue (ours Z25), Wed = our roll (ours H26), Sun → Mon (ours H26)
+    opens = [chi(2025, 12, 9, 17), chi(2025, 12, 10, 17), chi(2025, 12, 14, 17)]
     z = pl.concat([_bars("ESZ25", o, 60, lambda i: 6000 + i * 0.25) for o in opens])
     h = pl.concat([_bars("ESH26", o, 60, lambda i: 6050 + i * 0.25 + (i % 3) * 0.25) for o in opens])
     bars = pl.concat([z, h])
@@ -174,7 +181,7 @@ def test_compare_with_reference_finds_a_later_tradestation_roll():
 
     diff = roll_differences(cmp, cal, "ES")
     assert diff.row(0, named=True)["ts_roll"] == opens[2]
-    assert diff.row(0, named=True)["days_late"] == 3.0
+    assert diff.row(0, named=True)["days_late"] == 4.0
 
 
 # ── historical/multicharts_rolls.py on fake ExportBars CSVs ────────────────
