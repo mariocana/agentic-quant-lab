@@ -6,7 +6,8 @@
                      subprocesses, logs to data/logs/contesto.log, returns warnings.
     card()           one dict with everything both sessions need: rendered as
                      markdown by applications/contesto.py (session sheet) and
-                     as a page by the dashboard (GET /api/context).
+                     as the "Contesto sessione" page of the banco di lavoro
+                     (mc/docs/build_site.py, which calls it with this venv).
 
 Historical rates (London range quantiles, gap fill, trend days with low GEX)
 are recomputed from all complete rows of gold/daily_context on every call;
