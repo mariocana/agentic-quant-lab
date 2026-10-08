@@ -11,10 +11,16 @@ One row per roll event; read by alpha-quant, so SCHEMA is a contract.
                    it is missing
 
 Roll rule (fixed calendar, known in advance, no look-ahead): CME equity
-index futures expire on the third Friday of the contract month; the
-continuous series rolls 8 days earlier (the Thursday before, CME's roll
-date) at 17:00 America/Chicago, i.e. at the open of Friday's Globex
-session. A 1d_cme / 4h_cme / 1h bar therefore never mixes two contracts.
+index futures expire on the third Friday of the contract month. The roll
+day is the trading day 8 days earlier, the Thursday of the week before
+(CME's roll date, when volume and open interest move to the next
+quarter). With ROLL_AT_SESSION_OPEN the series switches at the open of the
+roll day's Globex session, Wednesday 17:00 America/Chicago: the whole roll
+day is already on the new contract, the side where the volume is that day.
+Switching on a session boundary also means a 1h / 4h_cme / 1d_cme bar never
+mixes two contracts. ROLL_AT_SESSION_OPEN = False switches at the end of
+the roll day instead (Thursday 17:00 CT). Kept unless the check against
+TradeStation's @ES shows its roll happens elsewhere.
 
 Contract codes are TradeStation's: root + month code + two-digit year,
 e.g. ESZ25 = December 2025, NQH26 = March 2026.
@@ -31,8 +37,9 @@ from quantlake.config import REFERENCE_ROOT
 
 TABLE_NAME = "rolls"
 CHICAGO = ZoneInfo("America/Chicago")
-ROLL_TIME = time(17, 0)
-ROLL_DAYS_BEFORE_EXPIRY = 8
+SESSION_OPEN = time(17, 0)          # Globex day session opens 17:00 CT the previous calendar day
+ROLL_DAYS_BEFORE_EXPIRY = 8        # roll day = expiry (third Friday) - 8 days = Thursday
+ROLL_AT_SESSION_OPEN = True        # switch at the open of the roll day's session (Wed 17:00 CT)
 MONTH_CODES = "FGHJKMNQUVXZ"
 QUARTERLY = "HMUZ"
 GAP_LOOKBACK = timedelta(days=3)  # how far before roll_ts a common minute may be
@@ -66,10 +73,17 @@ class Contract:
         return first_friday + timedelta(weeks=2)
 
     @property
+    def roll_day(self) -> date:
+        """CME roll date: the trading day ROLL_DAYS_BEFORE_EXPIRY before expiry."""
+        return self.expiry - timedelta(days=ROLL_DAYS_BEFORE_EXPIRY)
+
+    @property
     def roll_ts(self) -> datetime:
-        """When the continuous series leaves this contract (UTC)."""
-        day = self.expiry - timedelta(days=ROLL_DAYS_BEFORE_EXPIRY)
-        return datetime.combine(day, ROLL_TIME, tzinfo=CHICAGO).astimezone(timezone.utc)
+        """When the continuous series leaves this contract (UTC): the open of the
+        roll day's session (previous calendar day 17:00 CT) or, with
+        ROLL_AT_SESSION_OPEN False, the end of it (roll day 17:00 CT)."""
+        day = self.roll_day - timedelta(days=1) if ROLL_AT_SESSION_OPEN else self.roll_day
+        return datetime.combine(day, SESSION_OPEN, tzinfo=CHICAGO).astimezone(timezone.utc)
 
     def next_quarterly(self) -> "Contract":
         months = [MONTH_CODES.index(m) + 1 for m in QUARTERLY]
