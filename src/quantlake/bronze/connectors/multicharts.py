@@ -8,7 +8,9 @@ indicator writes into this project's data/multicharts folder shared from
 the Mac over SMB (or the CSV is copied here by hand).
 
 Quantlake convention: `timestamp` is the bar *open* (UTC), plus
-`timestamp_close`. upticks/downticks give an approximate delta
+`timestamp_close`. On intraday bars MultiCharts' `Volume` is the up-tick
+volume only and `Ticks` is the total, so `volume` is rebuilt here as
+upticks + downticks. upticks/downticks give an approximate delta
 (volume traded on up-ticks vs down-ticks), not the true aggressor side.
 """
 from datetime import datetime, timedelta
@@ -48,6 +50,8 @@ class MultiChartsCSVConnector(HistoricalConnector):
         ).with_columns(
             (pl.col("timestamp_close") - self.bar).alias("timestamp"),
         )
+        if {"upticks", "downticks"} <= set(df.columns):
+            df = df.with_columns((pl.col("upticks") + pl.col("downticks")).alias("volume"))
         df = df.unique(subset=["timestamp"], keep="last").sort("timestamp")
         if start is not None:
             df = df.filter(pl.col("timestamp") >= to_utc(start))

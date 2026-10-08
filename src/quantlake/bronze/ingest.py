@@ -36,8 +36,8 @@ def ingest(connector: HistoricalConnector, symbol, start, end):
     return df
 
 
-def save(df, table_name):
-    upsert(df, str(BRONZE_ROOT / table_name))
+def save(df, table_name, update_matched=False):
+    upsert(df, str(BRONZE_ROOT / table_name), update_matched=update_matched)
 
 
 def add_partition_columns(df, symbol):
