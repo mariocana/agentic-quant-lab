@@ -4,6 +4,7 @@ import { ChartPanel } from "./components/ChartPanel";
 import { TablePanel } from "./components/TablePanel";
 import { TableHeader } from "./components/TableHeader";
 import { WorkflowPanel } from "./components/WorkflowPanel";
+import { ContextPanel } from "./components/ContextPanel";
 import { useQuery } from "@tanstack/react-query";
 import { api, type Layer } from "./lib/api";
 
@@ -49,13 +50,14 @@ export function App() {
       <Sidebar
         selection={selection}
         onSelect={(s) => { setSelection(s); setSymbols([]); }}
+        onHome={() => setSelection(null)}
         collapsed={sidebarCollapsed}
         onToggleCollapsed={() => setSidebarCollapsed((c) => !c)}
       />
 
       <main className="flex flex-1 flex-col overflow-hidden">
         {!selection ? (
-          <EmptyState />
+          <ContextPanel />
         ) : (
           <>
             <TableHeader
@@ -107,17 +109,6 @@ export function App() {
           </>
         )}
       </main>
-    </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="flex h-full flex-col items-center justify-center text-fg-muted">
-      <div className="font-mono text-sm tracking-wide">
-        <span className="text-accent">▸</span> SELECT A TABLE FROM THE SIDEBAR
-      </div>
-      <div className="mt-2 text-xs text-fg-dim">bronze · silver · gold</div>
     </div>
   );
 }

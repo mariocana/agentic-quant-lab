@@ -14,6 +14,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from quantlake import context_card
+
 from . import catalog, queries
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
@@ -172,6 +174,25 @@ def get_stats(
         ts_to=ts_to,
     )
     return JSONResponse(_json_safe(payload))
+
+
+@app.get("/api/context")
+def get_context():
+    """Pre-session context card (Stucchi playbook), from the data already in the lake."""
+    try:
+        card = context_card.card()
+    except Exception as exc:  # missing tables on a fresh lake
+        raise HTTPException(status_code=503, detail=f"contesto non disponibile: {exc}")
+    return JSONResponse(_json_safe(card))
+
+
+@app.post("/api/context/update")
+def post_context_update(session: str = Query(..., pattern="^(london|ny)$")):
+    """Refresh the inputs for a session (~20 s: loaders run as subprocesses), then return the card."""
+    warnings = context_card.update(session)
+    card = context_card.card()
+    card["warnings"] = warnings + card["warnings"]
+    return JSONResponse(_json_safe(card))
 
 
 # Serve the React build when it exists (production mode).
