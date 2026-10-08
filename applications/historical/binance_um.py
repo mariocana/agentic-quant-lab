@@ -5,7 +5,10 @@
 
 OHLCV: monthly ZIPs from data.binance.vision for every full month, then REST
 from the last stored bar up to the last closed minute (covers the current
-month and a previous month whose ZIP isn't published yet). Funding: REST, full history.
+month and a previous month whose ZIP isn't published yet). data.binance.vision
+has no 1m ZIPs for BTCUSDT before 2020-01, so the head of the history
+(FIRST_MONTH → first stored bar, i.e. 2019-09-08 listing → 2019-12-31) is
+filled from REST too; once filled it costs one empty REST call per run. Funding: REST, full history.
 Resumable per symbol from the last bronze timestamp; re-running is safe.
 Gold (plain OHLCV for alpha-quant) is built by historical/ohlcv_gold.py.
 
@@ -20,10 +23,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import quantlake.bronze.ingest as bronze
 import quantlake.silver.ingest as silver
+from quantlake.config import BRONZE_ROOT
 from quantlake.bronze.connectors.binance_um import (
     BinanceUMFundingRateConnector, BinanceUMOHLCVBulkConnector, BinanceUMOHLCVRestConnector,
 )
 from quantlake.silver.funding import save_funding
+from quantlake.storage import first_timestamp
 from symbols import UM_PERPS
 
 FIRST_MONTH = datetime(2019, 9, 1, tzinfo=timezone.utc)  # BTCUSDT perpetual listed 2019-09
@@ -58,6 +63,20 @@ def ingest_ohlcv(symbol: str, now: datetime) -> None:
         print(f"[{symbol}] ohlcv REST {start:%Y-%m-%d %H:%M} → {rest_end:%H:%M}: {len(df):,} bars")
 
 
+def fill_head(symbol: str) -> None:
+    """REST for [FIRST_MONTH, first stored bar): months without a ZIP on data.binance.vision."""
+    first = first_timestamp(str(BRONZE_ROOT / OHLCV), symbol)
+    if first is None:
+        return
+    head_end = first.replace(second=0, microsecond=0) - timedelta(milliseconds=1)
+    if head_end <= FIRST_MONTH:
+        return
+    df = bronze.ingest(BinanceUMOHLCVRestConnector(), symbol, FIRST_MONTH, head_end)
+    silver.ingest(df, OHLCV, align_1m=True)
+    if not df.is_empty():
+        print(f"[{symbol}] ohlcv head REST {df['timestamp'].min():%Y-%m-%d} → {first:%Y-%m-%d}: {len(df):,} bars")
+
+
 def ingest_funding(symbol: str, now: datetime) -> None:
     last = bronze.last_bronze_ts(FUNDING, symbol)
     start = last + timedelta(milliseconds=1) if last else FIRST_MONTH
@@ -72,6 +91,7 @@ def main() -> None:
     for symbol in UM_PERPS:
         try:
             ingest_ohlcv(symbol, now)
+            fill_head(symbol)
             ingest_funding(symbol, now)
         except Exception as e:  # keep going with the other symbols
             print(f"[{symbol}] ERROR: {type(e).__name__}: {e}")
