@@ -92,7 +92,7 @@ bronze:
     source: binance_um
     grain: 1m
     partition: [symbol, year, month]
-    notes: USDⓈ-M perpetual 1m OHLCV (monthly ZIPs + /fapi/v1/klines), symbol = exchange symbol (BTCUSDT)
+    notes: USDⓈ-M perpetual 1m OHLCV (monthly ZIPs + /fapi/v1/klines; 2019-09 → 2019-12 from REST only, no 1m ZIPs), symbol = exchange symbol (BTCUSDT)
 
   binance_um_funding:
     source: binance_um
