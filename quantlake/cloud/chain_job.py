@@ -2,7 +2,7 @@
 
 The CBOE serves only the current chain, so a snapshot missed is lost for good:
 this job takes them even when the Mac is off. Railway runs it every 5 minutes
-in a few UTC hours (railway.json); the job decides from the New York clock
+in a few UTC hours (python/quantlake/railway.json); the job decides from the New York clock
 whether a slot is due, so the US/EU daylight-saving changes need no edits.
 
     slot (ET)  Rome (usually)  why
