@@ -303,3 +303,35 @@ def test_update_ohlcv_1d_cme_waits_for_the_session_close(lake, freeze_now):
     assert out["timestamp"].to_list() == [chi(2026, 9, 30, 17)]
     assert out["timestamp_close"].to_list() == [chi(2026, 10, 1, 17)]
     assert out["volume"].item() > 0
+
+
+def test_update_ohlcv_also_fills_history_added_before_the_first_gold_bar(lake, freeze_now):
+    freeze_now(gold, utc(2020, 1, 2, 12, 0))
+    _seed_silver("s", utc(2020, 1, 1, 0, 0), 60)            # gold built first from 2020-01-01
+    out = gold.update_ohlcv("s", "g", "15m", SYMBOL)
+    assert out["timestamp"].min() == utc(2020, 1, 1, 0, 0)
+
+    _seed_silver("s", utc(2019, 12, 31, 23, 0), 60)        # head added later (binance_um 2019 via REST)
+    out = gold.update_ohlcv("s", "g", "15m", SYMBOL)
+    head = [utc(2019, 12, 31, 23, m) for m in (0, 15, 30, 45)]
+    assert out["timestamp"].to_list() == head + [utc(2020, 1, 1, 0, 45)]  # head + rebuilt last bar
+
+    g = _gold("g", "15m")
+    assert g["timestamp"].to_list() == head + [utc(2020, 1, 1, 0, m) for m in (0, 15, 30, 45)]
+    assert g["timestamp"].is_unique().all()
+    assert g["year"].to_list()[:4] == [2019] * 4
+
+    # nothing new at either end: only the last bar is rewritten
+    assert gold.update_ohlcv("s", "g", "15m", SYMBOL)["timestamp"].to_list() == [utc(2020, 1, 1, 0, 45)]
+
+
+def test_update_ohlcv_head_with_session_timeframe(lake, freeze_now):
+    from zoneinfo import ZoneInfo
+    chi = lambda *a: datetime(*a, tzinfo=ZoneInfo("America/Chicago")).astimezone(timezone.utc)  # noqa: E731
+    freeze_now(gold, chi(2026, 10, 3, 12, 0))
+    _seed_silver("s", chi(2026, 10, 1, 17, 0), 24 * 60, symbol="ES")   # Thu 17:00 → Fri 17:00 session
+    assert gold.update_ohlcv("s", "g", "1d_cme", "ES")["timestamp"].to_list() == [chi(2026, 10, 1, 17)]
+    _seed_silver("s", chi(2026, 9, 30, 17, 0), 24 * 60, symbol="ES")   # the session before, added later
+    out = gold.update_ohlcv("s", "g", "1d_cme", "ES")
+    assert out["timestamp"].to_list() == [chi(2026, 9, 30, 17), chi(2026, 10, 1, 17)]
+    assert _gold("g", "1d_cme", "ES")["timestamp"].to_list() == [chi(2026, 9, 30, 17), chi(2026, 10, 1, 17)]
