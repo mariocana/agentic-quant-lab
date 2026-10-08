@@ -54,7 +54,7 @@
    "id": 2,
    "name": "Backtest IS",
    "short": "IS",
-   "gate": "n ≥ 200 · avg trade ≥ $70 (NQ) · PF ≥ 1.2 · WR ≥ 55% · R:R 0.5–1 · DD÷10 ≤ $1.250 · peggior trade÷10 ≤ $500 · nessun anno > 50%"
+   "gate": "n ≥ 200 · avg trade ≥ $70 (NQ) · PF ≥ 1.2 · WR ≥ 55% · R:R 0.5–1 · DD÷10 ≤ $1.000 · peggior trade÷10 ≤ $500 · nessun anno > 50%"
   },
   {
    "id": 3,
