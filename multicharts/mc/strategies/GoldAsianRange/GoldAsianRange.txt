@@ -22,12 +22,16 @@
   prop, serve solo come diversificatore nel basket funded).
                    B = TP_RR 1.0 o 0.5 (profilo eval).
 
-  CHART: @GC 15 min, Globex, timezone Exchange (CT). Orari in ORA DEL
-         CHART: range 20:00-00:00 CT (= 21:00-01:00 NY), flat 10:00 CT
-         (= 11:00 NY). IOG off.
-  ATTENZIONE: tiene la posizione overnight fino all'uscita a tempo ->
-         nel Gate 1 annotare i giorni di rollover del contratto continuous
-         (dati non back-adjusted).
+  CHART: @GC 15 min, session template 24/7, timezone Exchange (CT),
+         Bar Magnifier 1 min ON. Orari in ORA DEL CHART: range 20:00-00:00
+         CT (= 21:00-01:00 NY), flat 10:00 CT (= 11:00 NY). IOG off.
+  NON USARE il template "COMEX: Metals Futures (Electronic)": lascia il
+         chart senza barre fra 07:45 e 14:15 e il time exit finisce sulle
+         14:15 invece che sulle 10:00 (Stage 1, primo giro invalidato).
+  ROLLOVER: verificato nello Stage 1 che la posizione NON resta mai
+         overnight (0/78: entrata dopo la mezzanotte, uscita alle 10:00
+         dello stesso giorno), quindi non attraversa i gap di rollover
+         del continuous.
   ===================================================================== }
 
 Inputs:

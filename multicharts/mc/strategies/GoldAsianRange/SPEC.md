@@ -30,3 +30,62 @@ $1.000–2.500 per GC, $100–250 per MGC. Nel report del corso il chart era in 
 day boundary 17:00: verificare che con il chart CT le finestre coincidano.
 **Kill**: gate pipeline. La variante A entra in pipeline solo per lo Stage 8 (basket),
 non per l'eval.
+
+---
+
+# Stage 1 — **Gate 1 passato** (09/10/2026)
+
+Dettaglio e prove in `CHECKLIST_Stage1.md`, report in `reports/`. Qui solo ciò che
+**modifica la spec**. Il corpo sopra resta com'era scritto prima dei run: è la
+pre-registrazione e non si riscrive.
+
+### Risolto: la finestra del range con chart CT
+
+La domanda aperta («nel report del corso il chart era in ora NY con day boundary 17:00:
+verificare che con il chart CT le finestre coincidano») è chiusa. Il log `GAR RNG` dà
+`barre= 16` e `armTime= 0` su tutte le 83 giornate = 20:00 → 00:00 esatte. MC timbra la
+barra di mezzanotte `0`, non `2400`, quindi il wrap `Time >= 2000 or Time < 0` chiude la
+finestra al punto giusto.
+
+### Corretto: sessione del chart
+
+Il template `COMEX: Metals Futures (Electronic)` **non va usato**: lascia il chart senza
+barre fra 07:45 e 14:15 e manda il time exit sulle 14:15. Serve un template **24/7**.
+
+### Corretto: ampiezza del range, quindi rischio per trade
+
+| | spec (assunto) | misurato |
+|---|---|---|
+| range | $10–25 | **mediana 37,8 pt**, media ≈ 42 pt |
+| rischio per GC | $1.000–2.500 | **$3.780** mediano |
+| rischio per MGC | $100–250 | **$378** mediano, **$442** nel caso peggiore del campione |
+
+Da 1,5 a 3,8 volte l'assunzione. **Resta sotto la soglia di Gate 2** sul trade peggiore
+(÷10 ≤ $500): $442. È la prima strategia della pipeline la cui unità di rischio entra nel
+budget dell'MLL — le tre su @NQ morivano esattamente qui.
+
+### Corretto: il profilo della variante A
+
+| | spec (dalla ricerca del corso) | misurato (78 trade, 4 mesi) |
+|---|---|---|
+| WR variante A | ~34% | **57,7%** |
+| avg win / avg loss | > 1 | 1,50 |
+| PF | 1,18 (ricerca) / 1,64–3,28 (live) | 2,04 |
+
+Il WR 34% non si riproduce. Ipotesi: il time exit a 10:00 CT chiude in piccolo utile
+molte posizioni che altrimenti si girerebbero in perdita. Da verificare sui 5 anni dello
+Stage 2.
+
+**Conseguenza sulla pre-registrazione**: allo Stage 2 vanno **entrambe** le varianti, non
+solo la B. La regola «Gate 2 si giudica sulla variante B» era motivata dall'attesa WR 34%
+della A; quell'attesa è smentita da un dato di meccanica, non da una scelta a posteriori
+sui risultati. Le varianti Stage 4 (`StopFrac` 0.5/0.75, long only, finestra 22:00–01:00)
+restano come scritte.
+
+### Aperto
+
+- **ADR dell'oro nel periodo non misurata**: 37,8 punti di range asiatico su un
+  sottostante a $4.100–4.400 vanno rapportati al range giornaliero medio. Se il range
+  asiatico è una frazione dominante dell'ADR, lo stop «tutto il range» è strutturalmente
+  sovradimensionato e la variante `StopFrac` < 1 diventa il caso base, non un'alternativa.
+- **Gate date** non ancora eseguito.

@@ -1,20 +1,20 @@
 {
- "updated": "2026-10-08",
+ "updated": "2026-10-09",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
-  "updated": "2026-10-08",
+  "updated": "2026-10-09",
   "groups": [
    {
-    "title": "1. NQ First5 chiusa — avanti con le candidate mai testate",
-    "note": "cimitero, causa B, 08/10",
+    "title": "1. Gold Asian Range — Stage 2, l'unica candidata che avanza",
+    "note": "Gate 1 passato, 09/10",
     "items": [
-     "**Gold Asian Range** (GC 15m) — Stage 1. La metto per prima apposta: è l'**unica non su @NQ**, e dopo tre morti per rischio per micro sullo stesso strumento è l'informazione che manca",
-     "**VWAP Pullback** (NQ 1m) — Stage 1",
-     "**DriftPullback** — resta bloccata: serve @NQ non back-adjusted o il drift riscritto in ATR",
-     "Il **lato short** resta un buco del basket: First5 era l'unica candidata con uno short reale",
-     "Il trigger sul Gate 3 **resta armato e invariato**: chiede *tutte* le candidate rimaste, e ne restano tre"
+     "**Prima dello Stage 2, due cose brevi**: (a) misurare l'**ADR dell'oro** nel periodo — 37,8 pt di range asiatico vanno rapportati al range giornaliero, se è una frazione dominante lo stop «tutto il range» è sovradimensionato e `StopFrac` < 1 diventa il caso base; (b) il **gate date**, come fatto per First5",
+     "**Stage 2** — IS 2020‑2024, 1 contratto, $12,50/lato, Bar Magnifier 1 min, **entrambe le varianti** (A `TP_RR 0` e B `TP_RR 1`): la pre‑registrazione «si giudica sulla B» nasceva dall'attesa WR 34% della A, smentita dal dato di meccanica (WR 57,7%)",
+     "**Poi Stage 3 subito** (Monte Carlo), prima di spendere run su varianti: è la regola presa dopo i due errori su ORB e VaultBreak",
+     "**VWAP Pullback** (NQ 1m) — Stage 1, dopo Gold",
+     "**DriftPullback** — resta bloccata: serve @NQ non back-adjusted o il drift riscritto in ATR"
     ]
    },
    {
@@ -267,16 +267,21 @@
    "path": "mc/strategies/GoldAsianRange",
    "stages": {
     "0": "pass",
-    "1": "pending"
+    "1": "pass",
+    "2": "active"
    },
-   "note": "Codice pronto (`GoldAsianRange.txt`): range 20:00–00:00 CT con wrap, stop OCO ai bordi, stop = ampiezza range, TP_RR opzionale, flat 10:00 CT. Variante A (TP_RR 0) per il basket funded, B (TP_RR 1/0.5) per l'eval. Overnight per costruzione → annotare i giorni di rollover. In attesa dati.",
+   "note": "**Gate 1 passato (09/10/2026)**, tutti e sei i controlli. Il dato nuovo: il trade peggiore è **$442 per MGC**, sotto la soglia di Gate 2 ($500). È la **prima strategia della pipeline la cui unità di rischio entra nell'MLL** — le tre su @NQ morivano esattamente qui. Due scostamenti dalla spec: il range è 37,8 pt mediani (spec: $10–25, cioè 1,5–3,8× più larga) e la variante A ha **WR 57,7%**, non il 34% della ricerca → allo Stage 2 vanno **entrambe** le varianti. Rollover: non è un problema, 0/78 posizioni overnight. Chart: template **24/7**, non `COMEX: Metals Futures (Electronic)` che lascia il chart senza barre 07:45–14:15.",
    "log": [
     {
      "date": "2026-09-22",
      "text": "Spec + codice. Range 20:00–00:00 CT con wrap sulla mezzanotte; stop OCO armati nell'istante in cui il range chiude (è il motivo per cui regge fill realistici). Variante A (no TP, WR 34%) fuori dal profilo eval → solo basket funded; variante B con TP 1R/0.5R per l'eval."
+    },
+    {
+     "date": "2026-10-09",
+     "text": "**Stage 1 chiuso, Gate 1 passato.** Primo giro invalidato dal template sessione `COMEX: Metals Futures (Electronic)`: chart senza barre fra 07:45 e 14:15, time exit finito sulle 14:15. Con template **24/7** tutto a posto: entrate 00:30–09:45, 1 trade/giorno su 78 giorni, 63/78 uscite a tempo alle 10:15, solo lun–ven, **0 posizioni overnight** (il rischio rollover della spec non esiste), scaling ×10 **esatto** su ogni metrica (10,000000). Prova diretta sullo stop: max distanza 43,90 pt × $100 + $25 di commissione = $4.415 = trade peggiore riportato da MC, quindi **nessuna uscita oltre il livello di stop**. Il log `GAR RNG` del primo giro ha validato la finestra del range (`barre= 16`, `armTime= 0` su 83 giornate) e risolto l'ambiguità della barra di mezzanotte: MC la timbra `0`. **Il numero che conta: $442 di trade peggiore per MGC contro una soglia di $500.** Dopo tre strategie @NQ uccise dal rischio per micro, su MGC il muro non c'è. Due correzioni alla spec: range mediano **37,8 pt** (assunto $10–25) e variante A con **WR 57,7%** invece del 34% della ricerca — per questo allo Stage 2 vanno entrambe le varianti, e non è una scelta a posteriori sui risultati ma la conseguenza di un dato di meccanica."
     }
    ],
-   "next": "Stage 1: chart @GC 15m, verifica meccanica + annotare i giorni di rollover."
+   "next": "Stage 2 — IS 2020-2024, 1 contratto, costi on ($12,50/lato GC), Bar Magnifier 1 min. Prima: misurare l'**ADR dell'oro** nel periodo (un range asiatico di 37,8 pt va rapportato al range giornaliero) ed eseguire il **gate date**."
   },
   {
    "name": "NQ First5",
@@ -396,6 +401,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-09",
+   "text": "**Primo segnale che il muro non è universale: $442 per MGC.** Gold Asian Range passa il Gate 1 e porta il dato che mancava da tre strategie: il trade peggiore vale **$442 per micro**, sotto la soglia di Gate 2 ($500), e il DD del campione **$1.042–1.429 per micro**. ORB, VaultBreak e First5 sfondavano tutte e tre su @NQ di un fattore 1,5–5. La differenza non è la logica — è lo strumento: il micro dell'oro è 1/10 del contratto grande e il range asiatico non scala con il nozionale. **Il trigger sul Gate 3 resta armato e non scatta**: non è una candidata bocciata, è una candidata che avanza. Nota di metodo: il run era già stato lanciato una volta con il template sessione sbagliato (buco di 6 ore e mezza nel chart, time exit alle 14:15 invece delle 10:00) e il difetto è stato trovato dal log `GAR ENT`, non dal report — i numeri del report erano plausibili."
+  },
   {
    "date": "2026-10-01",
    "text": "**Messa per iscritto la domanda scomoda sul Gate 3, mentre non conviene.** Il Gate 3 chiede che 1 micro tenuto **cinque anni** non sfondi l'MLL nel 95% dei riordinamenti. Ma il problema reale della prop è **arrivare a +$3.000 prima di −$2.000 su una finestra breve, potendo ritentare**: è un problema di *primo passaggio*, e chi lo risolve è lo **Stage 7** — che sta dopo il Gate 3 e che il Gate 3 impedisce di raggiungere. In più il reshuffle assume i trade scambiabili, quindi penalizza chi guadagna dall'ordine degli eventi. **Non lo tocchiamo adesso**: rilassare un gate subito dopo due bocciature è la mossa che ci siamo impegnati a non fare. Fissato invece il trigger: se *tutte* le candidate falliscono il Gate 3 pur avendo un edge, allora il gate è mal specificato, si ri‑deriva dal primo passaggio e si ri‑passa tutto il cimitero. Introdotta anche la **causa di morte** nel cimitero: A = edge assente (definitivo), B = non entra nel conto (recuperabile). ORB e VaultBreak sono **B**, e per VaultBreak non esiste N intera su nessuna taglia Lucid — nemmeno la 150k, che ne chiederebbe fra 1,24 e 1,45."
