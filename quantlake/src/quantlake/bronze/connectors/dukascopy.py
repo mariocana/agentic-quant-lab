@@ -1,4 +1,4 @@
-"""End of v0.5.3 - Dukascopy historical minute OHLCV connector.
+"""Dukascopy historical minute OHLCV connector.
 
 Fetches bid + ask minute candles from Dukascopy's public datafeed
 (https://datafeed.dukascopy.com), merges them into the canonical mid + spread

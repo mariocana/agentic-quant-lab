@@ -1,4 +1,4 @@
-"""End of video 3.1 — silver ingestion orchestration.
+"""Silver ingestion orchestration.
 
 Same shape as bronze.ingest but writes to data/silver/ and runs
 clean_ohlcv on the way in. Two functions:

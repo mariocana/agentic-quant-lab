@@ -1,4 +1,4 @@
-"""End of v0.6.5 - Owlracle gas-price connector.
+"""Owlracle gas-price connector.
 
 Two access modes:
   snapshot() - /gas endpoint, current state only. Use from a poll

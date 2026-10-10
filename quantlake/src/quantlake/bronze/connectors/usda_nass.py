@@ -1,4 +1,4 @@
-"""End of v0.6.3 - USDA NASS QuickStats connector.
+"""USDA NASS QuickStats connector.
 
 Pulls annual planted acreage at state granularity. Doesn't fit the
 HistoricalConnector(symbol, start, end) shape - the natural grain is

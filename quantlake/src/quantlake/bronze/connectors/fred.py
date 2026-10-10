@@ -1,4 +1,4 @@
-"""End of v0.6.1 - FRED REST connector.
+"""FRED REST connector.
 
 Fetches macroeconomic time series from St. Louis Fed's public API.
 Series identified by FRED ID ("DFF" = Fed Funds Rate, "DGS10" =

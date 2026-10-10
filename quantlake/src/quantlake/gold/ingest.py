@@ -1,18 +1,21 @@
-"""End of v0.4.0 — gold ingest extended for live runners.
+"""Gold ingest: silver 1m bars → resampled bars (+ optional features) → Delta.
 
-Two new functions added vs v0.3.3:
+Batch:
+  ingest               resample, drop the window still open, optional
+                       transform_gold + features, upsert
+  update_ohlcv         incremental plain-OHLCV gold (ohlcv_gold.py): new
+                       windows at the tail, history added at the head,
+                       optional lookback rebuild
 
+Live runners:
   rebuild_from_silver  rebuild gold for one symbol from all silver rows
-                       (used at startup of live scripts, with a fresh
-                       pipeline so batch state doesn't contaminate live)
+                       (at startup of live scripts, with a fresh pipeline
+                       so batch state doesn't contaminate live)
   warmup_pipeline      seed pipeline state with the last N stored gold
                        bars (so the first live bar isn't NaN)
-
-Plus a poll-driven equivalent of live._emit_gold_bar:
-
-  build_live_bar       read the just-closed TF window from silver, resample,
-                       apply transform_gold + pipeline.update, save
-                       (used by Module 6's poll-based live scripts)
+  build_live_bar       poll-driven equivalent of live._emit_gold_bar: read
+                       the just-closed window from silver, resample, apply
+                       transform_gold + pipeline.update, save
 
 rebuild_from_silver is the batch ingest() fed with the symbol's silver rows.
 """
@@ -195,7 +198,7 @@ def build_live_bar(
 ) -> pl.DataFrame | None:
     """Build and persist the just-closed gold TF bar for ``symbol``.
 
-    Used by Module 6's poll-driven live scripts (eth_data, wheat_stress).
+    Used by the poll-driven live scripts (eth_data, wheat_stress, fx, macro).
     The WebSocket runner has its own emit path.
     """
     tf_sec = TF_SECONDS[timeframe]
