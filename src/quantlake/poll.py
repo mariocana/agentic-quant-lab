@@ -1,6 +1,6 @@
-"""End of v0.5.2 - Aligned polling loop for REST-based flows.
+"""Aligned polling loop for REST-based flows.
 
-Symmetric to live.run (M4) but for sources that pull instead of push.
+Symmetric to live.run but for sources that pull instead of push.
 A timeframe-aligned scheduler that fires a user-provided task function.
 
 The task body lives in the application script - poll.run is a clock,

@@ -1,4 +1,4 @@
-"""End of video 3.2 — gold OHLCV resampling.
+"""Gold OHLCV resampling and features.
 
 Resamples 1m bars to a higher timeframe using Polars' group_by_dynamic.
 

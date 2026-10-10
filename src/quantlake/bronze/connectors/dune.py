@@ -1,4 +1,4 @@
-"""End of v0.6.4 - Dune Analytics generic query connector.
+"""Dune Analytics generic query connector.
 
 Saved queries hosted on dune.com identified by query_id. The connector
 pulls the cached result via dune_client.get_latest_result, applies a

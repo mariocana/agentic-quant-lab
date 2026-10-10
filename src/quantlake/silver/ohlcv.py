@@ -1,4 +1,4 @@
-"""End of video 3.1 — silver OHLCV cleaning.
+"""Silver OHLCV cleaning.
 
 The mantra: NaN, never drop. Invalid values get marked as NaN; rows are
 never deleted. This keeps the time index intact — your rolling windows

@@ -1,4 +1,4 @@
-"""End of v0.6.2 - Open-Meteo connector. Free, no API key.
+"""Open-Meteo connector. Free, no API key.
 
 Two access modes, same normalized schema:
 

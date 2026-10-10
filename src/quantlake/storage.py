@@ -1,7 +1,9 @@
-"""End of video 1.3 — shared Delta IO.
+"""Shared Delta IO for the bronze / silver / gold time-series tables.
 
-Idempotent upsert built on top of Delta Lake's merge. Used by bronze in
-this module; silver and gold will reuse the same function in Modules 3+.
+  upsert        idempotent write: first write creates the table, then merge
+  read_symbol   one symbol's rows, partition-pruned, optional since / until
+  symbols       distinct symbols (from the Delta log, no data scan)
+  first_timestamp / last_timestamp, delete_range / delete_symbol
 
 Three things matter here.
 

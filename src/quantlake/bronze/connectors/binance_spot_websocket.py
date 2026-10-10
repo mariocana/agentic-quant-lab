@@ -1,7 +1,4 @@
-"""End of video 2.4 — Binance spot WebSocket connector class.
-
-Same body as the stream_klines() function from v2.3, now wrapped in a
-class that respects the StreamConnector contract.
+"""Binance spot WebSocket connector (StreamConnector).
 
 TABLE_NAME matches the REST and bulk connectors — all three Binance
 spot connectors write to the same Delta table on disk.

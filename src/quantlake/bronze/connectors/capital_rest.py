@@ -1,4 +1,4 @@
-"""End of v0.5.1 — Capital.com REST OHLCV connector.
+"""Capital.com REST OHLCV connector.
 
 CST + X-SECURITY-TOKEN auth (tokens come from response headers, not body),
 401-retry on token expiry, paginated /prices with a 95% window cap to

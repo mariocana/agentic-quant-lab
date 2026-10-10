@@ -1,4 +1,4 @@
-"""End of v0.5.4 - Composite silver tables for multi-source feeds.
+"""Composite silver tables for multi-source feeds.
 
 One silver in this module aggregates a historical source with a live
 source covering the same concept:
