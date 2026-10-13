@@ -271,3 +271,81 @@ del campione, non una garanzia: su cinque anni di Stage 2 qualche giornata larga
 `h24` mediano 92,90 punti su un sottostante a $4.100–4.400 = **~2,2% di escursione
 giornaliera**. È un periodo volatile, e va ricordato quando si leggeranno i numeri dello
 Stage 2 sul 2020–2024.
+
+---
+
+## Gate date — **pre-registrato il 13/10/2026, prima del run**
+
+### Impostazioni del run
+
+| | |
+|---|---|
+| Finestra del chart | **2026‑09‑01 → 2026‑09‑30** |
+| Variante | **C** — `TP_RR 1`, `Num_Contracts 1`, **`ShowLog 1`** |
+| Tutto il resto | default di spec: `RangeStart 2000`, `RangeEnd 0`, `ExitTime 1000`, `StopFrac 1.0`, `TradeLongs 1`, `TradeShorts 1`, `MinRangePts 0`, `MaxRangePts 0` |
+| Chart | @GC 15 min, template **24/7**, timezone **Exchange**, Bar Magnifier 1 min |
+| Costi | commissione **$12,50 per contratto**, slippage 0 |
+
+Variante C e non A perché ha il mix di uscite più ricco (TP, SL, tempo): più cose possono
+rompersi in modo visibile.
+
+### Perché questo gate esiste
+
+In MultiCharts **l'intervallo di dati del chart È l'intervallo del backtest**. Non c'è un
+"backtest from/to" separato. Quindi restringere il chart non isola un periodo: cambia anche
+quali barre esistono per costruire il primo range. Il gate verifica che la strategia non sia
+**dipendente dal punto di partenza del chart**.
+
+### Le 9 attese, scritte prima di vedere i risultati
+
+Riferimento: il run dello Stage 1 (chart 16/06 → 08/10), variante C, che su settembre fa
+**22 trade e $23.940**.
+
+| # | Attesa | Valore |
+|---|---|---|
+| 1 | `Start Date` / `End Date` nel foglio Settings | esattamente la finestra impostata, non di più |
+| 2 | **Il 01/09 perde il trade.** Il chart parte il 01/09 alle 00:00, quindi la finestra 20:00–00:00 della sera del 31/08 non esiste → nessun range → nessun arming | **trade = 21**, non 22 |
+| 3 | Net Profit = $23.940 − $3.315 (lo short del 01/09) | **$20.625** |
+| 4 | Primo trade | **02/09, 08:15, long, entry 4380.90, uscita `L-TP` 4432.60, +$5.145** |
+| 5 | Ultimo trade | **30/09, 01:30, short, entry 4198.60, uscita `S-SL` 4219.70, −$2.135** |
+| 6 | Mix dei segnali di uscita | `L-TP` 5 · `S-TP` **3** · `L-SL` 3 · `S-SL` 3 · `EXIT-S` 5 · `EXIT-L` 2 |
+| 7 | Direzioni e esiti | long/short **10 / 11** · vincenti/perdenti **12 / 9** |
+| 8 | Righe `GAR RNG` nel log | **21**, datate 1260902 → 1260930, **tutte con `barre= 16` e `armTime= 0`** |
+| 9 | I valori `range=` del log | **identici** a `reports/GAR_ADR_log.txt` per quei 21 giorni (vedi tabella sotto) |
+
+L'attesa **9 è la più importante**: se il range di un giorno cambia solo perché il chart
+parte in settembre invece che in giugno, la misura è contaminata dalla finestra e tutto
+quello che abbiamo concluso sull'ADR va rifatto.
+
+### I 21 valori attesi (attesa 9)
+
+| data | `range=` | | data | `range=` | | data | `range=` |
+|---|---|---|---|---|---|---|---|
+| 1260902 | 51.70 | | 1260911 | 39.30 | | 1260922 | 37.80 |
+| 1260903 | 50.40 | | 1260914 | 29.70 | | 1260923 | 37.50 |
+| 1260904 | 20.60 | | 1260915 | 34.40 | | 1260924 | 30.00 |
+| 1260907 | 44.20 | | 1260916 | 66.70 | | 1260925 | 31.70 |
+| 1260908 | 26.00 | | 1260917 | 51.80 | | 1260928 | 75.20 |
+| 1260909 | 44.30 | | 1260918 | 32.40 | | 1260929 | 26.60 |
+| 1260910 | 31.30 | | 1260921 | 26.70 | | 1260930 | 21.10 |
+
+### Un'incertezza dichiarata, non una previsione
+
+`MaxBarsBack`. Il codice non usa funzioni con lookback, quindi in teoria basta 1 barra. Ma
+se MC lo imposta in automatico su un valore più alto (il default è spesso 50, cioè ~12 ore
+su un chart a 15 minuti), le prime barre vengono saltate e **il primo trade potrebbe cadere
+il 03/09 invece del 02/09**. Se accade questo, non è un difetto della strategia: è
+`MaxBarsBack`, e si verifica leggendolo nelle proprietà. Lo scrivo adesso per non poterlo
+usare dopo come spiegazione comoda.
+
+### Domanda secondaria che questo run chiude
+
+Nel run dello Stage 1: **zero entrate alle 00:15, sedici alle 00:30**. L'arming avviene
+sulla barra delle 00:00, quindi `next bar at rHi stop` dovrebbe poter riempire già sulla
+barra delle 00:15. Con `ShowLog 1` si confronta l'`armTime` di `GAR RNG` con l'ora di
+`GAR ENT` e si vede se c'è un ritardo di una barra. Per un breakout la prima barra dopo la
+rottura è quella che conta, quindi la risposta serve.
+
+Attesa: le 21 entrate cadono a 08:15, 00:30, 01:44, 02:15, 00:30, 01:15, 01:44, 01:44,
+00:45, 03:45, 06:14, 03:14, 00:45, 00:59, 00:30, 01:44, 04:30, 00:59, 01:15, 02:00, 01:30
+— **nessuna alle 00:15**.
