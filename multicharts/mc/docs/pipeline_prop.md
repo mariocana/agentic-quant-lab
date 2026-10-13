@@ -539,3 +539,73 @@ Non ora, ma registrato per non ripensarci da capo:
   Apex (es. Gold Asian variante A, WR 34% senza TP) potrebbero rientrare qui.
 - Se e quando: servirà un simulatore prop adattato a quelle regole (il notebook del corso
   è scritto per il trailing di Apex) e nuove soglie nei gate 2, 3 e 7.
+
+### Il quarto dato capovolge il quadro: la prima morte per causa A (13/10/2026)
+
+Le prime tre strategie morte lo erano tutte di **causa B** — edge presente, unità di rischio
+troppo grande per l'MLL — e tutte su **@NQ**:
+
+| | gate fallito | numero che uccide (per micro) |
+|---|---|---|
+| ORB | Gate 3 | DD 95° pct **$3.121** |
+| VaultBreak | Gate 3 | DD 95° pct **$3.109** |
+| NQ First5 | Gate 2 | DD storico **$5.784** |
+
+Da lì era nata la domanda aperta: *esiste su @NQ un edge intraday direzionale la cui unità
+di rischio stia sotto $200 per micro?* E Gold Asian Range era stata scelta apposta come
+prima candidata **non su @NQ**.
+
+**Gold ha risposto a una domanda diversa da quella che le avevamo fatto.** L'unità di
+rischio **entra**: trade peggiore **$498 per MGC** contro una soglia di $500. Il muro di @NQ
+non esiste su MGC. E la strategia muore comunque, di **causa A**: su 1.280 trade e cinque
+anni l'intervallo di confidenza al 95% dell'avg trade **contiene lo zero** in entrambe le
+varianti pre‑registrate (A: −$2…+$122, t = 1,89 · B: −$24…+$67, t = 0,92).
+
+Non è una stima, è una dimostrazione: con una soglia di $140 netti e $25 di costo
+andata‑ritorno su GC serve un edge **lordo** di $165 per trade, e ce ne sono **$85** e
+**$46**. **Nemmeno azzerando i costi** si arriva alla soglia.
+
+**Il trigger sul Gate 3 non scatta, e la ragione è importante.** Il trigger è armato per il
+caso in cui *tutte* le candidate abbiano un edge e falliscano sull'unità di rischio: quello
+sarebbe il segnale che il gate è mal specificato. Gold è l'esatto contrario — unità di
+rischio dentro, edge fuori. Conta come **informazione a favore** dei gate così come sono,
+non contro.
+
+#### Le due cause sono davvero due cose diverse, e si vede adesso
+
+Finora A e B erano una distinzione sulla carta. Con quattro dati si vede che selezionano
+rimedi opposti:
+
+- **causa B** → l'edge c'è, serve cambiare **strumento, taglia o conto**. È il motivo per cui
+  le tre @NQ restano riapribili su un conto con MLL più largo.
+- **causa A** → non c'è niente da ridimensionare. Cambiare strumento non crea un edge.
+  **Definitiva.**
+
+#### La lezione di metodo, che è un errore di lettura e non un gate da cambiare
+
+Lo Stage 1 di Gold girava su quattro mesi del 2026 e dava numeri incoraggianti: avg trade
+$89 per MGC, trade peggiore $442. Su cinque anni l'avg trade è **$2–6 per MGC**.
+
+Il motivo è un regime di volatilità: **il range asiatico più largo di quattro mesi del 2026
+(85,20 punti) supera il più largo dei cinque anni precedenti (49,50 punti)**. E lo stop *è*
+l'ampiezza del range, quindi l'edge per trade scala con la volatilità realizzata **mentre i
+costi restano fissi**. Con 39 punti di range i $25 di costo sono rumore; con 7 punti si
+mangiano metà dell'edge lordo.
+
+**Il Gate 1 non ha sbagliato**: chiede «meccanica corretta al 100%» e non ha mai preteso di
+validare l'unità di rischio o l'edge. I numeri di rischio dello Stage 1 li ha letti come
+buona notizia **l'analisi**, extrapolando da quattro mesi. Nessun gate va toccato; va
+ricordato che **i numeri economici dello Stage 1 non sono un'anticipazione del Gate 2** e
+che un'unità di rischio definita dalla volatilità realizzata va misurata sull'IS, non sul
+campione recente.
+
+#### Secondo errore di processo, registrato
+
+Dopo il Gate 1 l'analisi aveva **scavalcato una pre‑registrazione**: la spec diceva «Gate 2
+si giudica sulla variante B», e il risultato dello Stage 1 (WR della variante A al 57,7%
+invece del 34% della ricerca) è stato usato per decidere che andassero **entrambe**. Su
+cinque anni il WR della variante A è **42,6%**, vicino al 34% della ricerca.
+
+La pre‑registrazione era giusta. Il campione che l'ha scavalcata era di **78 trade e quattro
+mesi**. La regola che resta scritta: **una pre‑registrazione non si rivede su un campione
+più piccolo di quello su cui verrà giudicata.**

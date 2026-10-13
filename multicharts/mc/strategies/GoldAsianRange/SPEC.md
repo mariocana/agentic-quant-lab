@@ -125,3 +125,120 @@ Due dati che si portano dietro:
   contro 4,9% complessivo: un range largo è più difficile da rompere in 10 ore). È un
   meccanismo, non fortuna — ma è una proprietà del campione, non una garanzia.
   **Da sorvegliare al Gate 2.**
+
+---
+
+# Stage 2 — IS 2020‑2024: **Gate 2 fallito da entrambe le varianti**
+
+Chart 2020‑01‑03 → 2024‑12‑31, 1 contratto, $12,50/contratto, slippage 0, Bar Magnifier
+1 min, template 24/7. Report in `reports/GAR_S2_IS_A_tp0.xlsx` e `GAR_S2_IS_B_tp1.xlsx`.
+**1.280 trade** per variante, ~256 all'anno, nessun anno con dati mancanti.
+
+| criterio | soglia | A (`TP_RR 0`) | B (`TP_RR 1`) |
+|---|---|---|---|
+| n | ≥ 200 | **1.280** ✅ | **1.280** ✅ |
+| avg trade | ≥ $140 (GC) | **$60** ❌ | **$21** ❌ |
+| Profit Factor | ≥ 1.2 | **1,152** ❌ | **1,062** ❌ |
+| WR | ≥ 55% | **42,6%** ❌ | **52,7%** ❌ |
+| avg win / avg loss | 0,5–1 | **1,554** ❌ | **0,955** ✅ |
+| DD ÷ 10 | ≤ $1.000 | **$2.186** ❌ | **$2.358** ❌ |
+| trade peggiore ÷ 10 | ≤ $500 | **$498** ✅ | **$498** ✅ |
+| nessun anno > 50% | | 41% (2021) ✅ | **66% (2024)** ❌ |
+
+Tre criteri su otto passati da ciascuna.
+
+## La dimostrazione: nessuna variante pre‑registrata può passare
+
+Non serve spendere run. L'avg trade richiesto è $140 **netti**; il costo andata‑ritorno su GC
+è $25; quindi serve un edge **lordo** di **$165 per trade**.
+
+| | edge lordo misurato | serve | fattore mancante |
+|---|---|---|---|
+| A | **$85** | $165 | **1,9×** |
+| B | **$46** | $165 | **3,6×** |
+
+Cioè: **anche azzerando del tutto i costi**, nessuna delle due arriva alla soglia. Una
+variante può spostare dove cade l'edge fra WR e R:R, non può moltiplicarlo per due o per
+quattro.
+
+Verificato anche l'unico asse che poteva cambiare il quadro, `long only` (pre‑registrato):
+va nella **direzione opposta**. Su oro 2020‑2024 il lato buono è lo short.
+
+| | n | avg trade | WR | PF |
+|---|---|---|---|---|
+| A long | 654 | $42 | 45,3% | 1,111 |
+| A short | 626 | **$79** | 39,8% | 1,191 |
+| B long | 654 | $23 | 53,4% | 1,069 |
+| B short | 626 | $20 | 51,9% | 1,055 |
+
+`short only` su A darebbe $79 contro $140, con WR 39,8% e R:R 1,80: fallisce comunque tre
+criteri. E `long only` su B peggiora la concentrazione annuale (2024 al 76%).
+
+## L'edge non è distinguibile da zero
+
+| | avg trade | sd | SE | t | IC 95% |
+|---|---|---|---|---|---|
+| A | $60,0 | $1.132 | $31,6 | **1,89** | **−$2 … +$122** |
+| B | $21,4 | $835 | $23,3 | **0,92** | **−$24 … +$67** |
+
+**Entrambi gli intervalli di confidenza contengono lo zero**, su 1.280 trade e cinque anni.
+Per portare la variante B a un t = 2 servirebbero **6.085 trade** a questo livello di edge,
+cioè ventiquattro anni di dati.
+
+## ✉️ Causa di morte: **A — edge assente**
+
+È la **prima morte per causa A** della pipeline. ORB, VaultBreak e NQ First5 erano tutte **B**
+(edge presente, unità di rischio fuori dall'MLL).
+
+Qui è l'opposto, e vale la pena notarlo: **l'unità di rischio passa** — trade peggiore $498
+per MGC contro una soglia di $500. Il muro che ha ucciso le tre strategie su @NQ non c'è.
+Quello che non c'è è l'edge.
+
+La variante A conserva un edge direzionale marginale (t = 1,89) ma **non può raggiungere
+WR ≥ 55% per costruzione**, come la spec diceva allo Stage 0. Con l'IC che contiene lo zero
+è troppo debole per occupare uno slot del basket allo Stage 8. **Chiusa anche lei.**
+
+## Correzione a quello che avevo scritto dopo lo Stage 1
+
+Dopo il Gate 1 avevo scritto che il WR 34% della ricerca «**non si riproduce**» (misurato
+57,7%) e ne avevo concluso che allo Stage 2 andassero **entrambe** le varianti, non solo la B
+come pre‑registrato.
+
+Su 1.280 trade e cinque anni il WR della variante A è **42,6%**: molto più vicino al 34%
+della ricerca che al 57,7% del 2026.
+
+**La pre‑registrazione originale era giusta e la mia revisione era sbagliata.** Avevo
+scavalcato un giudizio pre‑registrato sulla base di **78 trade e quattro mesi**. È
+esattamente l'errore che il protocollo esiste per impedire, e l'ho fatto io, non il
+protocollo.
+
+## Perché lo Stage 1 sembrava promettente: due regimi diversi
+
+| | 2026 (4 mesi, Stage 1) | 2020‑2024 (5 anni, Stage 2) |
+|---|---|---|
+| range mediano | **39,05 pt** | distanza di stop mediana **6,60 pt** (p90 11,22) |
+| range più largo | **85,20 pt** in 4 mesi | **49,50 pt** in 5 anni |
+| escursione giornaliera mediana | 92,90 pt ≈ 2,2% | — |
+
+**Il range più largo di quattro mesi del 2026 supera il più largo di cinque anni
+precedenti.** Il 2026 è il regime anomalo, non il 2020‑2024.
+
+Il meccanismo che lega le due cose: lo stop **è** l'ampiezza del range, quindi l'edge per
+trade scala con la volatilità realizzata — **ma i costi no**. Con un range di 39 punti i $25
+di costo sono rumore; con un range di 7 punti si mangiano metà dell'edge lordo.
+
+Nota sul metodo, e non è una correzione al gate: il Gate 1 chiede «meccanica corretta al
+100%» e non ha mai preteso di validare l'unità di rischio. I $442 di trade peggiore per MGC
+dello Stage 1 li ho letti **io** come una buona notizia, extrapolando da quattro mesi.
+L'errore è nella mia inferenza, non nel gate.
+
+## Nota sui dati: @GC è back‑adjusted
+
+Il prezzo medio d'ingresso nel 2020 è **2.459**, mentre l'oro nel 2020 stava fra $1.500 e
+$2.070. Il continuous @GC è quindi **back‑adjusted**: i livelli storici sono traslati di
+~$900 all'inizio del 2020.
+
+Non invalida questo Stage 2: l'aggiustamento additivo **preserva le differenze di prezzo**,
+quindi ampiezze di range, distanze di stop e P&L in dollari sono corretti. Ma **qualunque
+logica in percentuale di prezzo su @GC è inaffidabile**, e questo è esattamente il blocco
+mai rimosso di **DriftPullback**, il cui drift è `(Close − Close[n]) / Close[n]`.
