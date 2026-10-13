@@ -7,14 +7,13 @@
   "updated": "2026-10-13",
   "groups": [
    {
-    "title": "1. Gold Asian Range — Stage 2, l'unica candidata che avanza",
-    "note": "Gate 1 passato 09/10 · ADR misurata 13/10",
+    "title": "1. Gold Asian Range — **Stage 1 chiuso**, si passa allo Stage 2",
+    "note": "Gate 1 09/10 · ADR 13/10 · gate date 13/10",
     "items": [
-     "**Resta solo il gate date** prima dello Stage 2 (~10 min), come fatto per First5",
-     "**Stage 2** — IS 2020‑2024, 1 contratto, $12,50/lato, Bar Magnifier 1 min, **`StopFrac 1.0`** (confermato dalla misura dell'ADR: `asia/h24` = 0,447, la condizione per cambiare caso base non è soddisfatta) ed **entrambe le varianti** A e B",
-     "**Da sorvegliare al Gate 2, non da correggere ora**: il rischio per MGC è $390 mediano ma **$662 al p90**, contro una soglia di $500 sul trade peggiore. Nel campione il peggiore realizzato è $442 perché i giorni col range più largo **non generano trade** (38% vs 4,9%) — meccanismo reale, ma proprietà del campione",
+     "**Stage 2** — IS 2020‑2024, 1 contratto, $12,50/lato, Bar Magnifier 1 min, **`StopFrac 1.0`**, **entrambe le varianti** (A `TP_RR 0`, B `TP_RR 1`). Niente più prerequisiti: Gate 1, ADR e gate date sono tutti passati",
      "**Poi Stage 3 subito** (Monte Carlo), prima di spendere run su varianti: regola presa dopo i due errori su ORB e VaultBreak",
-     "Allo Stage 4, `TP_RR 0.5` ha ora una ragione misurata: a 1R il target è irraggiungibile nel 21,4% dei giorni, a 0,5R nell'1,2%"
+     "**Da sorvegliare al Gate 2**: il rischio per MGC è $390 mediano ma **$662 al p90** contro una soglia di $500 sul trade peggiore. Nel campione il peggiore realizzato è $442 perché i giorni col range più largo non generano trade (38% vs 4,9%) — meccanismo reale, ma proprietà del campione",
+     "Allo Stage 4 due assi hanno ora una ragione misurata: **`TP_RR 0.5`** (a 1R il target è irraggiungibile nel 21,4% dei giorni, a 0,5R nell'1,2%) e la **finestra del range** (quella misurata è 19:45–00:00, 15 min più larga della spec: la sensibilità all'orario si misura qui)"
     ]
    },
    {
@@ -282,7 +281,7 @@
     "1": "pass",
     "2": "active"
    },
-   "note": "**Gate 1 passato (09/10/2026)**, tutti e sei i controlli. Il dato nuovo: il trade peggiore è **$442 per MGC**, sotto la soglia di Gate 2 ($500). È la **prima strategia della pipeline la cui unità di rischio entra nell'MLL** — le tre su @NQ morivano esattamente qui. Due scostamenti dalla spec: il range è 37,8 pt mediani (spec: $10–25, cioè 1,5–3,8× più larga) e la variante A ha **WR 57,7%**, non il 34% della ricerca → allo Stage 2 vanno **entrambe** le varianti. Rollover: non è un problema, 0/78 posizioni overnight. Chart: template **24/7**, non `COMEX: Metals Futures (Electronic)` che lascia il chart senza barre 07:45–14:15.",
+   "note": "**Gate 1 passato (09/10/2026)**, tutti e sei i controlli. Il dato nuovo: il trade peggiore è **$442 per MGC**, sotto la soglia di Gate 2 ($500). È la **prima strategia della pipeline la cui unità di rischio entra nell'MLL** — le tre su @NQ morivano esattamente qui. Due scostamenti dalla spec: il range è 37,8 pt mediani (spec: $10–25, cioè 1,5–3,8× più larga) e la variante A ha **WR 57,7%**, non il 34% della ricerca → allo Stage 2 vanno **entrambe** le varianti. Rollover: non è un problema, 0/78 posizioni overnight. Chart: template **24/7**, non `COMEX: Metals Futures (Electronic)` che lascia il chart senza barre 07:45–14:15. **Gate date passato (13/10)**: 8 attese su 9 esatte al dollaro; la nona ha scoperto che col 24/7 MC timbra la mezzanotte **`2400`** e non `0`, quindi la finestra misurata è **19:45→00:00 (17 barre)**, 15 minuti più larga della spec — costante, documentata, spec corretta.",
    "log": [
     {
      "date": "2026-09-22",
@@ -295,9 +294,13 @@
     {
      "date": "2026-10-13",
      "text": "**ADR misurata: la condizione pre-registrata non è soddisfatta, il caso base non cambia.** `asia/h24` = **0,447** mediano su 84 giornate: il range asiatico è meno della metà dell'escursione giornaliera, quindi lo stop «tutto il range» **non** è strutturalmente sovradimensionato e `StopFrac 1.0` resta il caso base dello Stage 2. La regola era scritta prima di misurare e ha risposto «non cambiare niente». Due dati collaterali: il target a 1R è **raggiungibile** (`trade/asia` = 1,531 mediano; 1R impossibile in teoria solo nel 21,4% dei giorni, che combacia col 28% di target realizzati dalla variante B), e il **90° percentile del rischio sfora** ($662 per MGC contro $500 di soglia, max $852). Il trade peggiore realizzato era $442 perché i giorni col range più largo **tendono a non generare trade** — 38% senza trade nel decile più largo contro 4,9% complessivo, perché un range largo è più difficile da rompere in 10 ore. Meccanismo, non fortuna, ma proprietà del campione e non garanzia: da sorvegliare al Gate 2."
+    },
+    {
+     "date": "2026-10-13",
+     "text": "**Gate date passato: 8 attese su 9 esatte, e la nona scopre una deviazione vera.** Finestra 01/09–30/09, variante C. Centrati al dollaro e al prezzo: 21 trade (il 01/09 perde il trade perché manca la finestra del 31/08 sera), Net Profit **$20.625**, primo e ultimo trade identici al previsto, **tutti e sei** i conteggi dei segnali di uscita, long/short 10/11, vinc/perd 12/9. **L'attesa che doveva passare passa**: i 21 valori `range=` sono identici a quelli del run giugno-ottobre, quindi la misura del range **non dipende da dove parte il chart** e le conclusioni sull'ADR restano in piedi. **La nona attesa fallisce e insegna qualcosa**: `barre= 17` e `armTime= 15` invece di 16 e 0. Con il template **24/7** MC timbra la barra di mezzanotte **`2400`**, non `0`, quindi `Time >= 2000` la include. **Correzione a quanto avevo scritto**: l'affermazione «MC timbra la mezzanotte 0 e non 2400» valeva per il template COMEX del primo giro invalidato, non per il 24/7 che usiamo — era registrata in SPEC e checklist ed è stata corretta. Conseguenza: la finestra misurata è **19:45 → 00:00 (4h15)**, 15 minuti più larga della spec, in modo costante su tutte le 84 giornate. **Scelto di correggere la spec e non il codice**, perché la finestra è già un asse di variante pre-registrato allo Stage 4, perché il «20:00» non è mai stato un confine validato (viene dal template del corso, che era in ora NY), e perché tutte le misure fatte finora girano sullo stesso codice e sono coerenti fra loro. Chiusa anche la domanda secondaria: zero entrate alle 00:15 e sedici alle 00:30 **non** erano un ritardo di una barra, sono l'aritmetica di una finestra che si chiude alle 00:15. Nota: sette giornate hanno un `entry=` oltre il bordo del range (gap through), e in tutte e sette `SL` e `TP` sono ricalcolati dall'`EntryPrice` effettivo, quindi lo slippage sposta il livello e **non allarga il rischio**."
     }
    ],
-   "next": "Stage 2 — IS 2020-2024, 1 contratto, costi on ($12,50/lato GC), Bar Magnifier 1 min, **StopFrac 1.0** (la misura dell'ADR ha confermato il caso base) ed **entrambe le varianti** (A `TP_RR 0`, B `TP_RR 1`). Resta il **gate date** prima di lanciare."
+   "next": "**Stage 2** — IS 2020-2024, 1 contratto, costi on ($12,50/lato GC), Bar Magnifier 1 min, **`StopFrac 1.0`**, **entrambe le varianti** A e B. Stage 1 chiuso: Gate 1 + ADR + gate date tutti passati."
   },
   {
    "name": "NQ First5",

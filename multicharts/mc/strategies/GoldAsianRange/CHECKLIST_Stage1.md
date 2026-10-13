@@ -27,11 +27,16 @@ fra 07:45 e 14:15**: il time exit, che cerca la prima barra con `Time >= 1000`, 
 sulle 14:15. Quattro trade artefatto (entra 14:15, esce 14:29) e tutte le altre uscite a
 tempo fuori posto. Run scartato, nessun report conservato.
 
-Il log `GAR RNG` di quel giro ha però **validato la finestra del range**: `barre= 16` e
-`armTime= 0` su tutte le 83 giornate, cioè esattamente 20:00 → 00:00 a 15 minuti. Risolta
-anche l'ambiguità della barra di mezzanotte: MC la timbra `0`, non `2400`, quindi il wrap
-`Time >= 2000 or Time < 0` chiude la finestra sulla barra giusta. La domanda aperta nella
-spec («verificare che con il chart CT le finestre coincidano») è chiusa.
+Il log `GAR RNG` di quel giro dava `barre= 16` e `armTime= 0` su tutte le 83 giornate, e su
+quella base avevo scritto che MC timbra la barra di mezzanotte `0` e non `2400`.
+
+> ⚠️ **Corretto il 13/10/2026 dal gate date.** Quell'affermazione valeva per il template
+> `COMEX: Metals Futures (Electronic)`, non per il **24/7** che usiamo. Con il 24/7 MC
+> timbra la barra di mezzanotte **`2400`**, quindi `Time >= 2000` la include e il log dà
+> **`barre= 17` e `armTime= 15`**. Vedi la sezione del gate date in fondo: la finestra
+> misurata è **19:45 → 00:00** (4h15), non 20:00 → 00:00 (4h00). Il numero di barre resta
+> costante su tutte le giornate, quindi la misura è consistente — ma è 15 minuti più larga
+> della spec.
 
 ## Secondo giro (09/10/2026) — sessione 24/7, **Gate 1 passato**
 
@@ -349,3 +354,97 @@ rottura è quella che conta, quindi la risposta serve.
 Attesa: le 21 entrate cadono a 08:15, 00:30, 01:44, 02:15, 00:30, 01:15, 01:44, 01:44,
 00:45, 03:45, 06:14, 03:14, 00:45, 00:59, 00:30, 01:44, 04:30, 00:59, 01:15, 02:00, 01:30
 — **nessuna alle 00:15**.
+
+### Risultato del gate date (13/10/2026) — **8 attese su 9 esatte, la nona scopre una cosa**
+
+| # | Attesa | Risultato | |
+|---|---|---|---|
+| 1 | `Start`/`End Date` = la finestra | `End Date` = 30/09 23:59 ✔. `Start Date` = **02/09 08:15**, cioè il **primo trade**, non l'inizio del chart | ⚠️ |
+| 2 | 21 trade (il 01/09 perde il trade) | **21** | ✅ |
+| 3 | Net Profit $20.625 | **$20.625** | ✅ |
+| 4 | Primo: 02/09 08:15 L 4380.90 → `L-TP` 4432.60 +$5.145 | identico | ✅ |
+| 5 | Ultimo: 30/09 01:30 S 4198.60 → `S-SL` 4219.70 −$2.135 | identico | ✅ |
+| 6 | `L-TP` 5 · `S-TP` 3 · `L-SL` 3 · `S-SL` 3 · `EXIT-S` 5 · `EXIT-L` 2 | **tutti e sei esatti** | ✅ |
+| 7 | long/short 10/11 · vinc/perd 12/9 | identico | ✅ |
+| 8 | 21 righe `GAR RNG`, tutte `barre= 16` e `armTime= 0` | 21 righe ✔, date 1260902→1260930 ✔, ma **`barre= 17` e `armTime= 15`** | ❌ |
+| 9 | I 21 `range=` identici a `GAR_ADR_log.txt` | **tutti e 21 identici** | ✅ |
+
+Sull'attesa 1: `Start Date` nel foglio Settings è il timestamp del **primo trade**, non
+l'inizio del chart (vale anche per il run dello Stage 1, dove coincidevano). L'inizio del
+chart è confermato indirettamente dall'attesa 2, che è il controllo che conta.
+
+Sull'incertezza dichiarata: `MaxBarsBack` **non ha dato problemi**, il primo trade è il
+02/09 come previsto e non il 03/09.
+
+#### L'attesa 9 è quella che doveva passare, e passa
+
+I 21 valori `range=` del run di settembre sono **identici** a quelli del run di giugno‑ottobre.
+La misura del range **non dipende da dove parte il chart**: nessuna contaminazione, e tutto
+quello che abbiamo concluso sull'ADR resta in piedi.
+
+#### Cosa ha scoperto l'attesa 8
+
+**Con il template 24/7 MC timbra la barra di mezzanotte `2400`, non `0`.** Quindi
+`Time >= 2000` la include:
+
+- barre nella finestra: 20:00, 20:15, …, 23:45, **2400** = **17**
+- prima barra con `inWindow = false`: **00:15** → `armTime= 15`
+- gli ordini `next bar at rHi/rLo stop` vanno quindi sulla barra delle **00:30**
+
+**Questo chiude la domanda secondaria.** Zero entrate alle 00:15 e sedici alle 00:30 non
+erano un ritardo di una barra: sono l'aritmetica di una finestra che si chiude sulle 00:15
+invece che sulle 00:00. Nessun difetto, e la prima barra utile dopo la rottura viene usata.
+
+**Conseguenza sulla spec.** Le barre sono timbrate a fine periodo, quindi la barra «20:00»
+copre 19:45–20:00 e la barra «2400» copre 23:45–00:00: la finestra misurata è
+**19:45 → 00:00 (4h15)**, non 20:00 → 00:00 (4h00). **15 minuti più larga della spec**,
+in modo perfettamente costante su tutte le 84 giornate.
+
+#### Decisione: si corregge la spec, non il codice
+
+Due opzioni c'erano:
+
+| | Cosa | Costo |
+|---|---|---|
+| a | `RangeStart 2015` → barre 20:15…2400 = 16, finestra 20:00→00:00 esatta | **ri‑lanciare tutto il Gate 1** (A/B/C/D + gate date): ogni numero cambia |
+| b | Correggere la spec a 19:45–00:00 e lasciare il codice | zero run |
+
+**Scelta: (b).** Tre ragioni, scritte prima di proseguire:
+
+1. La finestra è **già un asse di variante pre‑registrato allo Stage 4** («finestra range
+   22:00–01:00 CT»). La sensibilità all'orario verrà misurata là, dove è il suo posto: non
+   serve perfezionarla allo Stage 1, serve che sia **documentata e costante**, e lo è.
+2. Il «20:00» non è mai stato un confine validato: viene dal template del corso, il cui
+   chart era in ora NY con day boundary alle 17:00. Inseguire un allineamento di 15 minuti
+   a un numero non validato è lavoro senza una domanda dietro.
+3. Tutte le misure fatte finora (ADR, distribuzione del rischio, scaling) girano sullo
+   **stesso codice**, quindi sono coerenti fra loro. Il confronto che conta — range di
+   settembre vs range di giugno‑ottobre — passa.
+
+Ciò che **non** è accettabile è lasciare scritto nel repo che la finestra è 20:00–00:00:
+corretto in `SPEC.md` e sopra in questo file.
+
+## ✅ Gate date — **passato** (13/10/2026)
+
+8 attese su 9 esatte al dollaro e al prezzo. La nona ha trovato una deviazione reale di 15
+minuti nella finestra, costante, documentata e risolta correggendo la spec. Nessun difetto
+di meccanica.
+
+### Nota collaterale: lo slippage d'ingresso esiste e il codice lo gestisce bene
+
+Nel log del periodo intero, sette giornate mostrano un `entry=` diverso dal bordo del range
+perché la barra ha **aperto oltre lo stop** (gap through):
+
+| giorno | bordo | entry | scarto |
+|---|---|---|---|
+| 1260805 | 4193.80 | 4196.30 | 2,50 pt peggio |
+| 1260813 | 4457.00 | 4452.40 | 4,60 pt peggio |
+| 1260922 | 4376.30 | 4375.20 | 1,10 pt peggio |
+| 1261001 | 4206.40 | 4206.60 | 0,20 pt peggio |
+| 1261002 | 4213.30 | 4214.00 | 0,70 pt peggio |
+| 1261005 | 4164.00 | 4162.60 | 1,40 pt peggio |
+| 1261013 | 4211.70 | 4213.60 | 1,90 pt peggio |
+
+In tutti e sette i casi `SL` e `TP` sono ricalcolati **dall'`EntryPrice` effettivo**
+(`posSL = EntryPrice ± sd`), quindi il rischio in punti resta uguale all'ampiezza del range.
+È il comportamento voluto: lo slippage sposta il livello, non allarga il rischio.

@@ -42,10 +42,17 @@ pre-registrazione e non si riscrive.
 ### Risolto: la finestra del range con chart CT
 
 La domanda aperta («nel report del corso il chart era in ora NY con day boundary 17:00:
-verificare che con il chart CT le finestre coincidano») è chiusa. Il log `GAR RNG` dà
-`barre= 16` e `armTime= 0` su tutte le 83 giornate = 20:00 → 00:00 esatte. MC timbra la
-barra di mezzanotte `0`, non `2400`, quindi il wrap `Time >= 2000 or Time < 0` chiude la
-finestra al punto giusto.
+verificare che con il chart CT le finestre coincidano») è chiusa: la finestra è stabile e
+identica su tutte le giornate.
+
+> ⚠️ **Corretto il 13/10/2026.** Qui era scritto «`barre= 16` e `armTime= 0` = 20:00 → 00:00
+> esatte, MC timbra la barra di mezzanotte `0` e non `2400`». **Falso per il template 24/7**,
+> che è quello che usiamo: valeva solo per il template COMEX del primo giro invalidato. Con
+> il 24/7 MC timbra la mezzanotte **`2400`**, `Time >= 2000` la include, e il log dà
+> **`barre= 17`, `armTime= 15`**. La finestra misurata è **19:45 → 00:00 (4h15)**, cioè 15
+> minuti più larga della spec. Costante su tutte le giornate, quindi la misura è consistente
+> e tutte le statistiche fatte finora restano valide fra loro. Vedi
+> `CHECKLIST_Stage1.md`, sezione gate date.
 
 ### Corretto: sessione del chart
 
