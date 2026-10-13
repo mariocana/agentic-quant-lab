@@ -7,14 +7,14 @@
   "updated": "2026-10-13",
   "groups": [
    {
-    "title": "1. Gold Asian Range chiusa — avanti con VWAP Pullback v4",
-    "note": "cimitero, causa A, 13/10",
+    "title": "1. VWAP Pullback — Gate 1 passato, Stage 2 bloccato sul pavimento dello stop",
+    "note": "Gate 1 13/10",
     "items": [
-     "**VWAP Pullback v4** (NQ 1m) — Stage 1. Usare la **v4 del Bridge** (gate ADX + risk sizing), non la v1 in repo",
-     "**Prima di lanciare, due pre‑registrazioni obbligatorie**: (a) il **gate ADX** è attivo di default → è un filtro, deve passare il **test split‑sample**; (b) lo stop è un **pivot swing**, quindi variabile → **misurare la distribuzione di `stopDist` prima del backtest**",
-     "**E una terza, nuova, da Gold**: misurare la distribuzione del rischio **sull'IS 2020‑2024**, non solo su un campione recente. Gold è morta perché lo Stage 1 girava su un regime di volatilità anomalo e io ho extrapolato da quattro mesi",
-     "**`IntradayBiasCheck_60m`** su @NQ (8 righe, zero rischio di fitting): dice in che ore @NQ si muove e in che direzione, prima di spendere run su qualsiasi idea direzionale",
-     "**DriftPullback**: il blocco ora ha una conferma indipendente — @GC è back‑adjusted, e lo è anche @NQ, quindi **qualunque logica in percentuale di prezzo su un continuous è inaffidabile**. La variante «drift in unità di ATR» resta a una riga"
+     "**Misurare la distribuzione del range della barra a 1 minuto su @NQ.** Serve a sapere sotto quale distanza uno stop è indistinguibile dal rumore, e quindi a fissare `MinStopPoints` **con una misura invece che con un numero scelto**. È lo stesso ruolo che ha avuto l'ADR per Gold",
+     "Poi **aggiungere l'input `MinStopPoints`** al codice (oggi non esiste: 4 trade su 78 hanno lo stop a ≤ 1 punto, uno a **un tick**)",
+     "**`MaxStopPoints 250`** è già deciso e non negoziabile: deriva dalla soglia di Gate 2 ($500/micro ÷ $2 per punto), non dai dati",
+     "Entrambi sono **filtri** → quando si applicano devono passare il **test split‑sample**",
+     "**OFF‑LIMITS**: nei dati un tetto a 100 punti rende il campione positivo (avg +$146, PF 1,46). Non si usa — sarebbe scelto guardando il risultato, cioè l'errore di Gold. Eventuali tetti diversi da 250 si testano allo Stage 4, dopo lo Stage 3"
     ]
    },
    {
@@ -257,9 +257,10 @@
    "path": "mc/strategies/VWAP_Pullback",
    "stages": {
     "0": "pass",
-    "1": "pending"
+    "1": "pass",
+    "2": "blocked"
    },
-   "note": "Codice pronto (`VWAP_Pullback.txt`): bias ORB + retest VWAP, stop/target sui pivot, EOD flat obbligatorio, 1 contratto. Chart Globex 24h, MaxBarsBack ≥ 42. In attesa dati.",
+   "note": "**Gate 1 passato (13/10)**, tutti e sei i controlli, scaling ×10 esatto, 0/78 overnight. Ma la misura pre‑registrata del rischio ha trovato che **l'unità di rischio non esiste**: lo stop a pivot swing va da **0,25 punti (un tick) a 386,75**, un rapporto di **1.547×**, con mediana 109,50 pt = **$219 per MNQ** e p90 a $499 — il tetto di Gate 2 è $500. Due patologie opposte: 4/78 stop a ≤ 1 punto (rumore, non stop) e 8/78 sopra 250 punti (fino a $774/micro). Solo la seconda ha una leva pre‑registrata (`MaxStopPoints`); per la prima servirebbe un input nuovo. **Stage 2 bloccato** finché non c'è un pavimento allo stop, e il suo valore va misurato, non scelto.",
    "log": [
     {
      "date": "2026-09-26",
@@ -268,9 +269,13 @@
     {
      "date": "2026-09-22",
      "text": "Spec + codice dal template 1 min. Tolto il sizing per margine/rischio %. **EOD flat reso obbligatorio** (l'originale teneva overnight fino alla risoluzione del bracket): cambia il profilo rispetto all'avg ~$80 del corso, va rivalidato. La variante ADX di Agnello (WR 82%) non è nel materiale: da ricostruire, non verificata."
+    },
+    {
+     "date": "2026-10-13",
+     "text": "**Gate 1 passato, Stage 2 bloccato dalla misura del rischio.** Meccanica perfetta su tutti e sei i controlli: ingressi 09:11–13:58 dentro la finestra, un trade al giorno su 78, flat alle 14:56 (corretto: `Time >= 1455` scatta sulla barra 1455 e `next bar at market` riempie sulla successiva), **0/78 overnight**, solo lun–ven, **scaling ×10 esatto (10,000000)**. Nessun difetto `CurrentContracts`: il codice usa bracket a livello di prezzo. Confermato anche l'offset di un minuto pre‑registrato: l'opening range copre 08:29–08:59 e **zero ingressi cadono nella barra 0900**. **Il risultato vero del run è la misura del rischio**, che era pre‑registrata per essere fatta qui. Lo stop a pivot swing va da **0,25 punti (un tick) a 386,75 punti**: un rapporto di **1.547×**. Mediana 109,50 pt = **$219 per MNQ**, p90 $499 contro un tetto di Gate 2 di $500. Due patologie opposte: **4 trade su 78 hanno lo stop a un tick o meno** — non è uno stop, è rumore, e tutti e quattro sono in perdita nonostante R:R nominali fino a 557 — e **8 su 78 superano 250 punti**, fino a $774 per micro. Il target ha lo stesso difetto: minimo 0,50 punti = $10, sotto i $15 di costo andata‑ritorno. **Solo la patologia del tetto ha una leva pre‑registrata** (`MaxStopPoints`); per il pavimento servirebbe un input nuovo, e non esiste una soglia di gate da cui derivarne il valore — serve una misura dedicata, come l'ADR per Gold. Economia dei 100 giorni, che **non è un giudizio** (il Gate 1 chiede meccanica, e il campione è recente — proprio l'errore commesso su Gold): net −$28.435, avg trade −$365, PF 0,63 con WR 53,8%. La perdita non viene dal WR ma dal fatto che lo stop mediano è una volta e mezza il target mediano. Con `MaxStopPoints 250`, l'unico valore non circolare perché derivato dal gate, il trade peggiore scende a $405 per micro (dentro la soglia) ma l'avg trade resta **−$204**. **Registrata come off‑limits una tentazione**: nei dati un tetto a 100 punti dà n=33, avg +$146, PF 1,46. Non si usa, perché sarebbe un valore scelto guardando il risultato. Se si vorrà testare un tetto diverso da 250 si fa allo Stage 4, dopo lo Stage 3, con il range dichiarato prima e il test split‑sample."
     }
    ],
-   "next": "Stage 1: chart @NQ 1m Globex, MaxBarsBack ≥ 300, verifica meccanica e numero di trade."
+   "next": "**Prima dello Stage 2**: (1) `MaxStopPoints 250`, derivato dalla soglia di Gate 2 ($500/micro ÷ $2 per punto), non dai dati; (2) misurare la **distribuzione del range della barra a 1 minuto su @NQ** per sapere sotto quale distanza uno stop è indistinguibile dal rumore, poi pre‑registrare un `MinStopPoints`; (3) entrambi sono filtri → **test split‑sample**."
   },
   {
    "name": "Gold Asian Range",
