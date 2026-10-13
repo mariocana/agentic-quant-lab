@@ -1,0 +1,82 @@
+{ =====================================================================
+  GAR_ADR_Study  -  INDICATORE (non e' una strategia, non manda ordini)
+  ---------------------------------------------------------------------
+  Scopo: rispondere alla domanda aperta dello Stage 1 di GoldAsianRange.
+  Il range asiatico misurato e' 37,8 punti mediani. E' una frazione
+  dominante di quanto l'oro si muove in un giorno, oppure no?
+
+  Se il range asiatico vale quasi tutto il movimento giornaliero, allora
+  uno stop pari a TUTTO il range e' strutturalmente sovradimensionato: il
+  target a 1R chiede al prezzo di fare, nella sola finestra di trading,
+  un movimento che di solito gli serve un giorno intero per fare.
+
+  STAMPA una riga per giorno, sulla barra di ExitTime:
+    asia    = ampiezza della finestra del range, misurata ESATTAMENTE
+              come la misura la strategia (stesso codice di wrap)
+    trade   = ampiezza della finestra di trading (RangeEnd -> ExitTime),
+              cioe' lo spazio in cui il trade deve vivere e morire
+    h24     = ampiezza delle 24 ore che finiscono a ExitTime
+              (rolling, nessuna logica di confine giornaliero: e' il
+              motivo per cui questa misura non puo' sbagliare)
+
+  CHART: lo STESSO di GoldAsianRange - @GC 15 min, template 24/7,
+         timezone Exchange (CT). Gli input vanno lasciati ai default,
+         che sono quelli della strategia.
+  NOTA: BarsBack24 = 96 vale per la compressione a 15 minuti
+        (24 h x 4 barre/h). Cambiando compressione va rifatto.
+  ===================================================================== }
+
+Inputs:
+    RangeStart(2000),          { identico alla strategia }
+    RangeEnd(0),
+    ExitTime(1000),
+    BarsBack24(96);            { barre in 24 h a 15 min }
+
+Variables:
+    inWindow(false),
+    rHi(0), rLo(0), asiaRng(0),
+    tHi(0), tLo(0), tradeRng(0),
+    h24(0), printed(false);
+
+{ ===== FINESTRA DEL RANGE: copia letterale dalla strategia ===== }
+if RangeStart < RangeEnd then
+    inWindow = Time >= RangeStart and Time < RangeEnd
+else
+    inWindow = Time >= RangeStart or Time < RangeEnd;
+
+{ ----- reset e costruzione del range asiatico ----- }
+if inWindow and inWindow[1] = false then begin
+    rHi = 0; rLo = 999999;
+end;
+if inWindow then begin
+    if High > rHi then rHi = High;
+    if Low  < rLo then rLo = Low;
+end;
+
+{ ----- alla chiusura del range: congela asia, apri la finestra trade ----- }
+if inWindow = false and inWindow[1] and rHi > 0 then begin
+    asiaRng = rHi - rLo;
+    tHi = 0; tLo = 999999;
+    printed = false;
+end;
+
+{ ----- costruzione della finestra di trading: da RangeEnd a ExitTime ----- }
+if inWindow = false and Time <= ExitTime and asiaRng > 0 then begin
+    if High > tHi then tHi = High;
+    if Low  < tLo then tLo = Low;
+end;
+
+{ ----- stampa: una riga per giorno, sulla barra di ExitTime ----- }
+if Time >= ExitTime and printed = false and asiaRng > 0 and tHi > 0 then begin
+    tradeRng = tHi - tLo;
+    h24 = Highest(High, BarsBack24) - Lowest(Low, BarsBack24);
+    Print("GAR ADR ", Date:8:0, " ", Time:5:0,
+          " asia=", asiaRng:8:2,
+          " trade=", tradeRng:8:2,
+          " h24=",   h24:8:2);
+    printed = true;
+end;
+
+Plot1(asiaRng, "asia");
+Plot2(tradeRng, "trade");
+Plot3(h24, "h24");
