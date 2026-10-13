@@ -89,3 +89,32 @@ restano come scritte.
   asiatico è una frazione dominante dell'ADR, lo stop «tutto il range» è strutturalmente
   sovradimensionato e la variante `StopFrac` < 1 diventa il caso base, non un'alternativa.
 - **Gate date** non ancora eseguito.
+
+---
+
+# ADR misurata (13/10/2026) — la condizione pre-registrata non è soddisfatta
+
+Prove in `CHECKLIST_Stage1.md`. n = 84 giornate.
+
+La regola era scritta prima di misurare: «se il range asiatico è una frazione dominante
+dell'ADR, lo stop *tutto il range* è strutturalmente sovradimensionato e `StopFrac` < 1
+diventa il caso base».
+
+**`asia / h24` = 0,447 mediano.** Il range asiatico è meno della metà dell'escursione
+giornaliera: la condizione **non** è soddisfatta.
+
+→ **`StopFrac 1.0` resta il caso base dello Stage 2.** Le varianti 0.5/0.75 restano allo
+Stage 4 dove erano pre-registrate.
+
+Due dati che si portano dietro:
+
+- **Il target a 1R è raggiungibile**: `trade / asia` = 1,531 mediano. 1R è impossibile
+  anche in teoria solo nel **21,4%** dei giorni — che combacia col 28% di target
+  realizzati dalla variante B. A `TP_RR 0.5` la quota scende all'**1,2%**.
+- **Il 90° percentile del rischio sfora**: con `StopFrac 1.0` il rischio per MGC è $390
+  mediano ma **$662 al p90** e $852 nel caso peggiore, contro una soglia di Gate 2 di
+  $500 sul trade peggiore. Il trade peggiore realizzato era $442 perché **i giorni col
+  range più largo tendono a non generare trade** (38% senza trade nel decile più largo
+  contro 4,9% complessivo: un range largo è più difficile da rompere in 10 ore). È un
+  meccanismo, non fortuna — ma è una proprietà del campione, non una garanzia.
+  **Da sorvegliare al Gate 2.**

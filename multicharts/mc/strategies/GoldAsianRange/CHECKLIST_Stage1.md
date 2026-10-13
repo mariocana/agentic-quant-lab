@@ -179,3 +179,95 @@ di rischio non sta nell'MLL» **non si presenta su MGC**.
   sovradimensionato. Da misurare.
 - **Gate date non ancora eseguito** (il controllo pre-registrato su una finestra di date
   ristretta, come fatto per First5).
+
+---
+
+## ADR — misurata (13/10/2026), punto aperto chiuso
+
+Indicatore `GAR_ADR_Study.txt` sullo stesso chart. **n = 84 giornate**, 17/06 → 12/10/2026.
+Tutte le misure in punti @GC.
+
+| | mediana | media | p10 | p90 | min | max |
+|---|---|---|---|---|---|---|
+| `asia` — finestra del range | **39,05** | 42,88 | 27,15 | 66,16 | 20,60 | 85,20 |
+| `trade` — finestra 00:00→10:00 | **57,00** | 64,70 | 39,22 | 98,13 | 26,00 | 149,60 |
+| `h24` — 24 ore precedenti | **92,90** | 99,97 | 58,80 | 150,77 | 42,80 | 242,40 |
+
+### La domanda pre-registrata e la sua risposta
+
+La regola era scritta prima di misurare, in `SPEC.md`: «*se il range asiatico è una frazione
+dominante dell'ADR, lo stop «tutto il range» è strutturalmente sovradimensionato e la
+variante `StopFrac` < 1 diventa il caso base, non un'alternativa*».
+
+**`asia / h24` = 0,447 mediano** (media 0,462; p10 0,263; p90 0,643).
+
+Il range asiatico è **meno della metà** del movimento giornaliero. La condizione
+pre-registrata **non è soddisfatta**: più di metà dell'escursione della giornata avviene
+fuori dalla finestra asiatica, quindi c'è spazio perché la rottura prosegua.
+
+**Conseguenza: `StopFrac 1.0` resta il caso base dello Stage 2.** La regola ha sparato e la
+risposta è «non cambiare niente». Le varianti `StopFrac` 0.5/0.75 restano dove erano
+pre-registrate, allo Stage 4.
+
+### Il target a 1R è raggiungibile
+
+`trade / asia` = **1,531 mediano** (media 1,668): nella giornata tipica la finestra di
+trading è una volta e mezza il range asiatico, quindi un target a 1R ci sta con margine.
+
+| | giorni | % |
+|---|---|---|
+| `trade` < `asia` → **1R irraggiungibile anche in teoria** | 18 / 84 | **21,4%** |
+| `trade` < 0,5 × `asia` → **nemmeno 0,5R** | 1 / 84 | **1,2%** |
+
+Il 21,4% combacia con il comportamento osservato della variante B: 22 target su 78 trade
+(28%) sono stati raggiunti. Numeri indipendenti, stessa storia.
+
+Nota per lo Stage 4: a `TP_RR 0.5` il target diventa irraggiungibile solo nell'1,2% dei
+giorni invece che nel 21,4%. Era già pre-registrata; ora si sa **perché** dovrebbe aiutare.
+
+### Il rischio per MGC, per `StopFrac`
+
+| `StopFrac` | mediana | p90 | max |
+|---|---|---|---|
+| **1.00** (base) | **$390** | **$662** | **$852** |
+| 0.75 | $293 | $496 | $639 |
+| 0.50 | $195 | $331 | $426 |
+| 0.35 | $137 | $232 | $298 |
+
+Soglia Gate 2 sul trade peggiore: **÷10 ≤ $500**.
+
+Con `StopFrac 1.0` la **mediana passa ($390) ma il 90° percentile no ($662)**, e il caso
+peggiore del campione è $852. Il trade peggiore *realizzato* nel run era $442 — molto
+meglio del massimo teorico. Il motivo non è fortuna:
+
+### Meccanismo di autolimitazione (nuovo, da registrare)
+
+I giorni con il range più largo **tendono a non generare nessun trade**, perché un range
+largo è più difficile da rompere entro le 10 ore della finestra.
+
+Nel decile più largo del periodo confrontabile (8 giorni, `asia` > 67 punti):
+
+| giorno | `asia` | trade? |
+|---|---|---|
+| 1260622 | 85,20 | **no** |
+| 1260825 | 84,50 | sì |
+| 1260630 | 76,70 | sì |
+| 1260831 | 75,90 | **no** |
+| 1260928 | 75,20 | sì |
+| 1260703 | 72,40 | **no** — ma è la vigilia del 4 luglio, half‑day |
+| 1260805 | 68,60 | sì |
+| 1260623 | 67,60 | sì |
+
+**3 su 8 senza trade (38%) contro un 4,9% complessivo.** Scontando 1260703, che si spiega
+col calendario e non con l'ampiezza, restano 2 su 8 (25%): comunque **cinque volte** il
+tasso di base.
+
+Quindi l'esposizione effettiva è più vicina alla mediana che al massimo. Ma è una proprietà
+del campione, non una garanzia: su cinque anni di Stage 2 qualche giornata larga entrerà.
+**Da sorvegliare al Gate 2, non da correggere adesso.**
+
+### Contesto: l'oro in questo periodo
+
+`h24` mediano 92,90 punti su un sottostante a $4.100–4.400 = **~2,2% di escursione
+giornaliera**. È un periodo volatile, e va ricordato quando si leggeranno i numeri dello
+Stage 2 sul 2020–2024.

@@ -8,13 +8,13 @@
   "groups": [
    {
     "title": "1. Gold Asian Range — Stage 2, l'unica candidata che avanza",
-    "note": "Gate 1 passato, 09/10",
+    "note": "Gate 1 passato 09/10 · ADR misurata 13/10",
     "items": [
-     "**Prima dello Stage 2, due cose brevi**: (a) misurare l'**ADR dell'oro** nel periodo — 37,8 pt di range asiatico vanno rapportati al range giornaliero, se è una frazione dominante lo stop «tutto il range» è sovradimensionato e `StopFrac` < 1 diventa il caso base; (b) il **gate date**, come fatto per First5",
-     "**Stage 2** — IS 2020‑2024, 1 contratto, $12,50/lato, Bar Magnifier 1 min, **entrambe le varianti** (A `TP_RR 0` e B `TP_RR 1`): la pre‑registrazione «si giudica sulla B» nasceva dall'attesa WR 34% della A, smentita dal dato di meccanica (WR 57,7%)",
-     "**Poi Stage 3 subito** (Monte Carlo), prima di spendere run su varianti: è la regola presa dopo i due errori su ORB e VaultBreak",
-     "**VWAP Pullback** (NQ 1m) — Stage 1, dopo Gold",
-     "**DriftPullback** — resta bloccata: serve @NQ non back-adjusted o il drift riscritto in ATR"
+     "**Resta solo il gate date** prima dello Stage 2 (~10 min), come fatto per First5",
+     "**Stage 2** — IS 2020‑2024, 1 contratto, $12,50/lato, Bar Magnifier 1 min, **`StopFrac 1.0`** (confermato dalla misura dell'ADR: `asia/h24` = 0,447, la condizione per cambiare caso base non è soddisfatta) ed **entrambe le varianti** A e B",
+     "**Da sorvegliare al Gate 2, non da correggere ora**: il rischio per MGC è $390 mediano ma **$662 al p90**, contro una soglia di $500 sul trade peggiore. Nel campione il peggiore realizzato è $442 perché i giorni col range più largo **non generano trade** (38% vs 4,9%) — meccanismo reale, ma proprietà del campione",
+     "**Poi Stage 3 subito** (Monte Carlo), prima di spendere run su varianti: regola presa dopo i due errori su ORB e VaultBreak",
+     "Allo Stage 4, `TP_RR 0.5` ha ora una ragione misurata: a 1R il target è irraggiungibile nel 21,4% dei giorni, a 0,5R nell'1,2%"
     ]
    },
    {
@@ -291,9 +291,13 @@
     {
      "date": "2026-10-09",
      "text": "**Stage 1 chiuso, Gate 1 passato.** Primo giro invalidato dal template sessione `COMEX: Metals Futures (Electronic)`: chart senza barre fra 07:45 e 14:15, time exit finito sulle 14:15. Con template **24/7** tutto a posto: entrate 00:30–09:45, 1 trade/giorno su 78 giorni, 63/78 uscite a tempo alle 10:15, solo lun–ven, **0 posizioni overnight** (il rischio rollover della spec non esiste), scaling ×10 **esatto** su ogni metrica (10,000000). Prova diretta sullo stop: max distanza 43,90 pt × $100 + $25 di commissione = $4.415 = trade peggiore riportato da MC, quindi **nessuna uscita oltre il livello di stop**. Il log `GAR RNG` del primo giro ha validato la finestra del range (`barre= 16`, `armTime= 0` su 83 giornate) e risolto l'ambiguità della barra di mezzanotte: MC la timbra `0`. **Il numero che conta: $442 di trade peggiore per MGC contro una soglia di $500.** Dopo tre strategie @NQ uccise dal rischio per micro, su MGC il muro non c'è. Due correzioni alla spec: range mediano **37,8 pt** (assunto $10–25) e variante A con **WR 57,7%** invece del 34% della ricerca — per questo allo Stage 2 vanno entrambe le varianti, e non è una scelta a posteriori sui risultati ma la conseguenza di un dato di meccanica."
+    },
+    {
+     "date": "2026-10-13",
+     "text": "**ADR misurata: la condizione pre-registrata non è soddisfatta, il caso base non cambia.** `asia/h24` = **0,447** mediano su 84 giornate: il range asiatico è meno della metà dell'escursione giornaliera, quindi lo stop «tutto il range» **non** è strutturalmente sovradimensionato e `StopFrac 1.0` resta il caso base dello Stage 2. La regola era scritta prima di misurare e ha risposto «non cambiare niente». Due dati collaterali: il target a 1R è **raggiungibile** (`trade/asia` = 1,531 mediano; 1R impossibile in teoria solo nel 21,4% dei giorni, che combacia col 28% di target realizzati dalla variante B), e il **90° percentile del rischio sfora** ($662 per MGC contro $500 di soglia, max $852). Il trade peggiore realizzato era $442 perché i giorni col range più largo **tendono a non generare trade** — 38% senza trade nel decile più largo contro 4,9% complessivo, perché un range largo è più difficile da rompere in 10 ore. Meccanismo, non fortuna, ma proprietà del campione e non garanzia: da sorvegliare al Gate 2."
     }
    ],
-   "next": "Stage 2 — IS 2020-2024, 1 contratto, costi on ($12,50/lato GC), Bar Magnifier 1 min. Prima: misurare l'**ADR dell'oro** nel periodo (un range asiatico di 37,8 pt va rapportato al range giornaliero) ed eseguire il **gate date**."
+   "next": "Stage 2 — IS 2020-2024, 1 contratto, costi on ($12,50/lato GC), Bar Magnifier 1 min, **StopFrac 1.0** (la misura dell'ADR ha confermato il caso base) ed **entrambe le varianti** (A `TP_RR 0`, B `TP_RR 1`). Resta il **gate date** prima di lanciare."
   },
   {
    "name": "NQ First5",
