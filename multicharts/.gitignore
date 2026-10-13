@@ -24,6 +24,7 @@ mc/**/*.mov
 mc/**/*.zip
 mc/**/*.exe
 mc/*.zip
+education/protocollo/9.TheBridge/DATA/
 
 # Video dei corsi (troppo grandi per GitHub)
 *.mp4
@@ -37,3 +38,6 @@ __pycache__/
 .pytest_cache/
 
 .idea/
+# archivi e dati pesanti
+*.zip
+education/**/DATA/
