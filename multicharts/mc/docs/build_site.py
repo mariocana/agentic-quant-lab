@@ -238,18 +238,22 @@ def log_items(entries):
 
 
 def pipeline_page(st):
+    td = st.get("todo") or {"groups": []}
     blockers = "".join("<li>%s</li>" % inline(b) for b in st.get("blockers", []))
     return """
 <header class="hero"><p class="eyebrow">Prop · aggiornato al %s</p><h1>Pipeline prop</h1>
 <p class="goal">%s</p></header>
 <h2>Board</h2>%s
+<h2>Prossimo passo <span class="note">memo del %s</span></h2>
+<section class="todo">%s<p class="more-links"><a href="#prossimi-passi">Tutti i prossimi passi →</a></p></section>
 <section class="cols">
   <div><h2>Profilo cercato</h2><p>%s</p><h2>Conto</h2><p>%s</p></div>
   <div><h2>Blocchi aperti</h2><ul class="blockers">%s</ul></div>
 </section>
 <p class="more-links"><a href="#prossimi-passi">Prossimi passi →</a> · <a href="#diario">Diario di bordo →</a>
  · <a href="#%s">Il protocollo →</a></p>
-""" % (esc(st["updated"]), esc(st["goal"]), board(st), inline(st.get("profile", "")),
+""" % (esc(st["updated"]), esc(st["goal"]), board(st), esc(td.get("updated", "")), todo_groups(td, td["groups"][:1]),
+       inline(st.get("profile", "")),
        inline(st.get("prop", "")), blockers, slug("mc/docs/pipeline_prop.md"))
 
 
@@ -459,47 +463,6 @@ def context_page(c, err):
     return "".join(out), toc
 
 
-# ---------------------------------------------------------------- panoramica
-def home_page(st, c, by_path):
-    td = st.get("todo") or {"groups": []}
-    alive = [s for s in st["strategies"] if s.get("stages") and not is_dead(s)]
-    dead = [s for s in st["strategies"] if is_dead(s)]
-    if c:
-        es = c["instruments"]["ES"]
-        g = c["regime"]
-        ctx = ('<p class="tile-num">EM ES <b>%s pt</b> · mercato fermo oltre <b>%s pt</b></p>'
-               '<p>GEX %s · volatilità %s</p><p class="note">calcolato alle %s</p>'
-               % (num(es["em"]), num(es["stop_max"], 1), "basso" if g["gex_low"] else it(g["gex_regime"]),
-                  it(g["vol_regime"]), when(c["generated_at"], day=True)))
-    else:
-        ctx = "<p>non disponibile</p>"
-    first = td["groups"][:1]
-    return """
-<header class="hero"><p class="eyebrow">Aggiornato al %s</p><h1>Banco di lavoro</h1>
-<p class="goal">%s</p></header>
-<div class="tiles">
-  <a class="tile" href="#contesto"><small>Oggi</small><h4>Contesto sessione →</h4>%s</a>
-  <a class="tile" href="#pipeline"><small>Prop</small><h4>Pipeline →</h4>
-    <p class="tile-num"><b>%d</b> strategie in gara · <b>%d</b> nel cimitero</p>
-    <p>%s</p></a>
-  <div class="tile"><small>Discrezionale</small><h4>Sessione</h4>
-    <p><a href="#%s">Playbook</a> · <a href="#%s">Scheda Londra</a> · <a href="#%s">Scheda NY</a></p>
-    <p><a href="#%s">Calibrazione del contesto</a></p></div>
-</div>
-<h2>Pipeline prop</h2>%s
-<h2>Prossimo passo <span class="note">memo del %s</span></h2>
-<section class="todo">%s<p class="more-links"><a href="#prossimi-passi">Tutti i prossimi passi →</a></p></section>
-<h2>Ultime voci del diario</h2>
-<ol class="log">%s</ol>
-<p class="more-links"><a href="#diario">Tutto il diario →</a></p>
-""" % (esc(st["updated"]), esc(st["goal"]), ctx, len(alive), len(dead),
-       esc(first[0]["title"]) if first else "",
-       slug("education/enrico_stucchi/PLAYBOOK.md"), slug("education/enrico_stucchi/sessioni/TEMPLATE_london.md"),
-       slug("education/enrico_stucchi/sessioni/TEMPLATE_ny.md"),
-       slug("education/enrico_stucchi/CALIBRAZIONE_contesto.md"),
-       board(st), esc(td.get("updated", "")), todo_groups(td, first), log_items(st.get("log", [])[:3]))
-
-
 # ---------------------------------------------------------------- pagina
 CSS = """
 /* Stile allineato alla dashboard di quantlake: terminale scuro, accento ambra,
@@ -697,6 +660,12 @@ nav details[open] summary::before{content:"▾ "}
 nav details.sub summary{text-transform:none; letter-spacing:0; font-size:.8rem; font-family:var(--sans); font-weight:400}
 nav details.sub a{padding-left:32px; color:var(--muted)}
 nav.filtering summary{display:none}
+nav a.main{font-size:.95rem; font-weight:600; padding:8px 20px}
+nav details.altro{margin-top:18px; border-top:1px solid var(--line); padding-top:8px}
+nav details.altro h4{margin:12px 0 2px; padding:0 20px; font-size:.64rem; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--dim); font-family:var(--mono); font-weight:600}
+nav details.altro a{font-size:.84rem; color:var(--muted)}
+nav.filtering h4{display:none}
 
 /* ---- pagine: panoramica, contesto, strategie ---- */
 .tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin:0 0 1em}
@@ -878,10 +847,10 @@ def build():
         for rel in strategy_docs(s["path"]):
             by_path[rel] = slug(rel)
 
-    pages = [("home", home_page(st, c, by_path), [])]
+    # le due pagine principali: pipeline (si apre per prima) e contesto di sessione
     ctx_html, ctx_toc = context_page(c, err)
-    pages += [("contesto", ctx_html, ctx_toc), ("pipeline", pipeline_page(st), []),
-              ("prossimi-passi", todo_page(st), []), ("diario", diary_page(st), [])]
+    pages = [("home", pipeline_page(st), []), ("contesto", ctx_html, ctx_toc),
+             ("prossimi-passi", todo_page(st), []), ("diario", diary_page(st), [])]
     for sec, lst in docs.items():
         for title, rel in lst:
             body, items = headings(doc_body(rel, by_path), slug(rel))
@@ -891,21 +860,19 @@ def build():
 
     alive = [s for s in strategies if not is_dead(s)]
     dead = [s for s in strategies if is_dead(s)]
-    nav = ["<h3>Oggi</h3>", nav_link("home", "Panoramica"), nav_link("contesto", "Contesto sessione"),
-           "<h3>Prop</h3>", nav_link("pipeline", "Pipeline"), nav_link("prossimi-passi", "Prossimi passi"),
-           nav_link("diario", "Diario di bordo")]
-    nav += [nav_link(slug(rel), t) for t, rel in docs["Prop"]]
-    nav.append("<h3>Strategie</h3>")
-    nav += [nav_link(strategy_id(s["name"]), s["name"]) for s in alive]
-    if dead:
-        nav.append('<details class="sub"><summary>Cimitero (%d)</summary>%s</details>'
-                   % (len(dead), "".join(nav_link(strategy_id(s["name"]), s["name"] + " †") for s in dead)))
-    for sec in ("Discrezionale", "Ricerca"):
-        nav.append("<h3>%s</h3>" % sec)
-        nav += [nav_link(slug(rel), t) for t, rel in docs[sec]]
-    if docs["Archivio MQL5"]:
-        nav.append('<details><summary>Archivio MQL5</summary>%s</details>'
-                   % "".join(nav_link(slug(rel), t) for t, rel in docs["Archivio MQL5"]))
+    nav = ['<a class="main" href="#home" data-title="Pipeline prop">Pipeline prop</a>',
+           '<a class="main" href="#contesto" data-title="Contesto sessione">Contesto sessione</a>']
+    # tutto il resto in un solo gruppo richiudibile
+    altro = ["<h4>Prop</h4>", nav_link("prossimi-passi", "Prossimi passi"), nav_link("diario", "Diario di bordo")]
+    altro += [nav_link(slug(rel), t) for t, rel in docs["Prop"]]
+    altro.append("<h4>Strategie</h4>")
+    altro += [nav_link(strategy_id(s["name"]), s["name"]) for s in alive]
+    altro += [nav_link(strategy_id(s["name"]), s["name"] + " †") for s in dead]
+    for sec in ("Discrezionale", "Ricerca", "Archivio MQL5"):
+        if docs[sec]:
+            altro.append("<h4>%s</h4>" % sec)
+            altro += [nav_link(slug(rel), t) for t, rel in docs[sec]]
+    nav.append('<details class="altro"><summary>Altro</summary>%s</details>' % "".join(altro))
 
     articles = "".join('<article id="%s"%s>%s</article>' % (pid, ' class="on"' if pid == "home" else "", body)
                        for pid, body, _ in pages)
