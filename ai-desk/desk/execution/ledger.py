@@ -125,11 +125,19 @@ class PositionLedger:
     def record(self, fill: Fill, intent: OrderIntent, cloid: str | None = None) -> None:
         """Note a fill. The first fill that opens a position sets `opened_at`;
         later fills on the same side only append their cloid, so adding to a
-        position does not restart its time stop."""
+        position does not restart its time stop.
+
+        `opened_at` is the fill's own time, not now. A maker order rests and is
+        only noticed by the next cycle's reconcile: stamping the clock there
+        started it up to a full cycle late, and the time stop that reads it ran
+        a day behind the position it was guarding. Five testnet positions filled
+        on different days carried the same `opened_at` to the second — the moment
+        one reconcile folded them all in.
+        """
         self._reload()
         row = self.rows.get(fill.asset)
         if row is None or intent.reduce_only is False and row.get("closed"):
-            row = {"opened_at": datetime.now(timezone.utc).isoformat(), "cloids": []}
+            row = {"opened_at": fill.created_at.isoformat(), "cloids": []}
         row["strategy_id"] = intent.strategy_id
         row["horizon_hours"] = intent.horizon_hours or row.get("horizon_hours")
         row["last_fill_at"] = fill.created_at.isoformat()

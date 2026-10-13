@@ -64,3 +64,42 @@ def test_time_stop(limits):
     ])
     out = time_stop_intents(acc, limits, now=now)
     assert len(out) == 1 and out[0].asset == "OLD" and out[0].reduce_only and out[0].side == "sell"
+
+
+def _aged(now, ages_and_horizons):
+    """An account whose positions are the given (asset, hours held, horizon)."""
+    return AccountState(equity_usd=10_000, margin_used_usd=0, positions=[
+        Position(asset=a, notional_usd=100, size=1, entry_px=100, mark_px=100, unrealized_pnl_usd=0,
+                 opened_at=now - timedelta(hours=held), horizon_hours=horizon, strategy_id="r")
+        for a, held, horizon in ages_and_horizons])
+
+
+def test_time_stop_fires_at_the_horizon_and_not_a_cycle_later(limits):
+    """Seven days of daily cycles and the stop never fired once. A 120h position was
+    looked at when it was exactly 120.0h old, the two-hour grace put its deadline at
+    122h, and the next look came 24h after that: the horizon was 120 hours and the
+    position lived 144."""
+    now = datetime.now(timezone.utc)
+    out = time_stop_intents(_aged(now, [("VVV", 120.0, 120)]), limits, now=now)
+    assert [i.asset for i in out] == ["VVV"]
+
+
+def test_time_stop_takes_the_check_nearest_the_deadline(limits):
+    """Between two cycles the desk cannot act, so it closes at whichever of them is
+    nearer the deadline — with a daily cycle, anything inside twelve hours."""
+    now = datetime.now(timezone.utc)
+    assert limits["time_stop_check_interval_hours"] == 24, "the rest of this test reads off that"
+    early = time_stop_intents(_aged(now, [("WAIT", 107.0, 120)]), limits, now=now)
+    assert early == [], "13h to go: the next cycle is closer to the deadline than this one"
+    late = time_stop_intents(_aged(now, [("GO", 109.0, 120)]), limits, now=now)
+    assert [i.asset for i in late] == ["GO"], "11h to go: this cycle is the nearest one"
+
+
+def test_the_time_stop_closes_the_whole_position_reduce_only(limits):
+    now = datetime.now(timezone.utc)
+    acc = _aged(now, [("SHORT", 130.0, 120)])
+    acc.positions[0].size = -1
+    acc.positions[0].notional_usd = -100
+    out = time_stop_intents(acc, limits, now=now)
+    assert out[0].side == "buy" and out[0].reduce_only and out[0].notional_usd == 100
+    assert out[0].order_type == "limit_ioc" and "time stop" in out[0].reason

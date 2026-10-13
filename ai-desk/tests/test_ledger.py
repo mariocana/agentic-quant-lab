@@ -54,6 +54,31 @@ def test_adding_to_a_position_does_not_restart_its_clock(ledger):
     assert ledger.rows["BTC"]["cloids"] == ["0xaaa", "0xbbb"]
 
 
+def test_the_clock_starts_when_the_fill_happened_not_when_we_noticed(ledger):
+    """A maker order rests on the book and its fill is only picked up by the next
+    cycle's reconcile. Stamping `opened_at` at that moment started the time stop a
+    whole cycle late: on testnet five positions filled on three different days all
+    reported the same opened_at to the second — the instant one reconcile folded
+    them in — and a position opened on the 8th claimed to be 24h younger than it was."""
+    i = intent()
+    filled_at = datetime.now(timezone.utc) - timedelta(hours=20)
+    ledger.record(fill(i).model_copy(update={"created_at": filled_at}), i, cloid="0xabc")
+    assert ledger.rows["BTC"]["opened_at"] == filled_at.isoformat()
+    assert ledger.enrich([position()])[0].opened_at == filled_at
+
+
+def test_a_position_noticed_late_is_still_stopped_on_time(ledger, limits):
+    """The two halves together: a fill folded in long after it happened still has to
+    reach its horizon on schedule."""
+    from desk.loop import time_stop_intents
+
+    now = datetime.now(timezone.utc)
+    i = intent(horizon=120)
+    ledger.record(fill(i).model_copy(update={"created_at": now - timedelta(hours=120)}), i)
+    account = _account(ledger.enrich([position()]))
+    assert [x.asset for x in time_stop_intents(account, limits, now=now)] == ["BTC"]
+
+
 def test_reconcile_drops_what_the_exchange_closed(ledger):
     for a in ("BTC", "ETH"):
         i = intent(asset=a)

@@ -36,5 +36,8 @@ max_abs_funding_hourly: 0.0001      # 0.01% / h  (~88% / yr)
 # Minimum ticket: below this the fee floor and rounding dominate. Rejected, not reduced.
 min_notional_usd: 15.0
 
-# Positions older than their thesis horizon are closed by the loop (time stop).
-time_stop_grace_hours: 2
+# Time stop. A position is closed at the cycle nearest its horizon, which needs to
+# know how far apart the cycles are: a deadline less than half this interval away
+# closes now rather than waiting for a check that lands a whole cycle late.
+# Keep it equal to the desk's schedule (one cycle a day -> 24).
+time_stop_check_interval_hours: 24

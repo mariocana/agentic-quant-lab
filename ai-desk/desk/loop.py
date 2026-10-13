@@ -46,14 +46,27 @@ def _warn_if_too_soon(strategy: Strategy, min_fraction: float = 0.1) -> None:
                     gap_h * 60, strategy.id, strategy.horizon_hours)
 
 def time_stop_intents(account: AccountState, limits: dict, now: datetime | None = None) -> list[OrderIntent]:
-    """Close positions that outlived their horizon (+ grace). Reduce-only, always allowed."""
+    """Close positions that reached their horizon. Reduce-only, always allowed.
+
+    The desk can only look when a cycle runs, so a deadline almost never falls on
+    a check. With one cycle a day a 120h position is seen at 120h and then not
+    again until 144h: waiting for the first check *past* the deadline added a
+    fifth of the holding period to every position, and a two-hour grace on top of
+    that was enough to make the desk skip the 120h check entirely — in seven days
+    the time stop never fired once.
+
+    So the position goes at whichever check sits nearest its deadline: once the
+    deadline is less than half a check interval away, it is closed. Ties close
+    early, which is the safe side — the thesis has expired either way.
+    """
     now = now or datetime.now(timezone.utc)
+    tolerance = timedelta(hours=limits["time_stop_check_interval_hours"] / 2)
     out = []
     for p in account.positions:
         if not p.managed or not p.opened_at or not p.horizon_hours:
             continue
-        deadline = p.opened_at + timedelta(hours=p.horizon_hours + limits["time_stop_grace_hours"])
-        if now >= deadline:
+        deadline = p.opened_at + timedelta(hours=p.horizon_hours)
+        if now + tolerance >= deadline:
             out.append(OrderIntent(asset=p.asset, side="sell" if p.size > 0 else "buy",
                                    notional_usd=abs(p.notional_usd), order_type="limit_ioc", reduce_only=True,
                                    strategy_id=p.strategy_id or "risk", horizon_hours=0,

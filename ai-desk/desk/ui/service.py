@@ -60,7 +60,8 @@ LIMIT_FIELDS = [
     ("max_pct_of_day_volume", "Max share of 24h volume", "fraction", "Ticket ≤ this share of the asset's 24h notional volume."),
     ("max_abs_funding_hourly", "Max funding paid", "per hour", "Paying more than this halves the ticket; more than 2x rejects it."),
     ("min_notional_usd", "Minimum ticket", "USD", "Below this the fee floor dominates. Rejected."),
-    ("time_stop_grace_hours", "Time stop grace", "hours", "Positions are closed at horizon + grace."),
+    ("time_stop_check_interval_hours", "Time stop: cycle interval", "hours",
+     "How far apart cycles run. A position closes at the cycle nearest its horizon."),
 ]
 
 
@@ -438,9 +439,14 @@ class DeskService:
             d = limits
             for k in keys[:-1]:
                 d = d[k]
-            d[keys[-1]] = int(v) if path == "time_stop_grace_hours" else v
+            d[keys[-1]] = int(v) if path == "time_stop_check_interval_hours" else v
         if limits["daily_loss_freeze_pct"] > limits["daily_loss_flatten_pct"]:
             raise ValueError("freeze must be below flatten")
+        # This one describes the schedule, it is not a free parameter: too small and
+        # the time stop runs a cycle late, too large and every position is closed on
+        # the cycle after it opens.
+        if not 1 <= limits["time_stop_check_interval_hours"] <= 168:
+            raise ValueError("time stop cycle interval must be between 1 and 168 hours")
         text = LIMITS_PATH.read_text()
         for path, v in values.items():
             text = set_yaml_scalar(text, path, limits_get(limits, path))
