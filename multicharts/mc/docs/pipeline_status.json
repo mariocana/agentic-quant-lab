@@ -1,10 +1,10 @@
 {
- "updated": "2026-10-09",
+ "updated": "2026-10-13",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
-  "updated": "2026-10-09",
+  "updated": "2026-10-13",
   "groups": [
    {
     "title": "1. Gold Asian Range — Stage 2, l'unica candidata che avanza",
@@ -18,6 +18,16 @@
     ]
    },
    {
+    "title": "2. Materiale nuovo del protocollo (13/10) — tre cose cambiano il piano",
+    "items": [
+     "**`IntradayBiasCheck_60m`** (`12. Community Research`): 8 righe, ottimizza `TestTime` 0→2300 step 100 e legge l'avg trade **ora per ora**. È lo strumento di misura che chiedevamo da due settimane, e non è una strategia quindi non c'è fitting. **Da girare su @NQ e @GC prima di qualsiasi altra idea direzionale**",
+     "**VWAP Pullback: usare la v4** del Bridge, non la v1 che abbiamo. Prima della Stage 1, due pre-registrazioni: (a) il **gate ADX** è attivo di default → è un filtro, deve passare il **test split-sample**; (b) lo stop è un **pivot swing**, quindi variabile → **misurare la distribuzione di `stopDist` prima del backtest**, altrimenti ripetiamo l'errore che ha ucciso ORB, VaultBreak e First5",
+     "**DriftPullback: il blocco non è rimosso** — il drift resta in % del prezzo grezzo («UNCHANGED» nel commento del codice), l'ATR è arrivata solo per le uscite. Ma la **variante «drift in unità di ATR» è una riga** ed è esattamente ciò che il blocco chiedeva → pre-registrata. Nota: `LongSLpts 80` = **$160 per micro** con R:R 0,5, primo candidato @NQ con rischio dichiarato dentro il budget",
+     "**Strategy of the Month settembre: short-only su futures Bitcoin** (08:30–09:00 CT negativa → short, flat 15:00 CT). Chiude due buchi insieme: il **lato short** del basket e un **terzo strumento**. Prima di una Stage 0 servono due cose: estrarre il codice dal PDF (non è allegato) e **verificare che LucidFlex consenta i futures crypto**",
+     "**`SetStopContract`**: l'uso canonico è in `Monday Long NQ` (`SetStopContract;` poi `SetStopLoss(StopPts * BigPointValue)`). Resta da fare il **test ×10**, da solo e non insieme ad altro"
+    ]
+   },
+   {
     "title": "2. Prima di qualsiasi codice IVB",
     "items": [
      "Misurare la **distribuzione del range della candela di breakout** su @NQ. È il rischio per trade: dice subito se $2.000/micro è raggiungibile. Se sì → nuova Stage 0 `IVB_Type1`; se no si chiude lì"
@@ -26,6 +36,8 @@
    {
     "title": "Sul tavolo, non urgente",
     "items": [
+     "*(13/10)* **Collisione di convenzione sui costi**: DriftPullback v2.1 addebita lo slippage **nel codice** (`StopSlipTicks 2`), la nostra convenzione la ripiega nella **commissione** ($7,50/lato NQ). Una delle due, non entrambe, o il costo è contato due volte",
+     "*(13/10)* **Regola di inattività delle prop**: l'autore delle Monday la segnala in maiuscolo come causa di perdita dell'account **più probabile del drawdown** per le strategie a bassa frequenza. Non l'avevamo mai nominata. Il nostro `n ≥ 200` la copre di fatto, non di diritto — da scrivere come vincolo esplicito",
      "**Debito tecnico**: rifare i Gate 2/3 già passati con lo slippage dentro la commissione ($7,50/lato)",
      "Stage 1 mai fatto: **VWAP Pullback**, **Gold Asian Range**",
      "**DriftPullback** bloccato — serve @NQ non back-adjusted, o il drift riscritto in ATR",
@@ -401,6 +413,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-13",
+   "text": "**Ingest del materiale nuovo del protocollo: tre cose cambiano il piano, una sola è una strategia.** (1) `IntradayBiasCheck_60m`, 8 righe, misura l'avg trade ora per ora ottimizzando `TestTime`: è lo strumento di misura che il TODO chiedeva da due settimane, e non essendo una strategia non ha rischio di fitting. (2) **VWAP Pullback esiste in v4** (gate ADX + risk sizing) mentre noi abbiamo la v1 — e il suo stop è un **pivot swing**, cioè di ampiezza variabile: va misurata la distribuzione di `stopDist` **prima** del backtest, perché il rischio per trade non dichiarato è precisamente ciò che ha ucciso ORB, VaultBreak e First5. (3) Il **blocco di DriftPullback non è rimosso**: il drift resta in percentuale del prezzo grezzo e il commento del codice lo dichiara esplicitamente «UNCHANGED»; l'ATR è arrivata per le uscite, non per il segnale. La variante «drift in ATR» resta però a una riga di distanza. Nuovo candidato dal vincitore di settembre: **short-only su futures Bitcoin**, che chiude due buchi insieme — il lato short e un terzo strumento — ma il codice non è allegato e va verificato che LucidFlex consenta i crypto. Due note di metodo raccolte: la **regola di inattività** delle prop (mai nominata prima, l'autore la dice più letale del drawdown per le strategie rare) e una **collisione di convenzione sui costi** fra `StopSlipTicks` nel codice e lo slippage ripiegato nella commissione. **Nessun gate toccato**: il materiale esterno produce strategie e varianti, non modifiche al protocollo."
+  },
   {
    "date": "2026-10-09",
    "text": "**Primo segnale che il muro non è universale: $442 per MGC.** Gold Asian Range passa il Gate 1 e porta il dato che mancava da tre strategie: il trade peggiore vale **$442 per micro**, sotto la soglia di Gate 2 ($500), e il DD del campione **$1.042–1.429 per micro**. ORB, VaultBreak e First5 sfondavano tutte e tre su @NQ di un fattore 1,5–5. La differenza non è la logica — è lo strumento: il micro dell'oro è 1/10 del contratto grande e il range asiatico non scala con il nozionale. **Il trigger sul Gate 3 resta armato e non scatta**: non è una candidata bocciata, è una candidata che avanza. Nota di metodo: il run era già stato lanciato una volta con il template sessione sbagliato (buco di 6 ore e mezza nel chart, time exit alle 14:15 invece delle 10:00) e il difetto è stato trovato dal log `GAR ENT`, non dal report — i numeri del report erano plausibili."
