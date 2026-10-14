@@ -48,6 +48,10 @@ Il numero che decide tutto è:
 
 Deve stare sotto $500. Con un MLL di $2.000 significa quattro perdite piene di margine.
 
+ATTENZIONE, QUESTO E' IL TETTO SBAGLIATO SE LO USI DA SOLO. Il tetto sul trade peggiore
+non e' il vincolo che stringe: stringe il DRAWDOWN. Leggi la sezione "IL VINCOLO VERO"
+qui sotto prima di usare i numeri di questa tabella.
+
 Tradotto in punti, per gli strumenti plausibili. VERIFICA tick e moltiplicatori su CME
 prima di usare questi numeri: la colonna del range giornaliero e' a memoria e va controllata.
 
@@ -78,6 +82,54 @@ per mancanza di edge.
 QUINDI: se una candidata non ti permette di stimare il rischio per trade in punti, non
 proporla, o proponila dicendo esplicitamente che quel numero manca. È il primo filtro,
 non l'ultimo.
+
+# IL VINCOLO VERO: il drawdown, non il trade peggiore
+
+Questo l'ho verificato con un Monte Carlo su esiti Bernoulli i.i.d. (20.000 simulazioni per
+riga), e i numeri sotto sono riprodotti indipendentemente due volte. Perdita = -1R,
+vincita = +R:R, DD = drawdown massimo su n trade in multipli di R.
+
+  WR    R:R    PF     n      DD mediano   DD 95 pct
+  0,60  0,80   1,20   300      10,6R        20,2R
+  0,60  0,80   1,20   600      13,4R        24,2R
+  0,60  0,87   1,30   250       8,9R        16,5R
+  0,62  0,86   1,40   250       8,0R        14,1R
+  0,62  0,86   1,40   500       9,6R        16,2R
+  0,65  0,81   1,50   250       7,0R        12,3R
+
+Ora incrocia i tre vincoli su MNQ ($2 per punto, costo $15 andata-ritorno sul contratto
+grande da $20 per punto, soglia avg trade $70 netti):
+
+  - DD storico per micro <= $1.000   ->  R <= 1000 / (DD_mediano x 2)   punti
+  - DD 95 pct per micro  <= $2.000   ->  R <= 2000 / (DD_95 x 2)        punti
+  - avg trade >= $70 netti           ->  R >= 85 / (E x 20)             punti,  E = WR x R:R - (1-WR)
+
+  PF     R max dal DD    R min dai costi    esito
+  1,20        47 pt           53 pt         IMPOSSIBILE (n=300)
+  1,20        37 pt           53 pt         IMPOSSIBILE (n=600)
+  1,30        56 pt           35 pt         fattibile: R = 35..56 pt  ($70..$112/micro)
+  1,40        52 pt           28 pt         fattibile: R = 28..52 pt  ($55..$104/micro)
+  1,50        71 pt           24 pt         fattibile: R = 24..71 pt  ($48..$142/micro)
+
+DUE CONSEGUENZE, ed e la parte piu importante di tutto questo prompt:
+
+1. L'UNITA DI RISCHIO AMMISSIBILE SU MNQ E CIRCA 30-55 PUNTI, cioe $60-110 PER MICRO.
+   Non 250 punti. Il tetto a 250 viene dal gate sul trade peggiore, che non e il vincolo
+   che stringe. Scala gli altri strumenti sullo stesso budget in dollari: MES 12-22 punti,
+   M2K 12-22, MGC 6-11.
+
+2. UN PF DI 1,20 NON BASTA. A PF 1,20 i due vincoli si incrociano: il drawdown ammette al
+   massimo 37-47 punti di R e i costi ne richiedono almeno 53. Non esiste un R che li
+   soddisfi entrambi. Serve PF >= 1,30, e con margine PF >= 1,40.
+   Il gate formale resta PF >= 1,2 e non lo riscrivo: ma una candidata con PF atteso 1,2
+   e' da considerare giA fallita, e proporla come "rispetta il gate" e' fuorviante.
+
+Una cautela sul modello, che vale per tutti i numeri sopra: il Monte Carlo i.i.d.
+SOTTOSTIMA il drawdown reale, perche le perdite si concentrano nei regimi sfavorevoli e il
+riordinamento indipendente rompe proprio quella dipendenza. I numeri sono un limite
+inferiore, non una stima centrale. E il DD mediano va confrontato con un gate che si misura
+su UNA realizzazione: centrarlo significa passare circa una volta su due per fortuna.
+Preferisci candidate che lo rispettino con margine, non al pelo.
 
 # IL SECONDO VINCOLO CHE UCCIDE: il pavimento dei costi
 
