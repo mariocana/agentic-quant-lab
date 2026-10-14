@@ -254,3 +254,96 @@ nessun filtro la riempie.
 **Se 1 e 2 passano**, la condizione 3 non è decisiva su 78 trade: giustifica un run Stage 4
 sull'IS per misurare il WR sul campione vero. Non è un via libera, è il permesso di spendere
 un altro run.
+
+---
+
+# `StopMode 2`: la regola ha sparato — **cimitero, causa A** (14/10/2026)
+
+Run di misura come pre-registrato: ~100 giorni, `StopMode 2`, filtri a 0, `ShowLog 1`.
+Report `reports/VWAP_S4_stopmode2_100gg.xlsx`, log `VWAP_S4_stopmode2_log.txt`.
+
+## La regola, applicata
+
+| # | Condizione | Soglia | Misurato | |
+|---|---|---|---|---|
+| **1** | mediana `stopDist` | **30–56 pt** | **20,75 pt** | ❌ |
+| 2 | mediana R:R | ≥ 0,90 | **4,18** | ✅ |
+| 3 | WR | ≥ 60% | **26,6%** | ❌ |
+
+La condizione 1 era una delle due decisive. **Il verdetto pre-registrato è il cimitero, senza
+altri run.**
+
+## I tre assetti tracciano una curva, e nessuno tocca la regione ammissibile
+
+| assetto | stop mediano | WR | R:R | WR di pareggio | esito |
+|---|---|---|---|---|---|
+| `StopMode 1` base | **109,50 pt** | 56,3% | 0,79 | 55,9% | pareggio, stop **troppo largo** |
+| `StopMode 1` + filtri 60/250 | **121 pt** | 72,9% | 0,39 | 71,8% | pareggio, R:R **sotto banda** |
+| `StopMode 2` | **20,75 pt** | **26,6%** | 2,09 | 32,4% | **in perdita**, profilo **trend** |
+
+Lo `StopMode 2` non ha solo accorciato lo stop: ha **capovolto il profilo**. WR 26,6% con
+R:R 2,09 è esattamente la famiglia trend following che il profilo prop esclude per
+costruzione — e perde, perché 26,6% sta sotto il pareggio di 32,4%.
+
+Le uscite lo dicono senza ambiguità: **57 stop su 79 (72%)** contro 21 target.
+
+## Perché era prevedibile dalla misura del rumore
+
+| | |
+|---|---|
+| `r15` mediano su @NQ 1 min (misurato il 14/10) | **60,00 pt** |
+| stop mediano `StopMode 2` | **20,75 pt** = **0,35× r15** |
+| stop sotto il rumore a 15 minuti | **68 / 79 = 86%** |
+| stop sotto il rumore a 5 minuti | 55 / 79 = 70% |
+| stop sotto l'ATR a 1 minuto | 33 / 79 = 42% |
+
+Il 42% dei trade ha lo stop **dentro una singola barra da un minuto**. Non è uno stop, è
+rumore — ed è lo stesso difetto per cui era stato introdotto `MinStopPoints`, qui in forma
+sistematica invece che su quattro trade.
+
+## Il colpo di grazia aritmetico: la finestra e la frequenza non coesistono
+
+Solo **15 trade su 79 (19%)** hanno lo stop dentro la finestra 30–56 punti. Filtrare lo
+`StopMode 2` alla finestra darebbe, sui 764 trade base di quattro anni, circa **145 trade**.
+
+**Soglia di Gate 2: n ≥ 200.** Non esiste un assetto in cui lo stop stia nella finestra **e**
+la frequenza basti. Non è una questione di parametri: è l'intersezione di due vincoli, e è
+vuota.
+
+## Lo split-sample, completato per il verbale
+
+| | BASE | FILTRO |
+|---|---|---|
+| IS intero 2021‑24 | avg $9 · PF 1,02 · t 0,23 | avg $33 · PF 1,08 · t 0,69 |
+| 1ª metà 2021‑22 | avg **−$29** · PF 0,93 | avg +$19 · PF 1,04 |
+| 2ª metà 2023‑24 | avg **+$46** · PF 1,12 · t 0,87 | avg +$46 · PF 1,11 · t 0,73 |
+
+La base passa da **negativa** nella prima metà a positiva nella seconda. Il filtro migliora in
+tutte e tre le finestre — era quindi un filtro legittimo — ma migliora qualcosa che non c'è:
+nessun t raggiunge 1 in nessun assetto.
+
+# ✉️ Chiusa — cimitero, causa di morte **A**
+
+**Causa A: edge assente.** Su 1.369 trade dell'IS più 79 della misura, in tre assetti che
+coprono l'intera geometria di stop e target, **nessun t arriva a 1**. L'intervallo di
+confidenza dell'avg trade contiene lo zero ovunque.
+
+Non è causa B: il problema non è che l'edge non entri nel conto. È che non si misura.
+
+## La lezione che resta, e chiude una classe
+
+**Uno stop messo dalla struttura di mercato non è un'unità di rischio che possiamo scegliere.**
+
+`StopMode 1` (pivot swing a 20 barre) dà 109 punti. `StopMode 2` (estremo del pullback) ne dà
+20,75. La finestra ammissibile sta fra 30 e 56. **I due modi sbagliano in direzioni opposte**,
+e la dispersione interna di ciascuno (0,25 → 386 e 0,25 → 179) è tale che nessun filtro li
+porta dentro senza distruggere la frequenza.
+
+Questo vale per **qualunque** stop ancorato a swing, pivot o estremo di pullback: la sua
+dimensione la decide il mercato, non la spec. L'anti-pattern 3 del prompt di ricerca
+(«unità di rischio non dichiarata») era scritto per intuizione; adesso ha la dimostrazione
+completa, su entrambi i modi.
+
+**Conseguenza operativa**: una candidata futura con stop strutturale non passa lo Stage 0
+senza che la distribuzione dello stop sia misurata **prima**, e confrontata con la finestra
+ammissibile dello strumento.
