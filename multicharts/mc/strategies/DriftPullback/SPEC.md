@@ -254,3 +254,68 @@ che è un compromesso, e che il saldo va misurato.
    **vincita media, perdita media, DD_R realizzati** — non assumerli dai TP/SL.
 4. Solo allora decidere strumento e budget, con la formula di fattibilità alimentata da
    numeri misurati.
+
+---
+
+# Stage 1 — il file e il run (15/10/2026)
+
+File: **`DriftPullback_v21.txt`** = il sorgente **v2.1 dell'autore**, byte per byte, più
+quattro aggiunte nostre, tutte marcate `NOSTRO` nel codice:
+
+| Aggiunta | Cosa fa |
+|---|---|
+| `DriftMode` (0/1) | **0 = drift in % dell'autore** (originale, intatto) · 1 = drift in unità di ATR |
+| `DriftThreshAtr` · `DriftAtrLen` | la soglia per il modo 1, e la lunghezza dell'ATR su data2 |
+| `driftLongOK` / `driftShortOK` | booleani che sostituiscono il confronto diretto nel blocco di arming, così **la logica dell'autore non è toccata**: cambia solo quale misura la alimenta |
+| log `DPB` su file | una riga per barra 15m con ancora valida, con **entrambe** le misure del drift |
+
+`DriftPullback.txt` (la nostra vecchia riscrittura dal PDF) resta in repo come riferimento
+ma **non si usa più**.
+
+## Perché il run si lancia con `DriftMode 0`
+
+Con `DriftMode 0` il codice è quello dell'autore. Quindi un solo run dà **tre cose insieme**:
+
+1. **verifica di meccanica** sul codice vero (non più di fedeltà: il sorgente è l'originale);
+2. **vincita media, perdita media, DD_R realizzati** — i numeri che servono alla formula di
+   fattibilità, e che **non** si possono dedurre dai `LongSLpts`/`LongTPpts` dichiarati;
+3. la **distribuzione congiunta di `dPct` e `dAtr`**, con cui `DriftThreshAtr` si **misura**
+   invece di indovinarla.
+
+Il default `DriftThreshAtr 0.60` è un segnaposto. **Non si usa** prima della calibrazione: è
+scritto qui perché un numero vuoto in un input è peggio di un numero dichiarato provvisorio.
+
+## Il run
+
+| | |
+|---|---|
+| Chart | **Data1 = @NQ 5 min**, **Data2 = @NQ 15 min** (Insert → Series, stesso simbolo) |
+| Sessione | Globex 24h, timezone **Exchange (CT)** |
+| Finestra | ~100 giorni |
+| `DriftMode` | **0** |
+| `ShowLog` | **1** · `LogPath` `C:\mc_out\dpb_drift.txt` · `ResetFile` **1** |
+| `SizeMode` | **1** (lotto fisso) · `BaseCts` **1** — **mai `SizeMode 2`**, che compone sul cushion |
+| `ExitMode` | **0** (punti fissi, la configurazione validata dall'autore) |
+| Costi | $7,50 per contratto |
+| Bar Magnifier | 1 min se disponibile |
+
+Creare `C:\mc_out` prima di lanciare.
+
+## Attenzione all'orario, che l'autore segnala in maiuscolo
+
+I cinque input di sessione sono in **ora del chart**, e i default sono per un chart **CT**:
+`SessStart 930`, `SessEnd 1430`, `FlatTime 1455`, `VwapStart 0830`, `VwapEnd 1500`.
+Su un chart in ora **Eastern** andrebbero `1030 / 1530 / 1555 / 0930 / 1600`. Niente dà
+errore se si sbaglia: si opera semplicemente **un'ora diversa** da quella validata.
+
+## La contraddizione da risolvere, ripetuta qui perché è il punto del run
+
+Dichiarato: **avg $77, WR 65%**, con `LongSLpts 80` / `LongTPpts 40` → R:R dichiarato **0,50**.
+A R:R 0,50 il null è **66,7%**, quindi un WR del 65% darebbe E = **−0,025** e PF **0,93**.
+
+Se il run conferma WR ~65% **e** R:R realizzato ~0,50, la strategia è in perdita e la
+contraddizione è nei numeri dell'autore. Se invece il R:R realizzato è più alto (perdite
+parziali da uscita a tempo, come su VaultBreak: stop dichiarato 100 punti, perdita media
+realizzata 60,6), allora il profilo torna coerente e si misura sul serio.
+
+**Questa è la domanda del run.** Non «funziona?», ma «quali sono i numeri realizzati?».
