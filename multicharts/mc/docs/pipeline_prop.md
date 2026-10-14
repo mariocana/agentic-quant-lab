@@ -807,3 +807,107 @@ Nota tecnica che vale la pena tenere: il Monte Carlo su esiti binari ±R prevede
 9–11 R per questi profili, e il DD misurato è **25,6 R**. La differenza non è il clustering:
 è che i P&L reali sono **dispersi** fra 0 e R, non binari, e la varianza per trade è più
 alta. **I Monte Carlo su esiti binari sottostimano il drawdown di circa 2,5 volte.**
+
+### Gli ATR misurati, finalmente (15/10/2026)
+
+`mc/strategies/ATR_Window_Study.txt` su cinque strumenti, **1.692–1.750 giorni ciascuno,
+2020‑01‑02 → 2026‑10‑14**, finestra RTH definita dal codice. Log in
+`mc/docs/measures/atr_window_rth_2020-2026.txt`.
+
+#### Specifiche lette da MC, non dalla memoria
+
+| | tick | bpv (big) | tick in $ (big) | **tick in $ (micro)** | **$/punto micro** |
+|---|---|---|---|---|---|
+| NQ | 0,25 | 50 → **20** | $5,00 | **$0,50** | **$2,00** |
+| ES | 0,25 | **50** | $12,50 | **$1,25** | **$5,00** |
+| YM | 1,00 | **5** | $5,00 | **$0,50** | **$0,50** |
+| RTY | 0,10 | **50** | $5,00 | **$0,50** | **$5,00** |
+| GC | 0,10 | **100** | $10,00 | **$1,00** | **$10,00** |
+
+I valori del punto che usavo erano **giusti**. Ma il dato nuovo è il **tick in dollari sul
+micro**: MNQ, MYM e M2K costano **$0,50**, MGC $1,00, **MES $1,25**. MES è 2,5 volte gli
+altri. Questo chiude definitivamente la questione del metro: la «grossolanità» del tick in
+*punti* non significa niente, il tick in *dollari* sì.
+
+#### Range RTH mediano per anno, in punti
+
+| | 2020 | 2021 | 2022 | 2023 | 2024 | 2025 | 2026 | **2020‑24** |
+|---|---|---|---|---|---|---|---|---|
+| NQ | 184,5 | 175,5 | 290,1 | 186,5 | 224,2 | 270,2 | 367,0 | **210,0** |
+| ES | 41,5 | 35,8 | 69,6 | 41,1 | 43,2 | 58,5 | 64,2 | **44,8** |
+| YM | 347,0 | 283,0 | 477,5 | 303,5 | 329,0 | 420,0 | 472,0 | **339,0** |
+| RTY | 30,1 | 35,8 | 39,8 | 27,9 | 31,1 | 31,9 | 37,5 | **32,5** |
+| GC | 19,4 | 16,1 | 16,2 | 15,6 | 21,3 | 34,8 | 59,8 | **17,8** |
+
+**Le mie stime erano tutte troppo alte:**
+
+| | mia stima | misurato | errore |
+|---|---|---|---|
+| NQ | 260 | 210,0 | **−19%** |
+| ES | 60 | 44,8 | **−25%** |
+| YM | 420 | 339,0 | **−19%** |
+| RTY | 40 | 32,5 | **−19%** |
+| **GC** | 30 | **17,8** | **−41%** |
+
+#### Il cambio di regime, quantificato
+
+Rapporto fra il range mediano dell'anno e quello del 2020‑2024:
+
+| | 2025 | **2026** |
+|---|---|---|
+| **GC** | 1,96× | **3,36×** |
+| NQ | 1,29× | **1,75×** |
+| ES | 1,31× | 1,44× |
+| YM | 1,24× | 1,39× |
+| **RTY** | 0,98× | **1,15×** |
+
+**Il 2026 dell'oro vale 3,36 volte il suo regime normale.** È la versione misurata di quello
+che ha reso illeggibile lo Stage 1 di Gold Asian Range: il range asiatico di 39 punti del
+2026 corrisponde a **circa 11–12 punti nel 2020‑2024**, cioè **$110–120 per MGC** —
+*dentro* il budget. Entrambe le letture che ne avevo dato (prima «$442 di trade peggiore,
+ottima notizia», poi «$378 contro un budget di $200, muro strutturale») erano sbagliate, e
+per la stessa ragione: misuravano un regime 3,36 volte anomalo.
+
+**RTY è lo strumento più stabile fra i regimi** (1,15× nel 2026, 0,98× nel 2025). Per una
+strategia il cui rischio dipende dalla volatilità realizzata, è una proprietà che vale.
+
+#### La classifica degli strumenti, con i numeri misurati
+
+R/ATR al budget di rischio consentito dai gate sul drawdown ($60–110 per micro):
+
+| micro | $/pt | ATR 20‑24 | R=$60 → ATR | R=$110 → ATR | tick $ micro |
+|---|---|---|---|---|---|
+| **M2K** | $5,00 | 32,5 | **0,37** | **0,68** | $0,50 |
+| **MYM** | $0,50 | 339,0 | **0,35** | **0,65** | $0,50 |
+| MGC | $10,00 | 17,8 | 0,34 | 0,62 | $1,00 |
+| MES | $5,00 | 44,8 | 0,27 | 0,49 | **$1,25** |
+| **MNQ** | $2,00 | 210,0 | **0,14** | **0,26** | $0,50 |
+
+**M2K e MYM vincono su entrambi gli assi**: lo stop ha il doppio dello spazio rispetto al
+rumore che ha su MNQ, allo stesso costo per tick. **MNQ è l'ultimo**, e questo è il numero
+che spiega le tre morti su @NQ: al budget consentito, lo stop vale **0,14–0,26 ATR**, cioè
+sta dentro il rumore.
+
+MGC è meglio di come l'avevo giudicato (l'ATR reale è il 41% più basso della mia stima), ma
+il tick costa il doppio. MES è il peggiore per costo.
+
+#### La soglia di E per strumento, che è il criterio operativo
+
+Da `RATIO = E × DDcap / (DD_R × (soglia + costo)) ≥ 1`, con DDcap $2.000 e soglia $7/micro:
+
+| micro | costo A/R | E richiesta a DD_R 25,6 | a DD_R 21 | a DD_R 15 |
+|---|---|---|---|---|
+| **M2K / MYM / MNQ** | $2,00 | **0,1152** | **0,0945** | 0,0675 |
+| MES | $3,50 | 0,1344 | 0,1103 | 0,0788 |
+| MGC | $3,60 | 0,1357 | 0,1113 | 0,0795 |
+
+VaultBreak, la nostra migliore, ha **E = 0,0952 con DD_R = 25,6**. Quindi:
+
+- su M2K/MYM servirebbe **E ≥ 0,1152**: manca il **21%**
+- **a DD_R = 21 la soglia scende a 0,0945 e VaultBreak passerebbe** (RATIO 1,007)
+- su MES e MGC la soglia sale del 17–18%: **da evitare**
+
+**Il criterio operativo per lo Stage 0, d'ora in poi**: una candidata su M2K o MYM deve
+promettere **E ≥ 0,115** con DD_R ≈ 25, oppure **E ≥ 0,095** se il disegno delle uscite
+tiene DD_R sotto 21. Tutto il resto — strumento, rapporto target/stop, finestra oraria — è
+secondario a questi due numeri.
