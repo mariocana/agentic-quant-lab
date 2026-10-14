@@ -103,3 +103,42 @@ L'IS è **@NQ a 1 minuto dal 2021**: circa 1,4 milioni di barre. Due cose posson
 non sono difetti della strategia: la **profondità storica** dei dati a 1 minuto, e il
 **tempo di esecuzione** del backtest con Bar Magnifier. Se i dati non arrivano al 2021,
 l'IS si accorcia e va annotato prima di leggere i risultati, non dopo.
+
+---
+
+# Pre‑registrazione 6 — come si fissa `MinStopPoints` (14/10/2026, prima della misura)
+
+Lo Stage 1 ha trovato che lo stop a pivot swing non ha pavimento: 4 trade su 78 con lo stop
+a ≤ 1 punto, uno a **un tick**, tutti e quattro in perdita. Serve un `MinStopPoints`, ma a
+differenza del tetto **non esiste una soglia di gate da cui derivarlo**.
+
+Il tetto è già fissato e non si discute: Gate 2 vuole trade peggiore ÷10 ≤ $500, su MNQ
+1 punto = $2, quindi **`MaxStopPoints 250`**. Derivato dal gate, non dai dati.
+
+Per il pavimento si misura il **rumore** con `VWAP_Noise_Study.txt`, e si applica questa
+regola, scritta adesso:
+
+> **`MinStopPoints` = la mediana di `r15`**, l'escursione a quindici minuti di @NQ nella
+> finestra di ingressi, arrotondata al punto intero.
+
+**Perché `r15` e non un'altra colonna.** Un trade di questa strategia entra fra le 09:11 e
+le 13:58 e dura in media ore: un target mediano di 74 punti non si raggiunge in pochi minuti.
+Uno stop più stretto dell'escursione tipica di un quarto d'ora verrà quindi colpito dal
+rumore nei primi minuti, prima che la tesi del trade abbia modo di realizzarsi o di essere
+smentita. `r5` sarebbe troppo permissivo (quindici secondi di rumore non sono un test della
+tesi), `r30` troppo severo (taglierebbe stop legittimi). `atr14` serve come controprova: se
+la mediana di `r15` e l'ATR a 1 minuto raccontano scale molto diverse, la misura va riletta
+prima di usarla.
+
+**Cosa NON decide questa regola.** Non è un'ottimizzazione: non si prova `MinStopPoints` a
+più valori per vedere quale rende. Il numero esce dalla misura del rumore, che è una
+proprietà dello strumento e non dei risultati della strategia.
+
+**Il seguito resta vincolato.** `MinStopPoints` e `MaxStopPoints` sono **filtri**: tolgono
+trade. Quando si applicano, devono passare il **test split‑sample** sull'IS come ogni altro
+filtro. Se non lo passano, non entrano, qualunque cosa dica il netto.
+
+**Resta off‑limits** il tetto a 100 punti che nei dati dello Stage 1 rende il campione
+positivo (n=33, avg +$146, PF 1,46). Non è pre‑registrato come valore e sarebbe scelto
+guardando il risultato. Tetti diversi da 250 si testano allo Stage 4, dopo lo Stage 3, con il
+range dichiarato prima.
