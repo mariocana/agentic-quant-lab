@@ -27,9 +27,27 @@
 
   CHART: lo STESSO dello Stage 1 - @NQ 1 min, Globex 24h, timezone
          Exchange, ~100 giorni. MaxBarsBack >= 30.
+
+  OUTPUT SU FILE, non nell'Output Window.
+    - LogPath e' un nome FISSO, non casuale: il file e' sempre lo stesso,
+      quindi si sa sempre dove guardare, e quando ci sara' una cartella
+      sincronizzata lo si legge per percorso senza chiederne il nome.
+    - ResetFile 1 svuota il file all'inizio di ogni ricalcolo, cosi'
+      contiene SOLO l'ultimo run. Print(File(...)) APPENDE: senza il
+      reset il file crescerebbe fra i run, cioe' sarebbe lo stesso
+      problema dell'Output Window spostato altrove.
+    - MC NON crea la cartella: creare C:\mc_out PRIMA di lanciare,
+      altrimenti non scrive niente e non lo segnala.
+    - Se FileDelete non compila in questa versione di MC: commentare il
+      blocco del reset e cambiare LogPath a ogni run. E' un input,
+      quindi non serve ricompilare.
+    - Togliere l'indicatore dal chart quando si e' finito: se il chart
+      si aggiorna, l'indicatore ricalcola e riscrive il file.
   ===================================================================== }
 
 Inputs:
+    LogPath("C:\mc_out\vwap_noise.txt"),
+    ResetFile(1),              { 1 = svuota il file all'inizio del run }
     WinStart(900),             { inizio finestra ingressi, ora del chart }
     WinEnd(1400),              { fine finestra ingressi }
     ATRLen(14),
@@ -38,12 +56,16 @@ Inputs:
 Variables:
     atr14(0), r5(0), r15(0), r30(0);
 
+{ ===== reset del file: una volta per ricalcolo ===== }
+if ResetFile = 1 and CurrentBar = 1 then
+    FileDelete(LogPath);
+
 if Time >= WinStart and Time <= WinEnd and Mod(Time, 100) = 0 then begin
     atr14 = AvgTrueRange(ATRLen);
     r5    = Highest(High, N5)  - Lowest(Low, N5);
     r15   = Highest(High, N15) - Lowest(Low, N15);
     r30   = Highest(High, N30) - Lowest(Low, N30);
-    Print("VWAP NOISE ", Date:8:0, " ", Time:5:0,
+    Print(File(LogPath), "VWAP NOISE ", Date:8:0, " ", Time:5:0,
           " atr14=", atr14:8:2,
           " r5=",    r5:8:2,
           " r15=",   r15:8:2,
