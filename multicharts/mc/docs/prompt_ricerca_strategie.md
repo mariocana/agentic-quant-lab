@@ -48,11 +48,25 @@ Il numero che decide tutto è:
 
 Deve stare sotto $500. Con un MLL di $2.000 significa quattro perdite piene di margine.
 
-Tradotto in punti, per gli strumenti plausibili:
-  - MNQ (Nasdaq micro), $2 per punto   -> stop massimo 250 punti
-  - MES (S&P micro),    $5 per punto   -> stop massimo 100 punti
-  - MGC (oro micro),    $10 per punto  -> stop massimo  50 punti
-  - M2K (Russell micro),$5 per punto   -> stop massimo 100 punti
+Tradotto in punti, per gli strumenti plausibili. VERIFICA tick e moltiplicatori su CME
+prima di usare questi numeri: la colonna del range giornaliero e' a memoria e va controllata.
+
+  strumento              $/punto   stop max a $500   range giorn. tipico   il vincolo stringe?
+  MGC   (oro micro)        $10        50 punti           ~90 punti           MOLTO
+  MNQ   (Nasdaq micro)      $2       250 punti         ~300-600 punti        MOLTO
+  MES   (S&P micro)         $5       100 punti          ~60-80 punti         poco
+  M2K   (Russell micro)     $5       100 punti          ~30-40 punti         no
+  MYM   (Dow micro)       $0,50     1.000 punti        ~400-700 punti        quasi mai
+
+Nota importante, perche' cambia dove conviene cercare: su MYM $500 di rischio sono MILLE
+punti Dow, cioe' piu' di qualunque escursione giornaliera, mentre il costo andata-ritorno in
+dollari resta dello stesso ordine degli altri indici. Il muro che ha ucciso tre strategie su
+@NQ su MYM non esiste. Nessuna delle quattro strategie morte e' stata provata su MYM, M2K o
+MES: sono terreno vergine, e una logica gia' nota applicata la' e' una proposta legittima,
+purche' tu dichiari il rischio per trade in punti.
+
+Vale anche il contrario: su MGC e MNQ il vincolo e' severo, quindi una candidata su quegli
+strumenti deve avere uno stop dichiarato e piccolo, non "stop al minimo precedente".
 
 E il drawdown su cinque anni, sempre per micro, deve stare sotto $1.000 (storico) e sotto
 $2.000 al 95° percentile di un Monte Carlo con riordinamento.
@@ -98,6 +112,9 @@ rispetta il profilo e non passa il gate.
    Tre strategie indipendenti, logiche diverse, tutte morte sullo stesso numero. Il
    nozionale del Nasdaq è troppo grande perché il rischio per trade entri in un MLL da
    $2.000, anche in micro. Serve una ragione forte e specifica per tornarci.
+   ATTENZIONE a cosa esclude questo punto: esclude **@NQ**, non il breakout. Lo stesso
+   breakout su MYM, M2K o MES è una proposta legittima, perché là il vincolo sull'unità di
+   rischio non stringe. L'anti-pattern è lo strumento, non la logica.
 
 2. UNITÀ DI RISCHIO CHE SCALA CON LA VOLATILITÀ REALIZZATA SENZA UN TETTO.
    Una strategia con "stop = ampiezza del range di sessione" sembrava eccellente su quattro
@@ -218,10 +235,25 @@ delle strategie, è quanto costa tenere un micro Nasdaq in un breakout direziona
 
 | Famiglia | Perché è esclusa |
 |---|---|
-| Trend following / breakout con R:R 2–3 e WR 35–40% | il profilo richiesto è WR ≥ 55% con R:R 0,5–1. È la maggior parte di quello che si trova pubblicato |
+| **Trend following** | fa WR basso e R alto **per costruzione**: lascia correre i vincenti, ed è quello che lo fa funzionare. Non si può portare a WR ≥ 55% senza distruggere il meccanismo. Escluso su **qualunque** strumento |
 | Overnight, swing, multi‑day, pair trading | flat EOD obbligatorio |
 | Bassa frequenza (< 40 trade/anno) | regola di inattività della prop |
 | Opzioni, order flow, dati COT in tempo reale | dati e strumenti che non abbiamo |
+
+### Il breakout NON è escluso, e questo va letto con attenzione
+
+Il breakout è un **ingresso**; sono le **uscite** a decidere WR e R:R. Un breakout con target
+piccolo e fisso è ad alto WR e sta dentro il profilo. La prova è nei nostri stessi dati: una
+delle strategie morte era un breakout con target a 1R e aveva **WR 52,7% con R:R 0,955**,
+dentro il profilo — è morta per mancanza di edge, non per il profilo.
+
+Quello che è escluso è il **breakout con uscita «lascia correre»** (R:R 2–3, WR 35–40%), che
+è la variante più pubblicata. E separatamente è escluso il **breakout direzionale intraday su
+@NQ**, per l'unità di rischio e non per la famiglia.
+
+**Breakout su altri strumenti è benvenuto.** Vedi la tabella degli strumenti: su MYM e M2K il
+vincolo sull'unità di rischio praticamente non stringe, e nessuna delle quattro strategie
+morte è stata provata là.
 
 # COSA DEVI AGGIUNGERE A QUESTA MEMORIA
 
