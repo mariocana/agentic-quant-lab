@@ -967,3 +967,86 @@ abbiano un edge e cadano sul rischio. Siamo a quattro su sei, e due sono morte s
 Ma la domanda che ne esce è la stessa di quel trigger, posta meglio: se un edge con
 **t = 3,01** non passa, il problema è il rapporto fra l'MLL di $2.000 e il target di $3.000,
 non il catalogo delle strategie.
+
+## 🔔 Il trigger sul Gate 3 è scattato (15/10/2026)
+
+Il trigger era armato il 01/10 con queste parole: «*se tutte le candidate falliscono il
+Gate 3 pur avendo un edge, allora il gate è mal specificato, si ri-deriva dal primo passaggio
+e si ri-passa tutto il cimitero*». Quattro delle sei sono morte di **causa B** — edge
+presente, rischio fuori budget. La condizione è soddisfatta.
+
+Ma non è scattato per conteggio: è scattato perché c'è **un numero**.
+
+### VaultBreak passa l'eval vera con il 90% di probabilità
+
+Simulazione di **primo passaggio** sul P&L giornaliero misurato dell'IS 2020‑2024, 2.000
+riordinamenti dei giorni: raggiungere **+$3.000 prima di −$2.000 dal picco**.
+
+| rischio per trade | P(passa) | giorni mediani |
+|---|---|---|
+| **VaultBreak $120** *(= 1 micro, la strategia così com'è)* | **90,0%** | **141** |
+| VaultBreak $150 | 83,8% | 101 |
+| DriftPullback $120 | 63,6% | 137 |
+| GoldA $120 | 56,6% | 109 |
+| ORB $120 | 49,2% | 221 |
+
+**La size minima è 1 micro**, e la perdita media realizzata di VaultBreak è **$121 per
+micro**: quindi la riga a $120 non è una taratura, è **la strategia senza modifiche**.
+
+Sul percorso storico, nell'ordine vero: a $120 arriva a +$3.000 in **181 giorni operativi**
+con un drawdown massimo trailing di **$1.759** — sotto l'MLL di $2.000.
+
+### Perché il Gate 3 la vietava
+
+Gate 3 chiede: DD al 95° percentile su cinque anni ÷ 10 ≤ $2.000. VaultBreak dava **$3.109**.
+Giusto — su cinque anni quel drawdown esiste.
+
+**Ma l'eval non chiede di sopravvivere cinque anni.** Chiede +$3.000 prima di −$2.000, e
+questo accade in **141 giorni mediani**. La strategia **finisce prima** che il drawdown grande
+abbia il tempo di formarsi.
+
+Il Gate 3 misura la sopravvivenza di un conto tenuto aperto per sempre. L'eval è un problema
+di **primo passaggio** su una finestra breve, con la possibilità di ritentare. Sono due
+domande diverse, e il gate risponde a quella sbagliata.
+
+### Quattro cautele, nessuna delle quali ho risolto
+
+1. **È tutto in-sample.** VaultBreak è morta al Gate 3, quindi **l'OOS non è mai stato
+   lanciato**. Questi numeri vengono dal 2020‑2024 su cui la strategia era già stata
+   ottimizzata allo Stage 4. **Non sono una previsione.**
+2. **Il riordinamento è un limite superiore.** Rompe il raggruppamento delle perdite, che su
+   un breakout @NQ è reale (le perdite si addensano nei regimi laterali). Il 90% va letto
+   come il massimo ottenibile, non come la stima centrale.
+3. **MLL semplificata**: non ho modellato il blocco a $50.100 (che renderebbe le cose più
+   facili) né la regola di consistenza al 50% (che le renderebbe più difficili).
+4. **Non riscrivo i gate.** Il trigger dice di ri-derivare il criterio dal primo passaggio e
+   di ri-passare il cimitero: è una decisione dell'utente, non mia. Qui c'è l'evidenza, non
+   la modifica.
+
+### Il passo che decide, ed è uno solo
+
+**L'OOS di VaultBreak su 2025‑2026.** È un run. Se il primo passaggio tiene fuori campione,
+il Gate 3 va ri-derivato e il cimitero va ri-aperto per le quattro di causa B. Se non tiene,
+il Gate 3 aveva ragione e il trigger si disarma.
+
+Non serve altro prima di quello.
+
+### E il basket non è la strada — misurato, non supposto
+
+Correlazione dei P&L giornalieri: **Gold è indipendente da tutto** (−0,12…+0,00), ma il
+blocco @NQ è a **0,39–0,50**. Sei strategie valgono **due fonti indipendenti**, non cinque.
+
+E peggio: **ogni basket è peggiore del suo miglior componente singolo.**
+
+| basket | n | E | R max ammesso | RATIO |
+|---|---|---|---|---|
+| VaultBreak da sola | 723 | 0,0952 | $60 | **0,63** |
+| VaultBreak + GoldA | 2.003 | 0,1135 | **0** | 0,00 |
+| tutte e cinque | 7.093 | 0,0685 | **0** | 0,00 |
+
+Il motivo non l'avevo previsto: **il costo fisso scala col numero di trade, il budget di
+drawdown no.** Un basket da 6.329 trade porta **$12.658 di costi** contro un budget di
+drawdown di $1.000. Aggiungere strategie aggiunge più costo che diversificazione.
+
+**Lo Stage 8 va quindi ripensato**: non come somma di strategie deboli, ma come scelta della
+*meno* frequente fra quelle che passano il primo passaggio.
