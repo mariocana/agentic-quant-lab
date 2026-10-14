@@ -7,14 +7,14 @@
   "updated": "2026-10-13",
   "groups": [
    {
-    "title": "1. DriftPullback — l'unica viva in pipeline, e ci sono tre cose nuove",
-    "note": "cinque morte, una bloccata",
+    "title": "1. DriftPullback — Stage 2 sull'IS, con la soglia già scritta",
+    "note": "Stage 1 passato 15/10",
     "items": [
-     "**Il sorgente originale v2.1 è arrivato** col materiale del 13/10: lo Stage 1 torna a essere una verifica di **meccanica** e non di fedeltà. Si usa quello dell'autore, non la nostra riscrittura dal PDF",
-     "**Sblocco**: drift in unità di ATR invece che in percentuale di prezzo. **Una riga**, già pre-registrata",
-     "**Contraddizione nei numeri dichiarati, da risolvere**: l'autore dichiara WR 65% con R:R 0,50, ma a R:R 0,50 il null è **66,7%** — quindi E sarebbe **−0,025** e il PF 0,93, in perdita. Contraddice l'avg $77 dichiarato. La spiegazione probabile sono le **perdite parziali** da uscita a tempo (su VaultBreak lo stop dichiarato era 100 punti e la perdita media realizzata 60,6)",
-     "**Regola di metodo che ne esce**: con un'uscita a tempo il R:R dichiarato **non** è quello realizzato. La formula di fattibilità va alimentata con vincita e perdita media **misurate**",
-     "**Lo stop dichiarato è sopra il budget**: 80 punti NQ = $160/micro contro $60–110. A budget su MNQ sono 55 punti = 0,26 ATR, dentro il rumore; **su MYM 220 punti = 0,65 ATR**. Il porting è una variante da pre-registrare prima, non da scegliere dopo"
+     "**Stage 2 IS 2020‑01‑01 → 2024‑12‑31**, `DriftMode 0`, 1 contratto, $7,50/contratto, `SizeMode 1`, `ExitMode 0`, Data1 5m + Data2 15m",
+     "**Più il run `DriftMode 1` a `DriftThreshAtr 0.56`** come variante pre‑registrata: è la mediana dell'equivalente misurato sul log, non un numero scelto",
+     "**Soglia pre‑registrata: WR ≥ 70%.** Osservato sul 2026: 64,4%. Serve che lo stop a 0,38 ATR invece di 0,22 porti +5,6 punti di win rate. **Se l'IS dà WR < 68% la strategia è chiusa**: nessuna variante muove il WR di quell'ordine",
+     "**Manca il test ×10** per chiudere formalmente il Gate 1: due run identici con `BaseCts` 1 e 10",
+     "Nota: il run sul 2026 **penalizza** la strategia (stop fisso in punti, volatilità 1,75× la norma). È l'opposto di Gold, dove il 2026 la lusingava — e il motivo per cui il verdetto è sospeso e non un kill"
     ]
    },
    {
@@ -394,9 +394,10 @@
    "path": "mc/strategies/DriftPullback",
    "stages": {
     "0": "pass",
-    "1": "blocked"
+    "1": "pass",
+    "2": "active"
    },
-   "note": "Codice pronto (`DriftPullback.txt`, due serie dati: 5m esecuzione + 15m segnale). Drift 1h ≥ 0.10% + ancora inclinata → si compra la prima barra 5m **contro** il drift entro 30 min. **L'unica candidata che nasce già col profilo prop**: WR 65%, R:R 0.5 (stop 80 / target 40–50), flat 14:55 CT e cap di perdita giornaliera scritto nella strategia (max 2 loss/giorno = $322 per micro). Sorgente non fornito dal corso: il porting viene dal walkthrough del PDF → lo Stage 1 verifica anche la fedeltà.",
+   "note": "**Stage 1 (15/10): la contraddizione è risolta e l'autore è onesto.** WR misurato **64,4%** contro 65% dichiarato; R:R realizzato **0,596** e non 0,50, perché 16 trade escono con `Flat` prima dello stop pieno — lo stesso meccanismo misurato su VaultBreak. avg trade **$42** contro $77. Eccesso sul caso **+1,7 pp**, E **0,0366**, **RATIO 0,33**. **Verdetto sospeso, non kill**: il run è su 100 giorni del 2026, dove l'ATR di NQ è 367 contro i 210 del 2020‑2024. Lo stop è fisso a 80 punti, quindi vale **0,22 ATR nel 2026 e 0,38 nell'IS**: il WR è strutturalmente depresso qui. È l'immagine speculare di Gold, e applicare un kill sarebbe lo stesso errore al contrario. **Soglia pre‑registrata: WR ≥ 70% sull'IS.**",
    "metrics": {
     "dichiarate dall'autore": "avg $77 · WR 65% · t-stat OOS 2.2 · live su funded",
     "worst day strutturale": "2 stop = $3.220 su NQ, $322 su MNQ → max 3 micro sotto il daily loss Apex"
@@ -421,9 +422,13 @@
     {
      "date": "2026-09-28",
      "text": "Entra in pipeline. Motivo: porta il lato short e soprattutto il **cap di perdita giornaliera strutturale** (MaxLossesPerDay 2), l'unica del corso in cui il worst day è noto prima del backtest invece di essere scoperto nell'equity curve. Rischio principale: è la quinta strategia su NQ e la terza momentum → correlazione da misurare subito dopo lo Stage 2, non al gate 8."
+    },
+    {
+     "date": "2026-10-15",
+     "text": "**Stage 1: 317 trade su 97 giorni, e la domanda del run è risolta.** Meccanica corretta: 0/317 overnight, massimo 4 trade/giorno come da `MaxTradesPerDay`, uscite tutte coi nomi previsti. **Manca il test ×10.** **I numeri realizzati contro i dichiarati**: WR **64,4%** contro 65% — l'autore è onesto; R:R realizzato **0,596** e non 0,50, perché 16 trade escono con `Flat` prima dello stop pieno, lo stesso meccanismo già misurato su VaultBreak (stop dichiarato 100 punti, perdita media 60,6); avg trade **$42** contro $77. Conferma la regola: con un'uscita a tempo il R:R dichiarato non è quello realizzato. **Il criterio**: eccesso sul caso **+1,7 pp** (serve +5,6…+6,5), E **0,0366** (serve ≥ 0,115), DD_R 24,5, **RATIO 0,33**. **Ma il verdetto è sospeso, non è un kill.** Il run è su 100 giorni del 2026, dove l'ATR di NQ misura **367 punti contro i 210 del 2020‑2024**. Lo stop è **fisso a 80 punti**, quindi vale **0,22 ATR nel 2026 e 0,38 nell'IS**: qui lo stop sta dentro il rumore e il WR è strutturalmente depresso. **È l'immagine speculare di Gold** — là il 2026 lusingava la strategia, qui la penalizza — e applicare un kill su questo campione sarebbe lo stesso errore al contrario. **Sul blocco**: dal log, la soglia `DriftThreshPct 0.10` tradotta in ATR **oscilla fra 0,29 e 1,06 anche dentro soli 100 giorni**, un fattore 3,6, perché dipende da `atr2` che varia molto più del prezzo. Il drift in percentuale è quindi una soglia **inversa alla volatilità**: arma più facilmente quando il mercato è agitato. Il blocco è più grave di come era descritto. Ma alla soglia equivalente di **0,56 ATR** i due modi armano 1.705 barre contro 1.782 con **1.606 in comune**: il 6% di armature diverse, quindi su questa finestra `DriftMode 1` non cambia l'ordine di grandezza dell'edge. **Pre‑registrato prima del run dello Stage 2**: tenendo R:R 0,596 e DD_R 24,5, `RATIO ≥ 1` richiede **WR ≥ 69,6%**. Osservato 64,4%: serve che lo stop a 0,38 ATR porti **+5,6 punti di win rate**. **Se l'IS dà WR < 68%, chiusa.**"
     }
    ],
-   "next": "**Bloccata**: serve una serie @NQ non back‑adjusted (o il drift riscritto in ATR) prima di poter fare lo Stage 1. Vedi la sezione dati in SPEC.md."
+   "next": "**Stage 2 sull'IS 2020‑2024**, `DriftMode 0`, più il run `DriftMode 1` a `DriftThreshAtr 0.56` come variante pre‑registrata. **Se l'IS dà WR < 68% la strategia è chiusa.** Manca anche il **test ×10** per chiudere formalmente il Gate 1."
   },
   {
    "name": "Evento macro",

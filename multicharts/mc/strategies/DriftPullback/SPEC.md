@@ -319,3 +319,80 @@ parziali da uscita a tempo, come su VaultBreak: stop dichiarato 100 punti, perdi
 realizzata 60,6), allora il profilo torna coerente e si misura sul serio.
 
 **Questa è la domanda del run.** Non «funziona?», ma «quali sono i numeri realizzati?».
+
+## Risultato dello Stage 1 (15/10/2026) — la domanda è risolta, e il verdetto è sospeso
+
+317 trade su 97 giorni (2026‑05‑29 → 10‑14), `DriftMode 0`, 1 contratto, $7,50/contratto.
+Report `reports/DPB_S1_100gg_mode0.xlsx`, log `DPB_S1_drift_log.txt`.
+
+### Meccanica
+
+0/317 overnight · massimo 4 trade al giorno = `MaxTradesPerDay` · uscite tutte con i nomi
+previsti (`L.TP` 115, `S.TP` 82, `L.SL` 55, `S.SL` 48, `L.Flat` 6, `S.Flat` 10, EOD 1) ·
+long 176 / short 141. **Manca il test ×10**, che va fatto per chiudere il Gate 1.
+
+### I numeri realizzati contro quelli dichiarati
+
+| | dichiarato | misurato |
+|---|---|---|
+| WR | 65% | **64,4%** |
+| R:R | 0,50 (da 40/80) | **0,596** |
+| avg trade | $77 | **$42** |
+| perdita media | 80 pt = $160/micro | 77,9 pt = **$156/micro** |
+
+**La contraddizione è risolta e l'autore è onesto sul WR.** Il R:R realizzato è più alto del
+dichiarato perché 16 trade escono con `Flat` prima dello stop pieno — esattamente il
+meccanismo già misurato su VaultBreak. **Conferma la regola**: con un'uscita a tempo, il R:R
+dichiarato non è quello realizzato.
+
+### Il criterio di fattibilità, su questi numeri
+
+null a R:R 0,596 = 62,7% · WR 64,4% → **eccesso +1,7 pp** (serve +5,6…+6,5)
+**E = 0,0366** (serve ≥ 0,115) · DD_R = 24,5 · **RATIO = 0,33**
+
+### Perché il verdetto è sospeso e non è un kill
+
+Questo run è su **100 giorni del 2026**, dove l'ATR di NQ misura **367 punti** contro i
+**210** del 2020‑2024: un regime **1,75×**. Lo stop è **fisso a 80 punti**, quindi:
+
+| | 80 punti valgono | effetto atteso sul WR |
+|---|---|---|
+| 2026 (questo run) | **0,22 ATR** | stop dentro il rumore → WR **depresso** |
+| 2020‑2024 (l'IS) | **0,38 ATR** | stop con spazio → WR **più alto** |
+
+È l'immagine speculare di Gold Asian Range: là il 2026 lusingava la strategia, qui la
+penalizza. E è esattamente il caso per cui dopo Gold abbiamo scritto che **i numeri economici
+di un campione recente non anticipano il Gate 2**. Applicare qui un kill sarebbe lo stesso
+errore, al contrario.
+
+### Lo sblocco in ATR: il blocco è peggiore del previsto, ma il modo 1 non è una strategia nuova
+
+Dal log, la soglia `DriftThreshPct 0.10` tradotta in unità di ATR **oscilla fra 0,29 e 1,06
+anche dentro questi soli 100 giorni** — un fattore **3,6** — perché dipende da `atr2`, che
+varia molto più del prezzo. Il drift in percentuale è quindi una soglia **inversa alla
+volatilità**: arma più facilmente quando il mercato è agitato. Il blocco è reale e più grave
+di come era descritto.
+
+Ma alla soglia equivalente (**0,56 ATR**, la mediana dell'equivalente misurato) i due modi
+armano 1.705 barre contro 1.782, con **1.606 in comune**: ~90% di sovrapposizione, il 6% di
+armature diverse. **Su questa finestra `DriftMode 1` non cambia l'ordine di grandezza
+dell'edge.** La sua utilità vera è sull'IS, dove la divergenza fra i due modi è maggiore.
+
+# Pre‑registrazione 8 — la soglia di WR sull'IS (15/10/2026, prima del run)
+
+Stage 2 sull'IS **2020‑01‑01 → 2024‑12‑31**, `DriftMode 0`, 1 contratto, $7,50/contratto,
+`SizeMode 1`, `ExitMode 0`. Più il run `DriftMode 1` a `DriftThreshAtr 0.56` come variante
+pre‑registrata.
+
+Tenendo il R:R realizzato a 0,596 e il DD_R a 24,5, il criterio `RATIO ≥ 1` richiede:
+
+| DD_R | E richiesta | **WR richiesto** |
+|---|---|---|
+| **24,5** (misurato) | 0,1103 | **≥ 69,6%** |
+| 21 (se le uscite fossero più binarie) | 0,0945 | ≥ 68,6% |
+
+**La soglia è WR ≥ 70% sull'IS.** Osservato sul 2026: 64,4%. Serve che lo stop a 0,38 ATR
+invece di 0,22 porti **+5,6 punti di win rate**.
+
+Se l'IS dà WR < 68%, la strategia è chiusa: nessuna variante pre‑registrata muove il WR di
+quell'ordine, e il resto del profilo è già misurato.
