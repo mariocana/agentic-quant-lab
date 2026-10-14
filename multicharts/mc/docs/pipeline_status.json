@@ -7,14 +7,14 @@
   "updated": "2026-10-13",
   "groups": [
    {
-    "title": "1. Criterio operativo: E ≥ 0,115 su M2K/MYM, o DD_R sotto 21",
-    "note": "ATR misurati 15/10",
+    "title": "1. DriftPullback — l'unica viva in pipeline, e ci sono tre cose nuove",
+    "note": "cinque morte, una bloccata",
     "items": [
-     "**Le due strade, in numeri**: una candidata passa se promette **E ≥ 0,115** (edge lordo in unità di R) con DD_R ≈ 25, **oppure E ≥ 0,095** se il disegno delle uscite tiene DD_R ≤ 21. VaultBreak, la nostra migliore, ha E 0,0952 e DD_R 25,6 → RATIO 0,83",
-     "**La via del DD_R è la più economica e non richiede più edge**: scende con una distribuzione di P&L meno dispersa, cioè più esiti binari stop/target e meno uscite a tempo parziali. Da provare su **VaultBreak**, che ha il RATIO migliore",
-     "**Strumenti**: **M2K e MYM** (stop a 0,35–0,68 ATR al budget, tick $0,50). Evitare **MES** (tick $1,25) e **MGC** (tick $1,00). **MNQ è ultimo**: 0,14–0,26 ATR, lo stop sta dentro il rumore",
-     "**RTY è il più stabile fra i regimi** (2026 = 1,15× il 2020‑24, contro 3,36× dell'oro e 1,75× di NQ): per una strategia con rischio dipendente dalla volatilità è una proprietà che vale",
-     "**Candidate v4 da valutare**: IB-C Breakout e IB-C Failure **su MYM**. Test di falsificazione: eccesso sul caso ≥ +8 pp a primo tocco. È una misura, non un backtest, e il risolutore first-touch esiste in `python/alpha-quant/legacy/`"
+     "**Il sorgente originale v2.1 è arrivato** col materiale del 13/10: lo Stage 1 torna a essere una verifica di **meccanica** e non di fedeltà. Si usa quello dell'autore, non la nostra riscrittura dal PDF",
+     "**Sblocco**: drift in unità di ATR invece che in percentuale di prezzo. **Una riga**, già pre-registrata",
+     "**Contraddizione nei numeri dichiarati, da risolvere**: l'autore dichiara WR 65% con R:R 0,50, ma a R:R 0,50 il null è **66,7%** — quindi E sarebbe **−0,025** e il PF 0,93, in perdita. Contraddice l'avg $77 dichiarato. La spiegazione probabile sono le **perdite parziali** da uscita a tempo (su VaultBreak lo stop dichiarato era 100 punti e la perdita media realizzata 60,6)",
+     "**Regola di metodo che ne esce**: con un'uscita a tempo il R:R dichiarato **non** è quello realizzato. La formula di fattibilità va alimentata con vincita e perdita media **misurate**",
+     "**Lo stop dichiarato è sopra il budget**: 80 punti NQ = $160/micro contro $60–110. A budget su MNQ sono 55 punti = 0,26 ATR, dentro il rumore; **su MYM 220 punti = 0,65 ATR**. Il porting è una variante da pre-registrare prima, non da scegliere dopo"
     ]
    },
    {

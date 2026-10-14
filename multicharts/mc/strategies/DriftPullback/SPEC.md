@@ -176,3 +176,81 @@ dall'OOS.
 
 Non accettare la terza via (usare la serie aggiustata e tirare avanti): renderebbe l'unico
 parametro non ottimizzabile della strategia dipendente dall'anno.
+
+---
+
+# Aggiornamento 15/10/2026 — tre cose cambiate, e una contraddizione nei numeri dichiarati
+
+## 1. Il sorgente originale è arrivato
+
+Sopra è scritto «**Il sorgente non è nel repo**: il codice in `DriftPullback.txt` è una
+riscrittura dal walkthrough del PDF → lo Stage 1 è una verifica di *fedeltà*». **Non è più
+vero.** Il materiale del protocollo del 13/10 contiene la v2.1 dell'autore in
+`education/protocollo/9.TheBridge/STRATEGIES/PROP FIRM NATIVE LOW RR/Drift Pullback.txt`.
+
+Lo Stage 1 torna quindi a essere una verifica di **meccanica** e non di fedeltà. Si usa il
+sorgente dell'autore, non la nostra riscrittura.
+
+Dalla v2.1 si impara anche che `SizeMode 1` (default) è a **lotto fisso**: solo `SizeMode 2`
+compone sul cushion. **Mai usare 2.**
+
+## 2. Il blocco resta, e la via di sblocco è una riga
+
+Il drift è ancora `(Close − Close[n]) / Close[n] × 100` sul prezzo grezzo, e il commento del
+codice dell'autore lo dichiara esplicitamente («*on the raw 15m close, UNCHANGED*»). Su un
+continuous back‑adjusted è inaffidabile, e adesso abbiamo la conferma indipendente dalla
+misura su @GC: il 2020 mostrava un prezzo medio d'ingresso di 2.459 quando l'oro reale stava
+fra $1.500 e $2.070.
+
+**Sblocco pre‑registrato**: drift in unità di ATR invece che in percentuale,
+`(Close − Close[n]) / AvgTrueRange(14)`. Una riga.
+
+## 3. Lo stop dichiarato è sopra il budget
+
+`LongSLpts 80` su @NQ vale **$160 per micro**, contro un budget di **$60–110** imposto dai
+gate sul drawdown. Con gli ATR ora misurati (NQ 210 punti, YM 339):
+
+| | punti | $/micro | in ATR |
+|---|---|---|---|
+| dichiarato, MNQ | 80 | **$160** | 0,38 |
+| a budget, MNQ | 55 | $110 | **0,26** — dentro il rumore |
+| a budget, MYM | 220 | $110 | **0,65** |
+
+Su MNQ, per stare nel budget, lo stop finisce dentro il rumore. **Su MYM lo stesso budget dà
+0,65 ATR.** Il porting è una variante da pre‑registrare, non una decisione da prendere dopo
+aver visto i risultati.
+
+## 4. La contraddizione da risolvere, scritta prima del run
+
+Il profilo dichiarato dall'autore è **avg $77, WR 65%, t‑stat OOS 2,2**. Con `LongSLpts 80` e
+`LongTPpts 40` il R:R dichiarato è **0,50**, e a R:R 0,50 il «null» (probabilità di toccare il
+target prima dello stop in un random walk senza drift) è **66,7%**.
+
+**Un WR del 65% a R:R 0,50 sta SOTTO il null.** L'edge in unità di R sarebbe
+E = 0,65 × 0,50 − 0,35 = **−0,025**, e il PF 0,93: in perdita. Questo **contraddice** l'avg
+trade di $77 dichiarato dall'autore.
+
+La spiegazione più probabile non è che l'autore sbagli: è che il **R:R realizzato sia più alto
+di quello dichiarato**, perché l'uscita a tempo e `MaxLossesPerDay` producono perdite
+*parziali*. Lo abbiamo già visto misurato su VaultBreak, dove lo stop dichiarato era 100
+punti e la perdita media realizzata **60,6**.
+
+**Conseguenza di metodo, che vale per tutte le candidate future**: con un'uscita a tempo, il
+R:R dichiarato **non** è il R:R realizzato, e la formula di fattibilità va alimentata con
+vincita media e perdita media **misurate**, non con i TP/SL della spec.
+
+E una cautela su quanto avevo scritto sulla via «abbassare DD_R»: le uscite parziali alzano
+il R:R realizzato **e** alzano la dispersione del P&L, quindi alzano anche DD_R. Le due cose
+si muovono insieme, quindi ridurre DD_R togliendo uscite parziali **non è gratis**: costa
+R:R realizzato. L'avevo presentata come la via che «non richiede più edge»: è più onesto dire
+che è un compromesso, e che il saldo va misurato.
+
+## Che cosa fare, nell'ordine
+
+1. Sostituire `DriftPullback.txt` con il sorgente v2.1 dell'autore (verifica di meccanica,
+   non più di fedeltà).
+2. Applicare la riga di sblocco: drift in ATR.
+3. Stage 1 su ~100 giorni, 1 contratto, `ShowLog` attivo, `SizeMode 1`. Misurare
+   **vincita media, perdita media, DD_R realizzati** — non assumerli dai TP/SL.
+4. Solo allora decidere strumento e budget, con la formula di fattibilità alimentata da
+   numeri misurati.
