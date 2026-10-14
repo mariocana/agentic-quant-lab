@@ -146,6 +146,43 @@ valutazione. Se concludi che i gate sono troppo severi, scrivilo come osservazio
 separata e vai avanti a proporre dentro i vincoli. Non riscrivere i vincoli per far
 entrare una candidata: è il modo in cui si costruiscono backtest che non sopravvivono.
 
+# DOVE CERCARE — la forma dell'uscita, non l'etichetta della famiglia
+
+Un orientamento per non farti perdere tempo. È un suggerimento, non un recinto: se trovi
+qualcosa che rispetta i vincoli e non sta in questa lista, proponila comunque.
+
+Il profilo richiesto (WR ≥ 55%, R:R 0,5–1, flat EOD) non seleziona una *famiglia*: seleziona
+una **forma dell'uscita**. Serve una logica che:
+
+    PRENDE PROFITTO PRESTO  e  DÀ SPAZIO ALLO STOP
+
+Questo è il criterio. Qualunque etichetta che produca questa forma va bene; qualunque
+etichetta che la violi non va bene, anche se è della famiglia "giusta".
+
+Sotto-famiglie che la producono per costruzione, da cui conviene partire:
+
+  - MEAN REVERSION INTRADAY su estremi di volatilità: deviazioni dal VWAP, bande intraday,
+    estremi di un range di sessione. Entri all'estremo, il target è la media (vicino), lo
+    stop sta oltre l'estremo (lontano). È la forma giusta per definizione.
+  - FADE DEL GAP DI APERTURA.
+  - PATTERN DI ESAURIMENTO ORARIO (time-of-day effects), purché l'uscita sia a target fisso
+    e non "lascia correre".
+  - BREAKOUT CON TARGET PICCOLO E FISSO. Sì, breakout: è l'ingresso che non conta, conta
+    l'uscita. Una delle nostre strategie morte era un breakout con target a 1R e stava
+    dentro il profilo con WR 52,7% e R:R 0,955.
+  - CONTINUAZIONE SU PULLBACK con target fisso piccolo.
+
+## Il rovescio della medaglia di questo profilo, da tenere presente
+
+WR alto con R:R sotto 1 significa che **si perde più di quanto si vinca per singolo trade**.
+Quindi una serie sfortunata costa molto, ed è esattamente il motivo per cui esiste il nostro
+Gate 3 (Monte Carlo sul 95° percentile del drawdown): due delle strategie morte sono morte
+là e non al Gate 2.
+
+Conseguenza pratica su cosa preferire: fra due candidate con lo stesso profilo, **preferisci
+quella con lo stop piccolo in valore assoluto**, non solo piccolo in rapporto al target. È
+il valore assoluto che decide se una serie di sei perdite sfonda l'MLL.
+
 # FONTI — da dove partire, non dove fermarsi
 
 Questa è una lista di partenza per non perdere i primi venti minuti, non un recinto. Segui
@@ -304,6 +341,27 @@ ripropone nessuno la prossima volta.
 
 Da cinque a otto candidate serie, non venti superficiali. Preferisco tre proposte dove so
 cosa misurare domani mattina, che quindici nomi da cercare.
+
+## QUASI-CANDIDATE: usa questa valvola invece di inventare un numero
+
+Se una strategia è buona ma sfora UN SOLO vincolo — stop a $600 per micro invece di $500,
+WR 53% invece di 55% — proponila comunque, marcala **QUASI-CANDIDATA** e scrivi quale
+vincolo sfora e di quanto.
+
+Questo esiste perché il rischio peggiore di questa richiesta è che tu, per consegnarmi otto
+candidate, mi dia un parametro inventato. **Preferisco tre candidate vere e quattro
+quasi-candidate dichiarate, che otto candidate costruite a tavolino.** Un numero stimato va
+marcato come stimato; un numero che non hai va dichiarato mancante.
+
+Tre regole su come usarla:
+
+  - **Un solo vincolo sforato.** Due o più e non è una quasi-candidata, è un'altra cosa:
+    scartala e mettila nella lista degli scarti.
+  - **Di' quanto sfora, non "poco".** $600 contro $500 è 1,2 volte il limite; le tre
+    strategie morte su @NQ stavano fra 3 e 6 volte. Un 1,2× è interessante, un 3× no.
+  - **Lo sforamento sulla frequenza è il più grave**, anche se sembra il più innocuo: meno
+    di 40 trade all'anno significa perdere il conto per inattività, non per drawdown. Non
+    trattarlo come un parametro da limare.
 
 Se la tua ricerca converge su "non esiste niente che rispetti questi vincoli", è un
 risultato legittimo e lo voglio sapere: significa che il problema è il conto da 50k e non
