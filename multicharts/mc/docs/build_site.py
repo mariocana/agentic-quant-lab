@@ -52,6 +52,7 @@ QL = os.path.join(ROOT, "python", "quantlake")
 PROP_DOCS = [
     ("Il protocollo prop", "mc/docs/pipeline_prop.md"),
     ("Protocollo di test MC", "mc/docs/protocollo_test_mc.md"),
+    ("Prompt ricerca strategie", "mc/docs/prompt_ricerca_strategie.md"),
     ("Setup TradeStation", "mc/docs/setup_tradestation.md"),
     ("Digest del corso", "mc/docs/institutional_protocol_digest.md"),
 ]
