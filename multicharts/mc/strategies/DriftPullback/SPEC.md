@@ -396,3 +396,91 @@ invece di 0,22 porti **+5,6 punti di win rate**.
 
 Se l'IS dà WR < 68%, la strategia è chiusa: nessuna variante pre‑registrata muove il WR di
 quell'ordine, e il resto del profilo è già misurato.
+
+---
+
+# Stage 2 — IS 2020‑2024: **Gate 2 fallito. Cimitero, causa B.**
+
+3.499 trade, 2020‑01‑02 → 2024‑12‑31, 1 contratto, $7,50/contratto. Report in `reports/`.
+
+| | `DriftMode 0` (autore) | `DriftMode 1` (ATR 0,56) | ×10 |
+|---|---|---|---|
+| n | 3.499 | 3.499 | 3.499 |
+| net | $194.110 | $174.150 | $1.953.565 |
+| avg trade | **$55** | $50 | $558 |
+| PF | 1,117 | 1,105 | 1,118 |
+| **WR** | **63,5%** | 63,1% | 63,5% |
+| R:R realizzato | 0,640 | 0,644 | 0,641 |
+| null | 61,0% | 60,8% | 60,9% |
+| **eccesso** | **+2,6 pp** | +2,3 pp | +2,6 pp |
+| **t** | **3,01** | 2,70 | 3,03 |
+| E | 0,0543 | 0,0504 | 0,0546 |
+| R per micro | $130 | $128 | $130 |
+| DD per micro | $3.309 | $3.634 | $3.309 |
+| DD_R | 25,5 | 28,3 | 25,5 |
+| **RATIO** | **0,47** | **0,40** | 0,48 |
+
+## La soglia pre‑registrata e il verdetto
+
+Era scritta prima del run: **WR ≥ 70%** per passare, **chiusa sotto 68%**. Misurato
+**63,5%**. Il verdetto è automatico.
+
+## La mia previsione era sbagliata, e il motivo è una regola
+
+Avevo scritto che il WR sarebbe salito dal 64,4% del 2026 a ≥70% sull'IS, perché lo stop
+fisso di 80 punti vale **0,38 ATR nell'IS** contro **0,22 nel 2026**. Misurato: da 64,4% a
+**63,5%**. Praticamente invariato, anzi leggermente più basso.
+
+**L'errore è identificabile.** Guardavo solo lo stop. Ma il **target è fisso anch'esso** (40
+punti long, 50 short), quindi cambiando volatilità **entrambe le gambe** scalano insieme. E
+la probabilità di primo tocco in un random walk è **S/(S+T)**, che dipende solo dal
+*rapporto*: è invariante di scala.
+
+> **Regola che resta**: quando stop **e** target sono entrambi fissi in punti, il win rate è
+> approssimativamente **invariante al regime di volatilità**. Cambia il tempo di risoluzione,
+> non l'esito.
+>
+> È il contrario del caso Gold, dove lo stop *era* l'ampiezza del range — scalava con la
+> volatilità — mentre i costi restavano fissi. Là il regime cambiava tutto, qui niente.
+
+## Lo sblocco del drift non aiuta — e questo chiude anche il blocco
+
+`DriftMode 1` a `DriftThreshAtr 0.56` dà **RATIO 0,40 contro 0,47**: peggio. WR 63,1%
+contro 63,5%, DD_R **28,3** contro 25,5.
+
+Il blocco era reale (la soglia in % oscilla di un fattore 3,6 in ATR anche dentro 100
+giorni), ma **ripararlo non migliora l'economia**. Era un difetto di coerenza, non la causa
+della debolezza. Il blocco si può considerare chiuso: la risposta è «sistemato, e non
+cambia niente».
+
+## Il limite ottimistico
+
+DD_R 25,5 impone R ≤ $2.000/25,5 = **$78 per micro**. A quel R:
+
+- edge lordo = 0,0543 × $78 = **$4,24 per micro**
+- meno $2 di costo → **$2,24 netti**, contro i **$7** richiesti dal Gate 2
+
+**Anche a costi esattamente zero** l'edge sarebbe $4,24 contro $7: manca un fattore **1,65**.
+Morta anche con trading gratuito.
+
+## ✉️ Causa di morte: **B** — e è il caso più informativo dei sei
+
+**L'edge è reale.** `t = 3,01` su 3.499 trade: è la **prima strategia della pipeline con un
+edge statisticamente solido**. Non è rumore come Gold (t 0,92) o VWAP Pullback (t 0,23).
+Nessun anno vale più del 50% del profitto (28/22/25/4/22%).
+
+E non basta. Il criterio chiede **E ≥ 0,115**; questa ha **E = 0,0543** con t = 3,01.
+
+> **Un edge statisticamente solido è ancora 2,1 volte troppo piccolo per il conto.**
+
+È la prova più forte che abbiamo che il vincolo che morde non sono le strategie.
+
+## Gate 1, chiuso con un'annotazione
+
+Il test ×10 dà: **Gross Profit esattamente 10,000000** e **Max Strategy Drawdown esattamente
+10,000000**; **Gross Loss 9,992462** (scarto dello **0,075%**) e commissioni 9,997428.
+Conteggio trade, WR e conteggi delle uscite **identici**.
+
+Non è il difetto della classe `CurrentContracts` — quello darebbe un fattore 10 su trade
+specifici, non uno 0,075% diffuso — e la sequenza dei trade è identica. **Non ho una
+spiegazione completa dello 0,075%**: lo annoto invece di archiviarlo come «passato».

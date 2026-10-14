@@ -911,3 +911,59 @@ VaultBreak, la nostra migliore, ha **E = 0,0952 con DD_R = 25,6**. Quindi:
 promettere **E ≥ 0,115** con DD_R ≈ 25, oppure **E ≥ 0,095** se il disegno delle uscite
 tiene DD_R sotto 21. Tutto il resto — strumento, rapporto target/stop, finestra oraria — è
 secondario a questi due numeri.
+
+### La sesta morte è la più informativa: un edge vero non basta (15/10/2026)
+
+DriftPullback è chiusa al Gate 2 con **t = 3,01 su 3.499 trade**. È la **prima strategia
+della pipeline con un edge statisticamente solido**, e non passa.
+
+| strategia | n | **t** | E | DD_R | **RATIO** | causa |
+|---|---|---|---|---|---|---|
+| **DriftPullback** | 3.499 | **3,01** | 0,0543 | 25,5 | **0,47** | **B** |
+| VaultBreak | 723 | — | 0,0952 | 25,6 | 0,83 | B |
+| ORB | 827 | — | 0,0597 | 21,5 | 0,62 | B |
+| Gold A | 1.280 | 1,89 | 0,1239 | 63,8 | 0,43 | A |
+| VWAP filtro | 605 | 0,69 | 0,0292 | 19,6 | 0,33 | A |
+| Gold B | 1.280 | 0,92 | 0,0636 | 64,6 | 0,22 | A |
+| VWAP base | 764 | 0,23 | 0,0253 | 50,0 | 0,11 | A |
+
+**Il criterio chiede E ≥ 0,115. DriftPullback ha E = 0,0543 con t = 3,01.**
+
+> Un edge statisticamente solido è ancora **2,1 volte troppo piccolo** per questo conto.
+
+E il limite ottimistico lo chiude senza appello: con DD_R 25,5 il drawdown ammette
+R ≤ $78 per micro, dove l'edge lordo vale $4,24 — contro i $7 richiesti. **Anche a costi
+esattamente zero manca un fattore 1,65.**
+
+#### Una regola nuova, da una mia previsione sbagliata
+
+Avevo previsto che il WR salisse dal 64,4% del 2026 al 70% sull'IS, perché lo stop fisso di
+80 punti vale 0,38 ATR nell'IS contro 0,22 nel 2026. Misurato: **63,5%**, invariato.
+
+L'errore: guardavo solo lo stop, ma **il target è fisso anch'esso**. La probabilità di primo
+tocco è **S/(S+T)**, che dipende dal *rapporto* e non dalla scala.
+
+> **Quando stop e target sono entrambi fissi in punti, il win rate è invariante al regime di
+> volatilità.** Cambia il tempo di risoluzione, non l'esito.
+>
+> È il contrario del caso Gold, dove lo stop *era* il range — scalava con la volatilità —
+> mentre i costi restavano fissi. Là il regime cambiava tutto; qui niente.
+
+Conseguenza pratica: **il regime va invocato solo quando una delle due gambe scala con la
+volatilità e l'altra no.** Non è un argomento generico da usare per sospendere un verdetto.
+
+#### Dove siamo, detto senza addolcirlo
+
+Sei strategie, sei morte. Quattro di causa B (edge presente, conto troppo piccolo) e due di
+causa A (edge assente). Il RATIO migliore mai raggiunto è **0,83** (VaultBreak), e l'edge più
+solido mai misurato è **t = 3,01** con un RATIO di **0,47**.
+
+Le due cose non coincidono: **la strategia con l'edge più credibile non è quella col RATIO
+più alto.** VaultBreak ha E quasi doppia ma solo 723 trade; DriftPullback ha metà E su 3.499
+trade. Nessuna delle due arriva a 1.
+
+**Il trigger sul Gate 3 non scatta** — resta armato per il caso in cui *tutte* le candidate
+abbiano un edge e cadano sul rischio. Siamo a quattro su sei, e due sono morte senza edge.
+Ma la domanda che ne esce è la stessa di quel trigger, posta meglio: se un edge con
+**t = 3,01** non passa, il problema è il rapporto fra l'MLL di $2.000 e il target di $3.000,
+non il catalogo delle strategie.
