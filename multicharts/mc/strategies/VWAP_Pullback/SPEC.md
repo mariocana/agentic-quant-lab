@@ -142,3 +142,115 @@ filtro. Se non lo passano, non entrano, qualunque cosa dica il netto.
 positivo (n=33, avg +$146, PF 1,46). Non è pre‑registrato come valore e sarebbe scelto
 guardando il risultato. Tetti diversi da 250 si testano allo Stage 4, dopo lo Stage 3, con il
 range dichiarato prima.
+
+---
+
+# Stage 2 — IS 2021‑2024: **Gate 2 fallito da entrambe le versioni**
+
+Chart @NQ 1 min, 2021‑01‑04 → 2024‑12‑31, 1 contratto, $7,50/contratto, Bar Magnifier off.
+Report in `reports/VWAP_S2_*.xlsx`.
+
+| criterio | soglia | BASE | FILTRO (`MinStop 60`, `MaxStop 250`) |
+|---|---|---|---|
+| n | ≥ 200 | 764 ✅ | 605 ✅ |
+| **avg trade** | ≥ $70 | **$9** ❌ | **$33** ❌ |
+| **Profit Factor** | ≥ 1,2 | **1,02** ❌ | **1,08** ❌ |
+| WR | ≥ 55% | 56,3% ✅ | 72,9% ✅ |
+| avg win / avg loss | 0,5–1 | 0,79 ✅ | **0,39** ❌ |
+| **DD ÷ 10** | ≤ $1.000 | **$2.380** ❌ | **$1.618** ❌ |
+| trade peggiore ÷ 10 | ≤ $500 | $444 ✅ | $444 ✅ |
+| nessun anno > 50% | | **2022 negativo** ❌ | **2023 = 67%** ❌ |
+
+## Il risultato vero: entrambe stanno sul pareggio
+
+| | R:R | WR di pareggio | WR osservato | margine | t |
+|---|---|---|---|---|---|
+| BASE | 0,79 | **55,9%** | 56,3% | **+0,4 punti** | 0,23 |
+| FILTRO | 0,39 | **71,8%** | 72,9% | **+1,1 punti** | 0,69 |
+
+PF 1,02 e 1,08 non sono sfortuna: sono l'aritmetica di quei margini. Su 764 e 605 trade il
+t resta sotto 1 — **l'edge non è distinguibile da zero.**
+
+## Il filtro funziona nelle due metà, e non basta
+
+| | BASE | FILTRO |
+|---|---|---|
+| IS intero | avg $9 · PF 1,02 | avg $33 · PF 1,08 |
+| 1ª metà 2021‑22 | avg **−$29** · PF 0,93 | avg **+$19** · PF 1,04 |
+| 2ª metà 2023‑24 | *non eseguito* | avg $46 · PF 1,11 |
+
+Migliora in entrambe le finestre confrontabili. Il sesto run **non è stato chiesto**: il
+verdetto di Gate 2 si giudica sull'IS intero, che c'è, e falliscono entrambe le versioni.
+Lo split‑sample avrebbe deciso solo *quale* delle due fosse la candidata.
+
+## Due questioni tecniche chiuse
+
+- **Bar Magnifier off, e non incide.** 0 trade su 764 esce nella stessa barra d'ingresso.
+  Con stop ≥ 60 punti e target a 0,39× lo span del bracket è ~83 punti contro un ATR a 1
+  minuto di 16: una barra che li contenga entrambi è ~5 volte l'ATR. Trascurabile.
+- **La predizione registrata il 14/10 era giusta**, e in anticipo: avevo scritto che avrebbe
+  fallito sul drawdown. Fallisce al **Gate 2** ($1.618/micro), non al Gate 3.
+
+## Perché, strutturalmente
+
+La finestra ammissibile dello stop, ricalcolata al **suo** n reale (600 trade su 4 anni),
+con i gate sul drawdown e il pavimento dei costi:
+
+| profilo | R max dal DD | R min dai costi | finestra |
+|---|---|---|---|
+| **WR 56% · R:R 0,80** *(il profilo osservato)* | 22 pt | 531 pt | **VUOTA** |
+| WR 60% · R:R 0,80 | 37 pt | 53 pt | **VUOTA** |
+| WR 60% · R:R 0,90 | 45 pt | 30 pt | 30–45 pt ($61–90/micro) |
+| WR 62% · R:R 1,00 | 56 pt | 18 pt | 18–56 pt ($35–111/micro) |
+| WR 65% · R:R 1,00 | 71 pt | 14 pt | 14–71 pt ($28–143/micro) |
+
+**Al profilo osservato la finestra è vuota di un fattore 24.** Si apre solo con
+**R:R ≥ 0,90 e WR ≥ 60%**, e richiede uno stop fra 30 e 56 punti. Lo StopMode 1 misurato ne
+ha **109,50** (base) e **121** (filtrato).
+
+Tre condizioni, tutte e tre mancate. Non è un gate che inciampa: è la geometria dello stop.
+
+---
+
+# Pre‑registrazione 7 — la misura `StopMode 2`, e la regola che la giudica (14/10/2026)
+
+Scritta **prima** del run.
+
+`StopMode 2` mette lo stop all'**estremo del pullback** invece che al pivot swing a 20 barre,
+lasciando il target dov'è. Quindi muove **due** cose nella direzione giusta insieme: lo stop
+si accorcia e il R:R sale. È l'unica variante pre‑registrata che tocchi la geometria, e il
+difetto misurato è geometrico.
+
+Il prezzo: uno stop più vicino viene colpito più spesso, quindi il WR scende. La domanda è
+se scenda sotto 60% prima che il R:R arrivi a 0,90.
+
+## Il run
+
+| | |
+|---|---|
+| Chart | @NQ 1 min, ~100 giorni (lo stesso dello Stage 1) |
+| `StopMode` | **2** |
+| **`MinStopPoints` / `MaxStopPoints`** | **0 / 0** — i filtri vanno **spenti**: misuriamo la distribuzione grezza, filtrarla significherebbe misurare il filtro |
+| `ShowLog` | **1** |
+| Resto | default · 1 contratto · $7,50/contratto |
+
+Serve **report + log**: il log dà `stopDist` e R:R, il report dà il WR.
+
+## La regola di decisione
+
+| # | Condizione | Soglia | Affidabilità su ~78 trade |
+|---|---|---|---|
+| 1 | mediana di `stopDist` | **fra 30 e 56 punti** | **alta** — è geometria, non esito |
+| 2 | mediana di R:R | **≥ 0,90** | **alta** — idem |
+| 3 | WR | ≥ 60% | **bassa** — su 78 trade l'errore standard è ~5,5 punti |
+
+**Le condizioni 1 e 2 decidono.** Sono proprietà della geometria di stop e target, misurate
+bene anche su 78 trade, e le soglie vengono dalla tabella della finestra qui sopra — cioè dai
+gate, non dai risultati.
+
+**Se 1 o 2 mancano → cimitero**, senza altri run. La finestra sarebbe vuota per costruzione e
+nessun filtro la riempie.
+
+**Se 1 e 2 passano**, la condizione 3 non è decisiva su 78 trade: giustifica un run Stage 4
+sull'IS per misurare il WR sul campione vero. Non è un via libera, è il permesso di spendere
+un altro run.

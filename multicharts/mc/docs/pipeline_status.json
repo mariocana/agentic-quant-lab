@@ -7,14 +7,14 @@
   "updated": "2026-10-13",
   "groups": [
    {
-    "title": "1. VWAP Pullback — Stage 2, con la banda dello stop misurata",
-    "note": "Gate 1 13/10 · rumore misurato 14/10",
+    "title": "1. VWAP Pullback — Gate 2 fallito, in misura `StopMode 2`",
+    "note": "Gate 2 fallito 14/10",
     "items": [
-     "**Stage 2, sei run** per il test split-sample: IS 2021‑2024 intero, 1ª metà, 2ª metà, ciascuna **base** (filtri a 0) e **filtrata** (`MinStopPoints 60`, `MaxStopPoints 250`). 1 contratto, $7,50/contratto",
-     "I due filtri entrano **solo se passano lo split-sample**: sono filtri come ogni altro, anche se derivano dal rischio e non dal rendimento",
-     "**Poi Stage 3 subito** (Monte Carlo), prima di qualunque variante",
-     "**Attesa dichiarata adesso, prima del run**: il campione di 100 giorni perde con avg trade −$314, e la diagnosi è R:R 0,49 contro un WR di pareggio del 67,1%. Se lo Stage 2 confermasse, il problema è il **target** e la leva è `MinRR 1` o il TP fisso in R — **varianti Stage 4**, quindi dopo lo Stage 3",
-     "*(Stage 4, pre-registrata il 14/10)* pavimento dello stop **proporzionale all'ATR** invece che fisso: il rumore alle 09:00 è 2,7 volte quello delle 14:00, quindi un pavimento fisso è permissivo in apertura e severo in chiusura"
+     "**Misura `StopMode 2`**: ~100 giorni, `StopMode 2`, **filtri a 0** (`MinStopPoints` e `MaxStopPoints`), `ShowLog 1`, 1 contratto, $7,50/contratto. Serve **report + log**",
+     "**Regola pre-registrata (14/10, prima del run)**: passa a Stage 4 solo se mediana `stopDist` fra **30 e 56 punti** E mediana R:R **≥ 0,90**. Le soglie vengono dalla finestra ammissibile calcolata sui gate, non dai risultati",
+     "Se una delle due manca → **cimitero**, senza altri run: la finestra sarebbe vuota per costruzione e nessun filtro la riempie",
+     "Il WR su ~78 trade ha un errore standard di ~5,5 punti, quindi **non è decisivo**: se 1 e 2 passano, giustifica un run Stage 4 sull'IS, non un via libera",
+     "**Non lanciare il sesto run dello Stage 2** (2ª metà base): non cambia il verdetto"
     ]
    },
    {
@@ -258,9 +258,9 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "active"
+    "2": "fail"
    },
-   "note": "**Gate 1 passato (13/10)**. L'unità di rischio, che non esisteva (stop da 0,25 a 386 punti), ora ha una **banda misurata**: `MinStopPoints 60` dalla mediana dell'escursione a 15 minuti di @NQ (misurata, non scelta) e `MaxStopPoints 250` dalla soglia di Gate 2 ($500/micro). Banda effettiva **$128–$474 per MNQ**, WR che sale a **58,3%**, proiezione ~603 trade su 5 anni. **Ma il campione resta in perdita** e la diagnosi è precisa: **R:R 0,49**, che richiede un WR di pareggio del 67,1% contro il 58,3% osservato. Il problema è il target, non lo stop. Nessun pavimento da 20 a 120 salva il campione, quindi la conclusione non dipende dal valore scelto.",
+   "note": "**Gate 2 fallito da entrambe le versioni (14/10).** Il dato vero non è un gate: **entrambe stanno sul pareggio**. BASE ha R:R 0,79 con un WR di pareggio di 55,9% e un WR osservato di 56,3% (+0,4 punti, t=0,23); FILTRO ha R:R 0,39 con pareggio a 71,8% e osservato 72,9% (+1,1 punti, t=0,69). Su 764 e 605 trade **l'edge non è distinguibile da zero**. La finestra ammissibile dello stop, al suo n reale, è **VUOTA di un fattore 24** al profilo osservato: si apre solo con R:R ≥ 0,90 e WR ≥ 60%, con stop fra 30 e 56 punti, mentre lo StopMode 1 ne ha 109–121. **In misura `StopMode 2`**, l'unica variante pre‑registrata che tocchi la geometria dello stop.",
    "log": [
     {
      "date": "2026-09-26",
@@ -277,9 +277,13 @@
     {
      "date": "2026-10-14",
      "text": "**L'unità di rischio ora esiste, e il problema si è spostato sul target.** Misurato il rumore di @NQ a 1 minuto con `VWAP_Noise_Study` (594 letture, 100 giorni × 6 ore): mediana dell'escursione a 15 minuti = **60,00 punti**. La regola pre-registrata — «`MinStopPoints` = mediana di `r15`» — dà quindi **60 punti = $120 per MNQ**. Con il tetto a 250 già derivato dal gate, la banda ammissibile è **$120–$500 per micro**: il tetto dal gate, il pavimento dalla misura, **nessuno dei due scelto guardando i risultati**. Un giro è stato buttato perché era su un chart a 15 minuti invece che a 1: `atr14` mediano 38 punti, impossibile su una barra da un minuto. Scoperto incrociando con lo Stage 1 — se il rumore a 15 minuti fosse stato 148 punti, uno stop mediano da 109,50 sarebbe stato dentro il rumore e i 24 target raggiunti su 78 non si spiegherebbero. Controprova interna sulla misura buona: le escursioni scalano con la **radice del tempo** (`r15/r5` = 1,82 contro √3 = 1,73; `r30/r15` = 1,42 contro √2 = 1,41). **Effetto della banda**: 48 trade su 78 tenuti, stop fra $128 e $474 per micro, WR che sale da 53,8% a **58,3%**, proiezione **~603 trade** su cinque anni. Il rischio è risolto. **Il P&L no, e la diagnosi è aritmetica**: R:R mediano **0,49** richiede un WR di pareggio di **67,1%**, contro il 58,3% osservato. Manca quasi un 9% assoluto, e il problema è il **target** troppo vicino, non lo stop. Verificato che **nessun pavimento da 20 a 120 punti** rimette in piedi il campione: la conclusione non dipende dal 60. **Il pavimento costa soldi, ed è la prova che non è stato scelto per piacere**: i 22 trade sotto i 60 punti portavano +$830 netti. Chi sceglie guardando i risultati non sceglie 60. **Trovata una dipendenza oraria del rumore e NON usata**: `r15` vale 108 punti alle 09:00 e 40 alle 14:00, un fattore 2,7. Un pavimento variabile sarebbe migliore, ma cambiare la regola dopo aver visto il dato è l'errore di Gold: registrata come **variante Stage 4** (pavimento proporzionale all'ATR invece che fisso). La leva giusta per il R:R esiste già fra le varianti Stage 4 pre-registrate (`MinRR 1`, TP fisso in R al posto del pivot), ma **Stage 3 viene prima di Stage 4**."
+    },
+    {
+     "date": "2026-10-14",
+     "text": "**Gate 2 fallito da entrambe le versioni, e il risultato vero è che entrambe stanno sul pareggio.** BASE: 764 trade, avg $9, PF 1,02, WR 56,3% contro un WR di pareggio di **55,9%** — margine **+0,4 punti**, t=0,23. FILTRO: 605 trade, avg $33, PF 1,08, WR 72,9% contro un pareggio di **71,8%** — margine **+1,1 punti**, t=0,69. PF 1,02 e 1,08 non sono sfortuna, sono l'aritmetica di quei margini: **su 1.369 trade complessivi l'edge non è distinguibile da zero**. Il filtro **funziona** dove è confrontabile: 1ª metà da avg −$29 a +$19, IS intero da $9 a $33. Il sesto run (2ª metà base) non è stato chiesto perché il verdetto si giudica sull'IS intero e falliscono entrambe: lo split‑sample avrebbe deciso solo quale delle due fosse la candidata. **Due questioni tecniche chiuse**: il Bar Magnifier era off e non incide, perché 0 trade su 764 esce nella stessa barra d'ingresso e lo span del bracket (~83 punti) è cinque volte l'ATR a 1 minuto (16); e **la predizione registrata il 14/10 era giusta e in anticipo** — avevo scritto che avrebbe fallito sul drawdown, e fallisce al Gate 2 ($1.618/micro) prima che al Gate 3. **La spiegazione strutturale**: ricalcolata la finestra ammissibile dello stop al suo n reale (600 trade su 4 anni), al profilo osservato (WR 56%, R:R 0,80) è **VUOTA di un fattore 24** — il drawdown ammette 22 punti, i costi ne richiedono 531. Si apre solo con **R:R ≥ 0,90 e WR ≥ 60%** e uno stop fra 30 e 56 punti; lo StopMode 1 ne ha 109,50 (base) e 121 (filtrato). Tre condizioni, tutte e tre mancate: non è un gate che inciampa, è la geometria dello stop. **In misura `StopMode 2`** (stop all'estremo del pullback invece del pivot a 20 barre): accorcia lo stop e alza il R:R insieme, ed è l'unica variante pre‑registrata che tocchi la geometria. Regola scritta prima del run: passa solo se mediana `stopDist` fra 30 e 56 punti **e** mediana R:R ≥ 0,90 — soglie derivate dalla tabella della finestra, cioè dai gate. Se una manca, cimitero senza altri run."
     }
    ],
-   "next": "**Stage 2** — IS 2021-2024, 1 contratto, $7,50/contratto. Sei run per il test split-sample: IS intero / 1ª metà / 2ª metà, ciascuna **base** (filtri a 0) e **filtrata** (`MinStopPoints 60`, `MaxStopPoints 250`). I filtri entrano solo se passano lo split-sample. Poi **Stage 3 subito**."
+   "next": "**Misura `StopMode 2`** (~100 giorni, filtri a 0, `ShowLog 1`, report + log). Regola pre‑registrata: passa a Stage 4 solo se mediana `stopDist` fra **30 e 56 punti** E mediana R:R **≥ 0,90**. Se una delle due manca → cimitero, senza altri run."
   },
   {
    "name": "Gold Asian Range",
