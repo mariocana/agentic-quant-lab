@@ -48,7 +48,26 @@ Il numero che decide tutto è:
 
 Deve stare sotto $500. Con un MLL di $2.000 significa quattro perdite piene di margine.
 
-ATTENZIONE, QUESTO E' IL TETTO SBAGLIATO SE LO USI DA SOLO. Il tetto sul trade peggiore
+ATTENZIONE DUE VOLTE. Primo: questo e' il tetto sbagliato se lo usi da solo.
+Secondo: la colonna del range giornaliero qui sotto era SBAGLIATA e la correggo.
+I "~90 punti" dell'oro erano il 2026 a $4.100, non il 2020-2024 a $1.600-2.700, dove il
+range era ~30 punti. Era il nostro anti-pattern 2 applicato al nostro stesso documento.
+Gli ATR di tutti gli strumenti vanno MISURATI per anno sull'IS prima di fidarsene.
+
+C'e anche un metro che conta piu del $/punto: i TICK CONTENUTI IN UN RANGE GIORNALIERO,
+cioe quanti tick di costo entrano nell'opportunita disponibile.
+
+  strumento   tick(pt)   ATR14(pt)   tick per ATR   contro NQ
+  NQ            0,25        260         1.040         1,00x
+  YM            1,00        420           420         0,40x
+  RTY           0,10         40           400         0,38x
+  GC            0,10         30           300         0,29x
+  ES            0,25         60           240         0,23x
+
+@NQ e lo strumento PIU FINE di tutti. Spostarsi altrove MIGLIORA il rapporto rischio/MLL ma
+PEGGIORA il rapporto costo/movimento di un fattore 2,5-4,3. Sono due forze opposte, e il
+guadagno su un fronte si paga sull'altro: non proporre un cambio di strumento come se fosse
+gratis. (ATR stimati, da misurare.) Il tetto sul trade peggiore
 non e' il vincolo che stringe: stringe il DRAWDOWN. Leggi la sezione "IL VINCOLO VERO"
 qui sotto prima di usare i numeri di questa tabella.
 

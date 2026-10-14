@@ -609,3 +609,82 @@ cinque anni il WR della variante A è **42,6%**, vicino al 34% della ricerca.
 La pre‑registrazione era giusta. Il campione che l'ha scavalcata era di **78 trade e quattro
 mesi**. La regola che resta scritta: **una pre‑registrazione non si rivede su un campione
 più piccolo di quello su cui verrà giudicata.**
+
+### Due vincoli che tirano in direzioni opposte (14/10/2026)
+
+Dalla ricerca v3 (`mc/ideas/candidate_lucidflex_50k_v3.md`), più due verifiche fatte qui.
+
+#### 1. Il gate che morde è il drawdown, non il trade peggiore
+
+Verificato con Monte Carlo indipendente (20.000 run per riga, esiti Bernoulli i.i.d.):
+i gate sul drawdown — storico ÷10 ≤ $1.000 e 95° pct ÷10 ≤ $2.000 — implicano una
+**perdita media per micro di circa $75–135**, secondo il PF e il numero di trade.
+
+Il tetto di Gate 2 sul trade peggiore ($500 per micro) **non è mai il vincolo che stringe**:
+chi passa i gate sul drawdown lo passa automaticamente. Tutto il lavoro fatto finora ragionava
+sul numero sbagliato.
+
+E incrociando con il pavimento dei costi: **a PF 1,20 la finestra è vuota**. Il drawdown
+ammette al massimo 37–47 punti di R su MNQ, i costi ne richiedono almeno 53. Non esiste un R
+che soddisfi entrambi. Serve **PF ≥ 1,30**, con margine 1,40.
+
+Il gate formale resta `PF ≥ 1.2` e **non si riscrive**. Ma una candidata con PF atteso 1,2 va
+considerata già fallita, e presentarla come «rispetta il gate» è fuorviante.
+
+#### 2. Spostarsi su strumenti più piccoli non risolve: le due forze sono opposte
+
+L'idea di portare una strategia morta per causa B su uno strumento con nozionale più piccolo
+sembrava la via naturale. **Non lo è**, e il motivo è misurabile.
+
+Confronto dei **tick contenuti in un range giornaliero** — quanti tick di costo entrano
+nell'opportunità disponibile:
+
+| | tick (pt) | ATR14 (pt) | tick per ATR | vs NQ |
+|---|---|---|---|---|
+| **NQ** | 0,25 | 260 | **1.040** | 1,00× |
+| YM | 1,00 | 420 | 420 | 0,40× |
+| RTY | 0,10 | 40 | 400 | 0,38× |
+| GC | 0,10 | 30 | 300 | 0,29× |
+| ES | 0,25 | 60 | 240 | **0,23×** |
+
+*(ATR stimati e non verificati: da misurare su MC. Se cambiano, cambia la classifica.)*
+
+**@NQ è lo strumento più fine di tutti.** Spostarsi altrove **migliora** il rapporto
+rischio/MLL ma **peggiora** il rapporto costo/movimento, di un fattore da 2,5 a 4,3. Sono due
+forze opposte, e il guadagno su un fronte si paga sull'altro.
+
+Questo chiude una classe di idee di salvataggio, non una singola idea.
+
+#### 3. Il porting di ORB e VaultBreak su MYM/M2K: falsificato in due minuti
+
+La ricerca proponeva il porting come «candidata condizionale», con un test di falsificazione
+eseguibile **senza nuovi backtest**: l'edge lordo per micro dopo il porting deve valere almeno
+3 volte il costo per micro. Con ρ ≈ 0,40 (quanto vale in dollari un micro YM contro un micro
+NQ, a pari ATR) e un costo per micro di ~$3, serve un **lordo su NQ ≥ ~$225 per contratto**.
+
+Misurato sui report già in repo:
+
+| | n | avg trade netto | **avg trade lordo** | lordo per micro dopo il porting | esito |
+|---|---|---|---|---|---|
+| ORB (IS 2020‑24, costi) | 827 | $81 | **$86** | $3,44 contro $3 di costo | ✖ |
+| VaultBreak (Stage 2 IS) | 723 | $110 | **$115** | $4,60 contro $3 di costo | ✖ |
+
+Servono $9 di lordo per micro. Ne abbiamo $3,44 e $4,60: mancano un fattore **2,6** e **2,0**.
+
+**Il porting è morto prima di partire.** Ed è una conferma del punto 2: l'edge si rimpicciolisce
+con il nozionale, i costi no.
+
+#### 4. La finestra su MGC era vuota: la morte di Gold era prevedibile con l'aritmetica
+
+Su MGC a PF 1,20 il drawdown ammette uno stop di ~10 punti ($100/micro) e i costi ne
+richiedono ~21 ($206/micro). **Finestra vuota.** Gold Asian Range aveva uno stop mediano di
+**39 punti**, quattro volte il tetto.
+
+Si potevano calcolare questi due numeri **prima** di scrivere una riga di codice. È lo stesso
+errore di lettura già registrato nel cimitero, visto da un'angolazione nuova: non solo i
+numeri economici dello Stage 1 non anticipano il Gate 2, ma **esiste un calcolo a priori che
+dice se una combinazione strumento/PF ha una finestra non vuota**, e va fatto allo Stage 0.
+
+**Conseguenza per la pipeline**: allo Stage 0, prima di scrivere il codice, si calcola la
+finestra dello stop per lo strumento scelto. Se è vuota, la spec non si scrive. Non è un gate
+nuovo: è aritmetica che evita di spendere Stage 1 e Stage 2.
