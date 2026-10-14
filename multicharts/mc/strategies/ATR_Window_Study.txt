@@ -1,0 +1,80 @@
+{ =====================================================================
+  ATR_Window_Study  -  INDICATORE (zero ordini)
+  ---------------------------------------------------------------------
+  Scopo: misurare il range giornaliero RTH per anno su piu' strumenti,
+  per sostituire le stime a memoria su cui si appoggiano TUTTE le
+  finestre ammissibili dello stop calcolate finora.
+
+  Oggi quelle finestre usano numeri non verificati, e una volta hanno
+  gia' sbagliato: i "~90 punti" dell'oro erano il 2026 a $4.100, non il
+  2020-2024 a $1.600-2.700, dove erano ~30.
+
+  LA FINESTRA LA DEFINISCE IL CODICE, NON IL TEMPLATE DI SESSIONE.
+  E' la lezione dei due giri buttati su GoldAsianRange (template con un
+  buco di sei ore) e su VWAP_Noise_Study (chart a 15 minuti invece che a
+  1). Qui il template non conta: basta che esista la finestra RTH.
+
+  STAMPA una riga per giorno, sulla barra di RTHEnd:
+    tag    = lo strumento, lo scrivi tu nell'input (niente dipendenze)
+    rng    = massimo - minimo della finestra RTH, in punti
+    barre  = barre usate, per accorgersi dei giorni incompleti
+    tick   = MinMove / PriceScale, letto da MC
+    bpv    = BigPointValue, letto da MC
+
+  tick e bpv li stampo perche' tutta l'aritmetica delle finestre si
+  appoggia a quei due numeri, e finora venivano dalla memoria. Cosi'
+  arrivano dalla piattaforma.
+
+  COME SI USA
+    Chart: 15 minuti, template 24/7, timezone Exchange, dal 2020-01-01
+           a oggi. Un run per strumento: @ES, @YM, @RTY, @NQ, @GC.
+    Orari RTH (ora del chart, CT):
+      indici (ES, YM, RTY, NQ) -> RTHStart 830  RTHEnd 1500
+      oro (GC)                 -> RTHStart 720  RTHEnd 1230
+    Tag:   "ES", "YM", "RTY", "NQ", "GC" - uno per run.
+    ResetFile: 1 SOLO sul primo strumento, 0 sui successivi, cosi' i
+           cinque run finiscono nello stesso file e me lo mandi una
+           volta sola.
+    Creare C:\mc_out PRIMA di lanciare: MC non crea la cartella.
+  ===================================================================== }
+
+Inputs:
+    Tag("ES"),                 { lo scrivi tu: ES, YM, RTY, NQ, GC }
+    RTHStart(830),             { ora del chart - indici 830, oro 720 }
+    RTHEnd(1500),              { ora del chart - indici 1500, oro 1230 }
+    LogPath("C:\mc_out\atr_window.txt"),
+    ResetFile(1);              { 1 sul primo strumento, 0 sugli altri }
+
+Variables:
+    inRTH(false),
+    hi(0), lo(0), nb(0), printed(false),
+    tick(0);
+
+tick = MinMove / PriceScale;
+
+if ResetFile = 1 and CurrentBar = 1 then
+    FileDelete(LogPath);
+
+inRTH = Time > RTHStart and Time <= RTHEnd;
+
+{ ----- prima barra della finestra: azzera ----- }
+if inRTH and inRTH[1] = false then begin
+    hi = High; lo = Low; nb = 1; printed = false;
+end
+else if inRTH then begin
+    if High > hi then hi = High;
+    if Low  < lo then lo = Low;
+    nb = nb + 1;
+end;
+
+{ ----- una riga per giorno, sulla barra di chiusura della finestra ----- }
+if inRTH and Time = RTHEnd and printed = false and nb > 1 then begin
+    Print(File(LogPath), "ATRW ", Tag, " ", Date:8:0,
+          " rng=", (hi - lo):9:2,
+          " barre=", nb:4:0,
+          " tick=", tick:8:4,
+          " bpv=", BigPointValue:9:2);
+    printed = true;
+end;
+
+Plot1(hi - lo, "rngRTH");
