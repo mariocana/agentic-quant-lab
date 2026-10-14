@@ -1050,3 +1050,95 @@ drawdown di $1.000. Aggiungere strategie aggiunge più costo che diversificazion
 
 **Lo Stage 8 va quindi ripensato**: non come somma di strategie deboli, ma come scelta della
 *meno* frequente fra quelle che passano il primo passaggio.
+
+## La pipeline è troppo selettiva, e si può dire su quali assi (15/10/2026)
+
+Obiezione dell'utente: 7,5 mesi per un payout non sono sostenibili, e il documento
+`8. Livestreaming/1. live001_propfirm_deck-2_.pdf` dice di **ingegnerizzare il passaggio e
+il payout**, non di renderlo un'utopia. *(Il deck è fatto di immagini e non ho potuto
+leggerlo: va riletto e confrontato con quanto segue.)*
+
+### Il nostro criterio ottimizza la cosa sbagliata
+
+| | il nostro gate | il business |
+|---|---|---|
+| rischio per trade | DD ÷10 ≤ $1.000 → **spinge in basso** | **alto**, se la quota per tentativo è bassa |
+| frequenza | **n ≥ 200** | **bassa**: ogni trade paga $2 contro un budget di $2.000 |
+| drawdown a 5 anni | vincolo binding (Gate 3) | **irrilevante**: il conto dura settimane |
+
+Il Gate 3 misura la sopravvivenza di un conto tenuto aperto per sempre. L'eval è un
+**primo passaggio ripetibile**: +$3.000 prima di −$2.000, e se fallisci ricominci.
+
+### Il numero: alzare il rischio accorcia il tempo più di quanto abbassi la probabilità
+
+VaultBreak, primo passaggio su 2.500 riordinamenti, con riprova dopo ogni bust:
+
+| rischio/trade | P(passa) | mesi se passa | **mesi se fallisce** | mesi attesi/payout |
+|---|---|---|---|---|
+| $120 *(dove il Gate 3 ci spinge)* | 91,5% | 6,6 | 4,7 | **7,0** |
+| $200 | 73,3% | 2,9 | 2,3 | 3,7 |
+| $400 | 55,8% | 1,0 | 0,9 | 1,6 |
+| $600 | 51,6% | 0,6 | 0,6 | **0,9** |
+
+La colonna che cambia tutto è **«mesi se fallisce»**: un tentativo andato male costa **meno
+tempo** di uno riuscito. Quindi provare in fretta e accettare i bust domina, se la quota per
+tentativo è bassa.
+
+### L'ottimo dipende dalla quota per tentativo, che non conosciamo
+
+Costo atteso per payout = **quota / P + €36/mese × mesi attesi** (€36 = solo il datafeed):
+
+| quota/tentativo | R ottimo | P(passa) | mesi attesi | costo/payout |
+|---|---|---|---|---|
+| €50 | $750 | 50,4% | 0,6 | €121 |
+| **€100** | **$600** | **52,9%** | **0,9** | **€220** |
+| €150 | $400 | 57,7% | 1,5 | €314 |
+| €200 | $200 | 74,6% | 3,7 | €400 |
+| €500 | $150 | 84,5% | 5,2 | €779 |
+
+**Serve il numero vero della quota LucidFlex per tentativo.** Senza quello non c'è un ottimo:
+a quota zero conviene rischiare tutto in un trade, che è una lotteria, non ingegneria.
+
+### Il vincolo che pone il tetto, e non è il drawdown
+
+La **regola di consistenza al 50%** (nessun giorno oltre metà del profitto). Verificata sui
+percorsi che passano:
+
+| rischio/trade | miglior giorno (mediana) | passaggi che violano il 50% |
+|---|---|---|
+| $120 | 9% | 0% |
+| $400 | 30% | 0% |
+| **$600** | **43%** | **0%** |
+| $850 | 55% | **66%** |
+
+**Il tetto vero è intorno a $600–700 per trade**, e lo mette la consistenza, non il
+drawdown. A $600 il miglior giorno vale già il 43%: è il bordo.
+
+### Quindi: la pipeline è troppo selettiva, ma non va "allentata"
+
+Va **ri-derivata su tre assi**, e su due va resa *più* severa:
+
+1. **Gate 3**: sostituire «DD 95° pct su 5 anni ≤ $2.000» con **«costo atteso per payout»**,
+   che è calcolabile e che dipende dalla quota per tentativo.
+2. **Gate 2, `n ≥ 200`**: va **rovesciato**. Era pensato per la significatività statistica,
+   ma nel conto reale ogni trade è un costo contro un budget di drawdown fisso. La
+   significatività va misurata col **t-stat**, non col conteggio.
+3. **Il tetto al rischio** va dalla **consistenza al 50%**, non dal drawdown a 5 anni.
+
+### Quello che NON va toccato, e che non abbiamo mai verificato
+
+Tutto questo vale **solo se l'edge esiste fuori campione**. Ogni numero qui sopra è
+**in-sample**, sul 2020‑2024 su cui VaultBreak era già stata ottimizzata allo Stage 4. E
+**nessuna delle sei strategie ha mai avuto un run OOS**, perché morivano prima.
+
+A rischio alto l'errore di stima si amplifica: a $600 per trade, se l'edge fuori campione è
+metà di quello in campione, P(passa) crolla e la quota si paga due volte. **L'OOS non è un
+gate da allentare: è il solo che non abbiamo mai eseguito.**
+
+### Tre cose, in ordine
+
+1. **La quota per tentativo di LucidFlex.** Tutto l'ottimo pivota su quel numero.
+2. **Rileggere il deck** `live001_propfirm_deck-2_.pdf` e confrontarlo con questa analisi:
+   se il corso dice la stessa cosa, la ri-derivazione ha due fonti indipendenti.
+3. **L'OOS di VaultBreak su 2025‑2026**, un run. È l'unica cosa che rende reale tutto il
+   resto, ed è anche l'unica che può chiuderlo.
