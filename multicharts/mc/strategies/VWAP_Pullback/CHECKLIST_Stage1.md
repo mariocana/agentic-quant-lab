@@ -147,3 +147,119 @@ qualunque filtro aggiunto.
    indistinguibile dal rumore. Da misurare **prima** di scegliere il numero.
 3. Entrambi sono **filtri**, quindi quando verranno applicati devono passare il
    **test split‑sample**.
+
+---
+
+## Misura del rumore (14/10/2026) — `MinStopPoints` = **60**
+
+`VWAP_Noise_Study.txt` sullo stesso chart dello Stage 1. **594 letture = 100 giorni × 6 ore**
+(97 a 13:00 e 14:00: tre chiusure anticipate). Log in `reports/VWAP_noise_log.txt`.
+
+### Un giro buttato, e vale la pena ricordarlo
+
+Il primo giro era su un chart a **15 minuti**, non a 1 minuto, e i numeri erano 2–4 volte
+troppo grandi (`atr14` mediano 38 punti, impossibile su una barra da un minuto di @NQ).
+Scoperto dal confronto con i dati dello Stage 1: se il rumore a 15 minuti fosse stato 148
+punti, uno stop mediano da 109,50 punti sarebbe stato dentro il rumore e i 24 target
+raggiunti su 78 non si spiegherebbero. Il run è stato scartato.
+
+### La misura, su @NQ 1 minuto
+
+| | min | p10 | p25 | **mediana** | media | p75 | p90 | max |
+|---|---|---|---|---|---|---|---|---|
+| `atr14` | 4,18 | 7,79 | 10,25 | **16,01** | 19,36 | 24,82 | 36,45 | 96,70 |
+| `r5` | 7,25 | 14,25 | 20,75 | **32,50** | 41,98 | 51,25 | 80,00 | 208,75 |
+| **`r15`** | 11,50 | 26,83 | 38,00 | **60,00** | 76,80 | 97,50 | 145,90 | 521,25 |
+| `r30` | 18,50 | 41,08 | 54,50 | **88,50** | 113,11 | 146,12 | 216,35 | 897,25 |
+
+Controprova interna: le escursioni scalano con la **radice del tempo**, come devono.
+`r15/r5` = 1,82 contro √3 = 1,73 · `r30/r15` = 1,42 contro √2 = 1,41. La misura è sana.
+
+### La regola pre-registrata, applicata
+
+> `MinStopPoints` = mediana di `r15`, arrotondata al punto intero.
+
+**Mediana di `r15` = 60,00 → `MinStopPoints = 60` punti = $120 per MNQ.**
+
+La banda ammissibile dello stop è quindi **60 → 250 punti = $120 → $500 per micro**. Il tetto
+veniva dal gate, il pavimento dalla misura: **nessuno dei due è stato scelto guardando i
+risultati.**
+
+### Il rumore non è costante nella sessione — e questo NON cambia la regola
+
+| ora (CT) | `atr14` | `r15` | `r30` |
+|---|---|---|---|
+| 09:00 | 30,80 | **108,00** | 183,00 |
+| 10:00 | 21,63 | 85,38 | 117,75 |
+| 11:00 | 14,58 | 58,75 | 87,62 |
+| 12:00 | 12,30 | 48,00 | 70,88 |
+| 13:00 | 10,63 | 40,50 | 57,00 |
+| 14:00 | 10,34 | **40,00** | 55,50 |
+
+Il rumore alle 09:00 è **2,7 volte** quello delle 14:00. Un pavimento fisso a 60 è quindi
+permissivo in apertura e severo in chiusura.
+
+**La regola resta 60.** Era scritta come «la mediana di `r15`», un numero singolo, e si
+applica come scritta: cambiarla in un pavimento variabile *dopo* aver visto la dipendenza
+oraria sarebbe esattamente l'errore commesso su Gold Asian Range. La dipendenza oraria
+diventa una **variante Stage 4 pre-registrata adesso**: pavimento proporzionale all'ATR(14)
+del momento invece che fisso — da testare dopo lo Stage 3, con il test split-sample.
+
+---
+
+## Effetto della banda 60–250 sul campione dello Stage 1
+
+Non è un giudizio di gate: sono 100 giorni recenti, e il regime recente ha già ingannato
+una volta. Serve a decidere se spendere lo Stage 2.
+
+| configurazione | n | net | avg trade | WR | PF | R:R | peggiore/micro | t |
+|---|---|---|---|---|---|---|---|---|
+| base | 78 | −$28.435 | −$365 | 53,8% | 0,63 | 0,54 | $628 | −1,54 |
+| solo tetto 250 | 70 | −$14.245 | −$204 | 54,3% | 0,73 | 0,62 | $405 | −1,04 |
+| **pavimento 60 + tetto 250** | **48** | **−$15.075** | **−$314** | **58,3%** | **0,69** | **0,49** | **$405** | **−1,14** |
+
+### Cosa le due regole risolvono, e cosa no
+
+**Risolvono il rischio**, che era il problema dichiarato:
+
+- banda effettiva degli stop tenuti: **63,75 → 236,75 punti = $128 → $474 per MNQ**, tutta
+  dentro il tetto di $500
+- WR sale a **58,3%**, sopra la soglia del 55%
+- 48 trade su 78 tenuti (62%) → proiezione su cinque anni **~603 trade**, molto sopra la
+  soglia di 200
+
+**Non risolvono il P&L**, e la diagnosi è precisa: **R:R mediano 0,49**. Con un R:R di 0,49
+il WR di pareggio è 1 / (1 + 0,49) = **67,1%**. Il WR osservato è 58,3%: manca quasi un
+9% assoluto. Il target è troppo vicino rispetto allo stop.
+
+### Il pavimento costa soldi, ed è la prova che non è stato scelto per piacere
+
+I 22 trade sotto i 60 punti di stop portavano **+$830 netti** (10 vincenti, 12 perdenti):
+togliendoli il netto peggiora. Se avessi scelto il pavimento guardando i risultati non avrei
+mai scelto 60. È giustificato dal realismo del rischio, non dal rendimento — che è
+esattamente il ruolo che gli era stato assegnato.
+
+Il tetto invece fa il lavoro sul P&L: gli 8 trade sopra 250 punti pesavano **−$14.190**.
+
+### Nessun pavimento salva la strategia
+
+| pavimento (tetto fisso 250) | n | net | avg trade |
+|---|---|---|---|
+| 20 | 58 | −$16.835 | −$290 |
+| 40 | 53 | −$16.885 | −$319 |
+| **60** | **48** | **−$15.075** | **−$314** |
+| 80 | 43 | −$14.980 | −$348 |
+| 100 | 37 | −$19.060 | −$515 |
+| 120 | 25 | −$13.865 | −$555 |
+
+Tutti perdono. La conclusione non dipende dal 60: **non esiste un pavimento che rimetta in
+piedi questo campione.** È un'informazione utile, perché toglie la tentazione di cercarlo.
+
+### La leva giusta esiste e è già pre-registrata — ma non si tocca adesso
+
+Il problema è il **target**, non lo stop: R:R 0,49 contro un WR di 58,3%. Le varianti Stage 4
+già scritte in `SPEC.md` includono **`MinRR 1`** e **«TP fisso in R al posto del pivot»**, che
+sono esattamente la leva.
+
+Ma **Stage 3 viene prima di Stage 4**, e Stage 2 prima di Stage 3. Non si anticipa, per la
+regola presa dopo i due errori su ORB e VaultBreak.

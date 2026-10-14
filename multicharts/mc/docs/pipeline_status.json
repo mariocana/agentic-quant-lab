@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-13",
+ "updated": "2026-10-14",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -7,14 +7,14 @@
   "updated": "2026-10-13",
   "groups": [
    {
-    "title": "1. VWAP Pullback — Gate 1 passato, Stage 2 bloccato sul pavimento dello stop",
-    "note": "Gate 1 13/10",
+    "title": "1. VWAP Pullback — Stage 2, con la banda dello stop misurata",
+    "note": "Gate 1 13/10 · rumore misurato 14/10",
     "items": [
-     "**Misurare la distribuzione del range della barra a 1 minuto su @NQ.** Serve a sapere sotto quale distanza uno stop è indistinguibile dal rumore, e quindi a fissare `MinStopPoints` **con una misura invece che con un numero scelto**. È lo stesso ruolo che ha avuto l'ADR per Gold",
-     "Poi **aggiungere l'input `MinStopPoints`** al codice (oggi non esiste: 4 trade su 78 hanno lo stop a ≤ 1 punto, uno a **un tick**)",
-     "**`MaxStopPoints 250`** è già deciso e non negoziabile: deriva dalla soglia di Gate 2 ($500/micro ÷ $2 per punto), non dai dati",
-     "Entrambi sono **filtri** → quando si applicano devono passare il **test split‑sample**",
-     "**OFF‑LIMITS**: nei dati un tetto a 100 punti rende il campione positivo (avg +$146, PF 1,46). Non si usa — sarebbe scelto guardando il risultato, cioè l'errore di Gold. Eventuali tetti diversi da 250 si testano allo Stage 4, dopo lo Stage 3"
+     "**Stage 2, sei run** per il test split-sample: IS 2021‑2024 intero, 1ª metà, 2ª metà, ciascuna **base** (filtri a 0) e **filtrata** (`MinStopPoints 60`, `MaxStopPoints 250`). 1 contratto, $7,50/contratto",
+     "I due filtri entrano **solo se passano lo split-sample**: sono filtri come ogni altro, anche se derivano dal rischio e non dal rendimento",
+     "**Poi Stage 3 subito** (Monte Carlo), prima di qualunque variante",
+     "**Attesa dichiarata adesso, prima del run**: il campione di 100 giorni perde con avg trade −$314, e la diagnosi è R:R 0,49 contro un WR di pareggio del 67,1%. Se lo Stage 2 confermasse, il problema è il **target** e la leva è `MinRR 1` o il TP fisso in R — **varianti Stage 4**, quindi dopo lo Stage 3",
+     "*(Stage 4, pre-registrata il 14/10)* pavimento dello stop **proporzionale all'ATR** invece che fisso: il rumore alle 09:00 è 2,7 volte quello delle 14:00, quindi un pavimento fisso è permissivo in apertura e severo in chiusura"
     ]
    },
    {
@@ -258,9 +258,9 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "blocked"
+    "2": "active"
    },
-   "note": "**Gate 1 passato (13/10)**, tutti e sei i controlli, scaling ×10 esatto, 0/78 overnight. Ma la misura pre‑registrata del rischio ha trovato che **l'unità di rischio non esiste**: lo stop a pivot swing va da **0,25 punti (un tick) a 386,75**, un rapporto di **1.547×**, con mediana 109,50 pt = **$219 per MNQ** e p90 a $499 — il tetto di Gate 2 è $500. Due patologie opposte: 4/78 stop a ≤ 1 punto (rumore, non stop) e 8/78 sopra 250 punti (fino a $774/micro). Solo la seconda ha una leva pre‑registrata (`MaxStopPoints`); per la prima servirebbe un input nuovo. **Stage 2 bloccato** finché non c'è un pavimento allo stop, e il suo valore va misurato, non scelto.",
+   "note": "**Gate 1 passato (13/10)**. L'unità di rischio, che non esisteva (stop da 0,25 a 386 punti), ora ha una **banda misurata**: `MinStopPoints 60` dalla mediana dell'escursione a 15 minuti di @NQ (misurata, non scelta) e `MaxStopPoints 250` dalla soglia di Gate 2 ($500/micro). Banda effettiva **$128–$474 per MNQ**, WR che sale a **58,3%**, proiezione ~603 trade su 5 anni. **Ma il campione resta in perdita** e la diagnosi è precisa: **R:R 0,49**, che richiede un WR di pareggio del 67,1% contro il 58,3% osservato. Il problema è il target, non lo stop. Nessun pavimento da 20 a 120 salva il campione, quindi la conclusione non dipende dal valore scelto.",
    "log": [
     {
      "date": "2026-09-26",
@@ -273,9 +273,13 @@
     {
      "date": "2026-10-13",
      "text": "**Gate 1 passato, Stage 2 bloccato dalla misura del rischio.** Meccanica perfetta su tutti e sei i controlli: ingressi 09:11–13:58 dentro la finestra, un trade al giorno su 78, flat alle 14:56 (corretto: `Time >= 1455` scatta sulla barra 1455 e `next bar at market` riempie sulla successiva), **0/78 overnight**, solo lun–ven, **scaling ×10 esatto (10,000000)**. Nessun difetto `CurrentContracts`: il codice usa bracket a livello di prezzo. Confermato anche l'offset di un minuto pre‑registrato: l'opening range copre 08:29–08:59 e **zero ingressi cadono nella barra 0900**. **Il risultato vero del run è la misura del rischio**, che era pre‑registrata per essere fatta qui. Lo stop a pivot swing va da **0,25 punti (un tick) a 386,75 punti**: un rapporto di **1.547×**. Mediana 109,50 pt = **$219 per MNQ**, p90 $499 contro un tetto di Gate 2 di $500. Due patologie opposte: **4 trade su 78 hanno lo stop a un tick o meno** — non è uno stop, è rumore, e tutti e quattro sono in perdita nonostante R:R nominali fino a 557 — e **8 su 78 superano 250 punti**, fino a $774 per micro. Il target ha lo stesso difetto: minimo 0,50 punti = $10, sotto i $15 di costo andata‑ritorno. **Solo la patologia del tetto ha una leva pre‑registrata** (`MaxStopPoints`); per il pavimento servirebbe un input nuovo, e non esiste una soglia di gate da cui derivarne il valore — serve una misura dedicata, come l'ADR per Gold. Economia dei 100 giorni, che **non è un giudizio** (il Gate 1 chiede meccanica, e il campione è recente — proprio l'errore commesso su Gold): net −$28.435, avg trade −$365, PF 0,63 con WR 53,8%. La perdita non viene dal WR ma dal fatto che lo stop mediano è una volta e mezza il target mediano. Con `MaxStopPoints 250`, l'unico valore non circolare perché derivato dal gate, il trade peggiore scende a $405 per micro (dentro la soglia) ma l'avg trade resta **−$204**. **Registrata come off‑limits una tentazione**: nei dati un tetto a 100 punti dà n=33, avg +$146, PF 1,46. Non si usa, perché sarebbe un valore scelto guardando il risultato. Se si vorrà testare un tetto diverso da 250 si fa allo Stage 4, dopo lo Stage 3, con il range dichiarato prima e il test split‑sample."
+    },
+    {
+     "date": "2026-10-14",
+     "text": "**L'unità di rischio ora esiste, e il problema si è spostato sul target.** Misurato il rumore di @NQ a 1 minuto con `VWAP_Noise_Study` (594 letture, 100 giorni × 6 ore): mediana dell'escursione a 15 minuti = **60,00 punti**. La regola pre-registrata — «`MinStopPoints` = mediana di `r15`» — dà quindi **60 punti = $120 per MNQ**. Con il tetto a 250 già derivato dal gate, la banda ammissibile è **$120–$500 per micro**: il tetto dal gate, il pavimento dalla misura, **nessuno dei due scelto guardando i risultati**. Un giro è stato buttato perché era su un chart a 15 minuti invece che a 1: `atr14` mediano 38 punti, impossibile su una barra da un minuto. Scoperto incrociando con lo Stage 1 — se il rumore a 15 minuti fosse stato 148 punti, uno stop mediano da 109,50 sarebbe stato dentro il rumore e i 24 target raggiunti su 78 non si spiegherebbero. Controprova interna sulla misura buona: le escursioni scalano con la **radice del tempo** (`r15/r5` = 1,82 contro √3 = 1,73; `r30/r15` = 1,42 contro √2 = 1,41). **Effetto della banda**: 48 trade su 78 tenuti, stop fra $128 e $474 per micro, WR che sale da 53,8% a **58,3%**, proiezione **~603 trade** su cinque anni. Il rischio è risolto. **Il P&L no, e la diagnosi è aritmetica**: R:R mediano **0,49** richiede un WR di pareggio di **67,1%**, contro il 58,3% osservato. Manca quasi un 9% assoluto, e il problema è il **target** troppo vicino, non lo stop. Verificato che **nessun pavimento da 20 a 120 punti** rimette in piedi il campione: la conclusione non dipende dal 60. **Il pavimento costa soldi, ed è la prova che non è stato scelto per piacere**: i 22 trade sotto i 60 punti portavano +$830 netti. Chi sceglie guardando i risultati non sceglie 60. **Trovata una dipendenza oraria del rumore e NON usata**: `r15` vale 108 punti alle 09:00 e 40 alle 14:00, un fattore 2,7. Un pavimento variabile sarebbe migliore, ma cambiare la regola dopo aver visto il dato è l'errore di Gold: registrata come **variante Stage 4** (pavimento proporzionale all'ATR invece che fisso). La leva giusta per il R:R esiste già fra le varianti Stage 4 pre-registrate (`MinRR 1`, TP fisso in R al posto del pivot), ma **Stage 3 viene prima di Stage 4**."
     }
    ],
-   "next": "**Prima dello Stage 2**: (1) `MaxStopPoints 250`, derivato dalla soglia di Gate 2 ($500/micro ÷ $2 per punto), non dai dati; (2) misurare la **distribuzione del range della barra a 1 minuto su @NQ** per sapere sotto quale distanza uno stop è indistinguibile dal rumore, poi pre‑registrare un `MinStopPoints`; (3) entrambi sono filtri → **test split‑sample**."
+   "next": "**Stage 2** — IS 2021-2024, 1 contratto, $7,50/contratto. Sei run per il test split-sample: IS intero / 1ª metà / 2ª metà, ciascuna **base** (filtri a 0) e **filtrata** (`MinStopPoints 60`, `MaxStopPoints 250`). I filtri entrano solo se passano lo split-sample. Poi **Stage 3 subito**."
   },
   {
    "name": "Gold Asian Range",

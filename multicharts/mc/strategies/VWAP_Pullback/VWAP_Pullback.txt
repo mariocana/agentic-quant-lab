@@ -14,7 +14,15 @@
        del bias -> next bar at market. Un trade al giorno (default).
     4) STOP: StopMode 1 = ultimo pivot swing (StopSwingLen); StopMode 2 =
        estremo del pullback. TARGET: ultimo pivot opposto (TargetSwingLen).
-       Filtri MinRR e MaxStopPoints (0 = off).
+       Filtri MinRR, MinStopPoints e MaxStopPoints (0 = off).
+    BANDA AMMISSIBILE DELLO STOP (misurata, non scelta - vedi SPEC.md):
+       MinStopPoints 60  = mediana dell'escursione a 15 minuti di @NQ.
+          Sotto questa distanza lo stop e' indistinguibile dal rumore:
+          nello Stage 1, 4 trade su 78 avevano lo stop a <= 1 punto.
+       MaxStopPoints 250 = $500 per micro MNQ ($2 per punto), cioe' la
+          soglia di Gate 2 sul trade peggiore. Derivato dal gate.
+       Entrambi sono FILTRI: quando si attivano devono passare il test
+       split-sample sull'IS.
     5) FLAT a EODFlatTime: OBBLIGATORIO per la prop (l'originale poteva
        tenere overnight fino alla risoluzione del bracket).
 
@@ -44,7 +52,8 @@ Inputs:
     TargetSwingLen(5),
     BufferPts(0),              { cuscinetto in punti oltre lo stop }
     MinRR(0),                  { scarta il setup se target/stop < MinRR (0 = off) }
-    MaxStopPoints(0),          { scarta il setup se lo stop e' piu' largo (0 = off) }
+    MinStopPoints(0),          { scarta il setup se lo stop e' piu' STRETTO (0 = off) }
+    MaxStopPoints(0),          { scarta il setup se lo stop e' piu' largo  (0 = off) }
     MaxTradesPerDay(1),
     TradeLongs(1),
     TradeShorts(1),
@@ -199,6 +208,7 @@ shortTgt = tgtSwingLow;
 validLong = (StopMode = 2 or hasStopSL) and hasTgtSH
     and (StopMode = 1 or longLatched)
     and longStop < Close and longTgt > Close
+    and (MinStopPoints = 0 or Close - longStop >= MinStopPoints)
     and (MaxStopPoints = 0 or Close - longStop <= MaxStopPoints)
     and (MinRR = 0 or (Close - longStop > 0
          and (longTgt - Close) / (Close - longStop) >= MinRR));
@@ -206,6 +216,7 @@ validLong = (StopMode = 2 or hasStopSL) and hasTgtSH
 validShort = (StopMode = 2 or hasStopSH) and hasTgtSL
     and (StopMode = 1 or shortLatched)
     and shortStop > Close and shortTgt < Close
+    and (MinStopPoints = 0 or shortStop - Close >= MinStopPoints)
     and (MaxStopPoints = 0 or shortStop - Close <= MaxStopPoints)
     and (MinRR = 0 or (shortStop - Close > 0
          and (Close - shortTgt) / (shortStop - Close) >= MinRR));
