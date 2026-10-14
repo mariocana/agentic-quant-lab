@@ -688,3 +688,122 @@ dice se una combinazione strumento/PF ha una finestra non vuota**, e va fatto al
 **Conseguenza per la pipeline**: allo Stage 0, prima di scrivere il codice, si calcola la
 finestra dello stop per lo strumento scelto. Se è vuota, la spec non si scrive. Non è un gate
 nuovo: è aritmetica che evita di spendere Stage 1 e Stage 2.
+
+### Il numero che decide tutto, e non contiene lo strumento (15/10/2026)
+
+Dalla ricerca v4, più la verifica fatta qui. **Corregge due cose che avevo scritto ieri in
+questo stesso documento.**
+
+#### L'eccesso sul caso: il metro giusto
+
+Con stop S e target T, in un random walk senza drift la probabilità di toccare T prima di S
+è **1/(1 + R:R)** — il «null». E il PF vale WR·R:R/(1−WR), quindi il WR richiesto per un dato
+PF è **PF/(PF + R:R)**.
+
+| R:R | null | WR per PF 1,3 | **eccesso richiesto** |
+|---|---|---|---|
+| 0,50 | 66,7% | 72,2% | **+5,6 pp** |
+| 0,80 | 55,6% | 61,9% | **+6,3 pp** |
+| 1,00 | 50,0% | 56,5% | **+6,5 pp** |
+
+Nella banda 0,5–1 l'eccesso richiesto è quasi **costante**. Quindi **cambiare il rapporto
+target/stop non crea edge: lo rietichetta.** (Sotto R:R 0,25 l'eccesso richiesto scende, ma
+il target diventa più piccolo dei costi: escluso per un altro motivo.)
+
+#### Le nostre sei, sullo stesso asse
+
+| strategia | n | WR | R:R | null | **eccesso** | PF |
+|---|---|---|---|---|---|---|
+| **VaultBreak** | 723 | 63,1% | 0,730 | 57,8% | **+5,3 pp** | **1,246** |
+| Gold A | 1.280 | 42,6% | 1,554 | 39,2% | +3,4 | 1,152 |
+| ORB | 827 | 55,6% | 0,898 | 52,7% | +2,9 | 1,126 |
+| Gold B | 1.280 | 52,7% | 0,955 | 51,2% | +1,5 | 1,062 |
+| VWAP filtro | 605 | 72,9% | 0,393 | 71,8% | +1,1 | 1,075 |
+| VWAP base | 764 | 56,3% | 0,789 | 55,9% | **+0,4** | 1,022 |
+
+Serve **+5,6…+6,5 pp**. Il nostro massimo è **+5,3** (VaultBreak). La ricerca v4 trova che la
+letteratura documenta **+1,5…+5 pp** per le famiglie intraday sugli indici: siamo in linea
+con la letteratura, e la letteratura non basta.
+
+#### La formula di fattibilità, senza strumento
+
+Due vincoli stringono R da lati opposti:
+
+- **costi**: R ≥ (soglia_avg_trade + costo) / E
+- **drawdown**: R ≤ DDcap / (DD/R)
+
+dove E è l'edge lordo in unità di R e **DD/R è il drawdown in multipli di R**. Fattibile se:
+
+```
+RATIO = E × DDcap / (DD_R × (soglia + costo))  ≥  1
+```
+
+| strategia | E | DD/R | R ammesso dal DD | R richiesto dai costi | **RATIO** |
+|---|---|---|---|---|---|
+| **VaultBreak** | 0,0952 | 25,6 | $78 | $95 | **0,83** |
+| ORB | 0,0597 | 21,5 | $93 | $151 | 0,62 |
+| Gold A | 0,1239 | 63,8 | $31 | $73 | 0,43 |
+| VWAP filtro | 0,0292 | 19,6 | $102 | $308 | 0,33 |
+| Gold B | 0,0636 | 64,6 | $31 | $142 | 0,22 |
+| VWAP base | 0,0253 | 50,0 | $40 | $356 | 0,11 |
+
+*(DDcap $2.000 = Gate 3. Soglia $7/micro = Gate 2 avg trade ÷ 10. Costo micro $2 stimato.
+Per Gold il DD 95° non è mai stato misurato: uso il DD storico × 2 come proxy prudente.)*
+
+**Tutte e sei sotto 1.** La migliore, VaultBreak, manca del **17%**.
+
+#### Correzione 1: il porting non è morto per il motivo che avevo scritto
+
+Ieri avevo falsificato il porting di ORB/VaultBreak su MYM calcolando che l'edge si
+rimpicciolisce con ρ ≈ 0,40 (il rapporto fra il valore in dollari di un micro YM e uno NQ).
+**Quel calcolo è sbagliato.** Assume di tenere lo stop alla stessa *frazione di ATR*; se
+invece si tiene R allo stesso *valore in dollari*, l'edge in dollari non cambia.
+
+Il porting è comunque morto, ma per un motivo più forte e più generale: **DD/R non dipende
+dallo strumento.** È una proprietà della distribuzione dei trade. Quindi cambiare strumento
+cambia R in dollari ma non il drawdown in multipli di R: si può sempre rimpicciolire R per
+passare il gate sul drawdown, ma così si rimpicciolisce l'edge in dollari **mentre il costo
+resta fisso**. La formula sopra lo dice in un numero.
+
+**Nessun cambio di strumento ha mai potuto salvare nessuna delle sei.**
+
+#### Correzione 2: la misura «tick per range giornaliero» era il metro sbagliato
+
+Ieri avevo scritto che @NQ è lo strumento più fine (1.040 tick per ATR contro 420 di YM) e
+che spostarsi altrove peggiora il rapporto costo/movimento. **Non è vero**, e l'errore è
+identificabile: ho misurato la finezza del tick **in punti**, che non è confrontabile fra
+strumenti con valore del punto diverso. Un tick di MYM e uno di MNQ valgono **entrambi
+$0,50**. In dollari sono identici, quindi la «grossolanità» di YM non si traduce in un costo
+maggiore.
+
+Le due quantità che decidono sono invece: **il costo in unità di R** (dipende solo dal costo
+in dollari) e **R/ATR** (quanto spazio ha lo stop rispetto al rumore). Su entrambe MYM e M2K
+battono MNQ: al budget di $100 per micro, R vale **0,19 ATR su MNQ** e **0,48 ATR su MYM**.
+La ricerca v4 aveva ragione e la tabella dei tick va letta come superata.
+
+#### Il limite ottimistico su VaultBreak, che chiude la candidata migliore
+
+VaultBreak è l'unica con un RATIO sopra 0,8. Azzerando **del tutto** i costi del micro, il
+suo R richiesto scende da $95 a $73,5 e il RATIO sale a **1,06**.
+
+Cioè: **VaultBreak è fattibile solo a costi esattamente zero.** Non è un margine, è il
+confine. Con un costo anche di $1 andata‑ritorno per micro il RATIO è 0,93.
+
+#### Che cosa resta da cercare, detto in numeri
+
+Non serve un altro strumento e non serve un altro rapporto target/stop. Serve **una delle
+due**:
+
+| | oggi (il nostro massimo) | serve |
+|---|---|---|
+| **E**, edge lordo in unità di R | 0,0952 | **≥ 0,115** (+21%) |
+| **DD/R**, drawdown in multipli di R | 25,6 | **≤ 21** (−18%) |
+
+Il secondo è interessante perché **non richiede più edge**: un DD/R più basso si ottiene con
+una distribuzione di P&L meno dispersa — meno uscite a tempo parziali, più esiti binari
+stop/target. È una proprietà del disegno delle uscite, non dell'ipotesi di mercato.
+
+Nota tecnica che vale la pena tenere: il Monte Carlo su esiti binari ±R prevedeva DD di
+9–11 R per questi profili, e il DD misurato è **25,6 R**. La differenza non è il clustering:
+è che i P&L reali sono **dispersi** fra 0 e R, non binari, e la varianza per trade è più
+alta. **I Monte Carlo su esiti binari sottostimano il drawdown di circa 2,5 volte.**
