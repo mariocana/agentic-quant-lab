@@ -171,6 +171,77 @@ Se un paper dice "stop a 2 ATR" e l'ATR giornaliero di quello strumento è noto,
 numero. Se dice "stop al minimo precedente", non lo hai e devi dirmelo: è il caso che ci ha
 già bloccato una strategia.
 
+# GIÀ GUARDATO — non riproporlo senza un motivo nuovo e scritto
+
+Questa è la memoria del lavoro fatto. Leggila prima di cercare. Se vuoi riproporre qualcosa
+che sta qui, devi portare un **dato nuovo**, non un argomento nuovo: una fonte che non
+avevamo, o un numero che smentisce il motivo dello scarto.
+
+## Morte in pipeline (non si riaprono)
+
+| Strategia | Strumento | Dove è morta | Il numero che l'ha uccisa | Causa |
+|---|---|---|---|---|
+| ORB Breakout | @NQ | Gate 3 (Monte Carlo) | DD 95° pct **$3.121 per micro** (tetto $2.000) | B |
+| VaultBreak | @NQ | Gate 3 (Monte Carlo) | DD 95° pct **$3.109 per micro** | B |
+| NQ First5 EMA DayHold | @NQ | Gate 2 | DD **$5.784 per micro**, WR 53,1% | B |
+| Gold Asian Range | @GC → MGC | Gate 2 | avg trade **$21** contro $140; IC 95% dell'edge contiene lo zero (t = 0,92) | A |
+
+Causa **B** = l'edge c'è ma l'unità di rischio non entra nell'MLL. Causa **A** = edge assente,
+definitiva.
+
+Le tre su @NQ sono morte sullo **stesso numero** con logiche diverse: non è una proprietà
+delle strategie, è quanto costa tenere un micro Nasdaq in un breakout direzionale intraday.
+
+## Bloccate, non morte (non riproporle come idee nuove)
+
+| Strategia | Blocco |
+|---|---|
+| DriftPullback | il segnale di drift è in percentuale di prezzo su un continuous back‑adjusted, quindi inaffidabile. Sbloccabile riscrivendo il drift in ATR |
+| VWAP Pullback | Gate 1 passato, Stage 2 bloccato: lo stop a pivot swing va da 0,25 a 386 punti, e il 10% dei trade ha uno stop indistinguibile dal rumore |
+
+## Scartate dopo lettura della fonte
+
+| Idea / fonte | Motivo dello scarto |
+|---|---|
+| PSAR su Bitcoin (Mesíček, 2025) | risultato negativo dichiarato dall'autore; backtest senza fee né slippage; l'unico risultato positivo è ottenuto restringendo le ore **dopo** aver visto i risultati |
+| Sistema multi‑agente LLM su BTC (Singhi, UCL) | contaminazione del test (l'LLM legge news dentro il proprio training), zero costi, output non codificabile in regole |
+| MA crossover + RSI mean reversion (elaborato econometrico, 59 pp.) | il documento si contraddice sui propri dati; campioni da 16 e 42 trade |
+| Divergenze (Elder) | si definiscono a posteriori, non codificabili senza look‑ahead |
+| Pattern a candele (Palmquist) | universo azionario con selezione cross‑sectional, daily multi‑day: incompatibile col flat EOD |
+| DAX Trading Lab (Serafini) | blocco strumento: il DAX è Eurex |
+| Monday Long ES / Monday Long NQ / Monday after up Friday | tengono la posizione overnight → incompatibili col flat EOD. L'autore stesso scrive che nessuna passa un OOS severo da sola |
+| Time Rotation Strategy (60m) | overnight nei default (21:00 → 05:00) |
+| Toolkit The Bridge (order flow, GEX, COT) | blocco strumento: richiede l'eseguibile e i suoi dati hosted |
+| Overnight Bias ORB | dipende dalle funzioni del Bridge |
+
+## Famiglie escluse per costruzione (non è un giudizio di qualità, è il profilo)
+
+| Famiglia | Perché è esclusa |
+|---|---|
+| Trend following / breakout con R:R 2–3 e WR 35–40% | il profilo richiesto è WR ≥ 55% con R:R 0,5–1. È la maggior parte di quello che si trova pubblicato |
+| Overnight, swing, multi‑day, pair trading | flat EOD obbligatorio |
+| Bassa frequenza (< 40 trade/anno) | regola di inattività della prop |
+| Opzioni, order flow, dati COT in tempo reale | dati e strumenti che non abbiamo |
+
+# COSA DEVI AGGIUNGERE A QUESTA MEMORIA
+
+Alla fine della tua risposta, oltre alle candidate, consegna **due liste in formato tabella**,
+così posso incollarle qui sotto e la prossima ricerca non rifà il tuo lavoro:
+
+**1. Scartate da te**, una riga per idea:
+
+| Idea | Fonte (link) | Motivo dello scarto in una riga |
+
+Includi anche le idee che hai scartato in dieci secondi. Servono: la prossima volta nessuno
+le riapre.
+
+**2. Dove hai cercato**, una riga per fonte consultata:
+
+| Fonte / query | Cosa ci ho trovato | Vale la pena ritornarci? |
+
+Questa seconda lista è quella che mi interessa di più per il futuro: dice quali filoni sono
+esausti e quali sono rimasti aperti perché hai finito il tempo, non perché non c'era niente.
+
 # COSA CONSEGNARE
 
 Prima una tabella di sintesi, ordinata da migliore a peggiore:
