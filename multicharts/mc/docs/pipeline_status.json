@@ -7,14 +7,14 @@
   "updated": "2026-10-15",
   "groups": [
    {
-    "title": "DriftPullback ha passato l'OOS. Prima volta.",
-    "note": "t 1,86 su 1.439 trade, WR 64,5%, avg $57,32 — ogni statistica dell'IS riprodotta",
+    "title": "DriftPullback ha passato OOS e Stage 7. Serve la seconda strategia.",
+    "note": "2 micro: 42% per tentativo, 89% entro quattro, $400, ~2,5 mesi — stesso numero su IS e OOS",
     "items": [
-     "**Stage 7, il gate che decide**: simulatore sulla lista di trade dell'OOS. Pass rate per tentativo **e cumulato su 3-4 tentativi**, micro come output.",
-     "Il numero da battere: **DD $3.812 per micro contro $2.000 di MLL**. Non chiedere «sopravvive al drawdown di due anni» ma «P(+$3.000 prima di -$2.000)».",
-     "Stage 6 (bootstrap) prima, se serve: EV > 0 in $ e R, CI sovrapposti fra IS e OOS.",
-     "**In coda**: OOS di `VaultBreak MaxTrades1` (t 2,97, mai testata fuori campione). Dieci minuti.",
-     "**In coda**: ORB cutoff11 (t 2,95), rigiudicabile dopo il ritiro del Gate 3."
+     "**OOS di VaultBreak MaxTrades1** (t 2,97, mai testata fuori campione). Dieci minuti di run, poi `check_report.py --fase 3`.",
+     "Poi **ORB cutoff11** (t 2,95), rigiudicabile dopo il ritiro del Gate 3.",
+     "**Stage 8**: correlazione fra le vive e simulazione del basket. Il corso: basket 45,8% contro 38% al primo tentativo, 84,3% contro 77,2% entro sei.",
+     "**Riserva aperta**: la curva di DriftPullback e al 98esimo percentile del suo drawdown. Il corso mette in panchina questa esatta strategia (Live 004, 152). Non rispondibile con lo storico attuale.",
+     "Se si parte comunque con una sola: **piano veloce**, 2 micro e finestra corta, non 1 micro e otto mesi."
     ]
    }
   ]
@@ -363,9 +363,11 @@
     "2": "pass",
     "4": "skip",
     "5": "pass",
-    "6": "run"
+    "6": "skip",
+    "7": "pass",
+    "8": "run"
    },
-   "note": "**VIVA. Unica strategia della pipeline ad avere superato un out-of-sample.** IS 2020-2024: 3.499 trade, t 3,01, WR 63,5%. **OOS 2025-2026: 1.439 trade, t 1,86, WR 64,5%, avg $57,32** — ogni statistica riprodotta, e il t piu basso e solo l'effetto del campione piu piccolo (atteso 1,93 a edge invariato, misurato 1,86). Ora la domanda e una sola e non riguarda l'edge: **il drawdown storico di un singolo MNQ vale $3.812 contro un MLL di $2.000**. Risponde il simulatore dello Stage 7 col pass rate, non una formula.",
+   "note": "**VIVA e passata al gate economico.** Unica della pipeline a superare OOS e Stage 7. IS: 3.499 trade, t 3,01, WR 63,5%. OOS: 1.439 trade, t 1,86, WR 64,5%, avg $57,32. **Simulazione: 2 micro, 42% per tentativo, 89% entro quattro, $400, ~2,5 mesi** — e lo stesso numero su IS e OOS. Il RATIO che l'aveva uccisa sbagliava domanda. **Due riserve aperte**: la curva e al 98esimo percentile del suo drawdown (il corso mette in panchina proprio questa strategia per questo) e il corso dice di non deployare una singola strategia in eval. Entrambe spingono allo Stage 8.",
    "metrics": {
     "dichiarate dall'autore": "avg $77 · WR 65% · t-stat OOS 2.2 · live su funded",
     "worst day strutturale": "2 stop = $3.220 su NQ, $322 su MNQ → max 3 micro sotto il daily loss Apex",
@@ -375,9 +377,19 @@
      "attesa dichiarata": "WR invariante al regime (stop E target fissi in punti → P(primo tocco) = S/(S+T), dipende dal rapporto non dalla scala): atteso 62–65%. Se il WR crolla sotto 55% il problema non e il regime, e che l'edge non c'era",
      "kill": "t < 1,3 sull'OOS → cimitero definitivo, come VaultBreak"
     },
-    "OOS 2025-2026 (costi dentro)": "1.439 trade · WR 64,5% · R:R 0,61 · avg netto $57,32 ± 30,74 · PF 1,111 · **t 1,86** · DD chiusi $38.125 · 808 trade/anno"
+    "OOS 2025-2026 (costi dentro)": "1.439 trade · WR 64,5% · R:R 0,61 · avg netto $57,32 ± 30,74 · PF 1,111 · **t 1,86** · DD chiusi $38.125 · 808 trade/anno",
+    "Stage 7 — simulazione": {
+     "2 micro, 60 gg": "pass 42,5% IS / 42,3% OOS · 29 gg mediani · 89% entro 4 · $400 · ~2,5 mesi",
+     "1 micro, senza limite": "pass 62,2% IS / 58,1% OOS · 105 gg mediani · 95% entro 3 · ~8 mesi",
+     "sensibilita costi": "a $2,50/RT invece di $1,50: 41,6% -> 38,2%",
+     "drawdown vs MLL": "a 2 micro il DD storico vale $7.627 contro $2.000 di MLL (3,8x) e il pass rate resta 42%"
+    }
    },
    "log": [
+    {
+     "date": "2026-10-15",
+     "text": "**Stage 7 SUPERATO a 2 micro. Il RATIO era sbagliato, e si misura di quanto.** Simulatore scritto (`mc/docs/prop_sim.py`), regole LucidFlex verificate sui transcript (nessuna consistency: Live 002, 444; il minimo $150/giorno e per il payout da funded). Breach controllato sull'escursione **dentro il trade** (colonna `Drawdown ($)`), come la conservativita che il corso aggiunge in Live 003. **2 micro, finestra 60 gg: pass **42,5% sull'IS e 42,3% sull'OOS** — lo stesso numero sui due campioni — mediana 29 giorni, **89% entro quattro tentativi, $400, ~2,5 mesi**. Robusto ai costi: a $2,50/RT invece di $1,50 scende solo a 38,2%. **Allineato col corso** (38-47,9% per tentativo, 85-92,6% entro quattro). **Il RATIO diceva 2,1 volte troppo piccola e «anche a costi zero manca un fattore 1,65»**: il difetto e quello registrato prima del run, chiedeva di sopravvivere al drawdown di cinque anni (26,3 R) quando la eval chiede +$3.000 (10,3 R) prima di -$2.000 (6,9 R) su finestra corta. A 2 micro il drawdown storico vale $7.627 contro $2.000 di MLL, sfonda di 3,8 volte, **e il pass rate e comunque 42%** perche quel drawdown si forma in cinque anni e il tentativo dura due mesi. **Alternativa misurata**: 1 micro senza limite di tempo da 62,2% per tentativo e 95% entro tre, ma ~8 mesi — e la leva che Live 005 chiama «one mini versus two minis». **Due riserve non risolte, scritte in SPEC.** (1) La curva e a $3.341 dal massimo, **98esimo percentile**, e il corso mette in panchina questa esatta strategia per questo (Live 004, 152). Condizionando le partenze: 2 micro/60gg da 67%, 1 micro/250gg da 7% — si ribalta col piano e le finestre indipendenti sono ~5-20, **non rispondibile**. Se si parte, col piano veloce. (2) Live 004: **non deployare una sola strategia nemmeno in eval** (basket 45,8% contro 38% al primo tentativo). Non contraddice «una alla volta», che riguarda lo sviluppo: si sviluppa una per volta, si deploya in gruppo."
+    },
     {
      "date": "2026-10-15",
      "text": "**Stage 5 SUPERATO. Prima strategia della pipeline a passare un out-of-sample.** OOS 2025-01-02 -> 2026-10-15 (range verificato dalle Settings), 1.439 trade, 1 contratto su tutti, commissione $7,50/contratto, Bar Magnifier on, preliminari puliti. **IS -> OOS**: avg $55,48 -> **$57,32** (piu alto), WR 63,5% -> **64,5%**, R:R 0,64 -> 0,61, PF 1,117 -> 1,111, t 3,01 -> **1,86** (soglia 1,3), DD $31.670 -> $38.125 (1,20x, soglia 1,5x). **Il controllo che conta**: a edge invariato il t scala con la radice di n, quindi da 3,01 su 3.499 trade si attende **1,93** su 1.439 — misurato **1,86**. Il t piu basso e solo l'effetto del campione piu piccolo, **non un decadimento**. E l'attesa sul WR era pre-registrata (62-65%, per l'invarianza al regime quando stop e target sono entrambi fissi in punti) e si e' verificata al 64,5%. **La riserva economica resta e passa allo Stage 7 col numero dell'OOS**: avg $5,73/micro x 808 trade/anno = **$4.634/anno per micro**, e DD $38.125 = **26,3 R** = **$3.812 per micro contro un MLL di $2.000** — un singolo MNQ sfonda l'MLL di 1,9x sul drawdown storico, e il DD_R e confermato dall'OOS (26,3 contro 24,4), quindi non e' rumore. Ma la eval non chiede di sopravvivere al drawdown di due anni: chiede **P(+$3.000 prima di -$2.000)** su finestra corta con **piu tentativi a $100**. Lo decide il simulatore."
@@ -415,7 +427,7 @@
      "text": "**Gate 2 fallito. Cimitero, causa B — e è la morte più informativa delle sei.** 3.499 trade sull'IS 2020‑2024: WR **63,5%** contro la soglia pre‑registrata di **70%** (chiusa sotto 68%). Verdetto automatico. **Ma l'edge è reale**: avg trade $55, PF 1,117, **t = 3,01**. È la prima strategia della pipeline con un edge statisticamente solido — non rumore come Gold (t 0,92) o VWAP (t 0,23) — e nessun anno vale più del 50% del profitto (28/22/25/4/22%). **E non basta**: il criterio chiede E ≥ 0,115, questa ha **E = 0,0543**, DD_R 25,5, **RATIO 0,47**. Un edge statisticamente solido è ancora **2,1 volte troppo piccolo** per questo conto. Limite ottimistico: DD_R 25,5 impone R ≤ $78/micro, dove l'edge lordo vale $4,24 e il netto $2,24 contro i $7 del gate. **Anche a costi esattamente zero manca un fattore 1,65.** **La mia previsione sul regime era sbagliata, e il motivo è una regola nuova.** Avevo previsto WR ≥70% sull'IS perché lo stop fisso di 80 punti vale 0,38 ATR là contro 0,22 nel 2026. Misurato: 63,5%, invariato dal 64,4% del 2026. L'errore è che guardavo solo lo stop: **il target è fisso anch'esso**, e la probabilità di primo tocco è S/(S+T), che dipende dal *rapporto* e non dalla scala. **Quando stop e target sono entrambi fissi in punti, il WR è invariante al regime di volatilità.** È il contrario di Gold, dove lo stop *era* il range e scalava con la volatilità mentre i costi restavano fissi. Il regime va invocato solo quando una gamba scala e l'altra no. **Lo sblocco del drift è chiuso con «sistemato, e non cambia niente»**: `DriftMode 1` a `DriftThreshAtr 0.56` dà RATIO **0,40** contro 0,47 e DD_R **28,3** contro 25,5. Il blocco era reale — la soglia in % oscilla di un fattore 3,6 in ATR anche dentro 100 giorni — ma era un difetto di coerenza, non la causa della debolezza. Gate 1 chiuso con un'annotazione: il test ×10 dà Gross Profit e Max Drawdown **esattamente** 10,000000, ma Gross Loss 9,992462 (scarto 0,075%) e commissioni 9,997428, con conteggio trade, WR e uscite identici. Non è la classe `CurrentContracts`, che darebbe un fattore 10 su trade specifici. **Non ho una spiegazione completa dello 0,075%**: annotato invece di archiviato."
     }
    ],
-   "next": "**Stage 6 (bootstrap) e poi Stage 7, il gate che decide.** Sulla lista di trade dell'OOS: pass rate per tentativo e **cumulato su 3-4 tentativi**, con il numero di micro come output. Il numero da battere e il drawdown: $3.812 per micro contro $2.000 di MLL."
+   "next": "**Stage 8: serve una seconda strategia prima di deployare.** Il corso e esplicito — non una sola in eval — e la nostra curva e al 98esimo percentile del suo drawdown. In coda e pronta: **VaultBreak MaxTrades1** (t 2,97, mai vista fuori campione, dieci minuti di run) e **ORB cutoff11** (t 2,95). Poi correlazione fra le due e simulazione del basket."
   },
   {
    "name": "Evento macro",
@@ -434,6 +446,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-15",
+   "text": "**Scritto il simulatore dello Stage 7 e DriftPullback lo passa: 42% per tentativo, 89% entro quattro, $400.** Lo stesso numero su IS (42,5%) e OOS (42,3%), e in linea col corso (38-47,9%). **Il RATIO sbagliava domanda**: chiedeva di sopravvivere al drawdown di cinque anni invece di misurare il primo passaggio su finestra corta. A 2 micro il drawdown storico sfonda l'MLL di 3,8 volte e il pass rate resta 42%, perche il drawdown si forma in cinque anni e il tentativo dura due mesi. Emerse due cose dal corso che riguardano proprio questa strategia: la mette **in panchina** per il drawdown corrente (Live 004, 152) e dice di **non deployare una sola strategia nemmeno in eval**. Prossimo passo: la seconda strategia."
+  },
   {
    "date": "2026-10-15",
    "text": "**Primo OOS superato nella storia della pipeline: DriftPullback.** t 1,86 su 1.439 trade (soglia 1,3), WR 64,5% contro 63,5% dell'IS, avg $57,32 contro $55,48. Sette strategie, sei morti, e la prima che arriva fuori campione ci arriva senza perdere niente. Il merito non e di un criterio nuovo: e dello split prop/live di stamattina, che l'ha tirata fuori dal cimitero dove l'avevano messa PF 1,12 e una soglia WR 70% di nostra derivazione."

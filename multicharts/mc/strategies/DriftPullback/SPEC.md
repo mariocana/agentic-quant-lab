@@ -595,3 +595,59 @@ $100**. A $4.634/anno per micro il target da $3.000 e a ~7,8 mesi con 1 micro, e
 micro il tempo si accorcia ma il drawdown cresce insieme.
 
 **Lo decide il simulatore, non una formula.** Stage 7, sulla lista di trade di questo OOS.
+
+## Stage 7 — simulazione: PASSA a 2 micro (15/10/2026)
+
+Simulatore: `mc/docs/prop_sim.py`. Regole LucidFlex 50k verificate sui transcript — conto
+$50.000, target +$3.000, MLL $2.000 trailing EOD con lock a $50.100, flat EOD, **nessuna
+regola di consistency** (Live 002, 444: *"you don't have a consistency rules, but you have a
+minimum profit day, on 50K is $150 per day"*, e quel minimo riguarda il payout da funded, non
+il passaggio). Costo micro **$1,50/round-turn**: il P&L del report e NQ full-size con $15/RT
+dentro, si torna al lordo, si divide per 10, si applica il costo del micro.
+
+**Conservativita**: il breach si controlla sull'**escursione dentro il trade** (colonna
+`Drawdown ($)` del report), non sulla chiusura — e la conservativita che il corso ha aggiunto
+in Live 003 (*"we consider the path inside the day as well"*).
+
+### Il risultato, e regge su entrambi i campioni
+
+| piano | pass/tentativo | gg mediani | entro 3 | entro 4 | tempo atteso |
+|---|---|---|---|---|---|
+| **2 micro, finestra 60 gg** | **42,5% IS / 42,3% OOS** | 29 | 81% | **89%** | **~2,5 mesi** |
+| 1 micro, senza limite | 62,2% IS / 58,1% OOS | 105 | **95%** | 98% | ~8 mesi |
+| 3 micro | 41,1% | 15 | 80% | 88% | ~1,5 mesi |
+
+A 2 micro **IS e OOS danno lo stesso numero** (42,5 e 42,3). Il simulatore non sta leggendo
+rumore. E robusto anche ai costi: a $2,50/RT invece di $1,50 il pass rate scende da 41,6% a
+**38,2%**.
+
+**Allineato col corso**: 38-47,9% per tentativo e 85-92,6% entro quattro (Live 003, 107 e
+Live 004, 237-238), col playbook da **$400** (tre tentativi piu attivazione).
+
+### Il RATIO era sbagliato, e di quanto
+
+Diceva: RATIO 0,47, **2,1 volte troppo piccola**, e *"anche a costi esattamente zero manca un
+fattore 1,65"*. Il simulatore dice **42% per tentativo, 89% entro quattro, $400, ~2,5 mesi**.
+
+Il difetto era quello registrato prima del run: chiedeva di sopravvivere al drawdown storico
+di cinque anni (26,3 R) quando la eval chiede di fare **+$3.000 (10,3 R a 2 micro) prima di
+-$2.000 (6,9 R)** su una finestra corta. A 2 micro il drawdown storico vale $7.627 contro un
+MLL di $2.000 — sfonda di 3,8 volte — **e il pass rate e comunque 42%**, perche quel
+drawdown si forma in cinque anni e il tentativo dura due mesi.
+
+### Le due riserve, scritte e non risolte
+
+**1. Il drawdown corrente.** La curva e a **$3.341 dal massimo per micro, 98esimo percentile**
+della sua distribuzione storica, contro un massimo di $3.812. Il corso mette in panchina
+**questa esatta strategia** per questo motivo (Live 004, 152: *"among these three strategies I
+would bench right now the drift pullback"*). Misurato sull'IS condizionando alle partenze da
+drawdown oltre il 95esimo percentile: **2 micro/60 gg da 67%**, **1 micro/250 gg da 7%**. Si
+ribalta col piano, e in entrambi i casi le finestre indipendenti sono ~5-20. **Non
+rispondibile con questo storico.** Vale come riserva: se si parte, si parte col piano
+**veloce** (2 micro, finestra corta), non col lento.
+
+**2. Una sola strategia.** Live 004: *"takeaway number one: **don't run a single strategy even
+in the evaluation phase**, that is going to put you at a disadvantage"*. Coi suoi numeri, un
+basket da 45,8% al primo tentativo contro 38% di una singola, e 84,3% contro 77,2% entro sei.
+Non contraddice la nostra regola «una alla volta», che riguarda lo **sviluppo**: si sviluppa
+una per volta, si **deploya** in gruppo.
