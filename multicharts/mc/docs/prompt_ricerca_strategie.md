@@ -168,9 +168,36 @@ in assoluto e non in percentuale.
 
   - Win rate >= 55%
   - Rapporto vincita media / perdita media fra 0,5 e 1
-  - Almeno 200 trade su cinque anni (2020-2024), cioè >= 40 all'anno
-  - Profit factor >= 1,2
-  - Nessun anno che valga più del 50% del profitto totale
+  - **Almeno 2 trade al giorno di media, cioè ~500 all'anno** (vedi sotto: è il vincolo
+    che decide, e il più stretto di tutti)
+  - ~~Profit factor >= 1,2~~ — **ritirato il 15/10/2026**: è un criterio da capitale
+    proprio, non da eval. Vedi `prop_vs_live.md`
+  - ~~Nessun anno > 50% del profitto~~ — **ritirato il 15/10/2026**, stessa ragione
+
+## Il vincolo di frequenza, e perché è quello che decide
+
+**La versione precedente di questo prompt chiedeva >= 40 trade/anno, ed era sbagliata.**
+Quella soglia veniva dalla regola di **inattività** della prop (serve un trade ogni 30
+giorni), non dall'**economia della eval**. Le quattro candidate prodotte con quella soglia
+(50-120 trade/anno) sono risultate tutte inusabili per questo motivo, non per l'edge.
+
+Il conto, fatto sull'unica strategia che ha superato la simulazione:
+
+| | DriftPullback (passata) | IB-C Breakout su MYM (candidata #1) |
+|---|---|---|
+| avg per micro per trade | $5,73 | **$11,58** (il doppio) |
+| trade al giorno | **3,2** | 0,28 (undici volte meno) |
+| **$ al giorno per micro** | **$18,34** | **$3,24** |
+| giorni per fare $3.000 a 2 micro | **82** | **462** |
+
+**Il numero da guardare non è l'avg trade: è `avg per micro x trade al giorno`.** Una
+strategia può avere un trade due volte migliore ed essere cinque volte peggiore per una eval.
+Quattrocentosessantadue giorni sono due anni per tentativo: non è una candidata, qualunque sia
+il suo win rate.
+
+**Screening prima di qualunque altra cosa:** scarta tutto ciò che sta sotto **$10 al giorno
+per micro** (DriftPullback sta a $18,34). Se la fonte non dà abbastanza per stimarlo, chiedi
+la frequenza prima del win rate.
 
 Nota bene la combinazione: ALTO win rate con R:R PICCOLO. Questo esclude per costruzione
 l'intera famiglia trend following / breakout con R:R 2-3 e win rate 35-40%, che è la
@@ -345,7 +372,7 @@ delle strategie, è quanto costa tenere un micro Nasdaq in un breakout direziona
 |---|---|
 | **Trend following** | fa WR basso e R alto **per costruzione**: lascia correre i vincenti, ed è quello che lo fa funzionare. Non si può portare a WR ≥ 55% senza distruggere il meccanismo. Escluso su **qualunque** strumento |
 | Overnight, swing, multi‑day, pair trading | flat EOD obbligatorio |
-| Bassa frequenza (< 40 trade/anno) | regola di inattività della prop |
+| Bassa frequenza (**< 2 trade/giorno**) | **l'economia della eval**: sotto $10/giorno per micro servono anni per fare $3.000. La vecchia soglia di 40 trade/anno veniva dalla regola di inattività ed era dieci volte troppo bassa |
 | Opzioni, order flow, dati COT in tempo reale | dati e strumenti che non abbiamo |
 
 ### Il breakout NON è escluso, e questo va letto con attenzione
