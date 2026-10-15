@@ -1306,3 +1306,39 @@ storico, nei documenti e nei messaggi di commit. Gli stage sono **0, 1, 2, 4, 5,
 - **Il cimitero resta chiuso** finché non c'è un dato nuovo. Il nuovo criterio *permette* di
   riaprire ORB, VaultBreak e DriftPullback, ma la riapertura si fa con un run OOS, non con un
   argomento.
+
+## Chi ha scritto cosa: verifica nel materiale del corso (15/10/2026)
+
+Domanda dell'utente: il `t` è del protocollo o lo stiamo aggiungendo noi? Verificato nelle
+trascrizioni.
+
+| | di chi è | dove |
+|---|---|---|
+| **t‑stat** | **del corso** | Live 002: *«the **out of sample T stats**, that is 2.2, 2.229, and we have an average trade net of 77»* — ed è su **DriftPullback** |
+| **Monte Carlo «≤ 10% simulazioni negative»** | **del corso** | Lezione 8: *«you should have a maximum of 10% of the simulations being unprofitable»* |
+| **avg trade ≥ soglia** | **del corso** | Lezione 8: *«the average trade is too small at $20, below the acceptable threshold for NASDAQ mini contracts»* |
+| **«DD 95° ÷10 ≤ $2.000 (MLL)»** | **NOSTRO** | il corso non lega mai il drawdown del Monte Carlo al limite della prop |
+
+**Il corso usa il Monte Carlo per la robustezza, non contro l'MLL.** Il legame col limite del
+conto l'abbiamo inventato noi, ed è la parte che si è rivelata sbagliata.
+
+E «≤ 10% simulazioni negative» equivale all'incirca a **t ≥ 1,28**: sostituirlo con **t ≥ 2**
+è coerente col corso **e più severo**.
+
+### Correzione a quanto applicato poche ore prima
+
+Avevo spostato **`avg trade ≥ $70` allo Stage 7**, classificandolo come «dipende dal
+rischio». **È falso**: l'avg trade su 1 contratto grande è una proprietà della strategia —
+cambiare il numero di micro non lo cambia. Ed è un criterio del corso.
+
+**Ripristinato al Gate 2.** Allo Stage 7 restano solo i due criteri che dipendono davvero dal
+**conto** e non dalla strategia: DD per micro e trade peggiore per micro.
+
+### E il `t` va anche sull'OOS, che è dove il corso lo mette
+
+Aggiunto `t ≥ 2` allo **Stage 5**. Al Gate 2 resta come screening sull'IS; **sull'OOS è il
+test vero**, ed è il numero che il corso cita per DriftPullback (2,229).
+
+Nota: la nostra misura di DriftPullback sull'**IS** dà t = 3,01 con avg $55. Il corso dichiara
+t = 2,2 con avg $77 sull'**OOS**. Numeri diversi su periodi diversi — e il confronto diretto
+lo potremo fare solo dopo aver eseguito un OOS, che non abbiamo mai fatto.

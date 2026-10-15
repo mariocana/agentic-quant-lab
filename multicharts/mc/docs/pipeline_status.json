@@ -66,7 +66,7 @@
    "id": 2,
    "name": "Backtest IS",
    "short": "IS",
-   "gate": "**t ≥ 2** · PF ≥ 1.2 (lordo) · WR ≥ 55% · R:R 0.5–1 · nessun anno > 50%. Solo criteri che NON dipendono dal livello di rischio: quelli che ci dipendono (avg trade, drawdown, trade peggiore) si giudicano allo Stage 7"
+   "gate": "**t ≥ 2** · **avg trade ≥ $70 (NQ)** · PF ≥ 1.2 (lordo) · WR ≥ 55% · R:R 0.5–1 · nessun anno > 50%. Tutti criteri che NON dipendono dal conto. Quelli che ci dipendono (DD per micro, trade peggiore per micro) si giudicano allo Stage 7, dove il rischio è un output"
   },
   {
    "id": 4,
@@ -78,7 +78,7 @@
    "id": 5,
    "name": "OOS",
    "short": "OOS",
-   "gate": "Una volta: avg trade/WR/PF stesso ordine · WR ≥ 50% · DD ≤ 1.5× IS · fail = cimitero"
+   "gate": "Una volta: avg trade/WR/PF stesso ordine · WR ≥ 50% · **t ≥ 2 sull'OOS** (è la soglia del corso, Live 002) · DD ≤ 1.5× IS · fail = cimitero"
   },
   {
    "id": 6,
@@ -445,6 +445,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-15",
+   "text": "**Verificato nel materiale del corso chi ha scritto cosa, e corretta una mia svista di poche ore prima.** **Il `t` è del corso**: Live 002, parlando di DriftPullback, cita *«the out of sample T stats, that is 2.2, 2.229, and we have an average trade net of 77»*. E lo usa **sull'OOS**. Non l'abbiamo aggiunto noi. **Anche il Monte Carlo è del corso**, ma per un'altra domanda: la Lezione 8 dice *«you should have a maximum of 10% of the simulations being unprofitable»*, e serve a misurare robustezza e dipendenza dall'ordine dei trade. Quel criterio è **più debole** del t: «≤10% simulazioni negative» equivale all'incirca a **t ≥ 1,28**, mentre noi chiediamo 2. Quindi sostituirlo col t è coerente col corso e più severo. **Il legame col MLL — «DD 95° ÷10 ≤ $2.000» — era NOSTRO**: il corso non lega mai il drawdown del Monte Carlo al limite della prop, ed è esattamente la parte che era sbagliata. **La mia svista**: avevo spostato `avg trade ≥ $70` allo Stage 7 classificandolo come dipendente dal rischio. **È falso.** L'avg trade su 1 contratto grande è una proprietà della strategia: cambiare il numero di micro non lo cambia. Ed è un criterio del corso — Lezione 8: *«the average trade is too small at $20, below the acceptable threshold for NASDAQ mini contracts»*. **Ripristinato al Gate 2.** Restano allo Stage 7 solo i due criteri che dipendono davvero dal **conto** e non dalla strategia: DD per micro e trade peggiore per micro. **Aggiunto `t ≥ 2` anche allo Stage 5 (OOS)**, che è dove il corso lo applica. Al Gate 2 resta come screening sull'IS; sull'OOS è il test vero."
+  },
   {
    "date": "2026-10-15",
    "text": "**Pipeline semplificata: lo Stage 3 è ritirato e il Gate 2 perde tre criteri.** Il principio che riordina tutto: **il Gate 2 giudica la strategia, lo Stage 7 giudica la configurazione**. Un criterio che cambia valore se cambio la size **non è una proprietà della strategia**, e tre degli otto criteri del Gate 2 facevano esattamente questo (avg trade, drawdown, trade peggiore): spostati allo Stage 7. **`n ≥ 200` sostituito da `t ≥ 2`.** Misurato sulle nostre: il conteggio le fa passare **tutte e cinque**, il t ne boccia **tre** — ORB (t 1,39, ed era arrivata al Gate 3 senza edge dimostrabile), GoldB (0,92) e VWAP (0,23). Il conteggio era permissivo dove doveva essere severo, e severo dove non doveva: una strategia da 150 trade regolari con t = 2,5 veniva bocciata. **Stage 3 (Monte Carlo) ritirato**: faceva tre cose, e due (mediana > 0, < 10% sim negative) sono quello che misura il t, mentre la terza (DD 95° ÷10 ≤ $2.000) era il criterio sbagliato — misurava la sopravvivenza di un conto tenuto aperto per sempre invece del primo passaggio. **Il DD al 95° percentile si continua a misurare**, ma come dato per il dimensionamento in fase funded, non come kill. **Lo Stage 7 diventa il gate economico**, e il livello di rischio è un suo **output**: si cerca quello che massimizza il pass rate entro i vincoli, invece di assumere 1 contratto e bocciare. Le sue soglie erano già quelle giuste (pass ≥ 40% al primo, ≥ 85% in quattro, ≤ 15 giorni) e coincidono con lo Step 03 del deck del corso. **La numerazione degli stage resta invariata**, con un buco al 3: il cimitero è pieno di «morta al Gate 3» e rinumerare avrebbe invalidato ogni riferimento storico."
