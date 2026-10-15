@@ -40,6 +40,34 @@ vive sono piu di una.
 
 > **Il rischio e un output, non un input.** Quanti contratti lo decide il simulatore, non noi.
 
+## Lo script che controlla i report
+
+Non si leggono piu gli xlsx a mano. `mc/docs/check_report.py` (solo libreria standard,
+nessuna installazione):
+
+```bash
+# misure + controlli preliminari
+python3 mc/docs/check_report.py report.xlsx
+
+# verdetto fase 2 (IS): t >= 2 . WR >= 55% . R:R 0,5-1
+python3 mc/docs/check_report.py report.xlsx --fase 2
+
+# verdetto fase 3 (OOS): t >= 1,3 . WR >= 50% . R:R 0,5-1 . DD <= 1,5x IS
+python3 mc/docs/check_report.py report.xlsx --fase 3 --dd-is 31670
+
+# confronto rapido di piu report
+python3 mc/docs/check_report.py mc/strategies/*/reports/*.xlsx --tabella
+```
+
+**La parte che conta davvero sono i CONTROLLI PRELIMINARI**, stampati prima delle misure:
+commissione a zero, Bar Magnifier disattivato, timeframe, simbolo, point value e range di
+date effettivo. Sono le trappole che ci hanno gia' bruciato dei run — un ORB girato con
+`No Commission` e Bar Magnifier `Disabled`, un VWAP girato su grafico 15 minuti invece di 1.
+Se sbaglia li, i numeri sotto non valgono niente.
+
+PF e concentrazione annuale vengono stampati ma **marcati come criteri live**: informativi,
+non fanno parte del verdetto.
+
 ## Stato
 
 | strategia | dove | nota |
