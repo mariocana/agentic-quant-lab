@@ -1142,3 +1142,84 @@ gate da allentare: è il solo che non abbiamo mai eseguito.**
    se il corso dice la stessa cosa, la ri-derivazione ha due fonti indipendenti.
 3. **L'OOS di VaultBreak su 2025‑2026**, un run. È l'unica cosa che rende reale tutto il
    resto, ed è anche l'unica che può chiuderlo.
+
+## Il deck del corso dice che il nostro Gate 3 è sbagliato (15/10/2026)
+
+Letto `8. Livestreaming/1. live001_propfirm_deck-2_.pdf` (15 slide, estratte come immagini).
+Dice, testualmente:
+
+### «THE FULL PROCESS. NOTHING FANCIER THAN THAT.»
+
+| | il corso | noi |
+|---|---|---|
+| Step 01 | **Find The Profile** — *High win rate. Low reward to risk.* | ✅ uguale |
+| Step 02 | **Run The History** — trade storici nel file Colab | ✅ Stage 2 |
+| **Step 03** | **GET THE PASS RATE** — *la probabilità che la strategia passi una challenge* | ❌ **Gate 3 = DD 95° pct su 5 anni** |
+| Step 04 | **Deploy Live** — *High pass rate confirmed. Go live.* | ❌ |
+
+**Il criterio del corso è il pass rate. Il nostro è il drawdown a cinque anni.** Sono due
+domande diverse, e la nostra non è quella del business.
+
+### «ONE STRATEGY. REPEATED.» — `1 − (1 − p)ⁿ`
+
+*«The edge is not in one attempt. It is in the sequence.»*
+
+L'esempio del corso parte da **p = 56,4%**: un tentativo 56,4%, due **81,0%**, tre **91,7%**,
+quattro **96,4%**.
+
+**Il nostro Gate 3 non avrebbe mai fatto passare una strategia con p = 56%.** Pretende un
+drawdown così piccolo che p arriva al ~90% — e proprio per questo impiega 7 mesi.
+
+### «THE $400 PLAYBOOK» — *Fail, re-enter, repeat. The budget absorbs the variance.*
+
+**$100 per tentativo.** Tre tentativi + $100 di attivazione = **$400 all-in** fino al funded.
+
+Era il numero che mancava al nostro calcolo. E con **$100 per tentativo** l'ottimo che
+avevamo calcolato indipendentemente è: **rischio $600 per trade, p = 52,9%, 0,9 mesi attesi,
+€220 di costo atteso per payout**.
+
+**Due derivazioni indipendenti, stesso risultato**: il corso parte da p = 56,4% e budgeta
+$400; noi arriviamo a p = 52,9% e €220 attesi. Non è una coincidenza: è lo stesso problema
+risolto due volte.
+
+### «ONCE FUNDED, THE PARADIGM CHANGES»
+
+| EVALUATION | FUNDED |
+|---|---|
+| **Maximise probability of passing** | **Maximise probability of payout** |
+
+*«Different goal. Different strategy.»* — e **«PAYOUTS > COSTS. AFTER TAXES.»**
+
+Noi abbiamo **un solo set di gate** per entrambe le fasi. Il corso dice che sono due problemi
+con due configurazioni diverse.
+
+### Che cosa cambia, concretamente
+
+1. **Gate 3**: sostituire «DD 95° pct su 5 anni ÷10 ≤ $2.000» con il **pass rate**, cioè la
+   probabilità di primo passaggio. Soglia derivabile dal budget: con **p ≥ 50%** e $100 a
+   tentativo, tre tentativi danno **87,5%** cumulato a **$400 all-in** — il playbook del corso.
+2. **Gate 2, `n ≥ 200`**: era per la significatività, ma nel conto reale ogni trade costa
+   $2 contro un budget di drawdown fisso. La significatività si misura col **t-stat**.
+3. **Il tetto al rischio** viene dalla **consistenza al 50%** (misurata: morde a $850 per
+   trade, non a $600), non dal drawdown a cinque anni.
+4. **Due profili invece di uno**: configurazione *eval* (massimizza p di passaggio) e
+   configurazione *funded* (massimizza p di payout). Oggi ne abbiamo una sola.
+
+### L'unica cosa che aggiungo al processo del corso
+
+Lo Step 03 calcola il pass rate sui **trade storici**. Ma un pass rate calcolato sul periodo
+**in cui la strategia è stata ottimizzata** non vale niente — è il nostro Stage 4 che
+contamina lo Stage 3.
+
+**Nessuna delle nostre sei strategie ha mai avuto un run fuori campione**, perché morivano
+prima. Il pass rate va calcolato **sull'OOS**, e quello resta il gate non negoziabile.
+
+### Il cimitero va ri-passato, e la procedura è scritta
+
+Il trigger del 01/10 diceva: *«se tutte le candidate falliscono il Gate 3 pur avendo un edge,
+il gate è mal specificato, si ri-deriva dal primo passaggio e si ri-passa tutto il cimitero»*.
+
+Quattro delle sei sono morte di causa B. **La condizione è soddisfatta, il deck del corso la
+conferma, e la ri-derivazione è quella qui sopra.** Ma il primo passo non è riaprire sei
+cartelle: è **un run OOS su VaultBreak**, che ha il pass rate in-sample più alto (90% a $120,
+53% a $600) e che nessuno ha mai testato fuori campione.
