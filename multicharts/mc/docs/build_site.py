@@ -50,6 +50,7 @@ QL = os.path.join(ROOT, "python", "quantlake")
 # (titolo, percorso relativo alla radice del repo). L'ordine è quello della
 # barra laterale: è la mappa del lavoro, non un elenco alfabetico.
 PROP_DOCS = [
+    ("La pipeline in una pagina", "mc/docs/pipeline_semplice.md"),
     ("Il protocollo prop", "mc/docs/pipeline_prop.md"),
     ("Prop vs Live: due metodologie", "mc/docs/prop_vs_live.md"),
     ("Metodologia live (stand-by)", "mc/docs/metodologia_live.md"),
