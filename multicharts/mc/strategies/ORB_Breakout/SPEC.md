@@ -233,3 +233,81 @@ DD storico ÷ 10 sotto i **~$780**. La soglia del Gate 2 ($1.000, cioè il 50% d
 quindi un filtro **leggermente permissivo** rispetto a ciò che il Gate 3 chiede davvero.
 Non la cambiamo su un dato solo, ma è bene saperlo prima di investire tempo su una
 strategia che al Gate 2 passa per un soffio.
+
+---
+
+# Riapertura e pre-registrazione OOS (15/10/2026)
+
+**Perche si riapre.** Era chiusa al **Gate 3**, che e stato **ritirato dalla pipeline**: la sua
+logica (DD al 95esimo percentile ÷10 contro l'MLL) e lo stesso errore del RATIO, cioe trattare
+la eval come «sopravvivere a cinque anni» invece che come primo passaggio su finestra corta e
+ripetibile. Col metro prop attuale la variante **cutoff11** supera il Gate 2:
+
+`MaxRisk_USD 3000` · `UseDeltaFilter 1` (soglia 200) · `UseEntryCutoff 1` alle **11:00** ·
+`TP_RR 1.0` · `AllowShort 0` · 550 trade · **t 2,95** · WR 58,9% · R:R 0,93.
+
+**E l'ultima gamba possibile**: tetto a 3 strategie, DriftPullback viva, VaultBreak chiusa.
+
+## Prima cosa: rifare lo Stage 2 a costi onesti
+
+Il run `ORB_MaxRisk3000_Delta_Cutoff11_IS-intero` usa **$2,50/contratto + 1 tick** (~$10/RT),
+il modello leggero. Stessa trappola di VaultBreak. A **$15/RT** l'avg scende da $188,63 a
+~$183,63 e il **t da 2,95 a ~2,87**: cambia poco, ma i due numeri devono stare sullo stesso
+metro prima di confrontare IS e OOS.
+
+## Attenzione: in ORB **non c'e nessun gate di data nel codice**
+
+Nessun `TradeStartEL`/`TradeEndEL` come in VaultBreak. Quindi **il range del grafico E il
+range del backtest**, punto. Ogni run va impostato col Date Range del grafico.
+
+Lead-in richiesto: solo `Max bars back >= 100`, nessuna finestra lunga da riempire.
+
+## Configurazione dei due run
+
+Identica in tutto tranne le date. `@NQ` **5 min**, timezone **Exchange (CT)**, session
+template **Globex 24h** (l'IS chiude alle 16:00 CT, verificato dal report), Bar Magnifier
+**1 min**, **1 contratto** (`SizingMode 0`), commissione **$7,50/contratto**, slippage **0**.
+
+| run | Date Range del grafico |
+|---|---|
+| Stage 2 (IS) | 2020-01-01 -> 2024-12-31 |
+| Stage 5 (OOS) | 2025-01-01 -> oggi |
+
+## Criteri OOS (Stage 5)
+
+| criterio | soglia |
+|---|---|
+| **t** | **>= 1,3** |
+| WR | >= 50%, e dello stesso ordine del **58,9%** dell'IS |
+| R:R | 0,5-1 |
+| DD | <= 1,5x quello dell'IS a costi onesti |
+
+**Kill:** `t < 1,3` -> cimitero. Nessun ritocco, nessuna variante di recupero.
+
+## Potenza del test, scritta prima
+
+110 trade/anno su 1,78 anni -> **n atteso ~196**. Con la sd dell'IS ($1.500):
+
+| ipotesi | avg | t a n=196 |
+|---|---|---|
+| edge intero | $183,63 | **1,71** |
+| edge dimezzato | $91,81 | 0,86 |
+| come VaultBreak (15%) | $27,54 | 0,26 |
+
+**Anche nel caso migliore ci si aspetta t ~1,7**, non 2,9. La soglia a 1,3 lascia passare solo
+un edge che persiste sopra il ~76%. Un edge dimezzato muore.
+
+## Attesa dichiarata sul WR
+
+**56-61%.** Stop e target sono entrambi legati al range di apertura, quindi scalano insieme:
+P(primo tocco) = S/(S+T) dipende dal rapporto e non dalla scala -> **WR invariante al regime**,
+la regola gia verificata tre volte. Se il WR crolla sotto 50% non e il regime, e che l'edge non
+c'era.
+
+## Riserva gia a verbale dallo Stage 4 (29/09), da non dimenticare
+
+Lo split-sample dell'IS diceva: **prima meta 2020-01 -> 2022-06 senza edge** (414 trade, PF
+0,999, net -$162), tutto il profitto nella seconda meta. Il filtro delta guadagnava +21% nella
+prima meta e **solo +2,5% nella seconda**, cioe dentro il rumore proprio nel periodo recente.
+
+**Quindi l'aspettativa onesta per l'OOS e bassa**, ed e scritta prima di vederlo.

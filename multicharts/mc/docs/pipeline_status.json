@@ -10,8 +10,8 @@
     "title": "DriftPullback viva e passata allo Stage 7. VaultBreak chiusa definitivamente.",
     "note": "tetto a 3 strategie, test live appena c'e qualcosa in mano",
     "items": [
-     "**Terza gamba: ORB cutoff11** (t 2,95 sull'IS, mai vista fuori campione, chiusa dal Gate 3 ritirato). Rigirare Stage 2 a costi onesti, poi OOS 2025-2026.",
-     "**Verificare che l'OOS di DriftPullback sia girato su Globex 24h**: se era RTH, lo Stage 7 e su un segnale diverso dall'IS e va rifatto.",
+     "**ORB cutoff11, Stage 2 a costi onesti** ($7,50/contratto, slippage 0), Date Range 2020-01-01 -> 2024-12-31. Poi OOS 2025-2026. Pre-registrazione scritta: n ~196, t 1,71 a edge intero, kill a 1,3.",
+     "~~Verificare il session template dell'OOS di DriftPullback~~ **fatto: era Globex 24h, lo Stage 7 regge.**",
      "Poi **Stage 8**: correlazione e simulazione del basket, appena ci sono due strategie vive.",
      "**Riserva aperta su DriftPullback**: la curva e al 98esimo percentile del suo drawdown e il corso mette in panchina proprio questa strategia (Live 004, 152).",
      "Se si parte con una sola: **piano veloce**, 2 micro e finestra corta."
@@ -84,9 +84,9 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "waiver",
+    "2": "run",
     "4": "pass",
-    "3": "fail"
+    "3": "ritirato"
    },
    "note": "**Causa di morte: B — non entra nel conto** (l'edge c'è: positiva in tutti gli anni e in entrambe le metà dell'IS; è l'unità di rischio a non stare in un MLL da $2.000 con 1 micro NQ). Archiviata **con i report**: se cambia gate, conto o strumento si ri‑testa in minuti. Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico. **15/10/2026 — da rigiudicare, non ancora riaperta.** Il Gate 3 che l'ha chiusa e stato ritirato dalla pipeline, e la sua logica (DD 95° ÷10 ≤ MLL) e lo stesso errore del RATIO: tratta la eval come «sopravvivere a cinque anni». Col metro prop la variante cutoff11 passa Gate 2 (t 2,95 · WR 58,9% · R:R 0,93 · n 550). **Resta parcheggiata**: una strategia alla volta, prima DriftPullback.",
    "metrics": {
@@ -157,7 +157,7 @@
      "text": "Porting da `OrbBreakout_EA` (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2."
     }
    ],
-   "next": "**Chiusa.** L'edge esiste (PF 1,35, WR 59%, positiva in entrambe le metà) ma l'unità di rischio — stop = intero range di apertura — è troppo grande per un conto con $2.000 di MLL. La correzione strutturale è una spec **nuova** con stop a rischio fisso, da aprire allo Stage 0 senza ereditare nulla. Priorità ora: le **cinque strategie mai testate**."
+   "next": "**Riaperta: e l'ultima gamba possibile.** Prima rifare lo **Stage 2 a costi onesti** ($7,50/contratto, slippage 0): il run esistente usa $2,50 + 1 tick e il t passa da 2,95 a ~2,87. Poi **OOS 2025-2026**. In ORB **non c'e gate di data nel codice**, quindi il Date Range del grafico E il range del backtest. Pre-registrazione in SPEC.md: n atteso ~196, t 1,71 a edge intero, kill a 1,3."
   },
   {
    "name": "VaultBreak",
@@ -396,6 +396,10 @@
    "log": [
     {
      "date": "2026-10-15",
+     "text": "**Verificato: l'OOS e stato girato su Globex 24h**, come l'IS e come richiede l'header del codice. Lo Stage 7 regge: il 42% di pass rate e su un segnale confrontabile con quello dell'IS. Era l'unico controllo che il report non poteva dare (il foglio Settings non registra il session template e il grafico finiva a oggi a meta sessione)."
+    },
+    {
+     "date": "2026-10-15",
      "text": "**Stage 7 SUPERATO a 2 micro. Il RATIO era sbagliato, e si misura di quanto.** Simulatore scritto (`mc/docs/prop_sim.py`), regole LucidFlex verificate sui transcript (nessuna consistency: Live 002, 444; il minimo $150/giorno e per il payout da funded). Breach controllato sull'escursione **dentro il trade** (colonna `Drawdown ($)`), come la conservativita che il corso aggiunge in Live 003. **2 micro, finestra 60 gg: pass **42,5% sull'IS e 42,3% sull'OOS** — lo stesso numero sui due campioni — mediana 29 giorni, **89% entro quattro tentativi, $400, ~2,5 mesi**. Robusto ai costi: a $2,50/RT invece di $1,50 scende solo a 38,2%. **Allineato col corso** (38-47,9% per tentativo, 85-92,6% entro quattro). **Il RATIO diceva 2,1 volte troppo piccola e «anche a costi zero manca un fattore 1,65»**: il difetto e quello registrato prima del run, chiedeva di sopravvivere al drawdown di cinque anni (26,3 R) quando la eval chiede +$3.000 (10,3 R) prima di -$2.000 (6,9 R) su finestra corta. A 2 micro il drawdown storico vale $7.627 contro $2.000 di MLL, sfonda di 3,8 volte, **e il pass rate e comunque 42%** perche quel drawdown si forma in cinque anni e il tentativo dura due mesi. **Alternativa misurata**: 1 micro senza limite di tempo da 62,2% per tentativo e 95% entro tre, ma ~8 mesi — e la leva che Live 005 chiama «one mini versus two minis». **Due riserve non risolte, scritte in SPEC.** (1) La curva e a $3.341 dal massimo, **98esimo percentile**, e il corso mette in panchina questa esatta strategia per questo (Live 004, 152). Condizionando le partenze: 2 micro/60gg da 67%, 1 micro/250gg da 7% — si ribalta col piano e le finestre indipendenti sono ~5-20, **non rispondibile**. Se si parte, col piano veloce. (2) Live 004: **non deployare una sola strategia nemmeno in eval** (basket 45,8% contro 38% al primo tentativo). Non contraddice «una alla volta», che riguarda lo sviluppo: si sviluppa una per volta, si deploya in gruppo."
     },
     {
@@ -454,6 +458,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-15",
+   "text": "**ORB riaperta come ultima gamba, con la pre-registrazione scritta prima.** Era chiusa al Gate 3, che e stato ritirato perche faceva lo stesso errore del RATIO. Col metro prop attuale cutoff11 passa il Gate 2 (t 2,95, WR 58,9%, R:R 0,93). Due cose da sistemare prima: il run esistente e a **costi leggeri** ($2,50 + 1 tick, t scende a ~2,87 a $15/RT) e in ORB **non c'e gate di data nel codice**, quindi il Date Range del grafico e il range del backtest. **Potenza scritta prima**: n atteso ~196, edge intero -> t 1,71, dimezzato -> 0,86, soglia 1,3. **E l'aspettativa onesta e bassa**, per una riserva gia a verbale dal 29/09: nello split-sample la prima meta dell'IS non aveva edge e il filtro delta guadagnava solo +2,5% nella seconda meta, dentro il rumore proprio nel periodo recente. **Verificato anche che l'OOS di DriftPullback era su Globex 24h**: lo Stage 7 regge."
+  },
   {
    "date": "2026-10-15",
    "text": "**VaultBreak chiusa definitivamente: anche `MaxTrades1` fallisce l'OOS, t = 0,23 su 138 trade.** Entrambe le configurazioni falsificate fuori campione, entrambe con parametri congelati e soglie scritte prima. L'edge realizzato e il 15% di quello dell'IS, sotto anche l'ipotesi pessimista pre-registrata. Restano una viva (DriftPullback) e una in coda (ORB cutoff11). **Tre run buttati prima di quello buono**, tutti per il range dati del grafico e non per la strategia: i controlli preliminari dello script li hanno beccati tutti e tre."
