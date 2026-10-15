@@ -100,7 +100,7 @@ def leggi(path):
         raise SystemExit('%s: colonna "Profit ($)" non trovata' % os.path.basename(path))
     col = {c.strip(): j for j, c in enumerate(righe[hdr])}
 
-    pl, cum, anni = [], [], []
+    pl, cum, anni, cts = [], [], [], []
     for r in righe[hdr + 1:]:
         j = col['Profit ($)']
         if j >= len(r) or not r[j].strip():
@@ -119,8 +119,11 @@ def leggi(path):
         jd = col.get('Date')
         d = _data(r[jd]) if jd is not None and jd < len(r) else None
         anni.append(d.year if d else None)
+        jk = col.get('Contracts')
+        if jk is not None and jk < len(r) and r[jk].strip():
+            cts.append(r[jk].strip())
 
-    return cfg, pl, cum, anni
+    return cfg, pl, cum, anni, cts
 
 
 def misura(pl, cum, anni):
@@ -161,9 +164,19 @@ def misura(pl, cum, anni):
 OK, NO, EH = 'OK  ', 'NO  ', '?   '
 
 
-def preliminari(cfg):
+def preliminari(cfg, cts):
     """Le trappole. Ritorna la lista (esito, testo)."""
     out = []
+
+    # size variabile: il P&L per trade non e' piu' confrontabile fra IS e OOS
+    distinti = sorted(set(cts))
+    if distinti and distinti != ['1']:
+        from collections import Counter
+        det = '  '.join('%sct: %d' % (k, v) for k, v in sorted(Counter(cts).items()))
+        out.append((NO, 'Size VARIABILE (%s) -> avg trade e t non confrontabili con una '
+                        'serie a 1 contratto. Metti SizeMode 0.' % det))
+    elif distinti:
+        out.append((OK, 'Size: 1 contratto su tutti i %d trade' % len(cts)))
 
     comm = cfg.get('Commission', '')
     zero = (not comm) or re.match(r'^\s*(0\$?|no commission)', comm, re.I)
@@ -205,7 +218,7 @@ FASI = {
 
 
 def rapporto(path, fase, dd_is):
-    cfg, pl, cum, anni = leggi(path)
+    cfg, pl, cum, anni, cts = leggi(path)
     m = misura(pl, cum, anni)
     nome = os.path.basename(path)
 
@@ -213,7 +226,7 @@ def rapporto(path, fase, dd_is):
     print(nome)
     print('=' * 72)
     print('\nCONTROLLI PRELIMINARI  (se sbaglia qui, i numeri sotto non valgono)')
-    for esito, testo in preliminari(cfg):
+    for esito, testo in preliminari(cfg, cts):
         print('  %s %s' % (esito, testo))
 
     print('\nMISURE')
@@ -258,7 +271,7 @@ def tabella(paths):
           ('file', 'n', 'WR%', 'R:R', 't', 'PF', 'avg'))
     for p in paths:
         try:
-            cfg, pl, cum, anni = leggi(p)
+            cfg, pl, cum, anni, _ = leggi(p)
             m = misura(pl, cum, anni)
         except SystemExit as e:
             print('%-44s %s' % (os.path.basename(p)[:44], e))
