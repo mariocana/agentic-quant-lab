@@ -550,3 +550,48 @@ drawdown e profitto scalano insieme.
 Se il simulatore dello Stage 7 conferma quel tempo, la strategia muore **la'**. Ma muore con
 la risposta giusta — pass rate e tempo di passaggio su piu tentativi — invece che con una
 stima su percorso medio.
+
+## Stage 5 — ESITO: PASSA (15/10/2026)
+
+Report: `reports/DPB_S5_OOS_2025-2026.xlsx`. Range verificato dalle Settings:
+**2025-01-02 -> 2026-10-15**, 1 contratto su tutti i 1.439 trade, commissione $7,50/contratto,
+Bar Magnifier Enabled 1 Minute. Preliminari tutti puliti.
+
+| | IS 2020-2024 | **OOS 2025-2026** | |
+|---|---|---|---|
+| n | 3.499 | **1.439** | 700/anno -> 808/anno |
+| avg trade | $55,48 ± 18,44 | **$57,32 ± 30,74** | **piu alto** |
+| WR | 63,5% | **64,5%** | attesa dichiarata 62-65%: **centrata** |
+| R:R | 0,64 | **0,61** | |
+| t | 3,01 | **1,86** | soglia 1,3 |
+| PF | 1,117 | **1,111** | |
+| DD chiusi | $31.670 | **$38.125** | 1,20x, soglia 1,5x |
+
+**Non si e' deteriorato niente.** Il controllo piu stringente: a edge invariato il t scala
+con la radice di n, quindi da 3,01 su 3.499 trade ci si aspetta **1,93** su 1.439. Misurato
+**1,86**. L'edge dell'OOS e statisticamente indistinguibile da quello dell'IS — il t piu
+basso e **solo** l'effetto del campione piu piccolo, non un decadimento.
+
+E l'attesa sul WR era pre-registrata e si e' verificata: stop **e** target fissi in punti ->
+P(primo tocco) = S/(S+T) -> WR invariante al regime. 63,5% -> 64,5%.
+
+**Prima strategia della pipeline a superare un out-of-sample.** Le altre sei: tre senza edge,
+una falsificata sull'OOS (VaultBreak), due mai arrivate qui.
+
+### La riserva economica, ora col numero dell'OOS
+
+Resta in piedi ed e' la domanda vera dello Stage 7:
+
+- avg **$5,73 per micro** x **808 trade/anno** = **$4.634/anno per micro**
+- DD **$38.125 = 26,3 R** -> **$3.812 per micro**, contro un **MLL di $2.000**
+
+Cioe: **un singolo MNQ ha un drawdown storico che sfonda l'MLL di 1,9 volte.** Il DD_R e
+confermato dall'OOS (26,3 contro 24,4 dell'IS) quindi non e' un artefatto del campione.
+
+**Ma questa non e' la domanda della eval**, ed e' l'errore che il RATIO faceva: la eval non
+chiede di sopravvivere al drawdown peggiore di due anni, chiede **la probabilita di toccare
++$3.000 prima di -$2.000 partendo da zero**, su una finestra corta e con **piu tentativi a
+$100**. A $4.634/anno per micro il target da $3.000 e a ~7,8 mesi con 1 micro, e scalando i
+micro il tempo si accorcia ma il drawdown cresce insieme.
+
+**Lo decide il simulatore, non una formula.** Stage 7, sulla lista di trade di questo OOS.
