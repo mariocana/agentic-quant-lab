@@ -1396,3 +1396,52 @@ su quello stesso periodo.
 **Il problema non erano i gate.** I gate avevano una formulazione sbagliata e un esito
 corretto. Il problema è che **non abbiamo ancora trovato un edge che sopravviva fuori
 campione**, e fino a oggi non l'avevamo mai verificato su nessuna.
+
+---
+
+## Il `t`, spiegato una volta per tutte
+
+`t = avg trade / (sd / sqrt(n))`
+
+Il denominatore `sd / sqrt(n)` e la **barra d'errore**: di quanto puo sbagliare la media per
+puro caso, dato quanti trade hai. Quindi:
+
+> **`t` = quante barre d'errore separano il tuo avg trade dallo zero.**
+
+Coi numeri veri della pipeline:
+
+| strategia | avg trade | barra d'errore | si legge | t |
+|---|---|---|---|---|
+| DriftPullback | $55,48 | ± $18,44 | **$55 ± 18** | **3,01** |
+| VaultBreak IS | $110,15 | ± $41,81 | $110 ± 42 | 2,63 |
+| Gold A | $59,96 | ± $31,65 | $60 ± 32 | 1,89 |
+| VWAP base | $9,08 | ± $38,97 | **$9 ± 39** | **0,23** |
+| VaultBreak OOS | −$1,90 | ± $74,81 | **−$2 ± 75** | **−0,03** |
+
+VWAP: il margine d'errore e **quattro volte** la media, non sai nemmeno il segno.
+DriftPullback: il peggio plausibile e ancora **+$37**, sopra zero.
+
+In probabilita — *«se l'edge fosse zero, quante volte vedrei una media cosi buona per
+fortuna?»*:
+
+| t | probabilita | |
+|---|---|---|
+| 2,0 | 1 su 40 | soglia Gate 2 |
+| 1,3 | 1 su 10 | **il livello del corso** («≤10% simulazioni negative») |
+| 0,23 | 4 su 10 | testa o croce |
+
+### La frase da ricordare
+
+> **`t` dice se l'edge *esiste*. Non dice se *basta*.**
+
+DriftPullback: t 3,01, edge quasi certo, avg trade **$55**. Certezza alta su un numero
+piccolo. Sono due domande diverse, e al «basta?» risponde il **simulatore dello Stage 7** col
+pass rate, non il t. Avere confuso le due e la ragione per cui abbiamo tenuto in Gate 2
+criteri che non ci andavano — vedi `prop_vs_live.md`.
+
+### Perche serve tanto `n`
+
+VaultBreak IS e OOS hanno quasi lo stesso win rate (63,1% e 62,4%), ma l'OOS ha **295** trade
+contro 723: barra d'errore **± $75** invece di ± $42. Piu trade = barra piu stretta = piu
+riesci a distinguere un edge piccolo dal rumore. Per questo 78 trade di Stage 1 non decidono
+mai niente, qualunque t diano (Gold Stage 1: t 2,45 su 78 trade, poi 0,92 sull'IS vero).
