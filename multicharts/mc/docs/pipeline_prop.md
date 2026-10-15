@@ -1223,3 +1223,86 @@ Quattro delle sei sono morte di causa B. **La condizione è soddisfatta, il deck
 conferma, e la ri-derivazione è quella qui sopra.** Ma il primo passo non è riaprire sei
 cartelle: è **un run OOS su VaultBreak**, che ha il pass rate in-sample più alto (90% a $120,
 53% a $600) e che nessuno ha mai testato fuori campione.
+
+---
+
+# ⚙️ Pipeline semplificata (15/10/2026)
+
+Applicata dopo aver letto il deck `live001` e aver misurato che il Gate 3 uccideva le
+candidate prima che lo Stage 7 — che ha già il criterio giusto — potesse girare.
+
+## Il principio
+
+> **Il Gate 2 giudica la strategia. Lo Stage 7 giudica la configurazione.**
+
+Un criterio che cambia valore se cambio la size **non è una proprietà della strategia**.
+Tre degli otto criteri del Gate 2 facevano esattamente questo.
+
+## Gate 2: da otto criteri a cinque
+
+| criterio | dipende dal rischio? | esito |
+|---|---|---|
+| WR ≥ 55% | no | **resta** |
+| R:R 0,5–1 | no | **resta** |
+| PF ≥ 1,2 **(lordo)** | no | **resta** |
+| nessun anno > 50% | no | **resta** |
+| `n ≥ 200` | — | **→ `t ≥ 2`** |
+| avg trade ≥ $70 | **sì** | → Stage 7 |
+| DD ÷10 ≤ $1.000 | **sì** | → Stage 7 |
+| peggior trade ÷10 ≤ $500 | **sì** | → Stage 7 |
+
+### Perché `t ≥ 2` e non `n ≥ 200`
+
+Misurato sulle nostre cinque con i dati IS:
+
+| | n | avg | **t** | `n ≥ 200` | `t ≥ 2` |
+|---|---|---|---|---|---|
+| DriftPullback | 3.499 | $55 | **3,01** | ✓ | ✓ |
+| VaultBreak | 723 | $110 | **2,63** | ✓ | ✓ |
+| ORB | 827 | $81 | **1,39** | ✓ | **✗** |
+| GoldB | 1.280 | $21 | **0,92** | ✓ | **✗** |
+| VWAP | 764 | $9 | **0,23** | ✓ | **✗** |
+
+Il conteggio le fa passare **tutte e cinque**; il t ne boccia **tre**. Era **permissivo dove
+doveva essere severo** — ORB è arrivata al Gate 3 con t = 1,39, cioè senza edge dimostrabile
+— **e severo dove non doveva**: una strategia da 150 trade molto regolari con t = 2,5 veniva
+bocciata dal conteggio.
+
+E c'è un motivo economico in più: ogni trade costa ~$2 contro un budget di drawdown fisso.
+`n ≥ 200` spingeva verso l'alta frequenza, che è **un costo**, non una virtù.
+
+## Stage 3 (Monte Carlo): ritirato
+
+Faceva tre cose:
+
+- *mediana > 0* e *< 10% simulazioni negative* → è quello che misura il **t**, al Gate 2;
+- *DD 95° ÷10 ≤ $2.000* → **il criterio sbagliato**: misurava la sopravvivenza di un conto
+  tenuto aperto per sempre, invece del **primo passaggio** su una finestra breve con riprova.
+
+**Il DD al 95° percentile si continua a misurare**, ma come dato per il dimensionamento in
+fase *funded* — non come kill in fase eval.
+
+## Stage 7: diventa il gate economico, e il rischio è un suo output
+
+Prima si assumeva 1 contratto e si bocciava. Adesso si **cerca** il livello di rischio per
+trade che massimizza il pass rate entro i vincoli del conto.
+
+Le soglie erano già giuste e restano: **pass ≥ 40% al primo tentativo**, ≥ 85% in quattro,
+**≤ 15 giorni**. Coincidono con lo Step 03 del deck (`1 − (1−p)ⁿ`, esempio a p = 56,4%).
+
+Vincolo che pone il tetto: la **consistenza al 50%** — misurata, morde a $850 per trade, non
+a $600.
+
+## La numerazione resta, con un buco al 3
+
+Il cimitero è pieno di «morta al Gate 3»: rinumerare avrebbe invalidato ogni riferimento
+storico, nei documenti e nei messaggi di commit. Gli stage sono **0, 1, 2, 4, 5, 6, 7, 8, 9**.
+
+## Cosa NON è cambiato
+
+- **Lo Stage 5 (OOS) resta prima dello Stage 7.** Un pass rate calcolato sul periodo in cui
+  la strategia è stata ottimizzata non vale niente, e **nessuna delle sei ha mai avuto un OOS**.
+- **Il profilo (WR alto, R:R basso) resta**: è lo Step 01 del corso, identico.
+- **Il cimitero resta chiuso** finché non c'è un dato nuovo. Il nuovo criterio *permette* di
+  riaprire ORB, VaultBreak e DriftPullback, ma la riapertura si fa con un run OOS, non con un
+  argomento.

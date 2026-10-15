@@ -66,13 +66,7 @@
    "id": 2,
    "name": "Backtest IS",
    "short": "IS",
-   "gate": "n ≥ 200 · avg trade ≥ $70 (NQ) · PF ≥ 1.2 · WR ≥ 55% · R:R 0.5–1 · DD÷10 ≤ $1.000 · peggior trade÷10 ≤ $500 · nessun anno > 50%"
-  },
-  {
-   "id": 3,
-   "name": "Monte Carlo",
-   "short": "MC",
-   "gate": "Reshuffle 1000: mediana > 0 · < 10% sim negative · **DD 95°÷10 ≤ $2.000** (MLL LucidFlex)"
+   "gate": "**t ≥ 2** · PF ≥ 1.2 (lordo) · WR ≥ 55% · R:R 0.5–1 · nessun anno > 50%. Solo criteri che NON dipendono dal livello di rischio: quelli che ci dipendono (avg trade, drawdown, trade peggiore) si giudicano allo Stage 7"
   },
   {
    "id": 4,
@@ -96,7 +90,7 @@
    "id": 7,
    "name": "Prop sim",
    "short": "Prop",
-   "gate": "Eval: pass ≥ 40% al 1°, ≥ 85% in 4, ≤ 15 gg · Funded: qualification ≥ 50%, payout > 4× fee"
+   "gate": "**Il gate economico, e il livello di rischio e' un suo OUTPUT.** Si cerca il rischio per trade che massimizza il pass rate entro i vincoli del conto. Eval: **pass ≥ 40% al 1° tentativo**, ≥ 85% in 4, **≤ 15 giorni**. Vincolo: consistenza 50%. Funded: qualification ≥ 50%, payout > 4× fee"
   },
   {
    "id": 8,
@@ -451,6 +445,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-15",
+   "text": "**Pipeline semplificata: lo Stage 3 è ritirato e il Gate 2 perde tre criteri.** Il principio che riordina tutto: **il Gate 2 giudica la strategia, lo Stage 7 giudica la configurazione**. Un criterio che cambia valore se cambio la size **non è una proprietà della strategia**, e tre degli otto criteri del Gate 2 facevano esattamente questo (avg trade, drawdown, trade peggiore): spostati allo Stage 7. **`n ≥ 200` sostituito da `t ≥ 2`.** Misurato sulle nostre: il conteggio le fa passare **tutte e cinque**, il t ne boccia **tre** — ORB (t 1,39, ed era arrivata al Gate 3 senza edge dimostrabile), GoldB (0,92) e VWAP (0,23). Il conteggio era permissivo dove doveva essere severo, e severo dove non doveva: una strategia da 150 trade regolari con t = 2,5 veniva bocciata. **Stage 3 (Monte Carlo) ritirato**: faceva tre cose, e due (mediana > 0, < 10% sim negative) sono quello che misura il t, mentre la terza (DD 95° ÷10 ≤ $2.000) era il criterio sbagliato — misurava la sopravvivenza di un conto tenuto aperto per sempre invece del primo passaggio. **Il DD al 95° percentile si continua a misurare**, ma come dato per il dimensionamento in fase funded, non come kill. **Lo Stage 7 diventa il gate economico**, e il livello di rischio è un suo **output**: si cerca quello che massimizza il pass rate entro i vincoli, invece di assumere 1 contratto e bocciare. Le sue soglie erano già quelle giuste (pass ≥ 40% al primo, ≥ 85% in quattro, ≤ 15 giorni) e coincidono con lo Step 03 del deck del corso. **La numerazione degli stage resta invariata**, con un buco al 3: il cimitero è pieno di «morta al Gate 3» e rinumerare avrebbe invalidato ogni riferimento storico."
+  },
   {
    "date": "2026-10-15",
    "text": "**Letto il deck del corso: dice che il nostro Gate 3 è sbagliato, e coincide col calcolo fatto indipendentemente.** «THE FULL PROCESS»: Step 01 trova il profilo (WR alto, R:R basso), Step 02 fa girare lo storico, **Step 03 GET THE PASS RATE — la probabilità che la strategia passi una challenge**, Step 04 deploy. **Il criterio del corso è il pass rate; il nostro è il drawdown a cinque anni.** «ONE STRATEGY. REPEATED.»: `1 − (1−p)ⁿ`, *«the edge is not in one attempt, it is in the sequence»*, con esempio a **p = 56,4%** → 81,0% a due tentativi, **91,7% a tre**. Il nostro Gate 3 non avrebbe mai fatto passare una strategia con p = 56%: pretende un drawdown così piccolo che p sale al ~90%, e per questo impiega 7 mesi. **«THE $400 PLAYBOOK»: $100 per tentativo**, tre tentativi più $100 di attivazione. **Era il numero che mancava**: con $100 a tentativo l'ottimo calcolato da noi è rischio $600/trade, p = 52,9%, **0,9 mesi attesi, €220 per payout**. Due derivazioni indipendenti, stesso risultato. **«ONCE FUNDED, THE PARADIGM CHANGES»**: eval = massimizza la probabilità di passare, funded = massimizza la probabilità di payout, *«different goal, different strategy»*. Noi abbiamo **un solo set di gate** per entrambe le fasi. **Ri-derivazione proposta**: (1) Gate 3 → **pass rate** invece del DD a 5 anni, soglia p ≥ 50% che con tre tentativi dà 87,5% a $400 all-in; (2) `n ≥ 200` → **t-stat**, perché ogni trade costa $2 contro un budget fisso; (3) tetto al rischio dalla **consistenza al 50%** (morde a $850, non a $600); (4) **due profili**, eval e funded, invece di uno. **L'unica cosa che aggiungo al processo del corso**: lo Step 03 calcola il pass rate sullo storico, ma un pass rate calcolato sul periodo dell'ottimizzazione non vale niente. **Nessuna delle sei ha mai avuto un run OOS**, perché morivano prima. Il pass rate va calcolato sull'OOS, e quello resta non negoziabile."
