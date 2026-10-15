@@ -117,3 +117,35 @@ il t alto stava solo su un campione piccolo.
 - **t** = avg trade / barra d'errore. Dice se l'edge **esiste**, non se **basta**.
 - **pass rate** = dice se basta. Si legge **cumulato sui tentativi**: 42% per tentativo fa
   89% entro quattro, e quattro tentativi costano $400.
+
+---
+
+# Session template e timezone: uno per strategia
+
+**Non c'e una risposta sola.** Lo decide il codice, ed e scritto nell'header di ogni file.
+L'unico invariante e il **timezone: sempre Exchange (CT)**.
+
+| strategia | template obbligatorio | perche |
+|---|---|---|
+| **DriftPullback** | **Globex 24h** (17:00-16:00 CT) | il drift e la MA sui 15m servono le barre pre-apertura |
+| **VaultBreak** | **solo RTH** (08:30-15:00 CT) | il reset usa `Date <> Date[1]`: su un chart 24h il «session open» sarebbe la **mezzanotte** |
+| **Gold Asian Range** | **24/7** | il range asiatico 20:00->00:00 scavalca la mezzanotte |
+
+**Gli orari negli input sono in ORA DEL CHART.** Con un chart ET sono sbagliati di un'ora e
+non te lo dice nessuno: il backtest gira e da numeri plausibili e falsi.
+
+## Come si verifica dal report
+
+Il foglio Settings di MultiCharts **non registra il session template**. Si deduce dall'**ora
+dell'ultima barra**, e solo se il grafico finisce su un giorno completo:
+
+| ultima barra | template |
+|---|---|
+| **16:00 CT** | Globex 24h |
+| **15:00 CT** | RTH |
+| altro | giorno incompleto: non si deduce, va guardato il grafico |
+
+`check_report.py` lo stampa fra i controlli preliminari.
+
+**Verificato sugli IS**: DriftPullback chiude alle 16:00 (Globex, corretto), VaultBreak alle
+15:00 (RTH, corretto). **Sugli OOS no**: i loro grafici finiscono a oggi a meta sessione.
