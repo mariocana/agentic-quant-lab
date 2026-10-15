@@ -4,47 +4,17 @@
  "profile": "WR ≥ 55–60% · R:R 0.5–1 · trade frequenti · DD per micro piccolo · sviluppo a 1 contratto NQ, size in micro dal simulatore",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
-  "updated": "2026-10-13",
+  "updated": "2026-10-15",
   "groups": [
    {
-    "title": "1. Zero OOS superati su uno eseguito. Da qui si riparte",
-    "note": "VaultBreak chiusa 15/10, trigger disarmato",
+    "title": "Pipeline azzerata (15/10/2026). Zero strategie attive.",
+    "note": "sei nel cimitero, nessuna in corso",
     "items": [
-     "**Il fatto**: sei strategie, sei morte, **un solo OOS mai eseguito e fallito con t = −0,03**. I gate avevano una formulazione sbagliata e un esito corretto. Il problema è l'edge, non il filtro",
-     "**La lezione misurata tre volte**: il **WR è stabile fuori campione, il R:R no**. Su VaultBreak il R:R è calato del 18% e ha azzerato il PF, perché con R:R < 1 il WR di pareggio è ipersensibile. **Da aggiungere allo Stage 0**: dichiarare e misurare il margine sul WR di pareggio, non dedurlo dal PF",
-     "**Il sospetto da verificare sullo Stage 4**: il t in-sample di VaultBreak (2,63) era calcolato sullo stesso periodo su cui era stata ottimizzata in tre varianti. **Lo Stage 4 contamina il Gate 2.** Le altre cinque hanno lo stesso problema",
-     "**Gli strumenti mai provati restano i due migliori**: M2K e MYM (stop a 0,35–0,68 ATR al budget, tick $0,50). Cinque delle sei sono state fatte girare su MNQ, che è il peggiore (0,14–0,26 ATR)",
-     "**Le candidate dell'agente** (IB-C Breakout, IB-C Failure su MYM) restano in coda, col loro test di falsificazione: eccesso sul caso ≥ +8 pp a primo tocco, che è una **misura** e non un backtest"
-    ]
-   },
-   {
-    "title": "2. Materiale nuovo del protocollo (13/10) — tre cose cambiano il piano",
-    "items": [
-     "**`IntradayBiasCheck_60m`** (`12. Community Research`): 8 righe, ottimizza `TestTime` 0→2300 step 100 e legge l'avg trade **ora per ora**. È lo strumento di misura che chiedevamo da due settimane, e non è una strategia quindi non c'è fitting. **Da girare su @NQ e @GC prima di qualsiasi altra idea direzionale**",
-     "**VWAP Pullback: usare la v4** del Bridge, non la v1 che abbiamo. Prima della Stage 1, due pre-registrazioni: (a) il **gate ADX** è attivo di default → è un filtro, deve passare il **test split-sample**; (b) lo stop è un **pivot swing**, quindi variabile → **misurare la distribuzione di `stopDist` prima del backtest**, altrimenti ripetiamo l'errore che ha ucciso ORB, VaultBreak e First5",
-     "**DriftPullback: il blocco non è rimosso** — il drift resta in % del prezzo grezzo («UNCHANGED» nel commento del codice), l'ATR è arrivata solo per le uscite. Ma la **variante «drift in unità di ATR» è una riga** ed è esattamente ciò che il blocco chiedeva → pre-registrata. Nota: `LongSLpts 80` = **$160 per micro** con R:R 0,5, primo candidato @NQ con rischio dichiarato dentro il budget",
-     "**Strategy of the Month settembre: short-only su futures Bitcoin** (08:30–09:00 CT negativa → short, flat 15:00 CT). Chiude due buchi insieme: il **lato short** del basket e un **terzo strumento**. Prima di una Stage 0 servono due cose: estrarre il codice dal PDF (non è allegato) e **verificare che LucidFlex consenta i futures crypto**",
-     "**`SetStopContract`**: l'uso canonico è in `Monday Long NQ` (`SetStopContract;` poi `SetStopLoss(StopPts * BigPointValue)`). Resta da fare il **test ×10**, da solo e non insieme ad altro"
-    ]
-   },
-   {
-    "title": "2. Prima di qualsiasi codice IVB",
-    "items": [
-     "Misurare la **distribuzione del range della candela di breakout** su @NQ. È il rischio per trade: dice subito se $2.000/micro è raggiungibile. Se sì → nuova Stage 0 `IVB_Type1`; se no si chiude lì"
-    ]
-   },
-   {
-    "title": "Sul tavolo, non urgente",
-    "items": [
-     "*(13/10)* **Collisione di convenzione sui costi**: DriftPullback v2.1 addebita lo slippage **nel codice** (`StopSlipTicks 2`), la nostra convenzione la ripiega nella **commissione** ($7,50/lato NQ). Una delle due, non entrambe, o il costo è contato due volte",
-     "*(13/10)* **Regola di inattività delle prop**: l'autore delle Monday la segnala in maiuscolo come causa di perdita dell'account **più probabile del drawdown** per le strategie a bassa frequenza. Non l'avevamo mai nominata. Il nostro `n ≥ 200` la copre di fatto, non di diritto — da scrivere come vincolo esplicito",
-     "**Debito tecnico**: rifare i Gate 2/3 già passati con lo slippage dentro la commissione ($7,50/lato)",
-     "Stage 1 mai fatto: **VWAP Pullback**, **Gold Asian Range**",
-     "**DriftPullback** bloccato — serve @NQ non back-adjusted, o il drift riscritto in ATR",
-     "*(nuovo, dall'ingest Unger del 03/10)* **Test del carattere di NQ**: stesso channel breakout con N da 1 a 15, si legge la forma dei risultati. Mezz'ora, e dice se stiamo costruendo la settima strategia breakout contro corrente",
-     "*(nuovo, 03/10)* Verificare **`SetStopContract`** col test ×10 — renderebbe `SetStopLoss` per contratto e toglierebbe alla radice il bug di C/D. **Non insieme al punto 1**: una cosa per volta",
-     "*(nuovo, 30/09)* Morpheus: restano i **video 6-9**, i tre su **ES** sono i più interessanti",
-     "Coda ingest: le **12 cartelle di codice Unger** — prime da guardare **ESCounter** e **Gap**"
+     "Si riparte **una strategia alla volta**. Nessuna scelta ancora fatta.",
+     "**I numeri IS delle sei morte non valgono**: cinque non hanno mai avuto un OOS, e la sesta (VaultBreak) aveva t = 2,63 in campione e **t = −0,03** fuori. Restano nel cimitero come storia, non come riferimento.",
+     "**Niente criteri nuovi.** La pipeline resta quella del corso: Stage 0→9, con lo Stage 3 ritirato il 15/10 e il Gate 2 a sei criteri.",
+     "**Lo Stage 4 non si tocca**: è della Lezione 9 (*«optimize the inputs, validate with out-of-sample data to minimize the risk of overfitting»*). Il corso sa già che ottimizzare sporca l'IS, e la sua risposta è l'OOS. Il nostro errore è stato **non eseguirlo mai**.",
+     "Quando si sceglie la prossima: **si arriva fino allo Stage 5** prima di dire se è buona. I numeri prima di lì non sono evidenza."
     ]
    }
   ]
