@@ -396,3 +396,65 @@ strategia già bocciata, lo stesso errore fatto sull'ORB.
 Quel che resta — e va usato, non riscritto da zero: il codice è corretto e verificato al
 Gate 1, gli input `TradeStartEL`/`TradeEndEL` servono a tutte, e la lezione sul rischio per
 micro vale per l'intera famiglia.
+
+---
+
+# Stage 5 — OOS 2025‑2026: pre‑registrazione (15/10/2026, prima del run)
+
+Riaperta dalla pipeline semplificata del 15/10: il Gate 3 che l'aveva uccisa (DD 95° pct
+÷10 ≤ $2.000) era **nostro**, non del corso, ed è stato ritirato. VaultBreak è l'unica delle
+sei a passare il Gate 2 nuovo: **t = 2,63** e **avg trade $110** sull'IS.
+
+**L'OOS non è mai stato eseguito**, perché moriva prima.
+
+## Il riferimento IS (2020‑2024)
+
+n = 723 (145/anno) · avg **$110** · sd $1.124 · WR **63,1%** · PF **1,246** · R:R 0,730 ·
+**t = 2,63** · DD $18.895
+
+## Il run
+
+| | |
+|---|---|
+| Chart | @NQ 5 min, sessione **RTH CME custom 08:30–15:00 CT**, Bar Magnifier 1 min |
+| **Range del chart** | **dal 2024‑01‑01** (serve il lead‑in: `DailyATRLen 252`) **a oggi** |
+| **`TradeStartEL`** | **1250101** |
+| **`TradeEndEL`** | **1261015** |
+| Input | `NoiseMult 0.60` · `DailyATRLen 252` · `EarliestEntry 845` · `LatestEntry 1400` · `FlattenTime 1450` · `MaxTradesPerDay 3` · `VWAPExitBars 2` · `StopLossPts 100` · `TakeProfitPts 50` · `Num_Contracts 1` |
+| Costi | commissione **$2,50/contratto** + slippage **1 tick** (= i nostri $7,50/lato) |
+
+**Identici allo Stage 2.** Il range del chart parte un anno prima della finestra valutata
+perché `TradeStartEL`/`TradeEndEL` separano il lead‑in dal periodo misurato.
+
+## Le soglie, e perché non sono quelle del Gate 2
+
+L'OOS è **1,79 anni ≈ 258 trade attesi**. Con l'edge IS identico, l'errore standard è $70 e
+il **t atteso è 1,57**: la soglia `t ≥ 2` boccerebbe un edge **intatto** due volte su tre.
+
+| criterio | se l'edge è intatto | se l'edge è zero |
+|---|---|---|
+| ~~t ≥ 2~~ | 33% | 2% |
+| **t ≥ 1,3** | **61%** | **10%** |
+| **avg trade ≥ $70** | **72%** | **16%** |
+
+**`t ≥ 1,3` è il livello del corso** («maximum of 10% of the simulations being unprofitable»
+= 10% di falsi positivi). Non è un'asticella abbassata: è quella giusta per questo campione.
+
+### Passa se, tutte:
+
+1. **avg trade ≥ $70**
+2. **t ≥ 1,3**
+3. **WR ≥ 50%** (IS: 63,1%)
+4. **PF e R:R dello stesso ordine dell'IS** (1,246 e 0,730)
+5. **DD ≤ 1,5 × IS**, cioè ≤ **$28.343**
+
+### Se passa
+
+Si va allo **Stage 7**, dove il livello di rischio è un output: si cerca quello che massimizza
+il pass rate entro i vincoli (pass ≥ 40% al 1°, ≥ 85% in 4, ≤ 15 giorni, consistenza 50%).
+Il pass rate in‑sample a $120 per trade era **90%**; sull'OOS va rifatto da zero.
+
+### Se non passa
+
+**Cimitero, definitivo.** E il trigger sul Gate 3 si disarma: significherebbe che il gate
+vietava qualcosa che non esisteva comunque.

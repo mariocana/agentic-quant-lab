@@ -78,7 +78,7 @@
    "id": 5,
    "name": "OOS",
    "short": "OOS",
-   "gate": "Una volta: avg trade/WR/PF stesso ordine · WR ≥ 50% · **t ≥ 2 sull'OOS** (è la soglia del corso, Live 002) · DD ≤ 1.5× IS · fail = cimitero"
+   "gate": "Una volta: avg trade/WR/PF stesso ordine · WR ≥ 50% · **avg trade ≥ $70** · **t ≥ 1.3** (= il livello del corso «≤10% simulazioni negative»: la soglia 2 del Gate 2 richiede n grande, su un OOS corto boccerebbe un edge intatto) · DD ≤ 1.5× IS · fail = cimitero"
   },
   {
    "id": 6,
