@@ -192,29 +192,6 @@ def preliminari(cfg, cts):
                 % (cfg.get('Compression', '?'), cfg.get('Symbol Name', '?'),
                    cfg.get('Point Value', '?'))))
 
-    # il session template NON e' nel foglio Settings: si deduce dall'ultima barra,
-    # 16:00 CT = Globex 24h, 15:00 CT = RTH. Vale solo se il grafico finisce su un
-    # giorno COMPLETO: se finisce a oggi a meta' sessione non discrimina.
-    f = cfg.get('End Date')
-    try:
-        m = round((float(f) % 1) * 1440)
-        ora = '%02d:%02d' % (m // 60, m % 60)
-    except (TypeError, ValueError):
-        ora = None
-    # se il grafico finisce OGGI e' un giorno incompleto: l'ora dell'ultima barra
-    # dice solo che ora era quando hai esportato, non il session template
-    if ora and d2 and d2 >= datetime.date.today():
-        out.append((EH, 'Ultima barra %s di OGGI: giorno incompleto, il session template '
-                        'NON si deduce. Verificalo sul grafico.' % ora))
-    elif ora:
-        if ora >= '15:55':
-            out.append((EH, 'Ultima barra %s -> session template **Globex 24h**' % ora))
-        elif '14:55' <= ora < '15:05':
-            out.append((EH, 'Ultima barra %s -> session template **RTH** (08:30-15:00 CT)' % ora))
-        else:
-            out.append((EH, 'Ultima barra %s: giorno incompleto, il session template NON si '
-                            'deduce. Verificalo sul grafico.' % ora))
-
     d1, d2 = _data(cfg.get('Start Date')), _data(cfg.get('End Date'))
     if d1 and d2:
         out.append((EH, 'Range testato: %s -> %s  (%d giorni)'
@@ -238,6 +215,29 @@ def preliminari(cfg, cts):
                                 'Il range del GRAFICO vince, allargalo e rigira.'
                             % (chiave, chiesto, 'partono' if verso == 'inizio' else 'finiscono',
                                atteso, scarto)))
+    # il session template NON e' nel foglio Settings: si deduce dall'ultima barra,
+    # 16:00 CT = Globex 24h, 15:00 CT = RTH. Vale solo se il grafico finisce su un
+    # giorno COMPLETO: se finisce a oggi a meta' sessione non discrimina.
+    f = cfg.get('End Date')
+    try:
+        m = round((float(f) % 1) * 1440)
+        ora = '%02d:%02d' % (m // 60, m % 60)
+    except (TypeError, ValueError):
+        ora = None
+    # se il grafico finisce OGGI e' un giorno incompleto: l'ora dell'ultima barra
+    # dice solo che ora era quando hai esportato, non il session template
+    if ora and d2 and d2 >= datetime.date.today():
+        out.append((EH, 'Ultima barra %s di OGGI: giorno incompleto, il session template '
+                        'NON si deduce. Verificalo sul grafico.' % ora))
+    elif ora:
+        if ora >= '15:55':
+            out.append((EH, 'Ultima barra %s -> session template **Globex 24h**' % ora))
+        elif '14:55' <= ora < '15:05':
+            out.append((EH, 'Ultima barra %s -> session template **RTH** (08:30-15:00 CT)' % ora))
+        else:
+            out.append((EH, 'Ultima barra %s: giorno incompleto, il session template NON si '
+                            'deduce. Verificalo sul grafico.' % ora))
+
     return out
 
 

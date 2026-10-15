@@ -376,3 +376,63 @@ esiste per impedire. La variante cutoff11 potra essere giudicata solo su dati **
 usati**, e oggi non ce ne sono.
 
 **ORB e chiusa.**
+
+## Rifatto con i parametri giusti: `cutoff11` NON passa. t = 0,63.
+
+Report: `reports/ORB_S2_IS_cutoff11_costi-onesti.xlsx` e
+`reports/ORB_S5_OOS_cutoff11_2025-2026.xlsx`. Configurazione verificata: `UseEntryCutoff 1`,
+`Cutoff_H 11`, `Cutoff_M 0`, `TP_RR 1.0`, `MaxRisk_USD 3000`, `UseDeltaFilter 1`,
+`AllowShort 0`. 550 trade sull'IS, cioe esattamente il conteggio atteso.
+
+### La regola applicata, scritta PRIMA di guardare i numeri
+
+Il primo run era un **errore di esecuzione** (i valori 11 e 12 finiti negli input sbagliati),
+non una scelta di variante: la SPEC pre-registrava `cutoff11` prima di vedere qualunque OOS.
+Quindi il test pre-registrato non era mai stato eseguito, ed eseguirlo e legittimo. **Ma un
+risultato correlato era gia stato visto** (t 0,80 sulla variante senza cutoff, di cui cutoff11
+e un sottoinsieme), e quell'informazione non si cancella. Verdetto dichiarato **asimmetrico**:
+
+- **fallisce -> morta, senza ambiguita** (un fallimento dopo uno sguardo non puo essere
+  selezione a nostro favore);
+- **passa -> provvisorio**, da confermare su dati non ancora usati.
+
+**E fallito.** Quindi il ramo conclusivo.
+
+### I numeri
+
+| | **IS 2020-2024** | **OOS 2025-2026** |
+|---|---|---|
+| n | 550 | **111** |
+| avg trade | $178,97 ± 63,85 | **$108,02 ± 172,29** |
+| WR | 58,5% | **59,5%** |
+| R:R | 0,93 | 0,78 |
+| **t** | **2,80** | **0,63** |
+| PF | 1,317 | 1,145 |
+| frequenza | 0,438 trade/giorno | **0,247** |
+
+Gate 2 superato (t 2,80, e la stima fatta prima era ~2,87). **Gate 3 no.**
+
+### Le due varianti a confronto: il cutoff peggiora
+
+| variante | IS t | OOS t | edge realizzato | $/anno per micro |
+|---|---|---|---|---|
+| senza cutoff | 2,74 | **0,80** | 79% | $878 -> 3,4 anni |
+| **cutoff11** | 2,80 | **0,63** | **60%** | **$677 -> 4,4 anni** |
+
+Il cutoff delle 11:00 **non ha aiutato fuori campione**, ha peggiorato: t da 0,80 a 0,63 ed
+edge dal 79% al 60%. **Conferma la riserva del 29/09**, scritta allora: il filtro guadagnava
++21% nella prima meta dell'IS e **solo +2,5% nella seconda**, dentro il rumore proprio nel
+periodo piu recente. Era un adattamento al 2020-2022, e il 2025-2026 lo ha mostrato.
+
+### Lo stesso meccanismo di frequenza, confermato
+
+0,438 -> 0,247 trade/giorno, dimezzata come nella variante senza cutoff. `MaxRisk_USD 3000`
+salta i giorni col range di apertura troppo largo, e il 2026 ha ATR 367 contro i 210 del
+2020-2024. **Non e un difetto della misura: e la strategia che smette di operare quando il
+mercato si allarga.**
+
+### Verdetto
+
+**ORB e chiusa su entrambe le varianti**, entrambe fuori campione, entrambe con la
+configurazione verificata dal foglio Settings e i costi onesti. E in ogni caso non sarebbe
+arrivata: **4,4 anni per fare $3.000 con 1 micro**, contro i 7,8 mesi di DriftPullback.
