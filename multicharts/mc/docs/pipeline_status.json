@@ -12,7 +12,7 @@
     "items": [
      "**Tetto a 3 strategie** (decisione 15/10). Oltre non si cerca: tre bastano per l'effetto basket di Live 004.",
      "**Test live appena c'e qualcosa in mano** (decisione 15/10). Paper >= 1 settimana, poi un tentativo vero col budget dichiarato. Non si aspetta il basket perfetto.",
-     "**OOS di VaultBreak MaxTrades1** (t 2,97, mai testata fuori campione). Dieci minuti di run, poi `check_report.py --fase 3`.",
+     "**Rigirare l'OOS di VaultBreak MaxTrades1 col grafico allargato al 2025-01-01**: il run del 15/10 aveva solo il 2026 (n=71, dove nemmeno un edge intero poteva passare). Archiviato come non valido.",
      "Poi **ORB cutoff11** (t 2,95), rigiudicabile dopo il ritiro del Gate 3.",
      "**Stage 8**: correlazione fra le vive e simulazione del basket. Il corso: basket 45,8% contro 38% al primo tentativo, 84,3% contro 77,2% entro sei.",
      "**Riserva aperta**: la curva di DriftPullback e al 98esimo percentile del suo drawdown. Il corso mette in panchina questa esatta strategia (Live 004, 152). Non rispondibile con lo storico attuale.",
@@ -176,6 +176,10 @@
    },
    "note": "**Causa A: edge assente fuori campione.** Riaperta il 15/10 dalla pipeline semplificata (il Gate 3 che l'aveva uccisa era nostro, non del corso), era l'**unica** delle sei a passare il Gate 2 nuovo con **t = 2,63** e avg $110 sull'IS. **L'OOS 2025‑2026 dà net −$560 su 295 trade, t = −0,03, PF 0,997**: l'edge non è ridotto, è **zero**. Il meccanismo: il **WR tiene** (62,4% contro 63,1%) ma il **R:R crolla del 18%** (0,601 contro 0,730), e con R:R 0,601 il WR di pareggio è 62,5% — l'osservato ci finisce sotto di un decimo di punto. Il t in-sample di 2,63 misurava, almeno in parte, lo Stage 4 che l'aveva ottimizzata su quel periodo.",
    "log": [
+    {
+     "date": "2026-10-15",
+     "text": "**Run OOS di `MaxTrades1` NON VALIDO: range del grafico corto.** Configurazione giusta (`MaxTradesPerDay 1`, $7,50/contratto, Bar Magnifier on) ma **i dati partono dal 2026-01-07 invece che dal 2025-01-01**: 371 giorni mancanti. In MC il range del grafico vince, `TradeStartEL` non carica barre che non ci sono. **Non e' una bocciatura, e lo si stabilisce senza guardare il risultato**: la SPEC pre-registrava il range e n fra 130 e 180, realizzato n = **71**; e con la sd misurata ($1.313), a n=71 **nemmeno l'edge intero dell'IS ($162) avrebbe dato piu di t 1,04**, sotto la soglia di 1,3 — il test non poteva produrre un PASS, quindi il suo FAIL non e' informazione. Rigirarlo col grafico allargato non viola «l'OOS una volta sola»: e' lo stesso caso del run ORB con `No Commission`. **Il dato che resta non e' incoraggiante**: sul solo 2026 avg $102,61 contro $162, il 63%, con barra d'errore ±$156 — indistinguibili, ma la direzione e' verso il basso. **Controllo aggiunto a `check_report.py`**: ora confronta TradeStartEL/TradeEndEL col range effettivo e segnala i giorni mancanti."
+    },
     {
      "date": "2026-10-01",
      "text": "**Gate 3 fallito: VaultBreak chiusa.** MC 1000 reshuffle sul report a costi onesti: base close‑to‑close −$18.620, mediana −$18.105, **95° percentile −$31.090** = **$3.109 per micro** contro $2.000. Sforo del 55%. **Previsione sbagliata**: avevo detto ~$49.100 applicando il 2,57× dell'ORB, il rapporto qui è **1,67×**. Il fattore MC non è una costante — dipende dalla dispersione dei trade (ORB: perdite fino a $3.000 per il cap `MaxRisk_USD`; VaultBreak: perdita bloccata a −$2.015). Ritirata la soglia derivata «P/D ≥ 3,86». **E il criterio P/D da solo non bastava**: sulla coda MC dà 2,34 ≥ 1,50 e quindi *passerebbe*, ma richiede fra 0,41 e 0,64 micro — e mezzo micro non esiste. Aggiunta alla pipeline la seconda condizione: **D per 1 micro ≤ MLL**."

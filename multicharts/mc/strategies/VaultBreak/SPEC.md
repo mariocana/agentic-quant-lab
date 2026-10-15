@@ -579,3 +579,43 @@ MaxTrades1 avg $167, cioe +52% togliendo i trade successivi al primo. Coerente.
 non si e misurato che **anche sull'OOS della base** i trade 2 e 3 della giornata sono
 collettivamente negativi. Se non lo sono, il passaggio e selezione in-sample e la strategia
 resta morta.
+
+## Run del 15/10 NON VALIDO — range del grafico corto
+
+Report archiviato come `reports/VB_S5_OOS_MaxTrades1_RANGE-CORTO_non-valido.xlsx`.
+
+Configurazione giusta (`MaxTradesPerDay 1`, commissione $7,50, Bar Magnifier on, 1 contratto),
+**ma i dati partono dal 2026-01-07 invece che dal 2025-01-01**: 371 giorni mancanti, cioe
+dodici mesi su ventidue. In MultiCharts il range del **grafico** vince: `TradeStartEL 1250101`
+non puo caricare barre che sul grafico non ci sono.
+
+**Perche e' «non valido» e non «bocciata», e come lo si stabilisce senza guardare il
+risultato.** Due ragioni, entrambe scritte prima del run:
+
+1. La SPEC pre-registrava `TradeStartEL 1250101 -> 1261015`. Il report dice 2026-01-07: **la
+   discrepanza si vede nei CONTROLLI PRELIMINARI**, prima delle misure.
+2. La pre-registrazione dichiarava la potenza attesa: **n fra 130 e 180**. Realizzato **n =
+   71**, meno della meta.
+
+E la conseguenza aritmetica, con la sd misurata ($1.313):
+
+| ipotesi | avg | t a n=71 |
+|---|---|---|
+| edge dell'IS intero | $162 | **1,04** |
+| misurato | $102,61 | 0,66 |
+| edge dimezzato | $81 | 0,52 |
+
+> **A n = 71 nemmeno un edge intatto poteva superare la soglia di 1,3.** Il test non era in
+> grado di produrre un PASS, quindi il suo FAIL non e informazione.
+
+Rigirarlo col grafico allargato **non viola** la regola «l'OOS si gira una volta sola»: e lo
+stesso caso del run ORB con `No Commission`, invalido su un controllo preliminare. Quello che
+**non** si potra fare e rigirarlo cambiando parametri della strategia.
+
+**Il dato che comunque resta, e non e incoraggiante.** Sul solo 2026: avg **$102,61** contro i
+$162 dell'IS a costi onesti, cioe il **63%**. WR **67,6%** (IS 65,4%) e R:R 0,57 (IS 0,74)
+sono coerenti col profilo. La barra d'errore e **±$156**, quindi $102 e $162 non sono
+distinguibili — ma la direzione e verso il basso e va ricordata quando arrivera il run buono.
+
+**Controllo aggiunto allo script**: `check_report.py` ora confronta `TradeStartEL`/`TradeEndEL`
+col range effettivo dei dati e segnala i giorni mancanti. Questa trappola non ci ricapita.

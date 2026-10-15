@@ -196,6 +196,25 @@ def preliminari(cfg, cts):
     if d1 and d2:
         out.append((EH, 'Range testato: %s -> %s  (%d giorni)'
                     % (d1, d2, (d2 - d1).days)))
+        # il range del grafico contro quello chiesto negli input: in MC il grafico
+        # VINCE, TradeStartEL non puo' caricare barre che non ci sono
+        for chiave, atteso, verso in (('TradeStartEL', d1, 'inizio'),
+                                      ('TradeEndEL', d2, 'fine')):
+            v = cfg.get(chiave, '').strip()
+            if not v:
+                continue
+            try:
+                n = int(float(v))
+                anno, mese, gg = 1900 + n // 10000, (n // 100) % 100, n % 100
+                chiesto = datetime.date(anno, mese, gg)
+            except (ValueError, OverflowError):
+                continue
+            scarto = abs((atteso - chiesto).days)
+            if scarto > 7:
+                out.append((NO, '%s chiede %s ma i dati %s il %s: %d giorni mancanti. '
+                                'Il range del GRAFICO vince, allargalo e rigira.'
+                            % (chiave, chiesto, 'partono' if verso == 'inizio' else 'finiscono',
+                               atteso, scarto)))
     return out
 
 
