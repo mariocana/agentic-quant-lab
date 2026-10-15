@@ -503,3 +503,79 @@ disarma: significherebbe che il gate vietava qualcosa che non esisteva comunque.
 smontare, con ragione sul piano logico — vietava una strategia **senza edge fuori campione**.
 
 **Ragionamento sbagliato, verdetto giusto.** Vale la pena tenerlo scritto così.
+
+---
+
+# Stage 5 — OOS di `MaxTrades1`: pre-registrazione (15/10/2026)
+
+**Perche si rigira un OOS su una strategia archiviata.** L'OOS del 15/10 (`VB_S5_OOS_2025-2026`,
+t = -0,03) e stato girato con `MaxTradesPerDay 3`, cioe la **configurazione base**: 295 trade
+su due anni = 145/anno, la stessa frequenza dell'IS base (723/5 anni). La variante
+`MaxTrades1` fa 77 trade/anno e **non e mai stata testata fuori campione**. Ha t = 2,97
+sull'IS, il secondo piu alto della pipeline.
+
+**L'unica differenza fra le due configurazioni e un input**: `MaxTradesPerDay` **1** invece di
+**3**. Verificato diffando i fogli Settings dei due report.
+
+## Problema di costi trovato prima del run
+
+| report | commissione | slippage | ~$/round-turn | t |
+|---|---|---|---|---|
+| `VB_Stage2_IS-intero` (base) | $2,50/contratto | 1 tick | ~$10 | 2,63 |
+| `VB_Stage2_IS-intero_costi-onesti` (base) | **$7,50/contratto** | 0 | **$15** | 2,40 |
+| `VB_S4_MaxTrades1_IS-intero` | $2,50/contratto | 1 tick | ~$10 | **2,97** |
+| `VB_S5_OOS_2025-2026` (base) | **$7,50/contratto** | 0 | **$15** | **-0,03** |
+
+Due conseguenze. **(1)** Il confronto IS/OOS della base era fra costi diversi, ma la versione
+onesta esiste (t 2,40) e il verdetto non cambia: 2,40 -> -0,03 e un fallimento vero. **(2)**
+Il **t 2,97 di MaxTrades1 e su costi leggeri**. A $15/RT l'avg scende da $167 a ~$162 e il t a
+**~2,88**: cambia poco, ma il numero da citare e 2,88, non 2,97.
+
+## Configurazione del run
+
+`MaxTradesPerDay` **1** · `TradeStartEL` **1250101** · `TradeEndEL` **1261015** ·
+commissione **$7,50/contratto**, slippage **0** (la nostra convenzione: lo slippage e dentro
+la commissione) · Bar Magnifier **Enabled 1 Minute** · 1 contratto. Tutto il resto come
+`VB_S4_MaxTrades1_IS-intero`.
+
+Per confrontabilita va rigirato **anche l'IS** con $7,50, cosi i due numeri sono sullo stesso
+metro.
+
+## Criteri (Stage 5)
+
+| criterio | soglia |
+|---|---|
+| **t** | **>= 1,3** |
+| WR | >= 50%, e dello stesso ordine del **65,4%** dell'IS |
+| R:R | 0,5-1 |
+| DD | <= 1,5x quello dell'IS |
+
+**Kill:** `t < 1,3` -> cimitero definitivo, seconda e ultima volta.
+
+## Il test ha poca potenza, e va detto prima
+
+A ~1 trade/giorno su ~450 giorni l'OOS avra **n fra 130 e 180**. Con la sd dell'IS:
+
+| n | se l'edge persiste intero | se si dimezza |
+|---|---|---|
+| 130 | t = 1,68 | t = 0,84 |
+| 150 | t = 1,80 | t = 0,90 |
+| 180 | t = 1,97 | t = 0,99 |
+
+Quindi **anche nel caso migliore ci si aspetta t ~1,7-2,0**, non 2,9: il campione e piccolo.
+E un edge dimezzato finisce sotto 1,3 e viene ucciso. Il test distingue «edge intero» da
+«edge dimezzato», e non molto altro.
+
+## La trappola interpretativa, scritta adesso
+
+I trade di `MaxTrades1` sono un **sottoinsieme** di quelli della base, e la base sull'OOS ha
+edge **zero**. Se MaxTrades1 passa e la base no, l'unica spiegazione onesta e **strutturale**:
+il primo trade del giorno porta l'edge e il secondo e il terzo lo distruggono.
+
+Quella affermazione e verificabile e **si verifica sull'IS, non sull'OOS**: base avg $110 ->
+MaxTrades1 avg $167, cioe +52% togliendo i trade successivi al primo. Coerente.
+
+**Regola scritta prima del run:** se MaxTrades1 passa l'OOS, non si grida al recupero finche
+non si e misurato che **anche sull'OOS della base** i trade 2 e 3 della giornata sono
+collettivamente negativi. Se non lo sono, il passaggio e selezione in-sample e la strategia
+resta morta.
