@@ -7,14 +7,14 @@
   "updated": "2026-10-13",
   "groups": [
    {
-    "title": "1. Ri-derivare il Gate 3 nel pass rate — il deck lo conferma",
-    "note": "deck live001 letto, 15/10",
+    "title": "1. Zero OOS superati su uno eseguito. Da qui si riparte",
+    "note": "VaultBreak chiusa 15/10, trigger disarmato",
     "items": [
-     "**Un run, e viene prima di tutto: OOS di VaultBreak 2025‑2026.** Ha il pass rate in-sample più alto (90% a $120/trade, 53% a $600) e **non è mai stato testato fuori campione**. Un pass rate calcolato sul periodo dell'ottimizzazione Stage 4 non vale niente",
-     "**Ri-derivazione del Gate 3** (decisione tua): sostituire «DD 95° pct su 5 anni ≤ $2.000» con il **pass rate ≥ 50%**, che con tre tentativi da $100 dà 87,5% cumulato a $400 all-in — il playbook del corso",
-     "**Gate 2, `n ≥ 200` → t-stat**: ogni trade costa $2 contro un budget di drawdown fisso, quindi il conteggio alto è un danno. La significatività si misura col t",
-     "**Tetto al rischio dalla consistenza al 50%**, non dal drawdown: misurato, morde a $850/trade (66% dei passaggi violano) ma non a $600 (0%)",
-     "**Due profili invece di uno**: configurazione *eval* (massimizza p di passaggio) e *funded* (massimizza p di payout). Il deck: «different goal, different strategy»"
+     "**Il fatto**: sei strategie, sei morte, **un solo OOS mai eseguito e fallito con t = −0,03**. I gate avevano una formulazione sbagliata e un esito corretto. Il problema è l'edge, non il filtro",
+     "**La lezione misurata tre volte**: il **WR è stabile fuori campione, il R:R no**. Su VaultBreak il R:R è calato del 18% e ha azzerato il PF, perché con R:R < 1 il WR di pareggio è ipersensibile. **Da aggiungere allo Stage 0**: dichiarare e misurare il margine sul WR di pareggio, non dedurlo dal PF",
+     "**Il sospetto da verificare sullo Stage 4**: il t in-sample di VaultBreak (2,63) era calcolato sullo stesso periodo su cui era stata ottimizzata in tre varianti. **Lo Stage 4 contamina il Gate 2.** Le altre cinque hanno lo stesso problema",
+     "**Gli strumenti mai provati restano i due migliori**: M2K e MYM (stop a 0,35–0,68 ATR al budget, tick $0,50). Cinque delle sei sono state fatte girare su MNQ, che è il peggiore (0,14–0,26 ATR)",
+     "**Le candidate dell'agente** (IB-C Breakout, IB-C Failure su MYM) restano in coda, col loro test di falsificazione: eccesso sul caso ≥ +8 pp a primo tocco, che è una **misura** e non un backtest"
     ]
    },
    {
@@ -199,9 +199,10 @@
     "1": "pass",
     "2": "blocked",
     "4": "active",
-    "3": "fail"
+    "3": "fail",
+    "5": "fail"
    },
-   "note": "**Causa di morte: B — non entra nel conto** (l'edge c'è: positiva in tutti gli anni e in entrambe le metà dell'IS; è l'unità di rischio a non stare in un MLL da $2.000 con 1 micro NQ). Archiviata **con i report**: se cambia gate, conto o strumento si ri‑testa in minuti. Codice pronto (`VaultBreak.txt` + indicatore livelli): rolling ATR 252, orari CT, stop/target in punti scalati sui contratti. Chart RTH obbligatorio; per il test meccanico usare DailyATRLen 20 (lead‑in). In attesa dati.",
+   "note": "**Causa A: edge assente fuori campione.** Riaperta il 15/10 dalla pipeline semplificata (il Gate 3 che l'aveva uccisa era nostro, non del corso), era l'**unica** delle sei a passare il Gate 2 nuovo con **t = 2,63** e avg $110 sull'IS. **L'OOS 2025‑2026 dà net −$560 su 295 trade, t = −0,03, PF 0,997**: l'edge non è ridotto, è **zero**. Il meccanismo: il **WR tiene** (62,4% contro 63,1%) ma il **R:R crolla del 18%** (0,601 contro 0,730), e con R:R 0,601 il WR di pareggio è 62,5% — l'osservato ci finisce sotto di un decimo di punto. Il t in-sample di 2,63 misurava, almeno in parte, lo Stage 4 che l'aveva ottimizzata su quel periodo.",
    "log": [
     {
      "date": "2026-10-01",
@@ -236,7 +237,7 @@
      "text": "Spec + codice. Scelta: ATR **rolling 252** invece del seeded/expanding del template originale → indipendente dalla data di partenza, ma i numeri della scheda del corso non sono confrontabili: si valida da capo. Orari convertiti ET→CT, stop/target in punti così scalano con i contratti."
     }
    ],
-   "next": "**Chiusa.** Gate 3 fallito: 95° percentile MC $31.090 = **$3.109 per micro** contro un MLL di $2.000, sforo del 55%. La griglia `NoiseMult` × `DailyATRLen` **non si lancia**: sarebbe la quarta variante su una strategia bocciata, lo stesso errore fatto sull'ORB. Codice e input `TradeStartEL`/`TradeEndEL` restano riusabili.",
+   "next": "Chiusa. Cimitero, causa A.",
    "metrics": {
     "Stage 2 IS 2020‑2024": "723 trade · WR **63,1%** · avg $110,15 · PF 1,246 · R:R 0,73 · DD **$18.895** · peggior trade $2.005",
     "per anno": "2020 +4.361 · 2021 +20.692 · 2022 +16.826 · 2023 +21.316 · 2024 +16.442 — **tutti positivi**, max 26,8% del net",
@@ -445,6 +446,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-15",
+   "text": "🔕 **Il trigger si disarma: l'OOS di VaultBreak dà zero.** Era pre-registrato — *«se non passa, cimitero definitivo, e il trigger si disarma: significherebbe che il gate vietava qualcosa che non esisteva comunque»*. **295 trade, net −$560, t = −0,03, PF 0,997, avg trade −$2.** L'edge fuori campione non è ridotto: è **zero**. **Ragionamento sbagliato, verdetto giusto.** Abbiamo passato una giornata a dimostrare che il Gate 3 era mal specificato — e lo era: il legame col MLL era nostro, misurava la sopravvivenza a cinque anni invece del primo passaggio, e il deck del corso conferma che il criterio giusto è il pass rate. **Ma la strategia che quel gate aveva ucciso non aveva edge fuori campione.** **Il difetto che si ripete, ed è il terzo caso**: il **WR è stabile, il R:R no**. VaultBreak IS→OOS: WR da 63,1% a 62,4% (tenuto), R:R da 0,730 a **0,601** (−18%), PF da 1,246 a **0,997**. Con R:R sotto 1 il WR di pareggio è ipersensibile: il calo del R:R ha spostato il pareggio dal 57,8% al 62,5%, e il 62,4% osservato ci è finito sotto di **un decimo di punto**. Conseguenza per lo Stage 0: in un profilo ad alto WR e R:R < 1, **il margine sul WR di pareggio è la grandezza fragile** — va dichiarata e misurata, non dedotta dal PF. **Il conto aggiornato: 6 strategie, 6 morte, 1 OOS eseguito, 0 superati.** L'unica che passava il Gate 2 nuovo aveva t = −0,03 fuori campione, e il suo t in-sample di 2,63 misurava anche lo Stage 4 che l'aveva ottimizzata su quel periodo. **Il problema non erano i gate**: avevano una formulazione sbagliata e un esito corretto. Il problema è che non abbiamo ancora trovato un edge che sopravviva fuori campione, e fino a oggi non l'avevamo mai verificato su nessuna."
+  },
   {
    "date": "2026-10-15",
    "text": "**Verificato nel materiale del corso chi ha scritto cosa, e corretta una mia svista di poche ore prima.** **Il `t` è del corso**: Live 002, parlando di DriftPullback, cita *«the out of sample T stats, that is 2.2, 2.229, and we have an average trade net of 77»*. E lo usa **sull'OOS**. Non l'abbiamo aggiunto noi. **Anche il Monte Carlo è del corso**, ma per un'altra domanda: la Lezione 8 dice *«you should have a maximum of 10% of the simulations being unprofitable»*, e serve a misurare robustezza e dipendenza dall'ordine dei trade. Quel criterio è **più debole** del t: «≤10% simulazioni negative» equivale all'incirca a **t ≥ 1,28**, mentre noi chiediamo 2. Quindi sostituirlo col t è coerente col corso e più severo. **Il legame col MLL — «DD 95° ÷10 ≤ $2.000» — era NOSTRO**: il corso non lega mai il drawdown del Monte Carlo al limite della prop, ed è esattamente la parte che era sbagliata. **La mia svista**: avevo spostato `avg trade ≥ $70` allo Stage 7 classificandolo come dipendente dal rischio. **È falso.** L'avg trade su 1 contratto grande è una proprietà della strategia: cambiare il numero di micro non lo cambia. Ed è un criterio del corso — Lezione 8: *«the average trade is too small at $20, below the acceptable threshold for NASDAQ mini contracts»*. **Ripristinato al Gate 2.** Restano allo Stage 7 solo i due criteri che dipendono davvero dal **conto** e non dalla strategia: DD per micro e trade peggiore per micro. **Aggiunto `t ≥ 2` anche allo Stage 5 (OOS)**, che è dove il corso lo applica. Al Gate 2 resta come screening sull'IS; sull'OOS è il test vero."

@@ -458,3 +458,48 @@ Il pass rate in‑sample a $120 per trade era **90%**; sull'OOS va rifatto da ze
 
 **Cimitero, definitivo.** E il trigger sul Gate 3 si disarma: significherebbe che il gate
 vietava qualcosa che non esisteva comunque.
+
+## Risultato dell'OOS — **fallito. Cimitero definitivo.** (15/10/2026)
+
+295 trade, 2025‑01‑03 → 2026‑10‑05. Report `reports/VB_S5_OOS_2025-2026.xlsx`.
+Configurazione identica allo Stage 2, costi equivalenti ($7,50/lato).
+
+| criterio pre‑registrato | soglia | misurato | |
+|---|---|---|---|
+| 1. avg trade | ≥ $70 | **−$2** | ❌ |
+| 2. **t** | ≥ 1,30 | **−0,03** | ❌ |
+| 3. WR | ≥ 50% | 62,4% | ✅ |
+| 4a. PF | ~1,246 | **0,997** | ❌ |
+| 4b. R:R | ~0,730 | 0,601 | ✅ |
+| 5. DD | ≤ $28.343 | $20.655 | ✅ |
+
+**Net −$560 su 295 trade.** L'edge fuori campione non è ridotto: è **esattamente zero**
+(t = −0,03). 2025: −$4.225 · 2026: +$3.665.
+
+### Il meccanismo: non è il win rate
+
+| | IS | OOS |
+|---|---|---|
+| WR | 63,1% | **62,4%** — tenuto |
+| R:R | 0,730 | **0,601** — **−18%** |
+
+Con R:R 0,601 il WR di pareggio è **62,5%**, e l'osservato è **62,4%**. Le vincite si sono
+rimpicciolite del 18% rispetto alle perdite, **quel tanto che basta** a portare il PF a 1,0.
+
+È lo stesso difetto misurato su DriftPullback e su Gold: **il R:R realizzato non è una
+costante della strategia.** Qui è bastato un calo del 18% per azzerare tutto.
+
+# ✉️ Chiusa — cimitero, causa **A** (edge assente fuori campione)
+
+L'IS dava t = 2,63 e avg $110. Ma l'IS è anche il periodo su cui è passata per lo **Stage 4**
+(tre varianti ottimizzate). Il t di 2,63 misurava, almeno in parte, quell'ottimizzazione.
+
+### Il trigger sul Gate 3 si disarma — era pre‑registrato
+
+La pre‑registrazione diceva: *«Se non passa: cimitero definitivo. E il trigger sul Gate 3 si
+disarma: significherebbe che il gate vietava qualcosa che non esisteva comunque.»*
+
+**È esattamente quello che è successo.** Il Gate 3 — che abbiamo passato una giornata a
+smontare, con ragione sul piano logico — vietava una strategia **senza edge fuori campione**.
+
+**Ragionamento sbagliato, verdetto giusto.** Vale la pena tenerlo scritto così.

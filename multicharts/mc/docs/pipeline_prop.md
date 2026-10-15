@@ -1342,3 +1342,57 @@ test vero**, ed è il numero che il corso cita per DriftPullback (2,229).
 Nota: la nostra misura di DriftPullback sull'**IS** dà t = 3,01 con avg $55. Il corso dichiara
 t = 2,2 con avg $77 sull'**OOS**. Numeri diversi su periodi diversi — e il confronto diretto
 lo potremo fare solo dopo aver eseguito un OOS, che non abbiamo mai fatto.
+
+## 🔕 Il trigger si disarma: l'OOS di VaultBreak dà zero (15/10/2026)
+
+Era pre‑registrato: *«Se non passa: cimitero definitivo. E il trigger sul Gate 3 si disarma:
+significherebbe che il gate vietava qualcosa che non esisteva comunque.»*
+
+**295 trade OOS, net −$560, t = −0,03.** L'edge fuori campione non è ridotto: è **zero**.
+
+| | soglia | misurato |
+|---|---|---|
+| avg trade | ≥ $70 | **−$2** |
+| t | ≥ 1,30 | **−0,03** |
+| PF | ~1,246 | **0,997** |
+
+### Ragionamento sbagliato, verdetto giusto
+
+Abbiamo passato una giornata a dimostrare che il Gate 3 era mal specificato — e lo era: il
+legame col MLL era nostro, misurava la sopravvivenza a cinque anni invece del primo
+passaggio, e il deck del corso conferma che il criterio giusto è il pass rate.
+
+**Ma la strategia che quel gate aveva ucciso non aveva edge fuori campione.** Il gate
+sbagliava la domanda e azzeccava la risposta.
+
+### Il difetto che si ripete, ed è il terzo caso
+
+| | WR | R:R | risultato |
+|---|---|---|---|
+| **VaultBreak** IS → OOS | 63,1% → **62,4%** (tenuto) | 0,730 → **0,601** (**−18%**) | PF da 1,246 a **0,997** |
+| DriftPullback dichiarato → misurato | 65% → 64,4% (tenuto) | 0,50 → 0,596 | avg da $77 a $42 |
+| Gold A → B (stessa logica, TP diverso) | 42,6% → 52,7% | 1,554 → 0,955 | PF da 1,152 a 1,062 |
+
+**Il win rate è stabile. Il R:R non lo è.** E con R:R sotto 1 il WR di pareggio è
+ipersensibile: a VaultBreak è bastato un calo del 18% del R:R per spostare il pareggio dal
+57,8% al 62,5% — e il 62,4% osservato ci è finito sotto di un decimo di punto.
+
+**Conseguenza per lo Stage 0**: in un profilo ad alto WR e R:R < 1, **il margine sul WR di
+pareggio è la grandezza fragile**. Va dichiarata e misurata, non dedotta dal PF.
+
+### Dove siamo
+
+| | esito |
+|---|---|
+| Strategie passate dalla pipeline | **6** |
+| Morte | **6** |
+| **OOS eseguiti** | **1** |
+| **OOS superati** | **0** |
+
+L'unica strategia che passava il Gate 2 nuovo (t = 2,63, avg $110) aveva **t = −0,03** fuori
+campione. E il suo t in‑sample misurava, almeno in parte, lo Stage 4 che l'aveva ottimizzata
+su quello stesso periodo.
+
+**Il problema non erano i gate.** I gate avevano una formulazione sbagliata e un esito
+corretto. Il problema è che **non abbiamo ancora trovato un edge che sopravviva fuori
+campione**, e fino a oggi non l'avevamo mai verificato su nessuna.
