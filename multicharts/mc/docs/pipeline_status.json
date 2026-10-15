@@ -7,14 +7,14 @@
   "updated": "2026-10-15",
   "groups": [
    {
-    "title": "DriftPullback viva e passata allo Stage 7. VaultBreak chiusa definitivamente.",
-    "note": "tetto a 3 strategie, test live appena c'e qualcosa in mano",
+    "title": "Una sola strategia viva: DriftPullback. ORB e VaultBreak chiuse sull'OOS.",
+    "note": "sette strategie, sei nel cimitero, una passata OOS e Stage 7",
     "items": [
-     "**ORB cutoff11, Stage 2 a costi onesti** ($7,50/contratto, slippage 0), Date Range 2020-01-01 -> 2024-12-31. Poi OOS 2025-2026. Pre-registrazione scritta: n ~196, t 1,71 a edge intero, kill a 1,3.",
-     "~~Verificare il session template dell'OOS di DriftPullback~~ **fatto: era Globex 24h, lo Stage 7 regge.**",
-     "Poi **Stage 8**: correlazione e simulazione del basket, appena ci sono due strategie vive.",
-     "**Riserva aperta su DriftPullback**: la curva e al 98esimo percentile del suo drawdown e il corso mette in panchina proprio questa strategia (Live 004, 152).",
-     "Se si parte con una sola: **piano veloce**, 2 micro e finestra corta."
+     "**Il nodo**: il corso dice di non deployare una sola strategia nemmeno in eval (Live 004), e noi ne abbiamo una. Tetto a 3, ma le altre due sono morte fuori campione.",
+     "**Decisione da prendere**: partire comunque con DriftPullback da sola col piano veloce (2 micro, finestra corta, 42% per tentativo, $400 per 89% entro quattro), oppure cercare una seconda candidata prima.",
+     "Se si cerca: le candidate dell'agente (IB-C Breakout, IB-C Failure) sono su **MYM**, e l'unita di rischio li e migliore di MNQ (R/ATR 0,35-0,65 contro 0,14-0,26).",
+     "**Riserva su DriftPullback**: la curva e al 98esimo percentile del suo drawdown e il corso mette in panchina proprio questa strategia (Live 004, 152).",
+     "Nessun OOS 2025-2026 e piu disponibile per ORB o VaultBreak: sono spesi."
     ]
    }
   ]
@@ -84,18 +84,24 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "run",
+    "2": "pass",
     "4": "pass",
-    "3": "ritirato"
+    "5": "fail"
    },
-   "note": "**Causa di morte: B — non entra nel conto** (l'edge c'è: positiva in tutti gli anni e in entrambe le metà dell'IS; è l'unità di rischio a non stare in un MLL da $2.000 con 1 micro NQ). Archiviata **con i report**: se cambia gate, conto o strumento si ri‑testa in minuti. Meccanica verificata su ES e NQ (dxFeed sample, mag–set 2026). Bloccato allo Stage 2: servono ≥ 5 anni di storico. **15/10/2026 — da rigiudicare, non ancora riaperta.** Il Gate 3 che l'ha chiusa e stato ritirato dalla pipeline, e la sua logica (DD 95° ÷10 ≤ MLL) e lo stesso errore del RATIO: tratta la eval come «sopravvivere a cinque anni». Col metro prop la variante cutoff11 passa Gate 2 (t 2,95 · WR 58,9% · R:R 0,93 · n 550). **Resta parcheggiata**: una strategia alla volta, prima DriftPullback.",
+   "note": "**Chiusa sull'OOS.** Gate 2 superato a costi onesti (674 trade, **t 2,74**, WR 57,0%, R:R 0,97) ma **Gate 3 no: t = 0,80** su 129 trade. **L'edge non e crollato** — avg $120,54 contro $151,71, il 79%, col WR perfino salito al 60,5% — ma la frequenza si e dimezzata (0,29 trade/giorno contro 0,54) perche `MaxRisk_USD 3000` salta i giorni col range troppo largo e il 2026 ha ATR 367 contro 210. **Il campione piccolo E il risultato, non un difetto della misura.** E sarebbe morta comunque allo Stage 7: $878/anno per micro significa **3,4 anni** per fare $3.000, contro i 7,8 mesi di DriftPullback.",
    "metrics": {
     "configurazione finale": "`MaxRisk_USD 3000` · `UseDeltaFilter 1` · `UseEntryCutoff 1` 11:00 · `TP_RR 1.0`",
     "IS 2020‑2024": "550 trade · WR 58,9% · avg $193,97 · PF 1,35 · DD storico $12.125 (close‑to‑close)",
     "Monte Carlo 1000 sim": "**DD 95° percentile $31.210 → $3.121 per micro** contro soglia **$2.000**. Migliore sim $9.830, peggiore $42.855.",
-    "esito": "**Gate 3 non superato del 56%.** Percorso chiuso: l'edge c'è, l'unità di rischio è troppo grande per il conto."
+    "esito": "**Gate 3 non superato del 56%.** Percorso chiuso: l'edge c'è, l'unità di rischio è troppo grande per il conto.",
+    "IS 2020-2024 (costi onesti, senza cutoff)": "674 trade · WR 57,0% · R:R 0,97 · avg $151,71 ± 55,31 · PF 1,284 · **t 2,74**",
+    "OOS 2025-2026": "129 trade · WR 60,5% · R:R 0,77 · avg $120,54 ± 150,37 · PF 1,179 · **t 0,80** · 0,29 trade/giorno"
    },
    "log": [
+    {
+     "date": "2026-10-15",
+     "text": "**Gate 3 non superato: t = 0,80. Cimitero.** **La configurazione girata non e quella pre-registrata**: `UseEntryCutoff` ha ricevuto 11 e `Cutoff_H` 12, i valori sono finiti negli input sbagliati, e la riga 130 vuole `= 1` — quindi **il cutoff non si applica mai** ed entrambi i run sono la variante senza cutoff. Ma IS e OOS usano la **stessa** configurazione, quindi sono confrontabili e si giudica quella. **IS a costi onesti: 674 trade, t 2,74, WR 57,0%, R:R 0,97 -> Gate 2 passato. OOS: 129 trade, t 0,80.** **Perche il run conta invece di essere invalidato come i tre di VaultBreak**: li il campione piccolo aveva causa tecnica (il grafico non aveva i dati), qui la frequenza e dimezzata per una **proprieta della strategia nel nuovo regime** — `MaxRisk_USD 3000` salta i giorni col range troppo largo e il 2026 ha ATR 367 contro 210, lo stesso meccanismo gia documentato il 29/09. Il campione piccolo **e** il risultato; invalidarlo sarebbe ragionamento motivato. **L'edge comunque non e crollato**: avg $120,54 contro $151,71, il 79%, e il WR e salito a 60,5%. La stima puntuale regge, le prove no — con 129 trade la barra d'errore e $150. **E sarebbe morta allo Stage 7 in ogni caso**: $878/anno per micro contro $3.000 di target sono **3,4 anni**, contro i 7,8 mesi di DriftPullback. **L'OOS 2025-2026 e speso**: rigirarlo con `UseEntryCutoff 1` sarebbe scegliere il migliore fra due risultati sugli stessi dati."
+    },
     {
      "date": "2026-10-01",
      "text": "**Gate 3 non superato: fine del percorso per l'ORB.** Monte Carlo 1000 reshuffle sulla configurazione corretta (550 trade, peggior perdita $2.990, verificata): **DD al 95° percentile $31.210 = $3.121 per micro**, contro una soglia di $2.000. Supera del **56%** → per la condizione 1 della riserva registrata stamattina è un **no definitivo**. **Mio errore di stima**: avevo previsto un rapporto di 1,3–1,8× fra 95° percentile e massimo storico; è **2,57×**. Con WR 59% e R:R 0,93 il risultato dipende quasi solo dall'ordine di vincite e perdite — nello storico la serie perdente più lunga è 5, ma su mille rimescolamenti ne emergono di molto più lunghe con perdite fino a $3.000. **L'OOS 2025+ resta intatto.** **Calibrazione per le altre cinque**: se il 2,57× fosse tipico, per passare il Gate 3 servirebbe un DD storico÷10 sotto ~$780 — la soglia del Gate 2 a $1.000 è quindi leggermente permissiva. Un dato solo, non la cambiamo, ma è utile saperlo."
@@ -157,7 +163,7 @@
      "text": "Porting da `OrbBreakout_EA` (MQL5) a PowerLanguage. Base: il Fabio Model validato dal corso su NQ 2021‑26 (823 trade, WR 58%, avg $183, PF 1.28) — sono i numeri con cui confrontare lo Stage 2."
     }
    ],
-   "next": "**Riaperta: e l'ultima gamba possibile.** Prima rifare lo **Stage 2 a costi onesti** ($7,50/contratto, slippage 0): il run esistente usa $2,50 + 1 tick e il t passa da 2,95 a ~2,87. Poi **OOS 2025-2026**. In ORB **non c'e gate di data nel codice**, quindi il Date Range del grafico E il range del backtest. Pre-registrazione in SPEC.md: n atteso ~196, t 1,71 a edge intero, kill a 1,3."
+   "next": "**Chiusa.** L'OOS 2025-2026 e speso. La variante cutoff11 potra essere giudicata solo su dati non ancora usati, e oggi non ce ne sono."
   },
   {
    "name": "VaultBreak",
@@ -458,6 +464,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-15",
+   "text": "**ORB chiusa sull'OOS: t = 0,80. Resta viva solo DriftPullback.** Giornata netta: lo split prop/live ha riaperto tre strategie e l'out-of-sample ne ha chiuse due. **E il punto e che ha funzionato**: DriftPullback e passata (t 1,86, Stage 7 al 42% per tentativo), VaultBreak e ORB no, e in entrambi i casi con soglie e potenza scritte prima del run. **Su ORB l'edge non e nemmeno crollato** (79% di quello dell'IS, WR salito): si e ridotta la **frequenza**, perche `MaxRisk_USD` salta i giorni a range largo e il 2026 ne ha molti di piu — e con 129 trade la prova non c'e, oltre al fatto che $878/anno per micro vorrebbero 3,4 anni per fare $3.000. **Ora il nodo e che il corso dice di non deployare una sola strategia e noi ne abbiamo una.**"
+  },
   {
    "date": "2026-10-15",
    "text": "**ORB riaperta come ultima gamba, con la pre-registrazione scritta prima.** Era chiusa al Gate 3, che e stato ritirato perche faceva lo stesso errore del RATIO. Col metro prop attuale cutoff11 passa il Gate 2 (t 2,95, WR 58,9%, R:R 0,93). Due cose da sistemare prima: il run esistente e a **costi leggeri** ($2,50 + 1 tick, t scende a ~2,87 a $15/RT) e in ORB **non c'e gate di data nel codice**, quindi il Date Range del grafico e il range del backtest. **Potenza scritta prima**: n atteso ~196, edge intero -> t 1,71, dimezzato -> 0,86, soglia 1,3. **E l'aspettativa onesta e bassa**, per una riserva gia a verbale dal 29/09: nello split-sample la prima meta dell'IS non aveva edge e il filtro delta guadagnava solo +2,5% nella seconda meta, dentro il rumore proprio nel periodo recente. **Verificato anche che l'OOS di DriftPullback era su Globex 24h**: lo Stage 7 regge."

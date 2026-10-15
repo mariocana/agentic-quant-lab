@@ -201,7 +201,12 @@ def preliminari(cfg, cts):
         ora = '%02d:%02d' % (m // 60, m % 60)
     except (TypeError, ValueError):
         ora = None
-    if ora:
+    # se il grafico finisce OGGI e' un giorno incompleto: l'ora dell'ultima barra
+    # dice solo che ora era quando hai esportato, non il session template
+    if ora and d2 and d2 >= datetime.date.today():
+        out.append((EH, 'Ultima barra %s di OGGI: giorno incompleto, il session template '
+                        'NON si deduce. Verificalo sul grafico.' % ora))
+    elif ora:
         if ora >= '15:55':
             out.append((EH, 'Ultima barra %s -> session template **Globex 24h**' % ora))
         elif '14:55' <= ora < '15:05':

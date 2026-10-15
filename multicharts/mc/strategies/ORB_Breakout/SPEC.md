@@ -311,3 +311,68 @@ Lo split-sample dell'IS diceva: **prima meta 2020-01 -> 2022-06 senza edge** (41
 prima meta e **solo +2,5% nella seconda**, cioe dentro il rumore proprio nel periodo recente.
 
 **Quindi l'aspettativa onesta per l'OOS e bassa**, ed e scritta prima di vederlo.
+
+## Stage 2 e Stage 5 — ESITO: NON PASSA l'OOS. Cimitero.
+
+Report: `reports/ORB_S2_IS_nocutoff_costi-onesti.xlsx` e
+`reports/ORB_S5_OOS_nocutoff_2025-2026.xlsx`.
+
+### La configurazione girata NON e quella pre-registrata
+
+`UseEntryCutoff` ha ricevuto **11** e `Cutoff_H` **12**: i due valori sono finiti negli input
+sbagliati. La riga 130 del codice e `if UseEntryCutoff = 1 and Bar_Time >= Cutoff_Time`, quindi
+con 11 la condizione e **sempre falsa** e **il cutoff non si applica mai**.
+
+Entrambi i run sono percio la variante **senza cutoff** (MaxRisk3000 + DeltaFilter), 674 trade
+sull'IS — esattamente il run del 29/09. **Ma IS e OOS usano la stessa configurazione**, quindi
+sono confrontabili fra loro: quello che si giudica e la variante senza cutoff.
+
+### I numeri
+
+| | **IS 2020-2024** | **OOS 2025-2026** |
+|---|---|---|
+| n | 674 | **129** |
+| avg trade | $151,71 ± 55,31 | **$120,54 ± 150,37** |
+| WR | 57,0% | **60,5%** |
+| R:R | 0,97 | 0,77 |
+| **t** | **2,74** | **0,80** |
+| PF | 1,284 | 1,179 |
+| frequenza | 0,54 trade/giorno | **0,29** |
+
+Gate 2 superato (t 2,74 · WR 57,0% · R:R 0,97). **Gate 3 no: t = 0,80.**
+
+### Perche il run conta, invece di essere invalidato come i tre di VaultBreak
+
+La tentazione c'e: **n = 129 contro i ~196 pre-registrati**, e a n=129 nemmeno un edge intero
+avrebbe raggiunto la soglia (t = 1,01). Sembra lo stesso caso del run VaultBreak a n=71.
+
+**Non lo e, e la differenza e il motivo del campione piccolo.** Li la causa era tecnica: il
+grafico non aveva i dati. Qui la frequenza e dimezzata per una **proprieta della strategia nel
+nuovo regime**: `MaxRisk_USD 3000` salta i giorni col range di apertura troppo largo, e il
+2026 ha ATR 367 contro i 210 del 2020-2024, quindi ne salta molti di piu. **E lo stesso
+meccanismo documentato il 29/09** («non e stato escluso l'anno, sono stati saltati i giorni
+con range oltre 150 punti»).
+
+Il campione piccolo **e il risultato**, non un difetto della misura. Invalidarlo sarebbe
+ragionamento motivato.
+
+### E comunque sarebbe morta allo Stage 7
+
+Indipendentemente dal t: net $15.550 su 1,77 anni = **$878/anno per micro**, contro un target
+di $3.000. Sono **3,4 anni con 1 micro**, contro i **7,8 mesi** di DriftPullback. Anche con
+l'edge al 100% il conto non si forma.
+
+### Nota onesta: l'edge non e crollato
+
+Avg $120,54 contro $151,71 e il **79%**, e il WR e perfino salito (60,5% contro 57,0%). Non e
+il collasso di VaultBreak (15%). **La stima puntuale regge, le prove no**: con 129 trade la
+barra d'errore e $150 e non si distingue $120 da zero.
+
+### L'OOS 2025-2026 e speso
+
+Non si rigira con `UseEntryCutoff 1`. Sarebbe scegliere il migliore fra due risultati sugli
+stessi dati, cioe esattamente la corruzione che la regola «l'OOS si gira una volta sola»
+esiste per impedire. La variante cutoff11 potra essere giudicata solo su dati **non ancora
+usati**, e oggi non ce ne sono.
+
+**ORB e chiusa.**
