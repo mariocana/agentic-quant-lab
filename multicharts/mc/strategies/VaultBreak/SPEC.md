@@ -619,3 +619,51 @@ distinguibili — ma la direzione e verso il basso e va ricordata quando arriver
 
 **Controllo aggiunto allo script**: `check_report.py` ora confronta `TradeStartEL`/`TradeEndEL`
 col range effettivo dei dati e segnala i giorni mancanti. Questa trappola non ci ricapita.
+
+## Stage 5 — ESITO `MaxTrades1`: NON PASSA. Cimitero definitivo.
+
+Report: `reports/VB_S5_OOS_MaxTrades1_2025-2026.xlsx`. **Run valido**: range 2025-01-03 ->
+2026-10-15, 650 giorni, **n = 138** — dentro la banda 130-180 pre-registrata. Commissione
+$7,50/contratto, Bar Magnifier on, 1 contratto, nessun controllo preliminare acceso.
+
+| | IS (costi onesti) | **OOS** |
+|---|---|---|
+| n | 384 | **138** |
+| avg trade | $162 | **$24,89 ± 109,54** |
+| WR | 65,4% | **63,8%** |
+| R:R | 0,74 | **0,59** |
+| **t** | 2,88 | **0,23** |
+| PF | 1,40 | 1,043 |
+
+**Contro le attese scritte prima del run**, con la sd misurata ($1.287):
+
+| ipotesi | avg | t atteso |
+|---|---|---|
+| edge dell'IS intero | $162 | 1,48 |
+| edge dimezzato | $81 | 0,74 |
+| **misurato** | **$24,89** | **0,23** |
+
+L'edge realizzato e il **15%** di quello dell'IS: sotto anche l'ipotesi piu pessimista
+pre-registrata. Non e il campione piccolo, non e il regime, non sono i costi. **Non c'e.**
+
+### Il filtro funzionava, ma non abbastanza da contare
+
+La regola interpretativa scritta prima del run era: *se MaxTrades1 passa e la base no,
+l'unica spiegazione onesta e che il primo trade del giorno porta l'edge*. Non e passata,
+quindi la regola non si applica — ma il dato merita di restare agli atti:
+
+- base, OOS: avg **-$1,90** su 295 trade
+- MaxTrades1, OOS: avg **+$24,89** su 138 trade
+
+Togliere il secondo e il terzo trade del giorno **migliora di $27**, coerente col +52%
+osservato sull'IS ($110 -> $167). La direzione e giusta. Ma $27 con una barra d'errore di
+$110 e rumore, e il livello assoluto resta lontanissimo dalla soglia.
+
+### Verdetto
+
+**VaultBreak e morta in entrambe le configurazioni, e in entrambi i casi fuori campione.**
+Base: t 2,40 sull'IS -> **-0,03** sull'OOS. MaxTrades1: t 2,88 sull'IS -> **0,23** sull'OOS.
+
+E la morte fatta bene: parametri congelati sull'IS, finestra dichiarata, soglia e potenza del
+test scritte prima, run valido ai controlli preliminari, nessun ritocco dopo. **Non si
+riapre.**

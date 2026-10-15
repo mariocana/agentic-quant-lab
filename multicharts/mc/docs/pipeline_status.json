@@ -7,16 +7,14 @@
   "updated": "2026-10-15",
   "groups": [
    {
-    "title": "DriftPullback ha passato OOS e Stage 7. Serve la seconda strategia.",
-    "note": "2 micro: 42% per tentativo, 89% entro quattro, $400, ~2,5 mesi — stesso numero su IS e OOS",
+    "title": "DriftPullback viva e passata allo Stage 7. VaultBreak chiusa definitivamente.",
+    "note": "tetto a 3 strategie, test live appena c'e qualcosa in mano",
     "items": [
-     "**Tetto a 3 strategie** (decisione 15/10). Oltre non si cerca: tre bastano per l'effetto basket di Live 004.",
-     "**Test live appena c'e qualcosa in mano** (decisione 15/10). Paper >= 1 settimana, poi un tentativo vero col budget dichiarato. Non si aspetta il basket perfetto.",
-     "**Rigirare l'OOS di VaultBreak MaxTrades1 col grafico allargato al 2025-01-01**: il run del 15/10 aveva solo il 2026 (n=71, dove nemmeno un edge intero poteva passare). Archiviato come non valido.",
-     "Poi **ORB cutoff11** (t 2,95), rigiudicabile dopo il ritiro del Gate 3.",
-     "**Stage 8**: correlazione fra le vive e simulazione del basket. Il corso: basket 45,8% contro 38% al primo tentativo, 84,3% contro 77,2% entro sei.",
-     "**Riserva aperta**: la curva di DriftPullback e al 98esimo percentile del suo drawdown. Il corso mette in panchina questa esatta strategia (Live 004, 152). Non rispondibile con lo storico attuale.",
-     "Se si parte comunque con una sola: **piano veloce**, 2 micro e finestra corta, non 1 micro e otto mesi."
+     "**Terza gamba: ORB cutoff11** (t 2,95 sull'IS, mai vista fuori campione, chiusa dal Gate 3 ritirato). Rigirare Stage 2 a costi onesti, poi OOS 2025-2026.",
+     "**Verificare che l'OOS di DriftPullback sia girato su Globex 24h**: se era RTH, lo Stage 7 e su un segnale diverso dall'IS e va rifatto.",
+     "Poi **Stage 8**: correlazione e simulazione del basket, appena ci sono due strategie vive.",
+     "**Riserva aperta su DriftPullback**: la curva e al 98esimo percentile del suo drawdown e il corso mette in panchina proprio questa strategia (Live 004, 152).",
+     "Se si parte con una sola: **piano veloce**, 2 micro e finestra corta."
     ]
    }
   ]
@@ -169,13 +167,16 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "blocked",
-    "4": "active",
-    "3": "fail",
+    "2": "pass",
+    "4": "pass",
     "5": "fail"
    },
-   "note": "**Causa A: edge assente fuori campione.** Riaperta il 15/10 dalla pipeline semplificata (il Gate 3 che l'aveva uccisa era nostro, non del corso), era l'**unica** delle sei a passare il Gate 2 nuovo con **t = 2,63** e avg $110 sull'IS. **L'OOS 2025‑2026 dà net −$560 su 295 trade, t = −0,03, PF 0,997**: l'edge non è ridotto, è **zero**. Il meccanismo: il **WR tiene** (62,4% contro 63,1%) ma il **R:R crolla del 18%** (0,601 contro 0,730), e con R:R 0,601 il WR di pareggio è 62,5% — l'osservato ci finisce sotto di un decimo di punto. Il t in-sample di 2,63 misurava, almeno in parte, lo Stage 4 che l'aveva ottimizzata su quel periodo.",
+   "note": "**Morta in ENTRAMBE le configurazioni, entrambe fuori campione.** Base: t 2,40 sull'IS -> **-0,03** sull'OOS (295 trade). `MaxTrades1`: t 2,88 sull'IS -> **0,23** sull'OOS (138 trade, range pieno 2025-2026, run valido). L'edge realizzato e il **15%** di quello dell'IS, sotto anche l'ipotesi piu pessimista pre-registrata (edge dimezzato -> t 0,74). E la morte fatta bene: parametri congelati, finestra e potenza del test dichiarate prima, nessun ritocco dopo. **Non si riapre.**",
    "log": [
+    {
+     "date": "2026-10-15",
+     "text": "**`MaxTrades1` NON passa l'OOS: t = 0,23. Cimitero definitivo, seconda e ultima volta.** Run valido al terzo tentativo: range 2025-01-03 -> 2026-10-15, 650 giorni, **n = 138**, dentro la banda 130-180 scritta prima. I due run precedenti erano invalidi per range corto (il grafico partiva dal 2026-01-07) e uno anche per compressione sbagliata (3 min invece di 5). **Contro le attese pre-registrate**, con sd $1.287: edge intero -> t 1,48, edge dimezzato -> t 0,74, **misurato 0,23** con avg $24,89 contro i $162 dell'IS, cioe il **15%**. Sotto anche l'ipotesi piu pessimista: non e il campione, non e il regime, non sono i costi. **Il filtro pero funzionava**: base OOS avg -$1,90 su 295 trade, MaxTrades1 +$24,89 su 138 — togliere il 2o e 3o trade del giorno migliora di $27, coerente col +52% visto sull'IS. Direzione giusta, entita dentro il rumore (barra d'errore $110) e livello assoluto lontanissimo. **Trovato e chiuso anche il lead-in**: `DailyATRLen 252` tiene `DailyATR = 0` finche non ha 252 sessioni e con `DailyATR = 0` non apre nulla, quindi il grafico deve partire ~252 sessioni PRIMA della finestra da valutare — da qui il Date Range dal 2024-01-01."
+    },
     {
      "date": "2026-10-15",
      "text": "**Run OOS di `MaxTrades1` NON VALIDO: range del grafico corto.** Configurazione giusta (`MaxTradesPerDay 1`, $7,50/contratto, Bar Magnifier on) ma **i dati partono dal 2026-01-07 invece che dal 2025-01-01**: 371 giorni mancanti. In MC il range del grafico vince, `TradeStartEL` non carica barre che non ci sono. **Non e' una bocciatura, e lo si stabilisce senza guardare il risultato**: la SPEC pre-registrava il range e n fra 130 e 180, realizzato n = **71**; e con la sd misurata ($1.313), a n=71 **nemmeno l'edge intero dell'IS ($162) avrebbe dato piu di t 1,04**, sotto la soglia di 1,3 — il test non poteva produrre un PASS, quindi il suo FAIL non e' informazione. Rigirarlo col grafico allargato non viola «l'OOS una volta sola»: e' lo stesso caso del run ORB con `No Commission`. **Il dato che resta non e' incoraggiante**: sul solo 2026 avg $102,61 contro $162, il 63%, con barra d'errore ±$156 — indistinguibili, ma la direzione e' verso il basso. **Controllo aggiunto a `check_report.py`**: ora confronta TradeStartEL/TradeEndEL col range effettivo e segnala i giorni mancanti."
@@ -218,7 +219,8 @@
     "Stage 2 IS 2020‑2024": "723 trade · WR **63,1%** · avg $110,15 · PF 1,246 · R:R 0,73 · DD **$18.895** · peggior trade $2.005",
     "per anno": "2020 +4.361 · 2021 +20.692 · 2022 +16.826 · 2023 +21.316 · 2024 +16.442 — **tutti positivi**, max 26,8% del net",
     "split‑sample": "1ª metà PF 1,202 · 2ª metà PF 1,308 — **entrambe profittevoli**",
-    "Gate 2": "6 su 7. Cade solo **DD÷10 = $1.889** contro $1.000. Max DD datato 9 giugno 2021, periodo qualunque."
+    "Gate 2": "6 su 7. Cade solo **DD÷10 = $1.889** contro $1.000. Max DD datato 9 giugno 2021, periodo qualunque.",
+    "OOS MaxTrades1 2025-2026": "138 trade · WR 63,8% · R:R 0,59 · avg $24,89 ± 109,54 · PF 1,043 · **t 0,23** · atteso 1,48 a edge intero, 0,74 a edge dimezzato"
    }
   },
   {
@@ -452,6 +454,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-15",
+   "text": "**VaultBreak chiusa definitivamente: anche `MaxTrades1` fallisce l'OOS, t = 0,23 su 138 trade.** Entrambe le configurazioni falsificate fuori campione, entrambe con parametri congelati e soglie scritte prima. L'edge realizzato e il 15% di quello dell'IS, sotto anche l'ipotesi pessimista pre-registrata. Restano una viva (DriftPullback) e una in coda (ORB cutoff11). **Tre run buttati prima di quello buono**, tutti per il range dati del grafico e non per la strategia: i controlli preliminari dello script li hanno beccati tutti e tre."
+  },
   {
    "date": "2026-10-15",
    "text": "**Due decisioni: tetto a 3 strategie per la prop, e test live appena c'e qualcosa in mano.** Non si aspetta il basket perfetto: paper almeno una settimana, poi un tentativo vero. **E misurata la domanda «ha senso cercare sullo stesso asset»**: DriftPullback e VaultBreak, entrambe NQ intraday, stesso periodo OOS, danno correlazione **0,367 sui 137 giorni in comune e 0,210 sull'unione**. La correlazione la fanno la famiglia e l'ora, non il ticker — e al contrario NQ/ES/YM/RTY sono fra loro 0,8-0,95 correlati intraday, quindi la stessa logica su ES comprerebbe poco. Il vincolo vero sono la **copertura** (VaultBreak opera 137 giorni su 456 e Drift copre tutto: zero giorni in cui opera solo lei) e l'**unita di rischio** (R/ATR: M2K 0,37-0,68 contro MNQ 0,14-0,26, il peggiore). Se un terzo candidato nasce su M2K o MYM e un vantaggio strutturale, non diversificazione di facciata."
