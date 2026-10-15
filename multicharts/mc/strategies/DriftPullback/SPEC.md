@@ -484,3 +484,69 @@ Conteggio trade, WR e conteggi delle uscite **identici**.
 Non è il difetto della classe `CurrentContracts` — quello darebbe un fattore 10 su trade
 specifici, non uno 0,075% diffuso — e la sequenza dei trade è identica. **Non ho una
 spiegazione completa dello 0,075%**: lo annoto invece di archiviarlo come «passato».
+
+---
+
+# Stage 5 — OOS 2025-2026: pre-registrazione (15/10/2026)
+
+**Perche siamo qui.** Lo split prop/live (`mc/docs/prop_vs_live.md`) ha tolto da Gate 2 i
+criteri dei soldi propri. Rigiudicata col solo metro prop questa strategia **passa**:
+**t 3,01 · WR 63,5% · R:R 0,64**, e il WR sta dentro la banda **54-72%** che il corso
+dichiara (Live 005, 1585), a un punto e mezzo dall'esempio che deploya (~65%, avg netto $77,
+Live 002, 244-252).
+
+**Cosa l'aveva uccisa.** La soglia `WR >= 70%` pre-registrata allo Stage 1, derivata dal
+nostro `RATIO = E x DDcap / (DD_R x (soglia + costo))`. Due difetti di quella formula:
+
+1. il termine `soglia` **e** il criterio live dei $7/micro, che oggi e in stand-by;
+2. chiede di **sopravvivere al drawdown storico di cinque anni** col rischio compresso
+   dentro l'MLL. Una eval non e quello: e un **primo passaggio su finestra corta,
+   ripetibile**. Il corso lavora col **39% di pass rate per tentativo** (Live 003, 107)
+   perche su quattro tentativi diventa **92,6%** (Live 004, 238).
+
+Il RATIO rispondeva con una formula, nella versione piu severa, alla domanda che il corso
+affida al **simulatore**. Lo Stage 7 lo sostituisce.
+
+## Configurazione: congelata, nessun parametro si tocca
+
+`DriftMode 0` · `DriftThreshPct 0.10` · `MALen 20` · `DriftLen 4` · `PullbackWindow 6` ·
+bracket **80 / 40 / 50** · `MaxLossesPerDay 2` · `EntryMode 0` · `TriggerMode 0`
+
+Dati: **@NQ 5m + 15m (data2)**, serie **non back-adjusted** (il difetto trovato il 29/09 e
+decisivo qui, perche `driftPct` usa una percentuale del prezzo).
+Costi: **$7,50/contratto/lato** + **2 tick di slippage sullo stop** (`StopSlipTicks 2`),
+identici all'IS.
+Finestra: **2025-01-01 → 2026-10-15**. Una volta sola.
+
+## Criteri, scritti prima del run
+
+| criterio | soglia |
+|---|---|
+| **t** | **>= 1,3** (il livello del corso, «≤10% simulazioni negative») |
+| WR | >= 50%, e **dello stesso ordine** del 63,5% dell'IS |
+| R:R | 0,5-1 |
+| DD | <= 1,5x quello dell'IS |
+
+**Kill:** `t < 1,3` → cimitero definitivo, come VaultBreak. Nessun ritocco, nessuna variante
+di recupero.
+
+## Attesa dichiarata
+
+**WR fra 62% e 65%.** Motivo: stop **e** target sono entrambi fissi in punti, quindi
+P(primo tocco) = S/(S+T) dipende dal **rapporto** e non dalla scala → il WR e **invariante al
+regime di volatilita**. E la regola misurata tre volte (Gold, VaultBreak, e questa stessa
+strategia fra 2026 al 64,4% e IS al 63,5%).
+
+Se il WR crolla sotto 55%, **non e il regime**: e che l'edge non c'era. Quella e la
+falsificazione, e non va spiegata via.
+
+## Riserva economica, registrata ora
+
+L'obiezione del RATIO non e nulla e non va dimenticata: con **DD_R 25,5** il drawdown ammette
+**R <= $78/micro**, dove l'edge netto vale **~$2,24/trade**, cioe **~$1.568/anno per micro**
+contro **$3.000** di target — e il rapporto **non migliora** aumentando i micro, perche
+drawdown e profitto scalano insieme.
+
+Se il simulatore dello Stage 7 conferma quel tempo, la strategia muore **la'**. Ma muore con
+la risposta giusta — pass rate e tempo di passaggio su piu tentativi — invece che con una
+stima su percorso medio.
