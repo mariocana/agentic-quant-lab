@@ -41,3 +41,6 @@ __pycache__/
 # archivi e dati pesanti
 *.zip
 education/**/DATA/
+
+# slide estratte dai video del corso (si rigenerano con mc/docs/estrai_slide.sh)
+education/protocollo/_slide/
