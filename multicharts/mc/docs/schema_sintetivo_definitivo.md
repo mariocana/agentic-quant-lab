@@ -149,3 +149,77 @@ dell'ultima barra**, e solo se il grafico finisce su un giorno completo:
 
 **Verificato sugli IS**: DriftPullback chiude alle 16:00 (Globex, corretto), VaultBreak alle
 15:00 (RTH, corretto). **Sugli OOS no**: i loro grafici finiscono a oggi a meta sessione.
+
+---
+
+# Far girare lo script del CORSO (Colab), e confrontarlo col nostro
+
+## Dove sta
+
+`education/protocollo/4. Validation, Risk & Going Live./3. Colab_PropFirm_Montecarlo.txt`
+contiene il link. Il notebook si chiama **`PropFirm_MonteCarlo_Apex50K_funded_IP.ipynb`** —
+«Prop Firm Challenge — Monte Carlo Pass Rate Estimator».
+
+C'e anche il secondo, `2. Colab_Montecarlo.txt`, che e il Monte Carlo generico sulla strategia
+(non sul passaggio della eval). Sono i «two colab files» di Live 003.
+
+Si apre **senza login** in sola lettura. Per eseguirlo serve un account Google e
+**File -> Salva una copia in Drive**: finche non lo copi, non puoi far girare le celle.
+
+## Cosa ti occorre
+
+**1. Il CSV, con i nomi di colonna suoi.** Il notebook pretende `trade_id`, `contracts`,
+`profit_usd`, `direction` e una data. Il foglio di MultiCharts ha gli stessi dati con nomi
+diversi, e sta nel **terzo** foglio: `pd.read_excel` da solo leggerebbe il primo, che e il
+sommario. Convertitore:
+
+```bash
+python3 mc/docs/to_colab_csv.py mc/strategies/NOME/reports/NOME_S5_OOS.xlsx
+```
+
+Scrive `NOME_S5_OOS_colab.csv` accanto all'originale, una riga per trade. Controlla che il
+conteggio, il WR e l'avg stampati combacino con `check_report.py`: se non combaciano, non
+caricare niente.
+
+**2. Cambiare i parametri, perche il notebook e per APEX e noi siamo su LucidFlex.**
+
+| | Apex 50K (default del notebook) | **LucidFlex 50k (il nostro)** |
+|---|---|---|
+| target | $3.000 | $3.000 — uguale |
+| max drawdown | **$2.500** EOD trailing | **$2.000** |
+| scadenza | **21 giorni** di trading | **nessuna** |
+| lock del trailing | a +$100 dal saldo iniziale | a **$50.100** |
+
+Se non li cambi, la risposta e sul conto sbagliato.
+
+**3. Azzerare i costi, altrimenti li conta due volte.** In CELL 2 ci sono
+`COMMISSION_PER_CONTRACT = 2.25` e `SLIPPAGE_PER_CONTRACT = 5.0`. Il nostro export ha gia i
+costi dentro ($7,50/contratto/lato), quindi vanno messi **entrambi a 0**.
+
+In alternativa `python3 mc/docs/to_colab_csv.py report.xlsx --lordo` riporta il P&L al lordo
+togliendo $7,50/lato, e allora i costi li metti nel notebook.
+
+**4. Sistemare il sizing.** `NUM_CONTRACTS = 1.7` e in **contratti NQ equivalenti**: 1 micro
+= 0,1. Due micro si scrivono `0.2`. Stessa cosa in `SWEEP_CONTRACTS`. E `RISK_PER_CONTRACT`
+va messo al nostro R per contratto NQ intero.
+
+## Cosa ha il suo che il nostro non ha
+
+Gli **scenari di degrado**: rigira la simulazione con WR −3/−5/−8 punti e P&L ridotto del
+10/15/25/30%. E la domanda «e se dal vivo rende meno del backtest», che il nostro non pone.
+Vale da sola il giro.
+
+## Cosa ha il nostro che il suo non ha
+
+- il controllo dello **stato attuale della curva** (quanto siamo lontani dal massimo);
+- il **breach dentro il trade** e non solo alla chiusura;
+- il guardrail sulle **finestre indipendenti**, che dichiara inaffidabile un numero invece di
+  stamparlo.
+
+## Il confronto da fare
+
+Girare i due sulla **stessa** lista di trade e sugli **stessi** parametri di conto. Se danno
+pass rate vicini, il nostro e validato. Se divergono, il primo sospetto sono i costi contati
+due volte e il secondo la scadenza a 21 giorni lasciata accesa.
+
+Il nostro, su DriftPullback OOS a 2 micro: **42,3% per tentativo, 89% entro quattro**.
