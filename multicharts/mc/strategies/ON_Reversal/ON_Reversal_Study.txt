@@ -88,7 +88,12 @@ if firstBar then begin
 end;
 
 { ===== APERTURA DI SESSIONE ===== }
-if Time >= SessStart and Time[1] < SessStart then begin
+{ apertura di sessione. Il secondo test (`Date <> Date[1]`) serve sui chart RTH:
+  li' la barra precedente e' la 15:00 del giorno prima, e `Time[1] < SessStart`
+  sarebbe FALSA (1500 < 830 e' falso) — la sessione non verrebbe MAI rilevata e la
+  strategia non farebbe un solo trade, in silenzio. Su Globex 24h non cambia nulla:
+  a mezzanotte Date cambia ma Time e' 5, che non e' >= SessStart. }
+if Time >= SessStart and ( Time[1] < SessStart or Date <> Date[1] ) then begin
     { il range della sessione finita si accumula nella media }
     if sessHi > sessLo and sessLo < 999999 then begin
         rngSum = rngSum + ( sessHi - sessLo );
