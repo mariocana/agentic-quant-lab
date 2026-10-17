@@ -10,6 +10,7 @@
     "title": "Decisione: si parte con ALMENO DUE strategie. Serve la seconda gamba.",
     "note": "DriftPullback e viva; la prima ora 08:30-09:30 CT e completamente libera",
     "items": [
+     "**Girare `ON_Reversal_Study` su @RTY (Tag RTY) e @YM (Tag YM)**, 5 min, CT, 2020-2024, ShowLog 1. Primo controllo: `R:R realizzato` deve essere ~0,667, altrimenti il resto non si legge.",
      "**Candidata raccomandata: overnight-intraday reversal** (Liu et al. 2025). Opera all'apertura, cioe nell'**ora libera** dove DriftPullback non ha un solo trade: correlazione quasi nulla per costruzione.",
      "**La soglia per una SECONDA gamba e piu bassa**: eccesso positivo a >= 3 errori standard da zero, non i +7,6 pp che servirebbero per reggere il conto da sola. Il basket guadagna smussando il percorso (Live 004: 45,8% contro 38%).",
      "**Ma attenzione**: una gamba a edge zero PEGGIORA il basket — e gia successo provando ad aggiungere VaultBreak.",
@@ -76,6 +77,29 @@
   }
  ],
  "strategies": [
+  {
+   "name": "ON Reversal",
+   "family": "**mean reverting** · seconda gamba del basket",
+   "instrument": "@RTY 5m (candidato) · @YM 5m (controllo)",
+   "path": "mc/strategies/ON_Reversal",
+   "stages": {
+    "0": "run"
+   },
+   "note": "**Stage 0. Seconda gamba**, dopo la decisione di non partire con DriftPullback da sola. Fada il movimento overnight nella prima ora di sessione. **Ragione strutturale**: il movimento notturno e in parte flusso impaziente su un book sottile, e chi fornisce quella liquidita viene ripagato alla riapertura — un compenso per un servizio, non un pattern. **Cade nell'ora 08:30-09:30 CT, dove DriftPullback non ha un solo trade**: correlazione quasi nulla per costruzione. Geometria: target a meta ritracciamento del gap, stop a 0,75 del gap, **R:R 0,667, caso 60%**.",
+   "metrics": {
+    "geometria pre-registrata": "G = ingresso − chiusura RTH di ieri · target −0,50·G · stop +0,75·G · R:R 0,667 · caso 60%",
+    "soglia da seconda gamba": "eccesso positivo a ≥ 3 errori standard da zero (NON i +7,6 pp che servirebbero per bastare da sola)",
+    "gate d'ingresso": "|G| ≥ 0,15 × range medio delle ultime 20 sessioni",
+    "aspettativa dichiarata": "eccesso +1…+4 pp sulla prima ora: sotto la soglia dei +6 ma sopra zero"
+   },
+   "log": [
+    {
+     "date": "2026-10-17",
+     "text": "**Aperta come seconda gamba.** Fonte: Liu et al., *Overnight-Intraday Reversal Everywhere*, AsianFA 2025. Scelta fra tre meccanismi mean reverting perche **cade nell'ora libera**: la distribuzione oraria di DriftPullback parte dalle 09:00 (SessStart 09:30) mentre RTH apre alle 08:30, quindi fra 08:30 e 09:30 **non ha un solo trade** e la correlazione e quasi nulla per costruzione. Strumento **@RTY**, perche e il piu domestico dei cinque indici — il suo overnight e meno informazione e piu sbilanciamento di flusso, che e il meccanismo del paper — e perche ha il **miglior R/ATR (0,49)** e la **migliore stabilita di regime (1,15x)**. **Ma e mio ragionamento, non una misura**, e M2K e il micro meno liquido proprio mentre si opera all'apertura: @YM gira come controllo nello stesso run. Scritto `ON_Reversal_Study.txt`, indicatore che separa la risoluzione **entro la prima ora** da quella **entro fine giornata**, perche la prima dice se la correlazione resta nulla e la seconda se al ritracciamento serve solo piu tempo. **Aspettativa dichiarata: +1…+4 pp sulla prima ora**, sotto la soglia dei +6 ma sopra zero."
+    }
+   ],
+   "next": "Girare `ON_Reversal_Study` su @RTY e @YM, 2020-2024, e mandare il log."
+  },
   {
    "name": "VWAP Fade",
    "family": "**mean reverting** (la prima della pipeline)",
