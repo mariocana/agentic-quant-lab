@@ -103,3 +103,26 @@ misura precedente sui cinque indici. Le due campagne di misura combaciano.
 
 `ATR_Window_Study` su **@CL** e **@YM** sul 2020-2024, per avere i range veri invece delle
 stime. E lo stesso run serve a decidere lo strumento di VWAP Fade.
+
+---
+
+# Cosa e permesso su LucidFlex (verificato il 18/10/2026)
+
+Fonte: <https://support.lucidtrading.com/en/articles/11404728-other-trading-activities>,
+articolo *Other Trading Activities*, aggiornato il 26/08/2026.
+
+| attivita | LucidFlex (il nostro) | LucidDaily |
+|---|---|---|
+| **News trading** | **PERMESSO** — *"Traders may enter or exit positions around scheduled or unscheduled news events on these plans without it being a breach"* | **vietato**: red folder news e **hard breach** |
+| **Strategie automatiche** | **permesse**, incluso il trade copier | — |
+| Scaling / DCA | permesso (il martingale e sconsigliato, non vietato) | — |
+| Scalping genuino | permesso, dentro la Microscalping policy | — |
+| **Flipping** | **permesso** — trade rapido per soddisfare il minimo di giorni operativi | — |
+
+**Il flipping permesso e la risposta ufficiale al problema dell'inattivita**: un trade
+dentro-fuori per far contare la giornata e esplicitamente consentito.
+
+**L'avvertenza che l'articolo fa, e che e reale**: durante le news ci sono slippage e
+*"velocity logic triggers"*, cioe comportamenti d'ordine particolari dovuti alla velocita del
+mercato, e *"Traders assume full responsibility for all outcomes"*. Permesso non vuol dire
+indolore.

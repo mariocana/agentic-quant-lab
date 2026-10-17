@@ -506,9 +506,14 @@
      "1 micro, senza limite": "pass 62,2% IS / 58,1% OOS · 105 gg mediani · 95% entro 3 · ~8 mesi",
      "sensibilita costi": "a $2,50/RT invece di $1,50: 41,6% -> 38,2%",
      "drawdown vs MLL": "a 2 micro il DD storico vale $7.627 contro $2.000 di MLL (3,8x) e il pass rate resta 42%"
-    }
+    },
+    "porting su @YM (fallito)": "3.393 trade · WR 61,8% · R:R 0,62 · **eccesso +0,07 pp** contro i +2,52 di NQ · expectancy 0,0012 R contro 0,0414 · avg $1,54 · **t 0,20**. La geometria si trasferisce, l'edge no."
    },
    "log": [
+    {
+     "date": "2026-10-18",
+     "text": "**Porting su @YM: la forma si trasferisce, l'edge no.** Stop riscalato per ATR a 129 punti (0,381 del range, la stessa frazione che 80 punti valgono su NQ). **WR 61,8% contro 63,5% e R:R 0,62 contro 0,64**: la scalatura ha funzionato esattamente come doveva. **Ma l'eccesso sul caso passa da +2,52 pp a +0,07 e l'expectancy da 0,0414 R a 0,0012 — 34 volte piu piccola.** avg $1,54, **t 0,20**. E la conferma piu netta possibile dell'avvertenza del corso («this same strategy logic does not automatically work across asset classes», Lesson 3) — e vale perfino fra due indici azionari americani correlati 0,8-0,95. **La seconda gamba non si ottiene replicando la prima altrove.**"
+    },
     {
      "date": "2026-10-15",
      "text": "**Verificato: l'OOS e stato girato su Globex 24h**, come l'IS e come richiede l'header del codice. Lo Stage 7 regge: il 42% di pass rate e su un segnale confrontabile con quello dell'IS. Era l'unico controllo che il report non poteva dare (il foglio Settings non registra il session template e il grafico finiva a oggi a meta sessione)."
@@ -607,6 +612,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-18",
+   "text": "**Verificata la regola news sul sito di Lucid, e e l'opposto di quello che pensavamo: su LucidFlex il news trading e PERMESSO.** *«Traders may enter or exit positions around scheduled or unscheduled news events on these plans without it being a breach»* — il divieto con hard breach vale solo su **LucidDaily**. Dallo stesso articolo: **strategie automatiche e trade copier permessi**, scaling/DCA permesso, scalping genuino permesso, e **flipping permesso**, cioe un trade dentro-fuori per far contare la giornata — che e la risposta ufficiale al problema dell'inattivita. **Resta vero che l'evento macro non si sviluppa**, ma per un'altra ragione: 2-3 rilasci a settimana non arrivano a 2 setup al giorno."
+  },
   {
    "date": "2026-10-18",
    "text": "**Ricerca sul web aperto: risultato negativo e informativo.** Nessun backtest credibile mostra un edge intraday frequente che sopravviva ai costi su ES/NQ/YM; l'esempio piu netto e uno studio 2026 su cripto con reversal da **1,3 punti base contro un costo di 5**. **Ma la cosa che conta e un'altra**: il profilo che il corso chiede — WR 54-72% con R:R 0,5-1 — **non esiste come proprieta di un segnale**. La replica seria del momentum intraday su ES/NQ da **WR 36-39% con payoff 2,09**, cioe l'opposto; e dove compaiono WR dell'82% sono vendor non verificati, con perdite medie piu grandi delle vincite. **Quel profilo lo impone l'uscita, non l'ingresso**: target vicino e stop lontano producono WR alto e R:R basso, mentre **l'eccesso sul caso resta identico** perche e invariante alla geometria. **Conseguenza operativa: smettere di cercare strategie con quel profilo e cercare segnali con un eccesso misurabile di qualunque forma.**"

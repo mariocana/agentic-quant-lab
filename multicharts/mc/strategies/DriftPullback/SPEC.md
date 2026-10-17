@@ -651,3 +651,35 @@ in the evaluation phase**, that is going to put you at a disadvantage"*. Coi suo
 basket da 45,8% al primo tentativo contro 38% di una singola, e 84,3% contro 77,2% entro sei.
 Non contraddice la nostra regola «una alla volta», che riguarda lo **sviluppo**: si sviluppa
 una per volta, si **deploya** in gruppo.
+
+## Porting su @YM: la forma si trasferisce, l'edge no (18/10/2026)
+
+Report: `reports/DPB_S2_IS_PORT-YM_2020-2024.xlsx`. IS 2020-2024, 3.393 trade, $6,75/lato,
+Bar Magnifier 1 min, Globex 24h. Stop riscalato per ATR a **129 punti** (0,381 del range
+mediano di YM, la stessa frazione che 80 punti valgono su NQ), target 65 e 81.
+
+| | **@NQ** | **@YM** |
+|---|---|---|
+| n | 3.499 | 3.393 |
+| **WR** | **63,5%** | **61,8%** |
+| **R:R** | **0,64** | **0,62** |
+| caso (1/(1+R:R)) | 61,0% | 61,7% |
+| **eccesso sul caso** | **+2,52 pp** | **+0,07 pp** |
+| expectancy | **0,0414 R** | **0,0012 R** |
+| avg trade netto | **$55,48** | **$1,54** |
+| **t** | **3,01** | **0,20** |
+
+**La scalatura per ATR ha funzionato come doveva**: WR 61,8% contro 63,5% e R:R 0,62 contro
+0,64. **La geometria si trasferisce quasi perfettamente.**
+
+> **Ma l'eccesso sul caso passa da +2,52 pp a +0,07, e l'expectancy e 34 volte piu piccola.**
+> **L'edge e di NQ, non del metodo.**
+
+E la conferma piu' netta che potessimo avere dell'avvertenza del corso — *"this same strategy
+logic does not automatically work across asset classes"* (Lesson 3, 18:59) — e vale perfino
+fra due indici azionari americani correlati 0,8-0,95.
+
+**Conseguenza**: la seconda gamba non si ottiene replicando la prima altrove. DriftPullback
+resta l'unica, e il suo edge e legato a qualcosa che NQ ha e YM no — probabilmente il fatto
+che il drift di un'ora su NQ sia piu' persistente, ma **non l'abbiamo misurato e non si
+specula**.
