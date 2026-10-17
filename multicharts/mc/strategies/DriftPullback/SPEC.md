@@ -683,3 +683,51 @@ fra due indici azionari americani correlati 0,8-0,95.
 resta l'unica, e il suo edge e legato a qualcosa che NQ ha e YM no — probabilmente il fatto
 che il drift di un'ora su NQ sia piu' persistente, ma **non l'abbiamo misurato e non si
 specula**.
+
+## Stage 7 rifatto col degrado (18/10/2026): e il numero che decide
+
+Aggiunti al simulatore gli **scenari di degrado**, che il Colab del corso ha e il mio non
+aveva: *e se dal vivo rende meno del backtest?* Una frazione dei vincenti viene trasformata in
+perdite vere e tutti i P&L vengono ridotti.
+
+### I due piani, a confronto
+
+| scenario | **2 micro, 60 gg** | | **1 micro, senza limite** | |
+|---|---|---|---|---|
+| | pass | entro 4 | pass | entro 4 |
+| come da backtest | **42,7%** | **89,2%** | **58,4%** | **97,0%** |
+| WR −3 pp, P&L −10% | **24,2%** | 67,0% | **22,2%** | 63,3% |
+| WR −5 pp, P&L −15% | **12,4%** | 41,1% | **4,3%** | 16,1% |
+| WR −5 pp, P&L −25% | 9,5% | 32,8% | 5,0% | 18,7% |
+| WR −8 pp, P&L −30% | 1,5% | 5,7% | **0,0%** | 0,2% |
+
+### Due cose che si leggono qui e non si vedevano prima
+
+**1. La strategia e fragile al degrado.** Bastano **3 punti di win rate e un −10% di P&L** per
+**dimezzare** il pass rate. A −5 punti crolla. Il motivo e strutturale: l'expectancy e
+**0,0414 R**, togline un po' e va a zero. Non e un difetto di questa strategia, e la
+conseguenza di un edge sottile — che e l'unico tipo di edge che abbiamo mai trovato.
+
+**2. Il piano veloce e piu' ROBUSTO di quello lento**, anche se parte da un pass rate piu'
+basso. A −5 punti di WR: **12,4% contro 4,3%**, e a −8 punti **1,5% contro 0,0%**.
+
+**Perche'**: il piano lento ha bisogno di ~77 giorni di macinatura, e vive sull'**accumulo**
+dell'edge. Degrada l'edge e la lunga marcia diventa un lento sanguinamento dentro l'MLL. Il
+piano veloce chiude in 22 giorni mediani e vive piu' sulla **varianza**, che il degrado non
+toglie.
+
+> **Se si parte, si parte col piano veloce: 2 micro, finestra corta.** Lo diceva gia' la
+> riserva sul drawdown corrente, ora lo dice anche il degrado.
+
+### Cosa serve sapere prima di spendere i $400
+
+La domanda non e' «qual e' il pass rate» ma **«quanto e' probabile il degrado»**. Tre cose che
+sappiamo:
+
+- l'OOS ha dato **WR 64,5% contro il 63,5% dell'IS**: il win rate e' stato **stabile**;
+- i costi sono **verificati** sul listino Lucid, non stimati;
+- **ma la curva e' al 98esimo percentile del suo drawdown**, e partire da li' e' gia' una
+  forma di scenario degradato — quello che il corso chiama mettere in panchina una strategia.
+
+**Con $400 di budget e 4 tentativi: 89% se il backtest regge, 67% se degrada di 3 punti, 41%
+se degrada di 5.**

@@ -507,9 +507,14 @@
      "sensibilita costi": "a $2,50/RT invece di $1,50: 41,6% -> 38,2%",
      "drawdown vs MLL": "a 2 micro il DD storico vale $7.627 contro $2.000 di MLL (3,8x) e il pass rate resta 42%"
     },
-    "porting su @YM (fallito)": "3.393 trade · WR 61,8% · R:R 0,62 · **eccesso +0,07 pp** contro i +2,52 di NQ · expectancy 0,0012 R contro 0,0414 · avg $1,54 · **t 0,20**. La geometria si trasferisce, l'edge no."
+    "porting su @YM (fallito)": "3.393 trade · WR 61,8% · R:R 0,62 · **eccesso +0,07 pp** contro i +2,52 di NQ · expectancy 0,0012 R contro 0,0414 · avg $1,54 · **t 0,20**. La geometria si trasferisce, l'edge no.",
+    "Stage 7 col degrado (18/10)": "2 micro/60gg: **42,7%** per tentativo e **89,2%** entro 4 come da backtest; **24,2% / 67,0%** con WR −3 pp e P&L −10%; **12,4% / 41,1%** con −5 pp e −15%. Il piano veloce e piu ROBUSTO del lento (1 micro senza limite crolla a 4,3% gia a −5 pp)."
    },
    "log": [
+    {
+     "date": "2026-10-18",
+     "text": "**Stage 7 rifatto col degrado, e il numero che decide e questo.** Aggiunti al simulatore gli scenari che il Colab del corso ha e il mio non aveva. **2 micro, 60 giorni**: 42,7% per tentativo e 89,2% entro quattro come da backtest, ma **24,2% e 67,0% con appena −3 punti di WR e −10% di P&L**, e 12,4% e 41,1% a −5 punti. **La strategia e fragile al degrado**, e il motivo e strutturale: expectancy **0,0414 R**, togline un po' e va a zero. **Seconda cosa, controintuitiva: il piano veloce e piu ROBUSTO del lento.** A −5 punti di WR da 12,4% contro il 4,3% di 1 micro senza limite, e a −8 punti 1,5% contro 0,0%. Il piano lento vive sull'**accumulo** dell'edge su ~77 giorni e degradandolo la marcia diventa un sanguinamento dentro l'MLL; il veloce chiude in 22 giorni mediani e vive sulla **varianza**, che il degrado non toglie. **Se si parte, si parte col piano veloce** — lo diceva gia la riserva sul drawdown corrente, ora lo dice anche il degrado. **Con $400 e quattro tentativi: 89% se il backtest regge, 67% se degrada di 3 punti, 41% se di 5.**"
+    },
     {
      "date": "2026-10-18",
      "text": "**Porting su @YM: la forma si trasferisce, l'edge no.** Stop riscalato per ATR a 129 punti (0,381 del range, la stessa frazione che 80 punti valgono su NQ). **WR 61,8% contro 63,5% e R:R 0,62 contro 0,64**: la scalatura ha funzionato esattamente come doveva. **Ma l'eccesso sul caso passa da +2,52 pp a +0,07 e l'expectancy da 0,0414 R a 0,0012 — 34 volte piu piccola.** avg $1,54, **t 0,20**. E la conferma piu netta possibile dell'avvertenza del corso («this same strategy logic does not automatically work across asset classes», Lesson 3) — e vale perfino fra due indici azionari americani correlati 0,8-0,95. **La seconda gamba non si ottiene replicando la prima altrove.**"

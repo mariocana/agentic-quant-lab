@@ -150,6 +150,42 @@ def sim_contiguo(giorni, n_micro, giorni_max):
     return esiti, durate
 
 
+def degrada(giorni, wr_adj, shrink, rng):
+    """Rigira la lista di trade come se dal vivo rendesse meno del backtest.
+
+    `wr_adj` e' in PUNTI di win rate da togliere: una frazione dei trade vincenti
+    viene trasformata in perdite, pescando dalla distribuzione delle perdite vere.
+    `shrink` riduce tutti i P&L di quella frazione. Sono gli scenari che il Colab
+    del corso chiama "degradation": la domanda e' «e se dal vivo va peggio».
+    """
+    vinc = [t for _, tr in giorni for t, _g in tr if t > 0]
+    perd = [(t, g) for _, tr in giorni for t, g in tr if t <= 0]
+    n = sum(len(tr) for _, tr in giorni)
+    if not vinc or not perd or n == 0:
+        return giorni
+    wr = len(vinc) / float(n)
+    # quota di vincenti da ribaltare perche' il WR scenda di wr_adj punti
+    quota = (wr_adj / 100.0) / wr if wr > 0 else 0.0
+    out = []
+    for d, tr in giorni:
+        nuovi = []
+        for t, g in tr:
+            if t > 0 and quota > 0 and rng.random() < quota:
+                t, g = perd[rng.randrange(len(perd))]      # diventa una perdita vera
+            nuovi.append((t * (1 - shrink), g * (1 - shrink)))
+        out.append((d, nuovi))
+    return out
+
+
+SCENARI = [
+    ("come da backtest",        0.0, 0.00),
+    ("WR -3 pp, P&L -10%",      3.0, 0.10),
+    ("WR -5 pp, P&L -15%",      5.0, 0.15),
+    ("WR -5 pp, P&L -25%",      5.0, 0.25),
+    ("WR -8 pp, P&L -30%",      8.0, 0.30),
+]
+
+
 def dd_corrente(giorni):
     """Per ogni giorno, la distanza dal massimo a fine giornata."""
     eq, picco, out = 0.0, 0.0, []
@@ -304,7 +340,15 @@ def main():
         print('   -> la colonna sequenziale e\' INDICATIVA, non una misura. Un 100% la')
         print('      diventa con una manciata di finestre fortunate. Si decide sullo iid.')
 
-    print('\n5. COSTO PER ARRIVARE FUNDED  (%d micro)' % migliore)
+    print('\n5. SE DAL VIVO VA PEGGIO DEL BACKTEST  (%d micro, iid)' % migliore)
+    print('   %-24s %8s %12s' % ('scenario', 'pass%', 'entro 4 tent.'))
+    for nome, wa, sh in SCENARI:
+        g2 = giorni if wa == 0 and sh == 0 else degrada(giorni, wa, sh, rng)
+        e2, _d2 = sim_iid(g2, migliore, max(2000, n_sim // 4), giorni_max, rng)
+        p2 = e2['pass'] / float(sum(e2.values()))
+        print('   %-24s %7.1f%% %11.1f%%' % (nome, 100 * p2, 100 * cumulato(p2, 4)))
+
+    print('\n6. COSTO PER ARRIVARE FUNDED  (%d micro)' % migliore)
     if pi > 0:
         print('   iid         tentativi attesi %.1f -> $%.0f  |  ~%.1f mesi'
               % (1 / pi, COSTO_TENT / pi, (mi * (1 / pi)) / 21.0))
