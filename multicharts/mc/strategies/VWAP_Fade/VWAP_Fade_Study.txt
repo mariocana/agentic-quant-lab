@@ -51,7 +51,7 @@ Vars:
     intrabarpersist sPV( 0 ),        { somma prezzo tipico * volume }
     intrabarpersist sPV2( 0 ),       { somma prezzo tipico^2 * volume }
     intrabarpersist sVol( 0 ),
-    intrabarpersist vwap( 0 ),
+    intrabarpersist sVwap( 0 ),
     intrabarpersist sigma( 0 ),
     intrabarpersist inSess( false ),
     intrabarpersist armed( 0 ),      { 0 = nessun setup, 1 = short, -1 = long }
@@ -73,7 +73,9 @@ Vars:
     intrabarpersist sumTgtPts( 0 ),
     intrabarpersist sumStopPts( 0 ),
     intrabarpersist firstBar( true ),
-    tp( 0 ), v( 0 ), var1( 0 ), nullWR( 0 ), obsWR( 0 );
+    tp( 0 ), vBar( 0 ), vrc( 0 ), nullWR( 0 ), obsWR( 0 );
+    { nomi evitati perche' GIA' DEFINITI in PowerLanguage:
+      V = alias di Volume · Var1 = variabile built-in · VWAP = funzione }
 
 if firstBar then begin
     firstBar = false;
@@ -97,7 +99,7 @@ if Time >= SessStart and Time[1] < SessStart then begin
             Print( File(LogPath), Date[1]:8:0, "  ", nSetup:5:0, "  ", nSetup:11:0,
                    "  ", nWin:10:0, "  ", nLoss:10:0, "  ", nOpen:6:0 );
     end;
-    sPV = 0; sPV2 = 0; sVol = 0; vwap = 0; sigma = 0;
+    sPV = 0; sPV2 = 0; sVol = 0; sVwap = 0; sigma = 0;
     armed = 0; nSetup = 0; nWin = 0; nLoss = 0; nOpen = 0;
     tDays = tDays + 1;
     inSess = true;
@@ -108,16 +110,16 @@ if Time > SessEnd then inSess = false;
 if inSess then begin
 
     { ----- VWAP e sigma pesata per volume ----- }
-    v = Volume;
-    if v <= 0 then v = Ticks;
+    vBar = Volume;
+    if vBar <= 0 then vBar = Ticks;
     tp = ( High + Low + Close ) / 3;
-    sPV  = sPV  + tp * v;
-    sPV2 = sPV2 + tp * tp * v;
-    sVol = sVol + v;
+    sPV  = sPV  + tp * vBar;
+    sPV2 = sPV2 + tp * tp * vBar;
+    sVol = sVol + vBar;
     if sVol > 0 then begin
-        vwap = sPV / sVol;
-        var1 = sPV2 / sVol - vwap * vwap;
-        if var1 > 0 then sigma = SquareRoot( var1 ) else sigma = 0;
+        sVwap = sPV / sVol;
+        vrc = sPV2 / sVol - sVwap * sVwap;
+        if vrc > 0 then sigma = SquareRoot( vrc ) else sigma = 0;
     end;
 
     { ----- risoluzione del setup aperto: primo tocco ----- }
@@ -142,18 +144,18 @@ if inSess then begin
     if armed = 0 and sigma > 0
        and ( MinSigmaPts = 0 or sigma >= MinSigmaPts ) then begin
 
-        if Close > vwap + EntrySD * sigma then begin
+        if Close > sVwap + EntrySD * sigma then begin
             armed = 1; entryPx = Close; sigAtEntry = sigma;
-            tgtPx  = vwap;
-            stopPx = vwap + StopSD * sigma;
+            tgtPx  = sVwap;
+            stopPx = sVwap + StopSD * sigma;
             nSetup = nSetup + 1; tSetup = tSetup + 1;
             sumTgtPts  = sumTgtPts  + ( entryPx - tgtPx );
             sumStopPts = sumStopPts + ( stopPx - entryPx );
         end
-        else if Close < vwap - EntrySD * sigma then begin
+        else if Close < sVwap - EntrySD * sigma then begin
             armed = -1; entryPx = Close; sigAtEntry = sigma;
-            tgtPx  = vwap;
-            stopPx = vwap - StopSD * sigma;
+            tgtPx  = sVwap;
+            stopPx = sVwap - StopSD * sigma;
             nSetup = nSetup + 1; tSetup = tSetup + 1;
             sumTgtPts  = sumTgtPts  + ( tgtPx - entryPx );
             sumStopPts = sumStopPts + ( entryPx - stopPx );
@@ -196,8 +198,8 @@ if ShowLog = 1 and LastBarOnChart then begin
     end;
 end;
 
-Plot1( vwap, "VWAP" );
-Plot2( vwap + EntrySD * sigma, "Entry+" );
-Plot3( vwap - EntrySD * sigma, "Entry-" );
-Plot4( vwap + StopSD  * sigma, "Stop+" );
-Plot5( vwap - StopSD  * sigma, "Stop-" );
+Plot1( sVwap, "VWAP" );
+Plot2( sVwap + EntrySD * sigma, "Entry+" );
+Plot3( sVwap - EntrySD * sigma, "Entry-" );
+Plot4( sVwap + StopSD  * sigma, "Stop+" );
+Plot5( sVwap - StopSD  * sigma, "Stop-" );
