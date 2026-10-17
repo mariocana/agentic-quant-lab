@@ -129,3 +129,66 @@ log `B30 OR`); se ne salta più del 20%, è un dato da riportare, non un motivo 
 **Kill**: gate della pipeline. In più, kill specifico se con lo stop strutturale (variante
 B) l'avg trade netto scende sotto $10 per MBT, oppure se il lato long rende quanto lo short
 (l'ipotesi è falsa).
+
+---
+
+# Stage 2 — **Gate 2 fallito** (17/10/2026) → **cimitero, causa A — edge assente**
+
+IS 2020‑01‑07 → 2024‑12‑31, @BTC 5 min, $175/lato (costi da 50 MBT), Bar Magnifier 1 min.
+Report in `reports/B30_S2_*_IS.xlsx`. Il corpo sopra è la pre‑registrazione e non si
+riscrive.
+
+| run | n | WR | avg netto | per MBT | PF | t | DD chiusi | peggior trade |
+|---|---|---|---|---|---|---|---|---|
+| A short, senza stop | 643 | 41,5% | −$242 | −$4,84 | 0,85 | −1,34 | $211.225 | −$16.925 |
+| **C short, stop (caso base)** | 643 | 28,8% | **−$49** | −$0,99 | 0,955 | −0,38 | $90.850 | −$9.475 |
+| D short, stop + TP 1R | 643 | 40,1% | −$298 | −$5,97 | 0,66 | **−3,82** | $216.450 | −$9.475 |
+| **LONG** (controllo), stop | 605 | 26,4% | −$175 | −$3,50 | 0,85 | −1,28 | $123.850 | −$10.250 |
+
+**Gate 2 sul caso base C**: n ✅ (643). Avg netto ❌ (−$49 contro ≥ $500). PF ❌ (0,955 contro
+1,2). WR ❌ (28,8% contro 55%). R:R ❌ (2,36, fuori da 0,5–1). Max DD ❌ ($90.850 contro
+$50.000, cioè **$1.817 per MBT**). Peggior trade ✅ ($9.475 = $190 per MBT). Annuale ❌ (net
+negativo). Sei soglie su otto mancate.
+
+### Perché: prima dei costi c'è poco, e non è quello che dice l'ipotesi
+
+Lordo = netto + $350 di andata e ritorno. In punti base del prezzo, per togliere l'effetto
+della crescita di BTC (il continuo è back‑adjusted: il minimo del 2020 è a 30.605, quindi
+nei primi anni i bp sono sottostimati):
+
+| run | lordo per trade | t lordo | lordo in bp | per anno, bp (2020 → 2024) |
+|---|---|---|---|---|
+| C short | +$301 | 2,30 | +7,5 | −2,3 · +3,2 · +17,4 · +5,5 · +12,4 |
+| LONG | +$175 | 1,28 | +7,3 | +2,4 · +1,6 · +10,1 · +14,5 · +8,5 |
+| A short senza stop | +$108 | 0,60 | +1,3 | — |
+| D short + TP 1R | +$52 | 0,66 | +0,3 | — |
+
+Il costo mediano di un trade in micro vale **12,8 bp**: più del lordo di qualunque variante.
+
+1. **L'ipotesi è falsa.** Il lato long, misurato come controllo, rende **lo stesso** dello
+   short al lordo (+7,3 bp contro +7,5). La tesi "i ribassi del mattino sono informati, i
+   rialzi sono FOMO" chiedeva un'asimmetria che non c'è. È il kill pre‑registrato.
+2. **Quel poco viene dallo stop, non dal segnale.** Senza stop lo short lordo è +1,3 bp,
+   con lo stop all'estremo della finestra +7,5: lo stop taglia le perdite e lascia correre
+   pochi trade grandi (WR 29%, R:R 2,4). È lo stesso effetto per long e short: una
+   proprietà della forma dell'uscita, non della direzione del mattino.
+3. **Il profilo prop lo distrugge.** Il target 1R, l'unico modo per portare il WR verso il
+   55%, taglia proprio quei trade: D è a +0,3 bp lordi e t −3,82 netto.
+4. **Nemmeno a costi zero si arriva alla soglia.** L'avg minimo è $10 per MBT, il lordo di C
+   è $6 per MBT. Senza costi C sarebbe positiva ma sotto soglia, e con un WR del 29% fuori
+   dal profilo.
+
+**Causa A, non B.** Il rischio per micro passa (peggior trade $190 per MBT, worst day di spec
+$400): il muro di @NQ qui non c'è. Manca l'edge.
+
+**Sul risultato dichiarato dall'autore** (PF 1,91, Sharpe 3): non si riproduce né nell'IS
+2020–2024 (PF 0,85 senza stop) né nei quattro mesi dello Stage 1 (PF 0,49). Il periodo e il
+contratto non erano dichiarati, quindi non si può dire dove stia la differenza.
+
+**Cosa la riaprirebbe** (regola del cimitero):
+- su **@BTC pieno con capitale proprio** il costo per BTC è molto più basso che in micro, ma
+  il lordo resta +7,5 bp con t 2,0 su cinque anni, e l'effetto non è quello dell'ipotesi:
+  sarebbe una **nuova Stage 0** sull'effetto "stop all'estremo della prima mezz'ora", long e
+  short insieme, non una riapertura di questa;
+- nessuna variante pre‑registrata dello Stage 4 tocca il problema: `MinDropPts` e il buffer
+  dello stop non creano l'asimmetria che manca, e i target in R peggiorano.

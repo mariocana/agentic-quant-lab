@@ -555,6 +555,40 @@
    "note": "Dopo i primi tre.",
    "log": [],
    "next": "Dopo i primi tre."
+  },
+  {
+   "name": "BTC First30 Short",
+   "family": "momentum intraday / altro asset, solo short",
+   "instrument": "BTC 5m (MBT)",
+   "path": "mc/strategies/BTC_First30",
+   "stages": {
+    "0": "pass",
+    "1": "pass",
+    "2": "fail"
+   },
+   "note": "**Causa di morte: A — edge assente, e ipotesi falsificata dal controllo long.** Strategy of the Month settembre 2026 (@adri27): short se 08:30–09:00 CT chiude in negativo, flat alle 15:00. **Non tradabile su LucidFlex** (Lucid non offre crypto): spec scritta con conto da definire e soglie LucidFlex come metro, ÷50 perché un @BTC vale 50 MBT, costi da micro ($175/lato su @BTC). IS 2020–2024, caso base con stop all'estremo della finestra: 643 trade, avg **−$49** (−$0,99/MBT), PF 0,955, WR 28,8%, DD $1.817/MBT. Lordo +7,5 bp per trade (t 2,0) contro **12,8 bp di costo** in micro. Il **lato long rende lo stesso al lordo (+7,3 bp)**: l'asimmetria della tesi non c'è, e quel poco viene dalla forma dello stop, non dal segnale. Il TP 1R, unico modo di avvicinare il WR 55%, lo azzera (t −3,82).",
+   "metrics": {
+    "IS 2020-2024 C short stop": "643 trade · WR 28,8% · R:R 2,36 · avg −$49,30 ± 130,63 · PF 0,955 · t −0,38 · DD $90.850 · peggior trade −$9.475",
+    "IS 2020-2024 LONG controllo": "605 trade · WR 26,4% · avg −$175 · PF 0,852 · t −1,28",
+    "IS 2020-2024 A senza stop": "643 trade · WR 41,5% · avg −$242 · PF 0,852 · t −1,34",
+    "IS 2020-2024 D stop + TP 1R": "643 trade · WR 40,1% · avg −$298 · PF 0,657 · **t −3,82**",
+    "lordo in bp del prezzo": "C +7,5 (t 2,0) · LONG +7,3 (t 1,78) · A +1,3 · D +0,3 · costo micro 12,8 bp"
+   },
+   "log": [
+    {
+     "date": "2026-10-17",
+     "text": "Spec Stage 0, signal e istruzioni Stage 1. Gate 0 con avviso: Lucid non ammette crypto, conto da definire."
+    },
+    {
+     "date": "2026-10-17",
+     "text": "**Stage 1, primo giro invalido**: il bracket `next bar` dopo l'ingresso lasciava scoperta la barra 09:00–09:05 (il 14/07 il TP 1R preso 85 pt oltre il suo prezzo). Corretto con `SetStopLoss`/`SetProfitTarget` per posizione × `Num_Contracts`. **Lo stesso schema c'è in GoldAsianRange.** Secondo giro: **Gate 1 passato**, controlli incrociati con il log su 84 giorni."
+    },
+    {
+     "date": "2026-10-17",
+     "text": "**Gate 2 fallito, cimitero, causa A.** Sei soglie su otto mancate sul caso base. Il controllo long, pre-registrato come test dell'ipotesi, rende quanto lo short al lordo: kill pre-registrato. Il PF 1,91 dichiarato dall'autore non si riproduce né nell'IS (0,85) né nello Stage 1 (0,49)."
+    }
+   ],
+   "next": "Chiusa. La riaprirebbe solo una nuova Stage 0 sull'effetto «stop all'estremo della prima mezz'ora», long e short insieme, su @BTC pieno con capitale proprio."
   }
  ],
  "blockers": [
@@ -563,6 +597,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-17",
+   "text": "**BTC First30 Short in cimitero, causa A.** Strategy of the Month settembre 2026, già non tradabile su Lucid (niente crypto). IS 2020–2024: avg −$49 sul caso base, lordo +7,5 bp contro 12,8 bp di costo in micro, e il **lato long rende lo stesso**: l'asimmetria della tesi non esiste. Due lezioni che valgono fuori da BTC: (1) **il controllo sul lato opposto costa un run e ha ucciso l'ipotesi da solo**; (2) **il bracket `next bar` emesso dopo l'ingresso lascia scoperta la barra d'ingresso** — c'è anche in GoldAsianRange, da verificare."
+  },
   {
    "date": "2026-10-17",
    "text": "**Decisione: si parte con almeno due strategie, non con DriftPullback da sola.** Coerente con Live 004. **Misurata la soglia per la seconda gamba, e sono due soglie diverse**: per reggere il conto *da sola* a 1 setup/giorno servirebbe un eccesso di **+7,6 pp** (la soglia non dipende da R, che si semplifica: dipende solo dalla frequenza), ma una seconda gamba deve **aggiungere**, non bastare — il basket guadagna smussando il percorso, 45,8% contro 38% coi numeri del corso. **Soglia realistica: eccesso positivo a >= 3 errori standard da zero, piu bassa correlazione.** Con la controprova gia agli atti che una gamba a edge zero (VaultBreak) peggiora il basket. **E trovata la finestra**: la distribuzione oraria di DriftPullback mostra il primo trade nell'ora delle 09:00 (SessStart 09:30), mentre RTH apre alle **08:30** — **l'ora 08:30-09:30 CT e completamente libera**, zero trade. Una strategia che opera li ha correlazione quasi nulla **per costruzione**. **Raccomandata: overnight-intraday reversal** (Liu et al. 2025), che cade esattamente li e ha il meccanismo piu strutturale dei tre."
