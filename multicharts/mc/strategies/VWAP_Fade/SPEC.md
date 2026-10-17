@@ -89,3 +89,27 @@ L'eccesso sara **positivo ma piccolo**, fra +2 e +5 pp, cioe sotto soglia. Motiv
 banda in cui e caduto tutto quello che abbiamo misurato finora, e un fade senza filtro di
 regime paga i giorni di trend. **Se esce sopra +6 senza filtri, sono io ad avere sbagliato
 previsione, e va verificato due volte prima di festeggiare.**
+
+## Strumento deciso: **@YM**. Col dato, non con l'aspettativa.
+
+Misurati i range RTH 2020-2024 (`mc/docs/lucid_strumenti.md`): **MCL e MYM hanno lo stesso
+identico range per micro, $170 contro $169**, quindi lo stesso R/ATR — **0,47** a R = $80.
+Come unita di rischio sono intercambiabili, e la scelta si sposta su altro:
+
+- **costo**: MYM $1,50 per round-turn contro $2,00 di MCL (1,9% di R contro 2,5%);
+- **granularita**: tick da $0,50 contro $1,00, cioe 160 tick di stop contro 80;
+- **stabilita di regime**: anno peggiore / anno migliore **1,68** contro **2,42** (il crude
+  nel 2022 raddoppia il range per la crisi energetica).
+
+E soprattutto una ragione che riguarda **questa** strategia e non il rischio:
+
+> L'ipotesi del VWAP Fade e che il VWAP sia il **benchmark di esecuzione istituzionale**.
+> Quell'argomento e nato sull'azionario ed e li che e piu forte. Sul crude il flusso che
+> lavora contro il VWAP e piu debole: la ragione strutturale si annacqua.
+
+**Quindi: VWAP Fade su @YM.** @NQ resta come controllo nello stesso run — costa un grafico e
+dice se il problema di MNQ (R/ATR 0,19) si vede anche qui.
+
+**MCL non e scartato, e messo da parte per la cosa giusta**: e l'unico non-indice a $0,50 per
+lato e l'unica vera diversificazione di classe disponibile. Ma merita una strategia pensata
+sui driver del crude, non un VWAP fade trapiantato.

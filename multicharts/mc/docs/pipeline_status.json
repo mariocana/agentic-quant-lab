@@ -11,7 +11,7 @@
     "note": "sette strategie, sei nel cimitero, una passata OOS e Stage 7",
     "items": [
      "**Girare `VWAP_Fade_Study` su @YM e @NQ** (5 min, CT, 2020-2024, ShowLog 1). Due soglie pre-registrate: eccesso ≥ +6 pp e ≥ 2 setup/giorno. Se non le passa, non si scrive la strategia.",
-     "**Misurare il range di @CL e @YM** con `ATR_Window_Study` (2020-2024): MCL costa $0,50/lato come i micro indici ed e' l'unico non-indice a quel prezzo, ma il suo R/ATR ~0,40 e' una **stima**.",
+     "~~Misurare il range di @CL e @YM~~ **fatto**: MCL $170 e MYM $169 per micro, R/ATR 0,47 entrambi. VWAP Fade va su **@YM**; MCL resta da parte per una strategia pensata sui driver del crude.",
      "**Il nodo**: il corso dice di non deployare una sola strategia nemmeno in eval (Live 004), e noi ne abbiamo una. Tetto a 3, ma le altre due sono morte fuori campione.",
      "**Decisione da prendere**: partire comunque con DriftPullback da sola col piano veloce (2 micro, finestra corta, 42% per tentativo, $400 per 89% entro quattro), oppure cercare una seconda candidata prima.",
      "Se si cerca: le candidate dell'agente (IB-C Breakout, IB-C Failure) sono su **MYM**, e l'unita di rischio li e migliore di MNQ (R/ATR 0,35-0,65 contro 0,14-0,26).",
@@ -81,7 +81,7 @@
   {
    "name": "VWAP Fade",
    "family": "**mean reverting** (la prima della pipeline)",
-   "instrument": "@YM 5m (candidato) · @NQ 5m (controllo)",
+   "instrument": "@YM 5m (deciso col dato) · @NQ 5m (controllo)",
    "path": "mc/strategies/VWAP_Fade",
    "stages": {
     "0": "run"
@@ -91,9 +91,14 @@
     "geometria pre-registrata": "ingresso a VWAP ± 1,0σ · target il VWAP · stop a ± 2,5σ con σ congelata · R:R 0,67",
     "soglia 1 — eccesso": "≥ +6,0 pp sul caso (60% in random walk) = WR ≥ 66% al primo tocco",
     "soglia 2 — frequenza": "≥ 2 setup/giorno (DriftPullback ne fa 3,2 e vale $18,34/giorno per micro)",
-    "aspettativa dichiarata": "eccesso fra +2 e +5 pp, cioe SOTTO soglia"
+    "aspettativa dichiarata": "eccesso fra +2 e +5 pp, cioe SOTTO soglia",
+    "strumento": "@YM. MCL e MYM misurano lo **stesso** range per micro ($170 vs $169) e lo stesso R/ATR (0,47 a R=$80), quindi la scelta si fa su costo ($1,50 vs $2,00 RT), granularita (tick $0,50 vs $1,00) e stabilita di regime (1,68 vs 2,42). E soprattutto: l ipotesi del VWAP come benchmark di esecuzione e nata sull azionario, sul crude si annacqua."
    },
    "log": [
+    {
+     "date": "2026-10-17",
+     "text": "**Strumento deciso col dato: @YM.** Misurati i range RTH 2020-2024 su CL e YM (1.250 e 1.248 giorni). **MCL e MYM danno lo stesso identico range per micro, $170 contro $169**, quindi lo stesso R/ATR: 0,35 a R=$60, **0,47 a $80**, 0,65 a $110. Come unita di rischio sono intercambiabili, e la scelta si sposta su costo (MYM $1,50 RT contro $2,00), granularita (tick $0,50 contro $1,00) e **stabilita di regime, 1,68 contro 2,42** — il crude nel 2022 raddoppia il range per la crisi energetica. E sulla ragione che riguarda questa strategia: **l'ipotesi del VWAP come benchmark di esecuzione e nata sull'azionario**, sul crude il flusso che lo insegue e piu debole. **La mia stima precedente su MCL era sbagliata del 18%** (~$200 e 0,40 contro $170 e 0,47) — nella direzione che lo favoriva, ma era una stima. **Controprova riuscita**: YM misura 338,50 punti contro i 339,0 della campagna precedente sui cinque indici."
+    },
     {
      "date": "2026-10-17",
      "text": "**Aperta.** Riempie il buco trovato oggi: sei strategie su sei erano momentum o breakout e il mean reversion non era mai stato testato, mentre Live 001, 421 lo da come meta del minimo. Geometria scelta per cadere dentro il profilo prop: ingresso a 1σ, target il VWAP, stop a 2,5σ, che da **R:R 0,67** e un caso base del **60%**. Scritto `VWAP_Fade_Study.txt`, un **indicatore** che conta i setup e li risolve al primo tocco: da frequenza, WR osservato ed eccesso senza girare nessun backtest. **Nessun filtro di regime, deliberatamente** — il fade muore nei giorni di trend e la tentazione sarebbe aggiungerlo subito, ma la lezione 2 dice di partire semplice e il filtro e la prima variante dello Stage 4, da far passare dallo split-sample. **Aspettativa dichiarata prima del run: eccesso fra +2 e +5 pp, sotto soglia.**"
@@ -499,6 +504,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-17",
+   "text": "**Misurati CL e YM: hanno lo stesso identico range per micro, $170 contro $169.** Quindi lo stesso R/ATR a ogni budget (0,47 a R=$80) e come unita di rischio sono intercambiabili. La scelta per VWAP Fade cade su **@YM** per costo, granularita e stabilita di regime, e perche l'ipotesi del VWAP come benchmark di esecuzione e nata sull'azionario. **MCL resta come unica vera diversificazione di classe disponibile a $0,50/lato**, ma merita una strategia pensata sul crude, non un fade trapiantato."
+  },
   {
    "date": "2026-10-17",
    "text": "**Letto il listino vero di LucidFlex: 34 prodotti approvati, e noi ne abbiamo guardati 9.** Prima cosa, una verifica: la nostra assunzione di **$1,50/round-turn sul micro** e corretta — sono $0,50 x 2 lati di commissione Lucid piu $0,50 di slippage (un tick MNQ). Era una stima, ora e un dato, e il simulatore non va ritoccato. **La cosa nuova e MCL**: il micro crude costa **$0,50 per lato**, quanto i micro indici, ed e l'unico non-indice a quel prezzo. Il crude ha driver completamente diversi dal NASDAQ, mentre NQ/ES/YM/RTY sono fra loro 0,8-0,95 correlati intraday: per il basket e la diversificazione piu vera disponibile a questo costo. Lesson 3, 18:22 chiede «a mix of instruments and asset classes» e noi non abbiamo fatto nemmeno la prima meta. **Il suo R/ATR ~0,40 e pero una stima**, da misurare. Confermato anche il quadro sugli indici: a R = $80/micro, **MNQ sta a 0,19 di R/ATR** contro 0,47 di MYM e 0,49 di M2K, **allo stesso costo di $1,50**. Valute ($2,40/lato) e agricoli ($2,80) restano fuori dal budget: non hanno micro."

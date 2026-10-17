@@ -40,7 +40,7 @@ con R = **$80 per micro**:
 | **MYM** | $170 | **0,47** | $1,50 | **1,9%** |
 | **M2K** | $162 | **0,49** | $1,50 | **1,9%** |
 | MGC | $178 | 0,45 | $2,60 | 3,2% |
-| **MCL** | ~$200 **[stima]** | ~0,40 **[stima]** | $2,00 | 2,5% |
+| **MCL** | **$170** | **0,47** | $2,00 | 2,5% |
 
 **MNQ e il peggiore su R/ATR e di parecchio**: uno stop da $80 vale 0,19 del range
 giornaliero, cioe sta dentro il rumore. MYM e M2K sono 2,5 volte meglio **allo stesso costo**.
@@ -58,8 +58,37 @@ Lesson 3, 18:22: *"A mix of strategies families, **a mix of instruments and asse
 avoid stacking the same logic on the same market."* Finora abbiamo fatto solo la prima meta,
 e nemmeno quella (sei strategie su sei erano momentum).
 
-**Ma il range di MCL non l'abbiamo misurato**: lo 0,40 di R/ATR e una stima da un ATR di ~$2
-sul crude. Va misurato con `ATR_Window_Study` prima di costruirci sopra qualunque cosa.
+### Misurato il 17/10/2026, e il risultato e una coincidenza utile
+
+`measures/atr_window_rth_CL_2020-2024.txt` e `..._YM_...` (1.250 e 1.248 giorni).
+
+> **MCL e MYM hanno lo stesso identico range giornaliero in dollari: $170 contro $169.**
+> E quindi lo stesso R/ATR a ogni budget: **0,35** a $60, **0,47** a $80, **0,65** a $110.
+
+Come unita di rischio sono **intercambiabili**. La scelta fra i due non si fa quindi sul
+rischio, si fa su altre tre cose:
+
+| | **MCL** | **MYM** |
+|---|---|---|
+| range giornaliero per micro | $170 | $169 |
+| R/ATR a R=$80 | 0,47 | 0,47 |
+| tick in dollari | $1,00 | **$0,50** |
+| costo round-turn | $2,00 (2,5% di R) | **$1,50 (1,9%)** |
+| stabilita di regime (anno max / anno min) | 2,42 | **1,68** |
+| classe di attivo | **crude: driver suoi** | indice azionario, 0,8-0,95 con NQ |
+
+**MYM vince su costo, granularita e stabilita. MCL vince sull'unica cosa che MYM non puo
+dare: non e un indice azionario.**
+
+Il 2022 spiega la differenza di stabilita: il crude passa da ~$150 a **$298** di range
+mediano (crisi energetica), mentre YM arriva a $239. Una strategia tarata sul crude del 2021
+si trova in un mercato diverso nel 2022.
+
+**La mia stima precedente era sbagliata del 18%**: avevo scritto ~$200 di range e R/ATR 0,40,
+misurati $170 e 0,47. Nella direzione che favorisce MCL, ma era comunque una stima.
+
+**Controprova riuscita**: YM misura 338,50 punti di range mediano contro i **339,0** della
+misura precedente sui cinque indici. Le due campagne di misura combaciano.
 
 ## Cosa resta escluso, e perche
 
