@@ -1,0 +1,80 @@
+{ =====================================================================
+  ESCounter  -  Unger, Trading System Supremacy, modulo 9 (ES)  -  PowerLanguage
+  ---------------------------------------------------------------------
+  FONTE: codice letto nel video 9x04 (00:20, "Compiled successfully",
+  23/03/2016) e 9x05 (02:30, lato short attivato e poi scartato).
+  Parametri finali sul grafico del video: ESCounter(700, 1500, 1, 1730, 1530).
+  Spec: SPEC.md.
+
+  REGOLE (originale, variante A)
+    1) Alle 17:30 (prima barra a 30 min della sessione Globex) MyLow =
+       minimo della sessione appena chiusa (low di data2, barre giornaliere).
+    2) Se il low di data2 e' il minimo delle ultime mybars sessioni
+       (con mybars = 1 e' sempre vero), dentro la finestra
+       starttime -> endtime: quando il close a 30 min torna SOPRA MyLow
+       (crosses above) -> buy next bar at market.
+    3) Uscite: stop loss Myloss $ per contratto, profit target myProfit $
+       per contratto. NESSUNA uscita a tempo: la posizione puo' restare
+       aperta piu' giorni.
+    Solo long: lo short speculare perde 2008-2016 (video 9x05).
+
+  AGGIUNTE PER LA PIPELINE (tutte spente nella variante A)
+    FlatEOD = 1       flat a fine sessione (SetExitOnClose)        -> variante B
+    MaxEntries > 0    tetto agli ingressi per sessione (da 17:30)   -> variante B
+    ShowLog = 1       log per lo Stage 1
+
+  CHART: data1 = @ES 30 min, data2 = @ES 1440 min (stesso simbolo, stessa
+         sessione), session template Globex 17:00-16:00 CT senza pause,
+         timezone Exchange (CT), Bar Magnifier 1 min ON.
+  COSTI: 15$ per Contract (= $1,75 Lucid + 1 tick $12,50), slippage 0.
+  ===================================================================== }
+
+Inputs:
+    Myloss(700),        { stop loss $ per contratto (Unger: 700) }
+    myProfit(1500),     { profit target $ per contratto (Unger: 1500; 1250 alternativa) }
+    mybars(1),          { sessioni per il minimo; 1 = filtro sempre vero (Unger: 1) }
+    starttime(1730),    { inizio finestra e momento in cui si fissa MyLow }
+    endtime(1530),      { fine finestra ingressi }
+    FlatEOD(0),         { 1 = flat a fine sessione (variante B) }
+    MaxEntries(0),      { >0 = massimo ingressi per sessione (variante B: 2) }
+    ShowLog(0);
+
+Variables:
+    timewindow(false), mylow(0), entriesSess(0), nEntries(0), sessBase(0);
+
+{ ===== FINESTRA (identica all'originale) ===== }
+if starttime > endtime then timewindow = time > starttime or time < endtime;
+if starttime < endtime then timewindow = time > starttime and time < endtime;
+
+{ ===== STOP E TARGET (ordini speciali: attivi dalla barra d'ingresso) ===== }
+setstopcontract;
+if Myloss > 0 then setstoploss(Myloss);
+if myProfit > 0 then setprofittarget(myProfit);
+if FlatEOD = 1 then setexitonclose;
+
+{ ingressi totali = trade chiusi + quello aperto. Conta anche un trade
+  entrato e uscito dentro la stessa barra a 30 min, che marketposition a
+  fine barra non vedrebbe. }
+nEntries = TotalTrades + IFF(marketposition <> 0, 1, 0);
+
+{ ===== NUOVA SESSIONE: fissa MyLow e azzera il conteggio ===== }
+if time = starttime then begin
+    mylow = l of data2;
+    sessBase = nEntries;
+    if ShowLog = 1 then
+        Print("ESC LOW ", Date:8:0, " ", Time:5:0, " mylow=", mylow:8:2,
+              " minimo_", mybars:1:0, "=", lowest(l of data2, mybars):8:2);
+end;
+
+entriesSess = nEntries - sessBase;
+
+{ ===== INGRESSO (logica originale + tetto opzionale) ===== }
+if low of data2 = lowest(l of data2, mybars) then begin
+    if timewindow and (c crosses above mylow)
+       and (MaxEntries = 0 or entriesSess < MaxEntries) then begin
+        buy ("ESC-L") next bar at market;
+        if ShowLog = 1 and marketposition = 0 then
+            Print("ESC SIG ", Date:8:0, " ", Time:5:0, " close=", c:8:2,
+                  " mylow=", mylow:8:2, " ingressi_sessione=", entriesSess:2:0);
+    end;
+end;
