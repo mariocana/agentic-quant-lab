@@ -163,3 +163,53 @@ risultato arriva **esattamente a 3,00 errori standard**: la soglia pre-registrat
 con dati veri invece che abbassando l'asticella.
 
 Se invece sul 2016-2019 l'eccesso sparisce, la risposta e altrettanto chiara e costa un run.
+
+## 2016-2019: **replica indipendente. La soglia e raggiunta.**
+
+Log: `mc/docs/measures/on_reversal_YM_2016-2019.txt`. 1.031 sessioni mai usate prima.
+
+| prima ora | n risolti | aperti | WR | **eccesso** | errori standard |
+|---|---|---|---|---|---|
+| **2016-2019** (nuovo) | 508 | 216 | **64,76%** | **+4,76 pp** | 2,19 |
+| **2020-2024** (gia noto) | 652 | 222 | **64,11%** | **+4,11 pp** | 2,14 |
+| **combinato** | **1.160** | | | **+4,40 pp** | **3,06** |
+
+IC 95% sul combinato: **+1,58 … +7,22 pp**. Soglia pre-registrata: **3,00**.
+
+**E non e solo il campione piu grande a portare il risultato oltre la linea.** I due periodi
+sono **indipendenti** e danno la **stessa grandezza**: +4,76 e +4,11. Una replica vale piu di
+un pooling, perche esclude che il primo numero fosse una finestra fortunata.
+
+E la previsione scritta **prima** del run — «se l'eccesso regge a ~+4, si arriva a 3,00» — e
+uscita a **3,06**.
+
+### Il decadimento e confermato, anche lui su due campioni
+
+| fine giornata | eccesso |
+|---|---|
+| 2016-2019 | **−0,27 pp** |
+| 2020-2024 | +2,00 pp |
+
+Su entrambi molto sotto la prima ora. **L'edge e nella prima ora e si consuma.** Due campioni
+indipendenti lo dicono, e coincide con la finestra in cui DriftPullback non opera.
+
+### Una cosa nuova da sapere per il sizing
+
+**R per micro cambia col regime**: **$37,07** sul 2016-2019 contro **$74,60** sul 2020-2024,
+perche R e proporzionale al gap e il gap scala con la volatilita (98,85 punti contro 198,94).
+
+E un **vantaggio**: il rischio si adatta da solo al regime invece di restare fisso in punti —
+il contrario del difetto che ha ucciso Gold. Ma significa che **il numero di contratti non puo
+essere deciso una volta per tutte**: va calcolato sul gap corrente, non sulla media storica.
+
+### La riserva che resta, e che solo il backtest puo sciogliere
+
+**Il 29% dei setup non si risolve entro l'ora** (216 su 737 e 222 su 889). Nel misuratore
+restano fuori dal win rate; in una strategia vera **escono flat alle 09:30 con un P&L che non
+abbiamo misurato**. Puo essere vicino a zero, puo essere negativo. **L'avg trade del backtest
+potra quindi essere sensibilmente diverso da quello che l'eccesso lascia sperare**, e non e
+un difetto del metodo: e la parte che l'eccesso sul caso, per costruzione, non vede.
+
+### Stato
+
+**Stage 0 e la misura sono chiusi, con la soglia raggiunta.** Si scrive la strategia.
