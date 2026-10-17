@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-15",
+ "updated": "2026-10-17",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -237,7 +237,7 @@
   },
   {
    "name": "VWAP Pullback",
-   "family": "mean reverting",
+   "family": "momentum · continuazione (NON mean reverting)",
    "instrument": "NQ 1m",
    "path": "mc/strategies/VWAP_Pullback",
    "stages": {
@@ -245,8 +245,12 @@
     "1": "pass",
     "2": "fail"
    },
-   "note": "**Causa di morte: A — edge assente.** Su 1.369 trade dell'IS più 79 della misura, in **tre assetti** che coprono l'intera geometria di stop e target, **nessun t arriva a 1**. La regola pre-registrata su `StopMode 2` è fallita sulla condizione decisiva: stop mediano **20,75 punti** contro una finestra di 30–56. I tre assetti sbagliano in direzioni opposte — `StopMode 1` a 109 punti (troppo largo), filtrato a 121 con R:R 0,39 (sotto banda), `StopMode 2` a 20,75 con WR 26,6% e R:R 2,09 (**profilo trend**, escluso, e in perdita). Colpo di grazia aritmetico: solo il 19% dei trade `StopMode 2` ha lo stop nella finestra → ~145 trade su 4 anni contro una soglia di 200. **Finestra e frequenza non coesistono.**",
+   "note": "**Causa di morte: A — edge assente.** Su 1.369 trade dell'IS più 79 della misura, in **tre assetti** che coprono l'intera geometria di stop e target, **nessun t arriva a 1**. La regola pre-registrata su `StopMode 2` è fallita sulla condizione decisiva: stop mediano **20,75 punti** contro una finestra di 30–56. I tre assetti sbagliano in direzioni opposte — `StopMode 1` a 109 punti (troppo largo), filtrato a 121 con R:R 0,39 (sotto banda), `StopMode 2` a 20,75 con WR 26,6% e R:R 2,09 (**profilo trend**, escluso, e in perdita). Colpo di grazia aritmetico: solo il 19% dei trade `StopMode 2` ha lo stop nella finestra → ~145 trade su 4 anni contro una soglia di 200. **Finestra e frequenza non coesistono.** **17/10/2026 — corretta la famiglia, era etichettata male.** Era a board come «mean reverting»: **e' momentum**. Il codice arma il bias con il **breakout** dell'opening range 08:30-09:00 e poi entra sul **reclaim del VWAP nella direzione del bias** — continuazione di trend. Il VWAP e' un livello di retest, non una media da fadare. Non esiste nessun ramo che venda la deviazione.",
    "log": [
+    {
+     "date": "2026-10-17",
+     "text": "**Correzione di famiglia, e ha una conseguenza grossa.** VWAP Pullback era classificata «mean reverting» sul board: **non lo e'**. Dal codice: il bias lo arma il breakout dell'opening range (riga 9), l'ingresso e' il reclaim del VWAP **nella direzione del bias** (riga 228 `Buy` sotto `longBias`), e nessun `RetestMode` fada la deviazione. E' momentum/continuazione. **Conseguenza: tutte e sei le strategie provate erano momentum o breakout.** L'etichetta sbagliata ci ha fatto credere di avere coperto entrambe le famiglie, mentre il mean reversion non l'abbiamo mai testato. Live 001, 421: «the minimum that you need to have is a trend following strategy **and a mean reverting strategy**»."
+    },
     {
      "date": "2026-09-26",
      "text": "Live 005: hanno testato 100+ mean reversion intraday con uscita EOD e **nessuna** era adatta alla prop. Questa resta in lista (è più continuation-su-pullback che mean reversion pura) ma con un sospetto a carico: se fallisce i gate, non è sfortuna."
@@ -470,6 +474,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-17",
+   "text": "**Tutte e sei le strategie morte erano momentum o breakout: il mean reversion non l'abbiamo mai provato.** Emerso correggendo l'etichetta di VWAP Pullback, che il board dava come «mean reverting» mentre il codice arma il bias su un breakout dell'opening range ed entra sul reclaim del VWAP nella direzione del bias. ORB, VaultBreak, Gold Asian Range, NQ First5, DriftPullback e VWAP Pullback stanno tutte nella stessa famiglia. Non e' solo che manca una seconda strategia: **manca meta' del metodo**, e il corso la indica come minimo (Live 001, 421)."
+  },
   {
    "date": "2026-10-15",
    "text": "**ORB chiusa sull'OOS: t = 0,80. Resta viva solo DriftPullback.** Giornata netta: lo split prop/live ha riaperto tre strategie e l'out-of-sample ne ha chiuse due. **E il punto e che ha funzionato**: DriftPullback e passata (t 1,86, Stage 7 al 42% per tentativo), VaultBreak e ORB no, e in entrambi i casi con soglie e potenza scritte prima del run. **Su ORB l'edge non e nemmeno crollato** (79% di quello dell'IS, WR salito): si e ridotta la **frequenza**, perche `MaxRisk_USD` salta i giorni a range largo e il 2026 ne ha molti di piu — e con 129 trade la prova non c'e, oltre al fatto che $878/anno per micro vorrebbero 3,4 anni per fare $3.000. **Ora il nodo e che il corso dice di non deployare una sola strategia e noi ne abbiamo una.**"
