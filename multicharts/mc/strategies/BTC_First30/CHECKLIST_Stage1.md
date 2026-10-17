@@ -1,4 +1,4 @@
-# CHECKLIST Stage 1 — BTC First30 Short
+# CHECKLIST Stage 1 — BTC First30 Short — **Gate 1 passato** (17/10/2026, secondo giro)
 
 Chart: `@BTC` · 5 min · Bar Magnifier 1 min · commissione **$175 per contratto** (50 MBT ×
 $3,50, slippage ripiegata dentro, campo slippage 0) · Point Value $5 · sessione Globex 24h
@@ -8,8 +8,8 @@ $3,50, slippage ripiegata dentro, campo slippage 0) · Point Value $5 · session
 |---|---|---|---|---|---|
 | A | 0 | 0 | 1 | `reports/B30_S1_A_nostop_x1.xlsx` | valido |
 | B | 0 | 0 | 10 | `reports/B30_S1_B_nostop_x10.xlsx` | valido |
-| C | 1 | 0 | 1 | — | **da rifare** (difetto del bracket) |
-| D | 1 | 1 | 1 | — | **da rifare** (difetto del bracket) |
+| C | 1 | 0 | 1 | `reports/B30_S1_C_orstop_x1.xlsx` + `B30_S1_C_log.txt` | valido (secondo giro) |
+| D | 1 | 1 | 1 | `reports/B30_S1_D_orstop_tp1_x1.xlsx` | valido (secondo giro) |
 
 ---
 
@@ -71,9 +71,43 @@ non abbastanza da dire qualcosa. C e D sono falsati dal difetto, e in D il difet
 numeri **migliori** del vero. Questo periodo cade nell'OOS (2025 →): come per GAR, i run
 dello Stage 1 servono solo alla meccanica e non entrano in nessuna decisione.
 
-## Per il secondo giro
-1. Ricompila `BTC_First30.txt` (versione con `SetStopLoss` / `SetProfitTarget`).
-2. Rifai **C** e **D** sullo stesso periodo, con `ShowLog 1` almeno su C, e salva il log.
-3. Controlli da chiudere: 1, 2, 6, 7 (distribuzione completa di `rischio_pt` su tutti i
-   giorni, non solo quelli a stop) e 9. In D nessun `Profit Target` deve essere riempito
-   oltre il suo prezzo.
+---
+
+## Secondo giro (17/10/2026) — codice con `SetStopLoss` / `SetProfitTarget`, **Gate 1 passato**
+
+C e D rifatti sullo stesso periodo; log del run C in `reports/B30_S1_C_log.txt`. Ogni
+controllo incrocia la List of Trades con il log, giorno per giorno.
+
+| # | controllo | esito |
+|---|---|---|
+| 1 | finestra giusta | ✅ tutti gli 84 giorni feriali: `t= 900`, `barre= 6`, `completa=TRUE` |
+| 2 | entrata solo nei giorni negativi | ✅ `short=TRUE` se e solo se `delta` < 0, su tutti gli 84 giorni (37 short, 44%) |
+| 3 | orari | ✅ entrate alle 09:05; uscite a tempo alle 15:05 (una alle 15:10, Labor Day) |
+| 4 | solo lunedì–venerdì | ✅ nessun trade nel weekend. Il log ha 16 righe di domenica (`t=` 16:05–16:25, `barre= 0`, `completa=FALSE`): è la riapertura della domenica sera, scartata come previsto. Rumore nel log, non nei trade |
+| 5 | un trade al giorno, zero overnight | ✅ |
+| 6 | stop | ✅ `SL` = entry + `rischio_pt` su tutti i 37 ingressi. Le 23 uscite `Stop Loss` di C sono **esattamente** al prezzo di stop, nessuna oltre. L'ingresso alle 09:00 differisce dal close delle 09:00 di 0 pt in mediana (da −115 a +100), quindi lo stop sta di fatto sul massimo della finestra |
+| 7 | guardrail e distribuzione del rischio | ✅ `MaxRiskPts 4000` mai superato. `rischio_pt` sui 37 ingressi: min 150, **mediana 430**, 90° perc. 705, **max 3.130** (25/06, finestra −3.020 pt). Per MBT: mediana **$43**, 90° perc. $71, max **$313**, sotto i $400 del worst day di spec |
+| 8 | scala ×10 | ✅ (primo giro) |
+| 9 | target 1R (D) | ✅ i 17 `Profit Target` sono **esattamente** a entry − `rischio_pt`. Tre sono presi dentro la barra d'ingresso (14/07, 25/09, 29/09): è proprio il caso che il primo giro sbagliava. Il 14/07 ora esce a 64.905 (1R = 150 pt), non a 64.825 |
+| 10 | festività USA | 03/07 (Independence Day osservato): finestra regolare, `delta` +65, nessun trade. 07/09 (Labor Day): un trade, uscita alle 15:10 perché manca la barra delle 15:00. Annotati: si decide allo Stage 2 se escluderli |
+
+### Numeri del secondo giro (informativi)
+
+| run | n | WR | avg trade | per MBT | PF | net |
+|---|---|---|---|---|---|---|
+| A (senza stop) | 37 | 37,8% | −$1.183 | −$23,7 | 0,49 | −$43.775 |
+| C (stop) | 37 | 27,0% | −$621 | −$12,4 | 0,62 | −$22.975 |
+| D (stop + TP 1R) | 37 | 45,9% | −$486 | −$9,7 | 0,65 | −$17.975 |
+
+Tutte e tre perdono, con t intorno a −1,2/−1,5: non significativo su 37 trade, e il periodo
+è OOS, quindi non entra in nessuna decisione. Una nota però va scritta adesso: l'autore ha
+pubblicato a settembre 2026 un PF di 1,91, e il suo periodo con ogni probabilità comprende
+questi mesi. Qui, sugli stessi mesi, PF 0,49. O il suo periodo e il suo contratto sono
+diversi, o il risultato dichiarato non si riproduce. Lo dirà l'IS.
+
+## Verso lo Stage 2
+- Prima: controllare @BTC a gennaio 2020 (prezzi positivi e plausibili, README).
+- Run IS 2020‑01‑01 → 2024‑12‑31 con `ShowLog 1` (serve il rischio di ogni trade per la
+  tabella annuale in R): **C** (stop), **D** (stop + TP 1R), **A** (senza stop, benchmark)
+  e il **controllo long** (`TradeLongs 1`, `TradeShorts 0`, `StopMode 1`).
+- Gate 2 con le soglie ÷50 della spec, non quelle di NQ di `check_report.py`.
