@@ -113,3 +113,51 @@ dice se il problema di MNQ (R/ATR 0,19) si vede anche qui.
 **MCL non e scartato, e messo da parte per la cosa giusta**: e l'unico non-indice a $0,50 per
 lato e l'unica vera diversificazione di classe disponibile. Ma merita una strategia pensata
 sui driver del crude, non un VWAP fade trapiantato.
+
+## Run del 17/10 su @YM: NON VALIDO, bug nell'indicatore
+
+Log archiviato come `mc/docs/measures/vwap_fade_YM_2020-2024_RUN-ROTTO.txt`.
+
+**Il risultato sembrava una stroncatura:** 20.217 setup su 1.292 giorni, WR 25,34% contro un
+caso del 60%, **eccesso −34,66 pp**. Non e un verdetto: e uno strumento rotto, e lo si vede
+senza interpretare niente.
+
+**Il tell sta nelle ultime due righe del log:**
+
+| | misurato | di progetto |
+|---|---|---|
+| distanza media al target | **101,39 punti** | 1,0 σ |
+| distanza media allo stop | **21,94 punti** | 1,5 σ |
+| **R:R realizzato** | **4,62** | **0,67** |
+
+Il target era **4,6 volte piu lontano dello stop**, cioe l'esatto contrario di come e
+costruita la geometria. Da li si ricava che **gli ingressi avvenivano a 2,06 σ sopra il VWAP
+invece che a 1,00**.
+
+### La causa
+
+Mancava la **condizione di riarmo**. Appena un setup si risolveva, `armed` tornava a 0 e la
+barra successiva poteva aprirne subito un altro — **senza che il prezzo fosse mai rientrato
+dentro la banda**. Dentro un trend questo riapre il setup a ogni barra, ogni volta piu lontano
+dal VWAP, con lo stop (fisso a 2,5 σ dal VWAP) sempre piu vicino e il target sempre piu
+lontano.
+
+Lo conferma la frequenza: **15,65 setup al giorno**, cioe **uno ogni 5 barre** su una
+giornata da 78. Non e un mercato che oscilla, e un contatore impazzito.
+
+### Le correzioni
+
+1. **Riarmo**: un nuovo setup puo nascere solo dopo che il prezzo e **rientrato** dentro
+   `± EntrySD · σ`. E la meccanica standard di un fade, non un filtro.
+2. **`MinBars 12`**: con poche barre la σ non e ancora definita e il primo tocco e rumore.
+   Un'ora a 5 minuti.
+3. **Diagnostica aggiunta**: il log ora stampa **`sigma all'ingresso`**, che **deve valere
+   ~1,00**. Se esce piu alto, il riarmo e di nuovo rotto e il resto del log non si legge
+   nemmeno.
+4. Corretta la riga giornaliera, che stampava `nSetup` due volte.
+
+### Cosa NON si puo concludere dal run rotto
+
+Niente sull'ipotesi. **L'eccesso di −34,66 pp non falsifica il VWAP Fade**: misura un
+meccanismo che nessuna strategia implementerebbe mai. L'aspettativa dichiarata prima del run
+(**+2…+5 pp, sotto soglia**) resta in piedi e non e stata ne confermata ne smentita.

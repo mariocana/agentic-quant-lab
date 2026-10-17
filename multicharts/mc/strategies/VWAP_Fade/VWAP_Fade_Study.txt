@@ -44,6 +44,8 @@ Inputs:
     EntrySD( 1.0 ),            { quante sigma per armare il fade }
     StopSD( 2.5 ),             { quante sigma per lo stop }
     MinSigmaPts( 0 ),          { 0 = off; filtro anti-rumore sulle sigma piccole }
+    MinBars( 12 ),             { barre minime prima di armare: con poche barre la
+                                 sigma non e' ancora definita (12 = 1 ora a 5 min) }
     ShowLog( 1 ),
     LogPath( "C:\mc_out\vwap_fade.txt" ),
     ResetFile( 1 );
@@ -73,6 +75,9 @@ Vars:
     intrabarpersist tDays( 0 ),
     intrabarpersist sumTgtPts( 0 ),
     intrabarpersist sumStopPts( 0 ),
+    intrabarpersist sumSdAtEntry( 0 ),
+    intrabarpersist canArm( false ),   { il prezzo e' rientrato nella banda? }
+    intrabarpersist nBars( 0 ),
     intrabarpersist firstBar( true ),
     tp( 0 ), vBar( 0 ), vrc( 0 ), nullWR( 0 ), obsWR( 0 );
     { nomi evitati perche' GIA' DEFINITI in PowerLanguage:
@@ -96,11 +101,12 @@ if Time >= SessStart and Time[1] < SessStart then begin
     if tDays > 0 or nSetup > 0 then begin
         { chiude il giorno precedente }
         if ShowLog = 1 then
-            Print( File(LogPath), Date[1]:8:0, "  ", nSetup:5:0, "  ", nSetup:11:0,
+            Print( File(LogPath), Date[1]:8:0, "  ", nSetup:5:0,
                    "  ", nWin:10:0, "  ", nLoss:10:0, "  ", nOpen:6:0 );
     end;
     sPV = 0; sPV2 = 0; sVol = 0; sVwap = 0; sigma = 0;
-    armed = 0; nSetup = 0; nWin = 0; nLoss = 0; nOpen = 0;
+    armed = 0; canArm = false; nBars = 0;
+    nSetup = 0; nWin = 0; nLoss = 0; nOpen = 0;
     tDays = tDays + 1;
     inSess = true;
 end;
@@ -140,25 +146,39 @@ if inSess then begin
         end;
     end;
 
-    { ----- nuovo setup: chiusura oltre la banda ----- }
+    nBars = nBars + 1;
+
+    { ----- RIARMO: il prezzo deve essere RIENTRATO nella banda -----
+      Senza questo, dentro un trend il setup si riapre a ogni barra sempre
+      piu' lontano dal VWAP, con lo stop sempre piu' vicino: era il difetto
+      del run del 17/10, che dava ingressi a 2,06 sigma invece che a 1,00
+      e un R:R realizzato di 4,62 invece di 0,67. }
     if armed = 0 and sigma > 0
+       and AbsValue( Close - sVwap ) < EntrySD * sigma then canArm = true;
+
+    { ----- nuovo setup: prima chiusura oltre la banda dopo un rientro ----- }
+    if armed = 0 and canArm and nBars >= MinBars and sigma > 0
        and ( MinSigmaPts = 0 or sigma >= MinSigmaPts ) then begin
 
         if Close > sVwap + EntrySD * sigma then begin
             armed = 1; entryPx = Close; sigAtEntry = sigma;
             tgtPx  = sVwap;
             stopPx = sVwap + StopSD * sigma;
+            canArm = false;
             nSetup = nSetup + 1; tSetup = tSetup + 1;
             sumTgtPts  = sumTgtPts  + ( entryPx - tgtPx );
             sumStopPts = sumStopPts + ( stopPx - entryPx );
+            if sigma > 0 then sumSdAtEntry = sumSdAtEntry + ( entryPx - sVwap ) / sigma;
         end
         else if Close < sVwap - EntrySD * sigma then begin
             armed = -1; entryPx = Close; sigAtEntry = sigma;
             tgtPx  = sVwap;
             stopPx = sVwap - StopSD * sigma;
+            canArm = false;
             nSetup = nSetup + 1; tSetup = tSetup + 1;
             sumTgtPts  = sumTgtPts  + ( tgtPx - entryPx );
             sumStopPts = sumStopPts + ( entryPx - stopPx );
+            if sigma > 0 then sumSdAtEntry = sumSdAtEntry + ( sVwap - entryPx ) / sigma;
         end;
     end;
 end
@@ -195,6 +215,8 @@ if ShowLog = 1 and LastBarOnChart then begin
         if sumStopPts > 0 then
             Print( File(LogPath), "R:R realizzato    ", (sumTgtPts/sumStopPts):8:3,
                    "   <- serve 0,5-1,0" );
+        Print( File(LogPath), "sigma all'ingresso", (sumSdAtEntry/tSetup):8:3,
+               "   <- DEVE essere ~1,00: se e' piu' alto il riarmo e' rotto" );
     end;
 end;
 
