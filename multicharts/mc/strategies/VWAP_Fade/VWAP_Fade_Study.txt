@@ -38,6 +38,7 @@
   ===================================================================== }
 
 Inputs:
+    Tag( "YM" ),               { lo scrivi tu: YM, NQ, CL - finisce nel log }
     SessStart( 830 ),          { inizio accumulo VWAP, ora del chart }
     SessEnd( 1455 ),           { ultima barra utile: dopo si chiude tutto }
     EntrySD( 1.0 ),            { quante sigma per armare il fade }
@@ -81,13 +82,12 @@ if firstBar then begin
     firstBar = false;
     if ShowLog = 1 and ResetFile = 1 then FileDelete( LogPath );
     if ShowLog = 1 then begin
-        Print( File(LogPath), "symbol=", GetSymbolName,
+        Print( File(LogPath), "VWAPFADE symbol=", Tag,
                " EntrySD=", EntrySD:3:2, " StopSD=", StopSD:3:2,
                " minmove=", MinMove:5:0, " pricescale=", PriceScale:6:0,
                " bigpointvalue=", BigPointValue:8:2 );
         Print( File(LogPath),
-               "data        setup  vwap_tocchi  verso_vwap  verso_stop  aperti  "
-               "dist_tgt_pt  dist_stop_pt" );
+               "data        setup  verso_vwap  verso_stop  aperti" );
     end;
 end;
 
