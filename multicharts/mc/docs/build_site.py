@@ -52,6 +52,7 @@ QL = os.path.join(ROOT, "python", "quantlake")
 PROP_DOCS = [
     ("La pipeline in una pagina", "mc/docs/pipeline_semplice.md"),
     ("Cosa uccide le strategie", "mc/docs/cosa_uccide_le_strategie.md"),
+    ("Ricerca 18/10", "mc/docs/ricerca_18-10.md"),
     ("La seconda gamba", "mc/docs/seconda_gamba.md"),
     ("Il difetto nel metodo di misura", "mc/docs/bug_misura_primo_tocco.md"),
     ("Prop vs Live: due metodologie", "mc/docs/prop_vs_live.md"),

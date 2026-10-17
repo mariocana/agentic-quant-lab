@@ -1,21 +1,20 @@
 {
- "updated": "2026-10-17",
+ "updated": "2026-10-18",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
-  "updated": "2026-10-17",
+  "updated": "2026-10-18",
   "groups": [
    {
-    "title": "Decisione: si parte con ALMENO DUE strategie. Serve la seconda gamba.",
-    "note": "DriftPullback e viva; la prima ora 08:30-09:30 CT e completamente libera",
+    "title": "Domenica di ricerca. Lunedi, se non c'e' altro, si parte con DriftPullback sola.",
+    "note": "una viva su nove; la ricerca di oggi dice che il profilo prop non e' una proprieta' dei segnali",
     "items": [
-     "**Stage 2 di ON Reversal: IS 2016-2024** su @YM, 1 contratto, $6,75/lato, Bar Magnifier 1 min, Globex 24h, TradeStartEL/TradeEndEL ai bordi. Prima cosa da guardare: il **R:R**, uscito 1,02 allo Stage 1 contro la banda 0,5-1.",
-     "**Candidata raccomandata: overnight-intraday reversal** (Liu et al. 2025). Opera all'apertura, cioe nell'**ora libera** dove DriftPullback non ha un solo trade: correlazione quasi nulla per costruzione.",
-     "**La soglia per una SECONDA gamba e piu bassa**: eccesso positivo a >= 3 errori standard da zero, non i +7,6 pp che servirebbero per reggere il conto da sola. Il basket guadagna smussando il percorso (Live 004: 45,8% contro 38%).",
-     "**Ma attenzione**: una gamba a edge zero PEGGIORA il basket — e gia successo provando ad aggiungere VaultBreak.",
-     "Metodo invariato: **prima l'indicatore di misura**, e si verifica che misuri quello che deve prima di leggere il risultato.",
-     "In coda: gap fade (stessa finestra, prior peggiore) e morning momentum/afternoon reversal (sovrapposizione piena con DriftPullback)."
+     "**Il run che vale di piu' e costa un'ora: DriftPullback portata su @YM.** Stop riscalato per ATR a **129 punti** (stessa frazione del range: 0,381), TP long 65, TP short 81, tutto il resto invariato. R per micro passa da $160 a **$64,57**.",
+     "**Se passa il Gate 2, misurare SUBITO la correlazione giornaliera con la versione NQ.** Stessa logica e stesse ore su indici 0,8-0,95 correlati: sopra 0,6 non e' una seconda gamba, e' la stessa scommessa in doppio.",
+     "**Finding della ricerca**: il profilo WR 54-72% con R:R 0,5-1 **non esiste come proprieta' di un segnale** — la letteratura sul momentum intraday replicato da WR 36-39% con payoff 2,09. Quel profilo lo impone il **bracket**, non l'ingresso.",
+     "**Conseguenza**: smettere di cercare strategie con quel profilo, cercare **segnali con un eccesso sul caso misurabile** di qualunque forma, e poi imporre la forma.",
+     "In coda: reversal pomeridiano (correlazione da misurare) ed **evento macro delle 8:30 CT**, gia' sul board e mai sviluppato — strutturale e nell'ora libera, ma 2-3 volte a settimana."
     ]
    }
   ]
@@ -608,6 +607,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-18",
+   "text": "**Ricerca sul web aperto: risultato negativo e informativo.** Nessun backtest credibile mostra un edge intraday frequente che sopravviva ai costi su ES/NQ/YM; l'esempio piu netto e uno studio 2026 su cripto con reversal da **1,3 punti base contro un costo di 5**. **Ma la cosa che conta e un'altra**: il profilo che il corso chiede — WR 54-72% con R:R 0,5-1 — **non esiste come proprieta di un segnale**. La replica seria del momentum intraday su ES/NQ da **WR 36-39% con payoff 2,09**, cioe l'opposto; e dove compaiono WR dell'82% sono vendor non verificati, con perdite medie piu grandi delle vincite. **Quel profilo lo impone l'uscita, non l'ingresso**: target vicino e stop lontano producono WR alto e R:R basso, mentre **l'eccesso sul caso resta identico** perche e invariante alla geometria. **Conseguenza operativa: smettere di cercare strategie con quel profilo e cercare segnali con un eccesso misurabile di qualunque forma.**"
+  },
   {
    "date": "2026-10-17",
    "text": "**ON Reversal sepolta, e la famiglia mean reverting e quasi esaurita.** Numero definitivo dal backtest: eccesso **+0,68 ± 1,43 pp su 1.175 risolti in 9 anni, 0,48 errori standard**. Non si salva cambiando le uscite, perche l'eccesso sul caso e invariante alla geometria. **E c'e una cosa che non avevo visto quando ho scelto fra i tre candidati: quello che ho costruito E il gap fade.** Il movimento overnight *e* il gap. Quindi dei tre meccanismi mean reverting ne restano **zero** utilizzabili: VWAP fade bocciato su due strumenti, gap/overnight fade bocciato qui, e il reversal pomeridiano si **sovrappone per intero** a DriftPullback. **Fissata anche la tolleranza sul R:R a ±5% (0,475-1,05)**, adesso che non serve a nessuno: a R:R 1,00 il WR richiesto per PF 1,3 e 56,5%, a 1,02 e 56,0%, mezzo punto. La banda descrive un profilo, non e un vincolo fisico."
