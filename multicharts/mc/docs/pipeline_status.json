@@ -100,6 +100,10 @@
    "log": [
     {
      "date": "2026-10-17",
+     "text": "**Scritta `ON_Reversal.txt` e la checklist dello Stage 1.** Geometria identica a quella misurata: G sulla prima barra, target a −0,50·G, stop a +0,75·G, flat alle 09:30, un setup al giorno, gate `|G| ≥ 0,15 × range medio di 20 sessioni`. **Due differenze dalla misura, scritte nel codice perche non si dimentichino**: (1) la misura calcolava l'ingresso alla **chiusura** della prima barra, la strategia entra alla **barra dopo a mercato** — il prezzo sara vicino ma non uguale e l'avg trade ne risentira; (2) il **29% dei setup** che non si risolve entro l'ora qui esce con `L-flat`/`S-flat`, e il loro P&L **lo vediamo per la prima volta in questo backtest** perche nel misuratore restava fuori dal win rate. Costi dichiarati: **$6,75/lato** su YM intero ($1,75 di commissione Lucid + 1 tick da $5)."
+    },
+    {
+     "date": "2026-10-17",
      "text": "**Replica indipendente sul 2016-2019: la soglia e raggiunta.** 1.031 sessioni mai usate, 508 risolti nella prima ora, WR **64,76%**, **eccesso +4,76 pp** — contro i +4,11 del 2020-2024. **Combinato: +4,40 pp su 1.160 risolti = 3,06 errori standard**, IC 95% +1,58…+7,22, soglia pre-registrata 3,00. **La previsione scritta prima del run diceva 3,00 se l'eccesso avesse retto a ~+4: e uscita 3,06.** E non e solo il campione piu grande: i due periodi sono **indipendenti** e danno la **stessa grandezza**, il che esclude che il primo fosse una finestra fortunata. **Decadimento confermato su entrambi**: a fine giornata −0,27 (2016-19) e +2,00 (2020-24), molto sotto la prima ora. **Novita per il sizing**: R per micro passa da $37,07 a $74,60 fra i due periodi perche e proporzionale al gap e il gap scala con la volatilita — e un vantaggio, il rischio si adatta da solo invece di restare fisso in punti come in Gold, ma i contratti vanno calcolati sul **gap corrente**. **Riserva che solo il backtest scioglie**: il 29% dei setup non si risolve entro l'ora e uscirebbe flat alle 09:30 con un P&L mai misurato, quindi l'avg trade potra essere sensibilmente diverso da quello che l'eccesso lascia sperare."
     },
     {
