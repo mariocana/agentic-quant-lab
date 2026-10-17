@@ -11,6 +11,7 @@
     "note": "sette strategie, sei nel cimitero, una passata OOS e Stage 7",
     "items": [
      "**Girare `VWAP_Fade_Study` su @YM e @NQ** (5 min, CT, 2020-2024, ShowLog 1). Due soglie pre-registrate: eccesso ≥ +6 pp e ≥ 2 setup/giorno. Se non le passa, non si scrive la strategia.",
+     "**Misurare il range di @CL e @YM** con `ATR_Window_Study` (2020-2024): MCL costa $0,50/lato come i micro indici ed e' l'unico non-indice a quel prezzo, ma il suo R/ATR ~0,40 e' una **stima**.",
      "**Il nodo**: il corso dice di non deployare una sola strategia nemmeno in eval (Live 004), e noi ne abbiamo una. Tetto a 3, ma le altre due sono morte fuori campione.",
      "**Decisione da prendere**: partire comunque con DriftPullback da sola col piano veloce (2 micro, finestra corta, 42% per tentativo, $400 per 89% entro quattro), oppure cercare una seconda candidata prima.",
      "Se si cerca: le candidate dell'agente (IB-C Breakout, IB-C Failure) sono su **MYM**, e l'unita di rischio li e migliore di MNQ (R/ATR 0,35-0,65 contro 0,14-0,26).",
@@ -498,6 +499,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-17",
+   "text": "**Letto il listino vero di LucidFlex: 34 prodotti approvati, e noi ne abbiamo guardati 9.** Prima cosa, una verifica: la nostra assunzione di **$1,50/round-turn sul micro** e corretta — sono $0,50 x 2 lati di commissione Lucid piu $0,50 di slippage (un tick MNQ). Era una stima, ora e un dato, e il simulatore non va ritoccato. **La cosa nuova e MCL**: il micro crude costa **$0,50 per lato**, quanto i micro indici, ed e l'unico non-indice a quel prezzo. Il crude ha driver completamente diversi dal NASDAQ, mentre NQ/ES/YM/RTY sono fra loro 0,8-0,95 correlati intraday: per il basket e la diversificazione piu vera disponibile a questo costo. Lesson 3, 18:22 chiede «a mix of instruments and asset classes» e noi non abbiamo fatto nemmeno la prima meta. **Il suo R/ATR ~0,40 e pero una stima**, da misurare. Confermato anche il quadro sugli indici: a R = $80/micro, **MNQ sta a 0,19 di R/ATR** contro 0,47 di MYM e 0,49 di M2K, **allo stesso costo di $1,50**. Valute ($2,40/lato) e agricoli ($2,80) restano fuori dal budget: non hanno micro."
+  },
   {
    "date": "2026-10-17",
    "text": "**Aperta VWAP Fade: la prima mean reverting della pipeline.** Vende la deviazione dal VWAP e punta al VWAP, l'esatto contrario di VWAP Pullback. Prima di scrivere la strategia si misura, con un indicatore, se esiste il materiale: **eccesso sul caso ≥ +6 pp** (il caso vale 60% con questa geometria) e **≥ 2 setup al giorno**. Sono i due test che le candidate precedenti avrebbero fallito se li avessimo applicati prima di scrivere il codice."

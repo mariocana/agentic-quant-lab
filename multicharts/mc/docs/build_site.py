@@ -54,6 +54,7 @@ PROP_DOCS = [
     ("Prop vs Live: due metodologie", "mc/docs/prop_vs_live.md"),
     ("Il protocollo prop", "mc/docs/pipeline_prop.md"),
     ("Metodologia live (stand-by)", "mc/docs/metodologia_live.md"),
+    ("Strumenti e costi LucidFlex", "mc/docs/lucid_strumenti.md"),
     ("Protocollo di test MC", "mc/docs/protocollo_test_mc.md"),
     ("Prompt ricerca strategie", "mc/docs/prompt_ricerca_strategie.md"),
     ("Setup TradeStation", "mc/docs/setup_tradestation.md"),
