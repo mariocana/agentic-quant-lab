@@ -51,6 +51,7 @@ QL = os.path.join(ROOT, "python", "quantlake")
 # barra laterale: è la mappa del lavoro, non un elenco alfabetico.
 PROP_DOCS = [
     ("La pipeline in una pagina", "mc/docs/pipeline_semplice.md"),
+    ("La seconda gamba", "mc/docs/seconda_gamba.md"),
     ("Prop vs Live: due metodologie", "mc/docs/prop_vs_live.md"),
     ("Il protocollo prop", "mc/docs/pipeline_prop.md"),
     ("Metodologia live (stand-by)", "mc/docs/metodologia_live.md"),

@@ -7,14 +7,14 @@
   "updated": "2026-10-17",
   "groups": [
    {
-    "title": "Una viva: DriftPullback. VWAP Fade chiusa su due strumenti.",
-    "note": "il mean reversion resta da coprire, ma con un meccanismo diverso dal fade sul VWAP",
+    "title": "Decisione: si parte con ALMENO DUE strategie. Serve la seconda gamba.",
+    "note": "DriftPullback e viva; la prima ora 08:30-09:30 CT e completamente libera",
     "items": [
-     "**La decisione aperta**: partire con DriftPullback da sola col piano veloce (2 micro, 42%/tentativo, $400 per l'89% entro quattro) oppure cercare prima la seconda gamba.",
-     "Se si cerca: i tre meccanismi mean reverting non provati sono **reversal pomeridiano dopo momentum mattutino** (Xu-Zhu 2022), **overnight-intraday reversal** (Liu et al. 2025) e **gap fade**.",
-     "**Da riusare**: la banda a 1 σ sul VWAP da 3,3 setup/giorno su YM e NQ — trigger valido per frequenza, manca il segnale.",
-     "**MCL** resta l'unica vera diversificazione di classe a $0,50/lato, ma vuole una strategia pensata sui driver del crude.",
-     "**Riserva su DriftPullback**: la curva e al 98esimo percentile del suo drawdown."
+     "**Candidata raccomandata: overnight-intraday reversal** (Liu et al. 2025). Opera all'apertura, cioe nell'**ora libera** dove DriftPullback non ha un solo trade: correlazione quasi nulla per costruzione.",
+     "**La soglia per una SECONDA gamba e piu bassa**: eccesso positivo a >= 3 errori standard da zero, non i +7,6 pp che servirebbero per reggere il conto da sola. Il basket guadagna smussando il percorso (Live 004: 45,8% contro 38%).",
+     "**Ma attenzione**: una gamba a edge zero PEGGIORA il basket — e gia successo provando ad aggiungere VaultBreak.",
+     "Metodo invariato: **prima l'indicatore di misura**, e si verifica che misuri quello che deve prima di leggere il risultato.",
+     "In coda: gap fade (stessa finestra, prior peggiore) e morning momentum/afternoon reversal (sovrapposizione piena con DriftPullback)."
     ]
    }
   ]
@@ -518,6 +518,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-17",
+   "text": "**Decisione: si parte con almeno due strategie, non con DriftPullback da sola.** Coerente con Live 004. **Misurata la soglia per la seconda gamba, e sono due soglie diverse**: per reggere il conto *da sola* a 1 setup/giorno servirebbe un eccesso di **+7,6 pp** (la soglia non dipende da R, che si semplifica: dipende solo dalla frequenza), ma una seconda gamba deve **aggiungere**, non bastare — il basket guadagna smussando il percorso, 45,8% contro 38% coi numeri del corso. **Soglia realistica: eccesso positivo a >= 3 errori standard da zero, piu bassa correlazione.** Con la controprova gia agli atti che una gamba a edge zero (VaultBreak) peggiora il basket. **E trovata la finestra**: la distribuzione oraria di DriftPullback mostra il primo trade nell'ora delle 09:00 (SessStart 09:30), mentre RTH apre alle **08:30** — **l'ora 08:30-09:30 CT e completamente libera**, zero trade. Una strategia che opera li ha correlazione quasi nulla **per costruzione**. **Raccomandata: overnight-intraday reversal** (Liu et al. 2025), che cade esattamente li e ha il meccanismo piu strutturale dei tre."
+  },
   {
    "date": "2026-10-17",
    "text": "**VWAP Fade chiusa su due strumenti: il fade della deviazione dal VWAP non ha edge.** @YM +0,41 pp, @NQ −1,67, **combinato −0,62 ± 0,57 su 7.516 setup risolti**, contro una soglia di +6 che starebbe a 10,5 errori standard. Non e lo strumento: NQ e YM hanno range per micro diversi di 2,5 volte e danno lo stesso nulla. **Due cose restano**: la banda a 1 σ produce 3,3 setup/giorno su entrambi ed e un trigger valido per frequenza, e il mean reversion **in generale** non e falsificato — lo e questo meccanismo."
