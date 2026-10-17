@@ -52,6 +52,7 @@ QL = os.path.join(ROOT, "python", "quantlake")
 PROP_DOCS = [
     ("La pipeline in una pagina", "mc/docs/pipeline_semplice.md"),
     ("La seconda gamba", "mc/docs/seconda_gamba.md"),
+    ("Il difetto nel metodo di misura", "mc/docs/bug_misura_primo_tocco.md"),
     ("Prop vs Live: due metodologie", "mc/docs/prop_vs_live.md"),
     ("Il protocollo prop", "mc/docs/pipeline_prop.md"),
     ("Metodologia live (stand-by)", "mc/docs/metodologia_live.md"),
