@@ -10,7 +10,7 @@
     "title": "Decisione: si parte con ALMENO DUE strategie. Serve la seconda gamba.",
     "note": "DriftPullback e viva; la prima ora 08:30-09:30 CT e completamente libera",
     "items": [
-     "**Girare `ON_Reversal_Study` su @RTY (Tag RTY) e @YM (Tag YM)**, 5 min, CT, 2020-2024, ShowLog 1. Primo controllo: `R:R realizzato` deve essere ~0,667, altrimenti il resto non si legge.",
+     "**`ON_Reversal_Study` su @YM, periodo 2016-2019** (Tag YM, 5 min, CT). Sul 2020-2024 l'eccesso e +4,11 pp ma a **2,14 errori standard** contro i 3 pre-registrati: il 2016-2019 e l'unico modo di arrivare a 3,00 senza toccare l'OOS e senza abbassare la soglia.",
      "**Candidata raccomandata: overnight-intraday reversal** (Liu et al. 2025). Opera all'apertura, cioe nell'**ora libera** dove DriftPullback non ha un solo trade: correlazione quasi nulla per costruzione.",
      "**La soglia per una SECONDA gamba e piu bassa**: eccesso positivo a >= 3 errori standard da zero, non i +7,6 pp che servirebbero per reggere il conto da sola. Il basket guadagna smussando il percorso (Live 004: 45,8% contro 38%).",
      "**Ma attenzione**: una gamba a edge zero PEGGIORA il basket — e gia successo provando ad aggiungere VaultBreak.",
@@ -80,25 +80,32 @@
   {
    "name": "ON Reversal",
    "family": "**mean reverting** · seconda gamba del basket",
-   "instrument": "@RTY 5m (candidato) · @YM 5m (controllo)",
+   "instrument": "**@YM 5m** (vince sulla misura) · @RTY scartato",
    "path": "mc/strategies/ON_Reversal",
    "stages": {
-    "0": "run"
+    "0": "pass",
+    "1": "run"
    },
-   "note": "**Stage 0. Seconda gamba**, dopo la decisione di non partire con DriftPullback da sola. Fada il movimento overnight nella prima ora di sessione. **Ragione strutturale**: il movimento notturno e in parte flusso impaziente su un book sottile, e chi fornisce quella liquidita viene ripagato alla riapertura — un compenso per un servizio, non un pattern. **Cade nell'ora 08:30-09:30 CT, dove DriftPullback non ha un solo trade**: correlazione quasi nulla per costruzione. Geometria: target a meta ritracciamento del gap, stop a 0,75 del gap, **R:R 0,667, caso 60%**.",
+   "note": "**Miglior segnale mai misurato, ma sotto la soglia che avevo scritto.** @YM prima ora: WR **64,11%** contro un caso del 60%, **eccesso +4,11 pp**, IC 95% da +0,35 a +7,87 — ma **2,14 errori standard** contro i **3** pre-registrati. @RTY: +1,46 pp, 0,80 errori standard, niente. **Due mie previsioni smentite**: avevo scelto RTY e vince YM quasi 3 a 1; e mi aspettavo piu edge a fine giornata, invece **l'edge sta nella prima ora e si consuma** (YM da +4,11 a +2,00) — cioe **la finestra che rende nulla la correlazione e anche quella che contiene l'edge**. R per micro **$74,60**, 0,69 setup/giorno. Riserva: **222 setup (25%) non risolti** entro l'ora restano fuori dal win rate.",
    "metrics": {
     "geometria pre-registrata": "G = ingresso − chiusura RTH di ieri · target −0,50·G · stop +0,75·G · R:R 0,667 · caso 60%",
     "soglia da seconda gamba": "eccesso positivo a ≥ 3 errori standard da zero (NON i +7,6 pp che servirebbero per bastare da sola)",
     "gate d'ingresso": "|G| ≥ 0,15 × range medio delle ultime 20 sessioni",
-    "aspettativa dichiarata": "eccesso +1…+4 pp sulla prima ora: sotto la soglia dei +6 ma sopra zero"
+    "aspettativa dichiarata": "eccesso +1…+4 pp sulla prima ora: sotto la soglia dei +6 ma sopra zero",
+    "misura 2020-2024 @YM": "889 setup · 0,69/giorno · gap medio $99,47/micro · **R $74,60/micro** · R:R realizzato 0,667 · prima ora: WR **64,11%** vs caso 60% = **+4,11 pp (2,14 es)** · fine giornata +2,00 pp",
+    "misura 2020-2024 @RTY": "900 setup · R $63,61/micro · prima ora +1,46 pp (0,80 es) · fine giornata **−0,31 pp**"
    },
    "log": [
+    {
+     "date": "2026-10-17",
+     "text": "**Misurato. `R:R realizzato 0,667` su entrambi: stavolta lo strumento misura quello che deve.** @YM prima ora: 652 risolti, WR **64,11%** contro caso 60%, **eccesso +4,11 pp**, errore standard 1,92 → **2,14 errori standard**, IC 95% +0,35…+7,87. @RTY: +1,46 pp, 0,80 errori standard. **Due previsioni mie smentite.** (1) **Avevo scelto RTY** col ragionamento «indice piu domestico → overnight piu flusso e meno informazione»: **vince YM quasi 3 a 1**, ed era il motivo per far girare entrambi. (2) **Mi aspettavo piu eccesso a fine giornata**: e il contrario, YM scende da +4,11 a +2,00 e RTY a −0,31. **L'edge sta nella prima ora e si consuma** — la finestra che rende nulla la correlazione con DriftPullback e anche quella che contiene l'edge. **Ma la soglia non e raggiunta**: avevo scritto >= 3 errori standard, siamo a 2,14, e accettarla adesso sarebbe quello che abbiamo rimproverato a ogni risultato comodo. **Riserva**: 222 setup (25%) non risolti entro l'ora restano fuori dal WR. **Prossima misura: @YM sul 2016-2019**, dati mai usati e non l'OOS. Se l'eccesso regge a ~+4, n va da 652 a ~1.282, l'errore standard da 1,92 a 1,37 e il risultato arriva **esattamente a 3,00 errori standard**: la soglia raggiunta con dati veri invece che abbassando l'asticella."
+    },
     {
      "date": "2026-10-17",
      "text": "**Aperta come seconda gamba.** Fonte: Liu et al., *Overnight-Intraday Reversal Everywhere*, AsianFA 2025. Scelta fra tre meccanismi mean reverting perche **cade nell'ora libera**: la distribuzione oraria di DriftPullback parte dalle 09:00 (SessStart 09:30) mentre RTH apre alle 08:30, quindi fra 08:30 e 09:30 **non ha un solo trade** e la correlazione e quasi nulla per costruzione. Strumento **@RTY**, perche e il piu domestico dei cinque indici — il suo overnight e meno informazione e piu sbilanciamento di flusso, che e il meccanismo del paper — e perche ha il **miglior R/ATR (0,49)** e la **migliore stabilita di regime (1,15x)**. **Ma e mio ragionamento, non una misura**, e M2K e il micro meno liquido proprio mentre si opera all'apertura: @YM gira come controllo nello stesso run. Scritto `ON_Reversal_Study.txt`, indicatore che separa la risoluzione **entro la prima ora** da quella **entro fine giornata**, perche la prima dice se la correlazione resta nulla e la seconda se al ritracciamento serve solo piu tempo. **Aspettativa dichiarata: +1…+4 pp sulla prima ora**, sotto la soglia dei +6 ma sopra zero."
     }
    ],
-   "next": "Girare `ON_Reversal_Study` su @RTY e @YM, 2020-2024, e mandare il log."
+   "next": "**Rigirare `ON_Reversal_Study` su @YM, periodo 2016-2019.** Non e l'OOS (2025-2026): e storia precedente all'IS, mai usata. Serve a portare il campione da 652 a ~1.282 risolti e il risultato da 2,14 a 3,00 errori standard."
   },
   {
    "name": "VWAP Fade",

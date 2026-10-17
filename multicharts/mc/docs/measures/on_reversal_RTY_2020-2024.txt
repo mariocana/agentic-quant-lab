@@ -1,0 +1,23 @@
+ONREV symbol=RTY MinGapAtr=0.15 Retrace=0.50 Stop=0.75 minmove=   10 bigpointvalue=    50.00
+
+=== TOTALI ===
+sessioni              1293
+setup                  900
+setup/giorno         0.696
+gap medio            16.96 punti
+  = per micro        84.81 dollari
+dist. target          8.48 punti
+R per micro          63.61 dollari   <- decide quanti contratti
+R:R realizzato       0.667   <- DEVE essere ~0,667
+
+--- risolti entro la PRIMA ORA (08:30-09:30) ---
+  target / stop / aperti     445     279     167
+  WR                  61.46%
+  caso                60.00%
+  ECCESSO              1.46 pp
+
+--- risolti entro FINE GIORNATA ---
+  target / stop / aperti     505     341      54
+  WR                  59.69%
+  caso                60.00%
+  ECCESSO             -0.31 pp

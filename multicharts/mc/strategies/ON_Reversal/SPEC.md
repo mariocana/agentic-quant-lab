@@ -102,3 +102,64 @@ questo meccanismo esca dal gruppo.
 **Sulla fine giornata mi aspetto un eccesso piu alto della prima ora**, perche il
 ritracciamento ha piu tempo per compiersi. Se succede, e un compromesso da decidere: piu edge
 contro piu correlazione con DriftPullback.
+
+## Misura 2020-2024: **non raggiunge la soglia**, ma e il miglior segnale mai trovato
+
+Log: `mc/docs/measures/on_reversal_YM_2020-2024.txt` e `..._RTY_...`. 1.293 sessioni.
+
+**`R:R realizzato 0,667` su entrambi**: stavolta lo strumento misura quello che deve.
+
+### Prima ora (08:30-09:30, la finestra libera)
+
+| | n risolti | aperti | WR | **eccesso** | errori standard | IC 95% |
+|---|---|---|---|---|---|---|
+| **@YM** | 652 | 222 | **64,11%** | **+4,11 pp** | **2,14** | +0,35 … +7,87 |
+| @RTY | 724 | 167 | 61,46% | +1,46 pp | 0,80 | −2,10 … +5,03 |
+
+### Fine giornata
+
+| | n risolti | WR | eccesso | errori standard |
+|---|---|---|---|---|
+| @YM | 821 | 62,00% | +2,00 pp | 1,17 |
+| @RTY | 846 | 59,69% | **−0,31 pp** | −0,18 |
+
+### Due mie previsioni smentite, e la seconda e una buona notizia
+
+**1. Avevo scelto @RTY.** Ragionamento: indice piu domestico → overnight piu sbilanciamento di
+flusso e meno informazione → meccanismo del paper piu forte. **Misurato: YM batte RTY quasi
+3 a 1** (+4,11 contro +1,46). Il ragionamento era plausibile e sbagliato, e la misura lo
+dice: era il motivo per far girare entrambi.
+
+**2. Mi aspettavo l'eccesso piu alto a fine giornata**, perche il ritracciamento ha piu tempo.
+**E il contrario**: YM passa da +4,11 a +2,00, RTY da +1,46 a −0,31. **L'edge sta nella prima
+ora e si consuma.** Ed e esattamente la finestra dove DriftPullback non opera: **la cosa che
+rende la correlazione nulla e anche la cosa che contiene l'edge.**
+
+### Ma la soglia pre-registrata non e raggiunta, e va detto
+
+Avevo scritto **«eccesso positivo a >= 3 errori standard da zero»**. YM sta a **2,14**.
+L'intervallo di confidenza esclude lo zero (+0,35 … +7,87), ma **la soglia era mia e non
+e passata.** Accettare 2,14 adesso sarebbe esattamente quello che abbiamo rimproverato a ogni
+risultato comodo.
+
+**E c'e una seconda riserva, onesta**: i **222 setup non risolti** entro la prima ora sono il
+**25% del totale** e restano fuori dal win rate. In una strategia vera uscirebbero flat alle
+09:30 con un P&L che non abbiamo misurato.
+
+### Quello che regge, comunque
+
+- **R per micro $74,60** su YM: dentro il budget, decide i contratti senza forzature.
+- **0,69 setup/giorno**: basso, ma per una seconda gamba e accettabile — non deve reggere il
+  conto, deve aggiungere.
+- **Gap medio $99,47 per micro**, cioe il movimento che si fada e grande abbastanza da non
+  essere rumore.
+
+### La prossima misura, e perche non brucia l'OOS
+
+**Rigirare su @YM il periodo 2016-2019**, che **non abbiamo mai usato**: non e l'out-of-sample
+(2025-2026), e un pezzo di storia precedente all'IS. Se l'eccesso regge intorno a +4 pp, il
+campione passa da 652 a **~1.282 risolti**, l'errore standard da 1,92 a **1,37**, e il
+risultato arriva **esattamente a 3,00 errori standard**: la soglia pre-registrata, raggiunta
+con dati veri invece che abbassando l'asticella.
+
+Se invece sul 2016-2019 l'eccesso sparisce, la risposta e altrettanto chiara e costa un run.
