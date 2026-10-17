@@ -10,7 +10,7 @@
     "title": "Decisione: si parte con ALMENO DUE strategie. Serve la seconda gamba.",
     "note": "DriftPullback e viva; la prima ora 08:30-09:30 CT e completamente libera",
     "items": [
-     "**Rigirare lo Stage 1 di ON Reversal con costi e Bar Magnifier** ($6,75/lato, magnifier 1 min), poi il test x10. La meccanica e gia verificata 6 su 6; senza magnifier non e affidabile solo l'attribuzione target/stop.",
+     "**Stage 2 di ON Reversal: IS 2016-2024** su @YM, 1 contratto, $6,75/lato, Bar Magnifier 1 min, Globex 24h, TradeStartEL/TradeEndEL ai bordi. Prima cosa da guardare: il **R:R**, uscito 1,02 allo Stage 1 contro la banda 0,5-1.",
      "**Candidata raccomandata: overnight-intraday reversal** (Liu et al. 2025). Opera all'apertura, cioe nell'**ora libera** dove DriftPullback non ha un solo trade: correlazione quasi nulla per costruzione.",
      "**La soglia per una SECONDA gamba e piu bassa**: eccesso positivo a >= 3 errori standard da zero, non i +7,6 pp che servirebbero per reggere il conto da sola. Il basket guadagna smussando il percorso (Live 004: 45,8% contro 38%).",
      "**Ma attenzione**: una gamba a edge zero PEGGIORA il basket — e gia successo provando ad aggiungere VaultBreak.",
@@ -84,7 +84,8 @@
    "path": "mc/strategies/ON_Reversal",
    "stages": {
     "0": "pass",
-    "1": "run"
+    "1": "pass",
+    "2": "run"
    },
    "note": "**Soglia raggiunta, con replica indipendente.** @YM prima ora: 2016-2019 (mai usato) **+4,76 pp**, 2020-2024 **+4,11 pp**, **combinato +4,40 pp su 1.160 risolti = 3,06 errori standard**, IC 95% +1,58…+7,22, contro una soglia pre-registrata di 3,00. **Non e il campione piu grande a portarlo oltre la linea**: i due periodi sono indipendenti e danno la stessa grandezza. **Il decadimento e confermato su entrambi**: a fine giornata −0,27 e +2,00, molto sotto la prima ora — l'edge sta dove DriftPullback non opera. **R per micro scala col regime** ($37 nel 2016-19, $75 nel 2020-24), quindi i contratti si calcolano sul gap corrente. **Riserva aperta**: il 29% dei setup non si risolve entro l'ora e uscirebbe flat alle 09:30 con un P&L mai misurato.",
    "metrics": {
@@ -95,9 +96,14 @@
     "misura 2020-2024 @YM": "889 setup · 0,69/giorno · gap medio $99,47/micro · **R $74,60/micro** · R:R realizzato 0,667 · prima ora: WR **64,11%** vs caso 60% = **+4,11 pp (2,14 es)** · fine giornata +2,00 pp",
     "misura 2020-2024 @RTY": "900 setup · R $63,61/micro · prima ora +1,46 pp (0,80 es) · fine giornata **−0,31 pp**",
     "replica 2016-2019 @YM": "1.031 sessioni mai usate · 737 setup · 0,72/giorno · R **$37,07/micro** · prima ora WR **64,76%** = **+4,76 pp (2,19 es)** · fine giornata **−0,27 pp**",
-    "COMBINATO prima ora": "**1.160 risolti · eccesso +4,40 pp · 3,06 errori standard · IC 95% +1,58…+7,22**"
+    "COMBINATO prima ora": "**1.160 risolti · eccesso +4,40 pp · 3,06 errori standard · IC 95% +1,58…+7,22**",
+    "Stage 1 (meccanica, 2026)": "65 trade · test x10 **esatto** (avg, DD e net tutti a x10,0000) · 6 controlli di meccanica su 6 · avg $149,23 = **$14,92/micro** a 0,83 trade/giorno = **$12,44/giorno per micro**"
    },
    "log": [
+    {
+     "date": "2026-10-17",
+     "text": "**Stage 1 chiuso. Test x10 esatto**: n, WR, R:R e PF identici, avg da $149,23 a $1.492,31, DD da $3.578 a $35.780, net da $9.700 a $97.000 — **tutti a x10,0000, nessuno scarto**, meglio di DriftPullback che sul Gross Loss aveva uno 0,075% mai spiegato. **La cosa da dire adesso e non al Gate 2**: il **R:R realizzato e 1,02** contro lo 0,667 di progetto, e non e un errore — e l'effetto delle **uscite flat**, che il misuratore non contava (li il rapporto era 0,50/0,75 per costruzione) mentre qui il 21,5% esce a tempo con un P&L intermedio che avvicina vincita e perdita media. **Il Gate 2 chiede R:R 0,5-1: 1,02 e appena fuori**, e su 65 trade di quattro mesi non significa nulla ma e la prima cosa da guardare sull'IS. **Economia per orientarsi**: avg $14,92 per micro a 0,83 trade/giorno = **$12,44 al giorno per micro** contro i $18,34 di DriftPullback — due terzi, con un trade 2,6 volte piu grosso e quattro volte meno frequente. Ordine di grandezza giusto per una seconda gamba. Costi usati $6,50 invece di $6,75: immateriale ($32 su 65 trade), ma allo Stage 2 si usa $6,75."
+    },
     {
      "date": "2026-10-17",
      "text": "**Stage 1: meccanica verificata, sei controlli su sei.** 65 trade sul 2026-06-29 → 10-16. Un solo ingresso al giorno su 65 giorni distinti; **08:35 su 65/65**; ultima uscita 09:35 e nessuna dopo; solo i sei nomi di uscita previsti; **direzione contraria al gap 65/65** (38 gap positivi → 38 short); 65 setup nel log = 65 trade nel report, 0,83/giorno. **L'ingresso e alle 08:35 e non alle 08:40 come avevo previsto**, ed e meglio: su Globex la barra timbrata 08:30 copre 08:25-08:30, quindi il segnale nasce sul prezzo delle 08:30 (l'apertura RTH) e il fill cade all'apertura della barra successiva. **Fragilita trovata verificando e corretta**: il rilevamento di apertura era `Time >= SessStart and Time[1] < SessStart`, che **su un chart RTH non avrebbe mai funzionato** — la barra precedente alla 08:35 e la 15:00 del giorno prima e `1500 < 830` e falso, quindi zero trade **in silenzio**. Aggiunto `or Date <> Date[1]` su strategia e indicatore; su Globex non cambia nulla. **Annotato, non giudicato**: uscite flat **21,5%** contro il 29% della misura, WR sui risolti **66,7%** contro 64,1-64,8%. Coerenti, campione piccolo. **Manca il test x10**, e il run va rifatto con costi e Bar Magnifier: senza magnifier, con target e stop colpibili dentro la stessa barra da 5 minuti, **l'attribuzione delle uscite non e affidabile**."
@@ -119,7 +125,7 @@
      "text": "**Aperta come seconda gamba.** Fonte: Liu et al., *Overnight-Intraday Reversal Everywhere*, AsianFA 2025. Scelta fra tre meccanismi mean reverting perche **cade nell'ora libera**: la distribuzione oraria di DriftPullback parte dalle 09:00 (SessStart 09:30) mentre RTH apre alle 08:30, quindi fra 08:30 e 09:30 **non ha un solo trade** e la correlazione e quasi nulla per costruzione. Strumento **@RTY**, perche e il piu domestico dei cinque indici — il suo overnight e meno informazione e piu sbilanciamento di flusso, che e il meccanismo del paper — e perche ha il **miglior R/ATR (0,49)** e la **migliore stabilita di regime (1,15x)**. **Ma e mio ragionamento, non una misura**, e M2K e il micro meno liquido proprio mentre si opera all'apertura: @YM gira come controllo nello stesso run. Scritto `ON_Reversal_Study.txt`, indicatore che separa la risoluzione **entro la prima ora** da quella **entro fine giornata**, perche la prima dice se la correlazione resta nulla e la seconda se al ritracciamento serve solo piu tempo. **Aspettativa dichiarata: +1…+4 pp sulla prima ora**, sotto la soglia dei +6 ma sopra zero."
     }
    ],
-   "next": "**Chiudere lo Stage 1**: rigirare con **$6,75/lato** e **Bar Magnifier 1 min**, poi il test x10 con `Num_Contracts 10`. Poi Stage 2 sull'IS 2016-2024."
+   "next": "**Stage 2: IS 2016-2024** su @YM, 1 contratto, $6,75/lato, Bar Magnifier 1 min, Globex 24h. Prima cosa da guardare: il R:R, che allo Stage 1 e uscito 1,02 contro una banda di 0,5-1."
   },
   {
    "name": "VWAP Fade",

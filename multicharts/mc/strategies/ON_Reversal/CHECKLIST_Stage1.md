@@ -115,3 +115,55 @@ Coerenti. Il campione e' piccolo (65 trade su quattro mesi) e non decide niente.
    uscite si'**: con target e stop che possono essere colpiti **dentro la stessa barra da 5
    minuti**, senza il magnifier e' MultiCharts a decidere quale scatta, non il percorso a 1
    minuto. Quindi **il 34/17 non e' affidabile** e il P&L non si legge.
+
+---
+
+# Stage 1 CHIUSO (17/10/2026)
+
+Report: `reports/ONR_S1_x1.xlsx` e `ONR_S1_x10.xlsx`. Commissione **$6,50/lato**, Bar
+Magnifier **1 min**, Globex 24h.
+
+## Test x10: esatto
+
+| | 1 contratto | x10 | rapporto |
+|---|---|---|---|
+| n · WR · R:R · PF | 65 · 61,5% · 1,02 · 1,635 | identici | — |
+| avg trade | $149,23 | $1.492,31 | **x10,0000** |
+| DD chiusi | $3.578 | $35.780 | **x10** |
+| Net | $9.700 | $97.000 | **x10** |
+
+**Nessuno scarto.** Meglio di DriftPullback, che sul Gross Loss aveva uno 0,075% non spiegato.
+
+**Nota sui costi**: usati $6,50/lato invece dei $6,75 dichiarati. Sono $0,50 per round-turn in
+meno, cioe **$32 su 65 trade** contro un net di $9.700. Immateriale, ma per lo Stage 2 si usa
+$6,75.
+
+## La cosa che va detta adesso, non al Gate 2
+
+> **R:R realizzato 1,02, contro lo 0,667 di progetto.**
+
+Non e un errore: e **l'effetto delle uscite flat**. Il misuratore contava solo target e stop,
+dove il rapporto e 0,50/0,75 per costruzione. Qui il **21,5% esce a tempo alle 09:30**, con un
+P&L intermedio che avvicina vincita media e perdita media.
+
+**Il Gate 2 chiede R:R fra 0,5 e 1: 1,02 e appena fuori.** Su 65 trade di un campione di
+quattro mesi non significa ancora nulla, ma e la prima cosa da guardare sull'IS. Se regge
+sopra 1, ci sono due strade — entrambe da pre-registrare **prima** di vederne l'effetto:
+
+1. **alzare `RetraceFrac`** (target piu vicino): aumenta il WR e abbassa il R:R, ma e un
+   parametro, quindi passa dallo split-sample;
+2. **accettarlo e discuterne al Gate 2**, visto che il R:R 0,5-1 descrive il *profilo* prop e
+   qui lo sforamento e di due centesimi.
+
+## L'economia, per orientarsi (non e un giudizio)
+
+avg **$149,23** su YM intero = **$14,92 per micro**, a **0,83 trade/giorno** →
+**$12,44 al giorno per micro**, contro i **$18,34** di DriftPullback.
+
+Due terzi del rendimento giornaliero della prima gamba, con un trade 2,6 volte piu grosso e
+quattro volte meno frequente. **Per una seconda gamba e un ordine di grandezza giusto.**
+
+## Avvertenza sul campione
+
+Questi 65 trade sono **solo il 2026** e servivano alla meccanica. Il giudizio e allo Stage 2,
+sull'IS **2016-2024** — dove la misura ha gia dato l'eccesso a 3,06 errori standard.
