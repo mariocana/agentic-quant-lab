@@ -10,6 +10,7 @@
     "title": "Una sola strategia viva: DriftPullback. ORB e VaultBreak chiuse sull'OOS.",
     "note": "sette strategie, sei nel cimitero, una passata OOS e Stage 7",
     "items": [
+     "**Girare `VWAP_Fade_Study` su @YM e @NQ** (5 min, CT, 2020-2024, ShowLog 1). Due soglie pre-registrate: eccesso ≥ +6 pp e ≥ 2 setup/giorno. Se non le passa, non si scrive la strategia.",
      "**Il nodo**: il corso dice di non deployare una sola strategia nemmeno in eval (Live 004), e noi ne abbiamo una. Tetto a 3, ma le altre due sono morte fuori campione.",
      "**Decisione da prendere**: partire comunque con DriftPullback da sola col piano veloce (2 micro, finestra corta, 42% per tentativo, $400 per 89% entro quattro), oppure cercare una seconda candidata prima.",
      "Se si cerca: le candidate dell'agente (IB-C Breakout, IB-C Failure) sono su **MYM**, e l'unita di rischio li e migliore di MNQ (R/ATR 0,35-0,65 contro 0,14-0,26).",
@@ -76,6 +77,29 @@
   }
  ],
  "strategies": [
+  {
+   "name": "VWAP Fade",
+   "family": "**mean reverting** (la prima della pipeline)",
+   "instrument": "@YM 5m (candidato) · @NQ 5m (controllo)",
+   "path": "mc/strategies/VWAP_Fade",
+   "stages": {
+    "0": "run"
+   },
+   "note": "**Stage 0. Prima strategia mean reverting mai aperta**, dopo la scoperta che tutte e sei le precedenti erano momentum o breakout. Vende la deviazione dal VWAP e punta al VWAP: l'esatto contrario di VWAP Pullback, che entrava sul reclaim. **Ragione strutturale**: il VWAP e il benchmark di esecuzione istituzionale, quindi il flusso che lo riporta indietro esiste per un motivo contabile e non per una regolarita statistica. **Non si scrive la strategia finche l'indicatore di misura non supera due soglie pre-registrate**: eccesso sul caso ≥ +6 pp (il caso vale 60%, serve WR ≥ 66%) e ≥ 2 setup al giorno.",
+   "metrics": {
+    "geometria pre-registrata": "ingresso a VWAP ± 1,0σ · target il VWAP · stop a ± 2,5σ con σ congelata · R:R 0,67",
+    "soglia 1 — eccesso": "≥ +6,0 pp sul caso (60% in random walk) = WR ≥ 66% al primo tocco",
+    "soglia 2 — frequenza": "≥ 2 setup/giorno (DriftPullback ne fa 3,2 e vale $18,34/giorno per micro)",
+    "aspettativa dichiarata": "eccesso fra +2 e +5 pp, cioe SOTTO soglia"
+   },
+   "log": [
+    {
+     "date": "2026-10-17",
+     "text": "**Aperta.** Riempie il buco trovato oggi: sei strategie su sei erano momentum o breakout e il mean reversion non era mai stato testato, mentre Live 001, 421 lo da come meta del minimo. Geometria scelta per cadere dentro il profilo prop: ingresso a 1σ, target il VWAP, stop a 2,5σ, che da **R:R 0,67** e un caso base del **60%**. Scritto `VWAP_Fade_Study.txt`, un **indicatore** che conta i setup e li risolve al primo tocco: da frequenza, WR osservato ed eccesso senza girare nessun backtest. **Nessun filtro di regime, deliberatamente** — il fade muore nei giorni di trend e la tentazione sarebbe aggiungerlo subito, ma la lezione 2 dice di partire semplice e il filtro e la prima variante dello Stage 4, da far passare dallo split-sample. **Aspettativa dichiarata prima del run: eccesso fra +2 e +5 pp, sotto soglia.**"
+    }
+   ],
+   "next": "Girare `VWAP_Fade_Study` su @YM e @NQ, 2020-2024, e mandare il log."
+  },
   {
    "name": "ORB Breakout",
    "family": "trend / breakout",
@@ -474,6 +498,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-17",
+   "text": "**Aperta VWAP Fade: la prima mean reverting della pipeline.** Vende la deviazione dal VWAP e punta al VWAP, l'esatto contrario di VWAP Pullback. Prima di scrivere la strategia si misura, con un indicatore, se esiste il materiale: **eccesso sul caso ≥ +6 pp** (il caso vale 60% con questa geometria) e **≥ 2 setup al giorno**. Sono i due test che le candidate precedenti avrebbero fallito se li avessimo applicati prima di scrivere il codice."
+  },
   {
    "date": "2026-10-17",
    "text": "**Tutte e sei le strategie morte erano momentum o breakout: il mean reversion non l'abbiamo mai provato.** Emerso correggendo l'etichetta di VWAP Pullback, che il board dava come «mean reverting» mentre il codice arma il bias su un breakout dell'opening range ed entra sul reclaim del VWAP nella direzione del bias. ORB, VaultBreak, Gold Asian Range, NQ First5, DriftPullback e VWAP Pullback stanno tutte nella stessa famiglia. Non e' solo che manca una seconda strategia: **manca meta' del metodo**, e il corso la indica come minimo (Live 001, 421)."
