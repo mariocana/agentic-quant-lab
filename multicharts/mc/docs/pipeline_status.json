@@ -37,7 +37,7 @@
    "id": 2,
    "name": "Backtest IS",
    "short": "IS",
-   "gate": "**t ≥ 2** · **WR ≥ 55%** · **R:R 0.5–1**. Tre criteri, tutti dal profilo prop del corso (Live 005: win rate 54–72%). PF, avg trade e concentrazione annuale sono stati spostati in `metodologia_live.md`: valgono per i soldi propri, non per una eval (Live 002: «your biggest enemy is the trailing drawdown and **not the profit factor**»). Il rischio e il drawdown non si giudicano qui: sono output dello Stage 7."
+   "gate": "**t ≥ 2** · **WR ≥ 55%** · **R:R 0,5–1 (tolleranza ±5%, cioe 0,475–1,05)**. Tre criteri, tutti dal profilo prop del corso (Live 005: win rate 54–72%). PF, avg trade e concentrazione annuale sono stati spostati in `metodologia_live.md`: valgono per i soldi propri, non per una eval (Live 002: «your biggest enemy is the trailing drawdown and **not the profit factor**»). Il rischio e il drawdown non si giudicano qui: sono output dello Stage 7."
   },
   {
    "id": 4,
@@ -87,7 +87,7 @@
     "1": "pass",
     "2": "fail"
    },
-   "note": "**Morta al Gate 2, e la misura che l'aveva autorizzata era sbagliata.** IS: 1.661 trade, avg **−$24,55**, **t −2,24**, WR 52,5%, net **−$40.784**, negativo in 8 anni su 9. **Due difetti nel mio indicatore, che si sommano** (vedi `bug_misura_primo_tocco.md`): (1) quando una barra da 5 minuti tocca **sia** target **sia** stop contavo sempre il target — sul percorso vero a 1 minuto il WR sui risolti e **60,7%** contro un caso del 60%, quindi **eccesso +0,7 pp e non +4,40**; (2) il **29% di non risolti**, che la misura escludeva, non e neutro ma **selezionato per perdenti** — col target a 0,50 G e lo stop a 0,75, chi va bene si risolve e chi va male resta in rosso e viene chiuso a tempo: 486 uscite flat a **−$113 medi**, cioe **−$54.852**. La ricostruzione torna al dollaro.",
+   "note": "**Morta al Gate 2, e la misura che l'aveva autorizzata era sbagliata.** IS: 1.661 trade, avg **−$24,55**, **t −2,24**, WR 52,5%, net **−$40.784**, negativo in 8 anni su 9. **Due difetti nel mio indicatore, che si sommano** (vedi `bug_misura_primo_tocco.md`): (1) quando una barra da 5 minuti tocca **sia** target **sia** stop contavo sempre il target — sul percorso vero a 1 minuto il WR sui risolti e **60,7%** contro un caso del 60%, quindi **eccesso +0,7 pp e non +4,40**; (2) il **29% di non risolti**, che la misura escludeva, non e neutro ma **selezionato per perdenti** — col target a 0,50 G e lo stop a 0,75, chi va bene si risolve e chi va male resta in rosso e viene chiuso a tempo: 486 uscite flat a **−$113 medi**, cioe **−$54.852**. La ricostruzione torna al dollaro. **Sepolta il 17/10.** Il numero definitivo viene dal backtest, non dalla misura: al primo tocco sul percorso a 1 minuto, 713 target contro 462 stop su 1.175 risolti in 9 anni, WR **60,68%** contro un caso del 60% = **eccesso +0,68 ± 1,43 pp, 0,48 errori standard**, IC 95% da −2,12 a +3,48. **E non si salva cambiando le uscite**: l'eccesso sul caso e invariante alla geometria.",
    "metrics": {
     "geometria pre-registrata": "G = ingresso − chiusura RTH di ieri · target −0,50·G · stop +0,75·G · R:R 0,667 · caso 60%",
     "soglia da seconda gamba": "eccesso positivo a ≥ 3 errori standard da zero (NON i +7,6 pp che servirebbero per bastare da sola)",
@@ -608,6 +608,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-17",
+   "text": "**ON Reversal sepolta, e la famiglia mean reverting e quasi esaurita.** Numero definitivo dal backtest: eccesso **+0,68 ± 1,43 pp su 1.175 risolti in 9 anni, 0,48 errori standard**. Non si salva cambiando le uscite, perche l'eccesso sul caso e invariante alla geometria. **E c'e una cosa che non avevo visto quando ho scelto fra i tre candidati: quello che ho costruito E il gap fade.** Il movimento overnight *e* il gap. Quindi dei tre meccanismi mean reverting ne restano **zero** utilizzabili: VWAP fade bocciato su due strumenti, gap/overnight fade bocciato qui, e il reversal pomeridiano si **sovrappone per intero** a DriftPullback. **Fissata anche la tolleranza sul R:R a ±5% (0,475-1,05)**, adesso che non serve a nessuno: a R:R 1,00 il WR richiesto per PF 1,3 e 56,5%, a 1,02 e 56,0%, mezzo punto. La banda descrive un profilo, non e un vincolo fisico."
+  },
   {
    "date": "2026-10-17",
    "text": "**ON Reversal morta al Gate 2 (t −2,24), e il vero risultato della giornata e un difetto nel MIO metodo di misura.** L'indicatore contava sempre il target quando una barra da 5 minuti toccava target e stop insieme, e escludeva dal win rate il 29% di setup non risolti trattandoli come neutri mentre sono **selezionati per perdenti**. I due difetti spiegano al dollaro il divario fra +4,40 pp di eccesso promesso e un net di −$40.784. Scritto `bug_misura_primo_tocco.md` con le correzioni. **La regola che ne esce: un indicatore di misura non autorizza una strategia, al massimo la propone.**"
