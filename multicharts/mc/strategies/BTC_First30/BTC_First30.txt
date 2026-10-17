@@ -19,8 +19,10 @@
        lontano di MaxRiskPts dal close delle 09:00 (vale con StopMode 1/2).
        Si salta anche il giorno con la finestra incompleta (manca una
        barra fra 08:35 e 09:00): il log lo segna con completa=0.
-    5) TARGET: TP_RR x rischio se TP_RR > 0 (rischio misurato
-       all'ingresso effettivo); 0 = nessun target.
+    5) TARGET: TP_RR x rischio se TP_RR > 0; 0 = nessun target.
+       Stop e target sono ordini speciali (SetStopLoss/SetProfitTarget),
+       attivi dalla barra d'ingresso. In List of Trades escono come
+       "Stop Loss" e "Profit Target".
     6) TIME EXIT: prima barra con Time >= ExitTime -> next bar at market
        (riempie alle 15:00).
     Un trade al giorno, solo lunedi'-venerdi'.
@@ -55,8 +57,7 @@ Variables:
     orOpen(0), orHi(0), orLo(0), orClose(0), orBars(0), orExpected(0),
     inOR(false), decided(false), fullWindow(false),
     goShort(false), goLong(false),
-    lvlSL(0), riskPts(0),
-    posSL(0), posTP(0), wasIn(false);
+    lvlSL(0), riskPts(0), dayRisk(0), wasIn(false);
 
 tick = MinMove / PriceScale;
 dow  = DayOfWeek(Date);
@@ -116,41 +117,36 @@ if inOR and decided = false and Time >= OREnd then begin
               " hi=", orHi:9:2, " lo=", orLo:9:2, " rischio_pt=", riskPts:8:2, " completa=", fullWindow:2:0,
               " short=", goShort:2:0, " long=", goLong:2:0);
 
+    { distanza di stop del giorno (0 = nessuno stop: StopMode 0 o nessun trade) }
+    dayRisk = 0;
+    if (goShort or goLong) and StopMode > 0 then dayRisk = riskPts;
+
     if MarketPosition = 0 and Time < ExitTime then begin
         if goShort then SellShort ("B30-S") Num_Contracts contracts next bar at market;
         if goLong  then Buy       ("B30-L") Num_Contracts contracts next bar at market;
     end;
 end;
 
-{ ===== ALL'INGRESSO: fissa stop e target sul prezzo effettivo ===== }
-if MarketPosition <> 0 and wasIn = false then begin
-    posSL = 0; posTP = 0;
-    if MarketPosition = -1 then begin
-        if StopMode = 1 then posSL = lvlSL;
-        if StopMode = 2 then posSL = EntryPrice + StopPts;
-        if posSL > 0 and TP_RR > 0 then posTP = EntryPrice - TP_RR * (posSL - EntryPrice);
-    end
-    else begin
-        if StopMode = 1 then posSL = lvlSL;
-        if StopMode = 2 then posSL = EntryPrice - StopPts;
-        if posSL > 0 and TP_RR > 0 then posTP = EntryPrice + TP_RR * (EntryPrice - posSL);
-    end;
-    if ShowLog = 1 then
-        Print("B30 ENT ", Date:8:0, " ", Time:5:0, " dir=", MarketPosition:3:0,
-              " entry=", EntryPrice:9:2, " SL=", posSL:9:2, " TP=", posTP:9:2,
-              " rischio_pt=", AbsValue(EntryPrice - posSL):8:2);
+{ ===== STOP / TARGET built-in, attivi gia' sulla barra d'ingresso =====
+  Ordini speciali: valgono anche dentro la barra in cui la posizione entra
+  (09:00-09:05). Il primo giro dello Stage 1 usava ordini "next bar" emessi
+  dopo l'ingresso, e quella barra restava scoperta (14/07/2026: il target e'
+  stato preso 85 pt oltre il suo prezzo). Distanza = dayRisk, misurata dal
+  close delle 09:00: lo stop reale e' EntryPrice + dayRisk, cioe' l'estremo
+  della finestra a meno dello scarto fra close e open delle 09:00.
+  `SetStopLoss` e' PER POSIZIONE: si moltiplica per Num_Contracts, mai per
+  CurrentContracts, che sulla barra d'ingresso vale 0 (lezione di NQ_First5). }
+if dayRisk > 0 then begin
+    SetStopLoss(dayRisk * BigPointValue * Num_Contracts);
+    if TP_RR > 0 then SetProfitTarget(TP_RR * dayRisk * BigPointValue * Num_Contracts);
 end;
-wasIn = MarketPosition <> 0;
 
-{ ===== BRACKET ===== }
-if MarketPosition = -1 then begin
-    if posSL > 0 then BuyToCover ("S-SL") next bar at posSL stop;
-    if posTP > 0 then BuyToCover ("S-TP") next bar at posTP limit;
-end;
-if MarketPosition = 1 then begin
-    if posSL > 0 then Sell ("L-SL") next bar at posSL stop;
-    if posTP > 0 then Sell ("L-TP") next bar at posTP limit;
-end;
+if MarketPosition <> 0 and wasIn = false and ShowLog = 1 then
+    Print("B30 ENT ", Date:8:0, " ", Time:5:0, " dir=", MarketPosition:3:0,
+          " entry=", EntryPrice:9:2, " SL=", EntryPrice - MarketPosition * dayRisk:9:2,
+          " TP=", IFF(TP_RR > 0, EntryPrice + MarketPosition * TP_RR * dayRisk, 0):9:2,
+          " rischio_pt=", dayRisk:8:2);
+wasIn = MarketPosition <> 0;
 
 { ===== TIME EXIT (anche se la sessione salta le 15:00: prima barra oltre) ===== }
 if MarketPosition <> 0 and (Time >= ExitTime or Date <> Date[1]) then begin
