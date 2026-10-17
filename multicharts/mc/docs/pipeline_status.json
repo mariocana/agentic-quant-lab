@@ -10,7 +10,7 @@
     "title": "Una sola strategia viva: DriftPullback. ORB e VaultBreak chiuse sull'OOS.",
     "note": "sette strategie, sei nel cimitero, una passata OOS e Stage 7",
     "items": [
-     "**Girare `VWAP_Fade_Study` su @YM e @NQ** (5 min, CT, 2020-2024, ShowLog 1). Due soglie pre-registrate: eccesso ≥ +6 pp e ≥ 2 setup/giorno. Se non le passa, non si scrive la strategia.",
+     "**Controllo di VWAP Fade su @NQ** (stesso indicatore, 2020-2024). Su @YM l'eccesso e **+0,41 pp** contro i +6 richiesti, con 3.804 setup risolti: conclusivo. Serve solo a sapere se il nulla e dello strumento o del meccanismo.",
      "~~Misurare il range di @CL e @YM~~ **fatto**: MCL $170 e MYM $169 per micro, R/ATR 0,47 entrambi. VWAP Fade va su **@YM**; MCL resta da parte per una strategia pensata sui driver del crude.",
      "**Il nodo**: il corso dice di non deployare una sola strategia nemmeno in eval (Live 004), e noi ne abbiamo una. Tetto a 3, ma le altre due sono morte fuori campione.",
      "**Decisione da prendere**: partire comunque con DriftPullback da sola col piano veloce (2 micro, finestra corta, 42% per tentativo, $400 per 89% entro quattro), oppure cercare una seconda candidata prima.",
@@ -84,17 +84,23 @@
    "instrument": "@YM 5m (deciso col dato) · @NQ 5m (controllo)",
    "path": "mc/strategies/VWAP_Fade",
    "stages": {
-    "0": "run"
+    "0": "pass",
+    "1": "fail"
    },
-   "note": "**Stage 0. Prima strategia mean reverting mai aperta**, dopo la scoperta che tutte e sei le precedenti erano momentum o breakout. Vende la deviazione dal VWAP e punta al VWAP: l'esatto contrario di VWAP Pullback, che entrava sul reclaim. **Ragione strutturale**: il VWAP e il benchmark di esecuzione istituzionale, quindi il flusso che lo riporta indietro esiste per un motivo contabile e non per una regolarita statistica. **Non si scrive la strategia finche l'indicatore di misura non supera due soglie pre-registrate**: eccesso sul caso ≥ +6 pp (il caso vale 60%, serve WR ≥ 66%) e ≥ 2 setup al giorno.",
+   "note": "**Misura fatta, non passa: eccesso +0,41 pp contro i +6 richiesti.** **Il primo test lo supera**: 3,33 setup/giorno, sopra la soglia di 2 — unica delle ultime quattro candidate a non morire di frequenza. **Il secondo no, e in modo conclusivo**: su 3.804 setup risolti il WR e **44,53%** contro un caso di **44,12%**, cioe **0,51 errori standard da zero**, IC 95% da −1,17 a +1,99 pp. Il fade al VWAP su YM **e un random walk**. Manca il controllo su @NQ, dieci minuti, per sapere se il nulla e dello strumento o del meccanismo.",
    "metrics": {
     "geometria pre-registrata": "ingresso a VWAP ± 1,0σ · target il VWAP · stop a ± 2,5σ con σ congelata · R:R 0,67",
     "soglia 1 — eccesso": "≥ +6,0 pp sul caso (60% in random walk) = WR ≥ 66% al primo tocco",
     "soglia 2 — frequenza": "≥ 2 setup/giorno (DriftPullback ne fa 3,2 e vale $18,34/giorno per micro)",
     "aspettativa dichiarata": "eccesso fra +2 e +5 pp, cioe SOTTO soglia",
-    "strumento": "@YM. MCL e MYM misurano lo **stesso** range per micro ($170 vs $169) e lo stesso R/ATR (0,47 a R=$80), quindi la scelta si fa su costo ($1,50 vs $2,00 RT), granularita (tick $0,50 vs $1,00) e stabilita di regime (1,68 vs 2,42). E soprattutto: l ipotesi del VWAP come benchmark di esecuzione e nata sull azionario, sul crude si annacqua."
+    "strumento": "@YM. MCL e MYM misurano lo **stesso** range per micro ($170 vs $169) e lo stesso R/ATR (0,47 a R=$80), quindi la scelta si fa su costo ($1,50 vs $2,00 RT), granularita (tick $0,50 vs $1,00) e stabilita di regime (1,68 vs 2,42). E soprattutto: l ipotesi del VWAP come benchmark di esecuzione e nata sull azionario, sul crude si annacqua.",
+    "esito @YM 2020-2024": "1.292 giorni · 4.305 setup · **3,33/giorno** · 3.804 risolti · WR **44,53%** contro caso **44,12%** · **eccesso +0,41 pp** (errore standard 0,81) · R:R realizzato 1,15"
    },
    "log": [
+    {
+     "date": "2026-10-17",
+     "text": "**NON PASSA, ma il numero stampato era di nuovo sbagliato e va corretto prima di registrarlo.** Il log diceva eccesso **−15,47 pp**: l'indicatore confrontava il win rate col caso della geometria **di progetto** invece che di quella **realizzata**. Entrando alla **chiusura** della barra che rompe la banda si sfora, e l'ingresso medio cade a **1,397 σ** invece che a 1,000 — il che sposta il caso dal 60% al **44,12%**. Contro quel caso, il WR misurato di **44,53%** da un eccesso di **+0,41 pp**, non −15,47. **Il verdetto non cambia** (serve +6) ma la ragione si: non e che la strategia perde, e che **non c'e niente**. **E il test aveva potenza da vendere**: 3.804 setup risolti, errore standard 0,81 pp, quindi +0,41 e a **0,51 errori standard da zero** e la soglia di +6 sarebbe stata a 7,5. IC 95%: −1,17…+1,99 pp. **Il primo test invece lo passa**: 3,33 setup/giorno contro la soglia di 2. **Lo sforamento di 0,40 σ degrada anche il R:R da 0,67 a 1,27**, e si correggerebbe entrando con un limite alla banda — ma non salverebbe niente, perche l'eccesso sul caso e costruito per essere invariante alla geometria: un fill migliore porta il caso dal 44% al 60% e la soglia dal 44% al 66%, e la distanza resta. **Indicatore corretto**: ora calcola il caso dalla sigma media realizzata all'ingresso."
+    },
     {
      "date": "2026-10-17",
      "text": "**Primo run su @YM NON VALIDO: bug nell'indicatore, non un verdetto.** Il log dava 20.217 setup su 1.292 giorni, WR 25,34% contro un caso del 60%, **eccesso −34,66 pp**: sembrava una stroncatura. **Non lo e, e si vede senza interpretare**: distanza media al target **101,39 punti** contro **21,94** allo stop, cioe **R:R realizzato 4,62 quando di progetto e 0,67**. Il target era 4,6 volte piu lontano dello stop, l'esatto contrario della geometria. Da li si ricava che gli ingressi avvenivano a **2,06 σ** invece che a 1,00. **Causa**: mancava la condizione di riarmo — appena un setup si risolveva, la barra dopo ne apriva un altro **senza che il prezzo fosse rientrato nella banda**, e dentro un trend questo riapre il setup a ogni barra sempre piu lontano, con lo stop sempre piu vicino. Lo conferma la frequenza: **15,65 setup/giorno = uno ogni 5 barre** su 78. **Correzioni**: riarmo solo dopo rientro dentro ±EntrySD·σ (meccanica standard, non un filtro), `MinBars 12` perche con poche barre la σ non e definita, e una diagnostica nuova — il log stampa `sigma all'ingresso`, che **deve valere ~1,00**: se e piu alto il riarmo e rotto e il resto non si legge. **Dal run rotto non si conclude niente sull'ipotesi**: l'aspettativa dichiarata (+2…+5 pp) resta in piedi."
@@ -108,7 +114,7 @@
      "text": "**Aperta.** Riempie il buco trovato oggi: sei strategie su sei erano momentum o breakout e il mean reversion non era mai stato testato, mentre Live 001, 421 lo da come meta del minimo. Geometria scelta per cadere dentro il profilo prop: ingresso a 1σ, target il VWAP, stop a 2,5σ, che da **R:R 0,67** e un caso base del **60%**. Scritto `VWAP_Fade_Study.txt`, un **indicatore** che conta i setup e li risolve al primo tocco: da frequenza, WR osservato ed eccesso senza girare nessun backtest. **Nessun filtro di regime, deliberatamente** — il fade muore nei giorni di trend e la tentazione sarebbe aggiungerlo subito, ma la lezione 2 dice di partire semplice e il filtro e la prima variante dello Stage 4, da far passare dallo split-sample. **Aspettativa dichiarata prima del run: eccesso fra +2 e +5 pp, sotto soglia.**"
     }
    ],
-   "next": "Girare `VWAP_Fade_Study` su @YM e @NQ, 2020-2024, e mandare il log."
+   "next": "**Controllo su @NQ** (dieci minuti) per sapere se il nulla e dello strumento o del meccanismo. Aspettativa: identico."
   },
   {
    "name": "ORB Breakout",
@@ -508,6 +514,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-17",
+   "text": "**VWAP Fade misurata su @YM: il fade al VWAP e un random walk.** WR 44,53% contro un caso di 44,12% su 3.804 setup risolti — **eccesso +0,41 pp**, a mezzo errore standard da zero, contro i +6 richiesti. **Passa invece il test di frequenza** (3,33 setup/giorno), l'unica delle ultime quattro candidate a riuscirci. **Secondo errore mio nello stesso indicatore**: stampava −15,47 pp perche confrontava col caso della geometria di progetto invece che di quella realizzata — entrando alla chiusura si sfora a 1,397 σ e il caso scende dal 60% al 44%. Corretto."
+  },
   {
    "date": "2026-10-17",
    "text": "**Misurati CL e YM: hanno lo stesso identico range per micro, $170 contro $169.** Quindi lo stesso R/ATR a ogni budget (0,47 a R=$80) e come unita di rischio sono intercambiabili. La scelta per VWAP Fade cade su **@YM** per costo, granularita e stabilita di regime, e perche l'ipotesi del VWAP come benchmark di esecuzione e nata sull'azionario. **MCL resta come unica vera diversificazione di classe disponibile a $0,50/lato**, ma merita una strategia pensata sul crude, non un fade trapiantato."

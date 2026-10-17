@@ -161,3 +161,52 @@ giornata da 78. Non e un mercato che oscilla, e un contatore impazzito.
 Niente sull'ipotesi. **L'eccesso di −34,66 pp non falsifica il VWAP Fade**: misura un
 meccanismo che nessuna strategia implementerebbe mai. L'aspettativa dichiarata prima del run
 (**+2…+5 pp, sotto soglia**) resta in piedi e non e stata ne confermata ne smentita.
+
+## Esito: NON PASSA. Eccesso +0,41 pp contro i +6 richiesti.
+
+Log: `mc/docs/measures/vwap_fade_YM_2020-2024.txt`. @YM, 1.292 giorni, 2020-2024.
+
+### Il primo test lo passa
+
+**3,33 setup al giorno**, sopra la soglia di 2. La famiglia non muore di frequenza — e
+l'unica delle ultime quattro candidate a superare questo scoglio.
+
+### Il secondo no, e il numero giusto non e quello stampato
+
+Il log stampava **eccesso −15,47 pp**, e anche quello era un difetto dell'indicatore:
+confrontava il win rate col caso della geometria **di progetto** invece che di quella
+**realizzata**.
+
+Entrando alla **chiusura** della barra che rompe la banda si sfora: l'ingresso medio cade a
+**1,397 σ** invece che a 1,000. E il caso dipende da dove entri davvero:
+
+| | ingresso | caso | WR misurato | eccesso |
+|---|---|---|---|---|
+| geometria di progetto | 1,00 σ | 60,00% | 44,53% | −15,47 pp **(sbagliato)** |
+| **geometria realizzata** | **1,397 σ** | **44,12%** | **44,53%** | **+0,41 pp** |
+
+> **Il fade al VWAP su YM e un random walk.** WR 44,53% contro un caso di 44,12%.
+
+### E il test aveva potenza da vendere
+
+Su **3.804 setup risolti**, l'errore standard sull'eccesso e **0,81 pp**:
+
+- misurato **+0,41 pp**, cioe **0,51 errori standard da zero**;
+- intervallo di confidenza 95%: **da −1,17 a +1,99 pp**;
+- la soglia di **+6,0 pp** sarebbe stata a **7,5 errori standard**.
+
+**Non e un campione piccolo, non e un regime sfortunato: non c'e niente.** L'aspettativa
+dichiarata prima del run era +2…+5 pp e sotto soglia; il misurato e persino sotto quella.
+
+### La nota sulla geometria, che non salva niente
+
+Lo sforamento di 0,40 σ degrada anche il R:R da **0,67 a 1,27**, fuori dalla banda prop. Si
+correggerebbe entrando con un **limite alla banda** invece che alla chiusura. **Ma non
+cambierebbe il verdetto**: l'eccesso sul caso e costruito apposta per essere invariante alla
+geometria — spostare target e stop rietichetta l'edge, non lo crea. Un fill migliore sposta
+il caso dal 44% al 60% e la soglia dal 44% al 66%: la distanza resta la stessa.
+
+### Cosa resta da fare prima di chiudere la famiglia
+
+Il controllo su **@NQ**, che e nella SPEC e costa dieci minuti. Serve a sapere se il nulla e
+dello strumento o del meccanismo. **L'aspettativa e che sia identico.**

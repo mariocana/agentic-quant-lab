@@ -201,11 +201,17 @@ if ShowLog = 1 and LastBarOnChart then begin
     Print( File(LogPath), "verso il VWAP     ", tWin:8:0 );
     Print( File(LogPath), "verso lo stop     ", tLoss:8:0 );
     Print( File(LogPath), "non risolti a EOD ", tOpen:8:0 );
-    if tWin + tLoss > 0 then begin
+    if tWin + tLoss > 0 and tSetup > 0 then begin
         obsWR  = 100 * tWin / ( tWin + tLoss );
-        nullWR = 100 * ( StopSD - EntrySD ) / StopSD;
+        { IL CASO VA CALCOLATO SULLA GEOMETRIA REALIZZATA, NON SU QUELLA DI PROGETTO.
+          Entrando alla chiusura della barra che rompe la banda si sfora: l'ingresso
+          medio cade a ~1,4 sigma invece che a 1,0, e il caso scende dal 60% al 44%.
+          Confrontare col 60% era l'errore del run del 17/10, che faceva sembrare
+          un -15,47 pp quello che e un +0,41. }
+        nullWR = 100 * ( StopSD - sumSdAtEntry / tSetup ) / StopSD;
         Print( File(LogPath), "WR sui risolti    ", obsWR:8:2, "%" );
-        Print( File(LogPath), "WR del caso       ", nullWR:8:2, "%" );
+        Print( File(LogPath), "WR del caso       ", nullWR:8:2,
+               "%  (sulla geometria REALIZZATA)" );
         Print( File(LogPath), "ECCESSO SUL CASO  ", (obsWR - nullWR):8:2,
                " pp   <- serve >= +6,0" );
     end;
