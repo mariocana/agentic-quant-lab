@@ -4,19 +4,17 @@
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
-  "updated": "2026-10-15",
+  "updated": "2026-10-17",
   "groups": [
    {
-    "title": "Una sola strategia viva: DriftPullback. ORB e VaultBreak chiuse sull'OOS.",
-    "note": "sette strategie, sei nel cimitero, una passata OOS e Stage 7",
+    "title": "Una viva: DriftPullback. VWAP Fade chiusa su due strumenti.",
+    "note": "il mean reversion resta da coprire, ma con un meccanismo diverso dal fade sul VWAP",
     "items": [
-     "**Controllo di VWAP Fade su @NQ** (stesso indicatore, 2020-2024). Su @YM l'eccesso e **+0,41 pp** contro i +6 richiesti, con 3.804 setup risolti: conclusivo. Serve solo a sapere se il nulla e dello strumento o del meccanismo.",
-     "~~Misurare il range di @CL e @YM~~ **fatto**: MCL $170 e MYM $169 per micro, R/ATR 0,47 entrambi. VWAP Fade va su **@YM**; MCL resta da parte per una strategia pensata sui driver del crude.",
-     "**Il nodo**: il corso dice di non deployare una sola strategia nemmeno in eval (Live 004), e noi ne abbiamo una. Tetto a 3, ma le altre due sono morte fuori campione.",
-     "**Decisione da prendere**: partire comunque con DriftPullback da sola col piano veloce (2 micro, finestra corta, 42% per tentativo, $400 per 89% entro quattro), oppure cercare una seconda candidata prima.",
-     "Se si cerca: le candidate dell'agente (IB-C Breakout, IB-C Failure) sono su **MYM**, e l'unita di rischio li e migliore di MNQ (R/ATR 0,35-0,65 contro 0,14-0,26).",
-     "**Riserva su DriftPullback**: la curva e al 98esimo percentile del suo drawdown e il corso mette in panchina proprio questa strategia (Live 004, 152).",
-     "Nessun OOS 2025-2026 e piu disponibile per ORB o VaultBreak: sono spesi."
+     "**La decisione aperta**: partire con DriftPullback da sola col piano veloce (2 micro, 42%/tentativo, $400 per l'89% entro quattro) oppure cercare prima la seconda gamba.",
+     "Se si cerca: i tre meccanismi mean reverting non provati sono **reversal pomeridiano dopo momentum mattutino** (Xu-Zhu 2022), **overnight-intraday reversal** (Liu et al. 2025) e **gap fade**.",
+     "**Da riusare**: la banda a 1 σ sul VWAP da 3,3 setup/giorno su YM e NQ — trigger valido per frequenza, manca il segnale.",
+     "**MCL** resta l'unica vera diversificazione di classe a $0,50/lato, ma vuole una strategia pensata sui driver del crude.",
+     "**Riserva su DriftPullback**: la curva e al 98esimo percentile del suo drawdown."
     ]
    }
   ]
@@ -81,22 +79,28 @@
   {
    "name": "VWAP Fade",
    "family": "**mean reverting** (la prima della pipeline)",
-   "instrument": "@YM 5m (deciso col dato) · @NQ 5m (controllo)",
+   "instrument": "@YM e @NQ 5m (entrambi misurati)",
    "path": "mc/strategies/VWAP_Fade",
    "stages": {
     "0": "pass",
     "1": "fail"
    },
-   "note": "**Misura fatta, non passa: eccesso +0,41 pp contro i +6 richiesti.** **Il primo test lo supera**: 3,33 setup/giorno, sopra la soglia di 2 — unica delle ultime quattro candidate a non morire di frequenza. **Il secondo no, e in modo conclusivo**: su 3.804 setup risolti il WR e **44,53%** contro un caso di **44,12%**, cioe **0,51 errori standard da zero**, IC 95% da −1,17 a +1,99 pp. Il fade al VWAP su YM **e un random walk**. Manca il controllo su @NQ, dieci minuti, per sapere se il nulla e dello strumento o del meccanismo.",
+   "note": "**Chiusa. Il fade della deviazione dal VWAP non ha edge, su nessuno dei due strumenti.** @YM: eccesso **+0,41 pp**. @NQ: **−1,67 pp**. Combinato su **7.516 setup risolti**: **−0,62 ± 0,57 pp**, IC 95% da −1,74 a +0,51, contro una soglia di +6 che starebbe a 10,5 errori standard. **Non e lo strumento**: NQ e YM hanno range per micro diversi di 2,5 volte e danno lo stesso nulla. **Il meccanismo pero produce materiale** — 3,3 setup/giorno su entrambi, unica delle ultime candidate a passare il test di frequenza: manca il segnale, non il contatore. **Il mean reversion in generale non e falsificato**, lo e un suo meccanismo.",
    "metrics": {
     "geometria pre-registrata": "ingresso a VWAP ± 1,0σ · target il VWAP · stop a ± 2,5σ con σ congelata · R:R 0,67",
     "soglia 1 — eccesso": "≥ +6,0 pp sul caso (60% in random walk) = WR ≥ 66% al primo tocco",
     "soglia 2 — frequenza": "≥ 2 setup/giorno (DriftPullback ne fa 3,2 e vale $18,34/giorno per micro)",
     "aspettativa dichiarata": "eccesso fra +2 e +5 pp, cioe SOTTO soglia",
     "strumento": "@YM. MCL e MYM misurano lo **stesso** range per micro ($170 vs $169) e lo stesso R/ATR (0,47 a R=$80), quindi la scelta si fa su costo ($1,50 vs $2,00 RT), granularita (tick $0,50 vs $1,00) e stabilita di regime (1,68 vs 2,42). E soprattutto: l ipotesi del VWAP come benchmark di esecuzione e nata sull azionario, sul crude si annacqua.",
-    "esito @YM 2020-2024": "1.292 giorni · 4.305 setup · **3,33/giorno** · 3.804 risolti · WR **44,53%** contro caso **44,12%** · **eccesso +0,41 pp** (errore standard 0,81) · R:R realizzato 1,15"
+    "esito @YM 2020-2024": "1.292 giorni · 4.305 setup · **3,33/giorno** · 3.804 risolti · WR **44,53%** contro caso **44,12%** · **eccesso +0,41 pp** (errore standard 0,81) · R:R realizzato 1,15",
+    "esito @NQ 2020-2024": "1.293 giorni · 4.219 setup · **3,26/giorno** · 3.712 risolti · WR **42,73%** contro caso **44,40%** · **eccesso −1,67 pp**",
+    "combinato YM+NQ": "**7.516 setup risolti · eccesso −0,62 ± 0,57 pp · IC 95% −1,74…+0,51**"
    },
    "log": [
+    {
+     "date": "2026-10-17",
+     "text": "**Controllo su @NQ: confermato, la famiglia si chiude.** Il log stampa ancora −17,27 pp perche girato con la versione dell'indicatore **prima** della correzione sul caso; il numero corretto si ricava dalle stesse righe. σ all'ingresso **1,390** → caso **44,40%**, WR **42,73%**, **eccesso −1,67 pp** su 3.712 setup risolti. **Combinato con @YM: −0,62 ± 0,57 pp su 7.516 setup**, IC 95% da −1,74 a +0,51, contro una soglia di +6 che starebbe a **10,5 errori standard**. **Non e lo strumento**: NQ e YM hanno range per micro diversi di 2,5 volte e danno lo stesso nulla. **Due cose da portare via**: la banda a 1 σ produce **3,3 setup/giorno su entrambi** ed e quindi un trigger valido per frequenza — manca il segnale, non il contatore; e il **mean reversion in generale non e falsificato**, lo e questo meccanismo. Restano reversal pomeridiano (Xu-Zhu 2022), overnight-intraday reversal (Liu 2025), gap fade."
+    },
     {
      "date": "2026-10-17",
      "text": "**NON PASSA, ma il numero stampato era di nuovo sbagliato e va corretto prima di registrarlo.** Il log diceva eccesso **−15,47 pp**: l'indicatore confrontava il win rate col caso della geometria **di progetto** invece che di quella **realizzata**. Entrando alla **chiusura** della barra che rompe la banda si sfora, e l'ingresso medio cade a **1,397 σ** invece che a 1,000 — il che sposta il caso dal 60% al **44,12%**. Contro quel caso, il WR misurato di **44,53%** da un eccesso di **+0,41 pp**, non −15,47. **Il verdetto non cambia** (serve +6) ma la ragione si: non e che la strategia perde, e che **non c'e niente**. **E il test aveva potenza da vendere**: 3.804 setup risolti, errore standard 0,81 pp, quindi +0,41 e a **0,51 errori standard da zero** e la soglia di +6 sarebbe stata a 7,5. IC 95%: −1,17…+1,99 pp. **Il primo test invece lo passa**: 3,33 setup/giorno contro la soglia di 2. **Lo sforamento di 0,40 σ degrada anche il R:R da 0,67 a 1,27**, e si correggerebbe entrando con un limite alla banda — ma non salverebbe niente, perche l'eccesso sul caso e costruito per essere invariante alla geometria: un fill migliore porta il caso dal 44% al 60% e la soglia dal 44% al 66%, e la distanza resta. **Indicatore corretto**: ora calcola il caso dalla sigma media realizzata all'ingresso."
@@ -114,7 +118,7 @@
      "text": "**Aperta.** Riempie il buco trovato oggi: sei strategie su sei erano momentum o breakout e il mean reversion non era mai stato testato, mentre Live 001, 421 lo da come meta del minimo. Geometria scelta per cadere dentro il profilo prop: ingresso a 1σ, target il VWAP, stop a 2,5σ, che da **R:R 0,67** e un caso base del **60%**. Scritto `VWAP_Fade_Study.txt`, un **indicatore** che conta i setup e li risolve al primo tocco: da frequenza, WR osservato ed eccesso senza girare nessun backtest. **Nessun filtro di regime, deliberatamente** — il fade muore nei giorni di trend e la tentazione sarebbe aggiungerlo subito, ma la lezione 2 dice di partire semplice e il filtro e la prima variante dello Stage 4, da far passare dallo split-sample. **Aspettativa dichiarata prima del run: eccesso fra +2 e +5 pp, sotto soglia.**"
     }
    ],
-   "next": "**Controllo su @NQ** (dieci minuti) per sapere se il nulla e dello strumento o del meccanismo. Aspettativa: identico."
+   "next": "**Chiusa.** Il mean reversion resta da coprire con un meccanismo diverso: reversal pomeridiano dopo momentum mattutino, reversal overnight-intraday, gap fade."
   },
   {
    "name": "ORB Breakout",
@@ -514,6 +518,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-17",
+   "text": "**VWAP Fade chiusa su due strumenti: il fade della deviazione dal VWAP non ha edge.** @YM +0,41 pp, @NQ −1,67, **combinato −0,62 ± 0,57 su 7.516 setup risolti**, contro una soglia di +6 che starebbe a 10,5 errori standard. Non e lo strumento: NQ e YM hanno range per micro diversi di 2,5 volte e danno lo stesso nulla. **Due cose restano**: la banda a 1 σ produce 3,3 setup/giorno su entrambi ed e un trigger valido per frequenza, e il mean reversion **in generale** non e falsificato — lo e questo meccanismo."
+  },
   {
    "date": "2026-10-17",
    "text": "**VWAP Fade misurata su @YM: il fade al VWAP e un random walk.** WR 44,53% contro un caso di 44,12% su 3.804 setup risolti — **eccesso +0,41 pp**, a mezzo errore standard da zero, contro i +6 richiesti. **Passa invece il test di frequenza** (3,33 setup/giorno), l'unica delle ultime quattro candidate a riuscirci. **Secondo errore mio nello stesso indicatore**: stampava −15,47 pp perche confrontava col caso della geometria di progetto invece che di quella realizzata — entrando alla chiusura si sfora a 1,397 σ e il caso scende dal 60% al 44%. Corretto."

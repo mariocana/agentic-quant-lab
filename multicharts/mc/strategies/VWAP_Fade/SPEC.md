@@ -210,3 +210,42 @@ il caso dal 44% al 60% e la soglia dal 44% al 66%: la distanza resta la stessa.
 
 Il controllo su **@NQ**, che e nella SPEC e costa dieci minuti. Serve a sapere se il nulla e
 dello strumento o del meccanismo. **L'aspettativa e che sia identico.**
+
+## Controllo su @NQ: confermato. La famiglia si chiude.
+
+Log: `mc/docs/measures/vwap_fade_NQ_2020-2024.txt`. 1.293 giorni, 2020-2024.
+
+Il log stampa ancora **−17,27 pp** perche e girato con la versione dell'indicatore **prima**
+della correzione sul caso. Il numero corretto si ricava dalle stesse righe:
+
+| | setup/giorno | σ all'ingresso | caso | WR | **eccesso** | n risolti |
+|---|---|---|---|---|---|---|
+| **@YM** | 3,33 | 1,397 | 44,12% | 44,53% | **+0,41 pp** | 3.804 |
+| **@NQ** | 3,26 | 1,390 | 44,40% | 42,73% | **−1,67 pp** | 3.712 |
+| **combinato** | | | | | **−0,62 pp ± 0,57** | **7.516** |
+
+Intervallo di confidenza 95% sul combinato: **da −1,74 a +0,51 pp**. La soglia di **+6,0**
+sarebbe a **10,5 errori standard**.
+
+> **Non c'e edge nel fade della deviazione dal VWAP, su nessuno dei due strumenti.**
+> Due campioni indipendenti, 7.516 setup risolti, e lo zero ci sta comodamente dentro.
+
+### Cosa si porta via questa misura
+
+1. **La famiglia «fade della deviazione dal VWAP» e chiusa.** Non e lo strumento: NQ e YM
+   danno lo stesso nulla pur avendo range per micro diversi di 2,5 volte.
+2. **Il meccanismo pero produce materiale**: **3,3 setup al giorno su entrambi**, sopra la
+   soglia di 2, unica delle ultime candidate a passare il test di frequenza. Se un giorno si
+   trova un edge mean reverting, **la banda a 1 σ sul VWAP e un trigger valido**: manca il
+   segnale, non il contatore.
+3. **Il mean reversion in generale NON e falsificato.** Lo e *un* meccanismo. Restano da
+   provare: reversal pomeridiano dopo momentum mattutino (Xu-Zhu 2022), reversal
+   overnight-intraday (Liu et al. 2025), gap fade.
+
+### Il costo di questa misura
+
+Tre run e **due bug miei** nello stesso indicatore: il riarmo mancante (15,65 setup/giorno,
+R:R 4,62) e il caso calcolato sulla geometria di progetto invece che su quella realizzata
+(−15,47 dove c'era +0,41). **Entrambi erano visibili senza guardare il win rate** — il primo
+nella frequenza assurda, il secondo nel R:R fuori scala. La regola da tenere: **prima si
+controlla che lo strumento misuri quello che deve, poi si legge il risultato.**
