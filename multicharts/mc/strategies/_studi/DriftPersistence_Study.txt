@@ -1,0 +1,111 @@
+{ =====================================================================
+  DriftPersistence_Study  -  INDICATORE DI MISURA
+  ---------------------------------------------------------------------
+  Misura LA PREMESSA di DriftPullback, non la strategia:
+
+      «dopo un drift di un'ora, il prezzo tende a CONTINUARE?»
+
+  Serve a rispondere con un dato alla domanda «su quale strumento?».
+  Il porting su @YM e' fallito (eccesso da +2,52 a +0,07 pp) pur avendo
+  trasferito perfettamente la geometria: l'edge e' di NQ. Questo dice
+  SE e DOVE quella premessa vale, prima di scrivere altro codice.
+
+  COSA FA
+    1) ogni barra calcola il drift delle ultime DriftLen barre;
+    2) se |drift| supera DriftThresh volte l'ATR, registra il segno;
+    3) guarda il rendimento delle FwdBars barre successive;
+    4) conta quante volte il segno coincide.
+
+  IL METRO
+    In un random walk la risposta e' **50%**. Tutto quello che conta e'
+    l'**eccesso sul 50%**, con il suo errore standard.
+
+  PERCHE' QUESTO NON HA I BUG DEGLI ALTRI MISURATORI
+    Non c'e' nessun primo tocco da risolvere, quindi nessun tie-break
+    dentro la barra; e non c'e' niente di "non risolto" da escludere:
+    ogni osservazione ha un segno. E' un semplice test sul segno di un
+    rendimento forward.
+
+  CHART: 15 min, timezone Exchange (CT). La finestra la impone il CODICE.
+         Applicare a @NQ, @YM, @RTY, @GC, @CL con il Tag giusto,
+         periodo 2020-2024, e mandare il log.
+  ===================================================================== }
+
+Inputs:
+    Tag( "NQ" ),
+    SessStart( 830 ),
+    SessEnd( 1500 ),
+    DriftLen( 4 ),             { barre su cui si misura il drift (4 x 15m = 1 ora) }
+    FwdBars( 2 ),              { orizzonte avanti (2 x 15m = 30 min) }
+    DriftThresh( 0.50 ),       { |drift| minimo, in multipli di ATR }
+    AtrLen( 14 ),
+    ShowLog( 1 ),
+    LogPath( "C:\mc_out\drift_persistence.txt" ),
+    ResetFile( 1 );
+
+Vars:
+    intrabarpersist nOss( 0 ),
+    intrabarpersist nCont( 0 ),
+    intrabarpersist sumAbsDrift( 0 ),
+    intrabarpersist sumFwdCont( 0 ),
+    intrabarpersist sumFwdContr( 0 ),
+    intrabarpersist firstBar( true ),
+    drift( 0 ), atr( 0 ), fwd( 0 ), inWin( false ),
+    wr( 0 ), se( 0 );
+
+if firstBar then begin
+    firstBar = false;
+    if ShowLog = 1 and ResetFile = 1 then FileDelete( LogPath );
+    if ShowLog = 1 then
+        Print( File(LogPath), "DRIFTPERS symbol=", Tag,
+               " DriftLen=", DriftLen:3:0, " FwdBars=", FwdBars:3:0,
+               " DriftThresh=", DriftThresh:4:2,
+               " bigpointvalue=", BigPointValue:9:2 );
+end;
+
+atr = AvgTrueRange( AtrLen );
+
+{ la finestra e' definita dal codice. Serve spazio per FwdBars barre avanti,
+  quindi si smette FwdBars barre prima di SessEnd. }
+inWin = Time > SessStart and Time <= SessEnd;
+
+if inWin and atr > 0 and CurrentBar > DriftLen + FwdBars + AtrLen then begin
+
+    { drift delle ultime DriftLen barre, chiuso FwdBars barre fa cosi' che
+      il rendimento forward sia gia' tutto disponibile e non ci sia look-ahead }
+    drift = Close[FwdBars] - Close[FwdBars + DriftLen];
+
+    if AbsValue( drift ) >= DriftThresh * atr[FwdBars] then begin
+        fwd = Close - Close[FwdBars];
+        nOss = nOss + 1;
+        sumAbsDrift = sumAbsDrift + AbsValue( drift ) / atr[FwdBars];
+        if ( drift > 0 and fwd > 0 ) or ( drift < 0 and fwd < 0 ) then begin
+            nCont = nCont + 1;
+            sumFwdCont = sumFwdCont + AbsValue( fwd ) / atr[FwdBars];
+        end
+        else
+            sumFwdContr = sumFwdContr + AbsValue( fwd ) / atr[FwdBars];
+    end;
+end;
+
+if ShowLog = 1 and LastBarOnChart and nOss > 0 then begin
+    wr = 100 * nCont / nOss;
+    se = 100 * SquareRoot( 0.25 / nOss );
+    Print( File(LogPath), "" );
+    Print( File(LogPath), "=== ", Tag, " ===" );
+    Print( File(LogPath), "osservazioni      ", nOss:8:0 );
+    Print( File(LogPath), "continuazioni     ", nCont:8:0 );
+    Print( File(LogPath), "PERSISTENZA       ", wr:8:2, "%" );
+    Print( File(LogPath), "il caso           ", 50.00:8:2, "%" );
+    Print( File(LogPath), "ECCESSO           ", (wr - 50):8:2, " pp" );
+    Print( File(LogPath), "errore standard   ", se:8:2, " pp" );
+    Print( File(LogPath), "errori standard   ", ((wr - 50)/se):8:2,
+           "   <- serve >= 3 per crederci" );
+    Print( File(LogPath), "drift medio       ", (sumAbsDrift/nOss):8:3, " ATR" );
+    if nCont > 0 then
+        Print( File(LogPath), "mossa se continua ", (sumFwdCont/nCont):8:3, " ATR" );
+    if nOss - nCont > 0 then
+        Print( File(LogPath), "mossa se inverte  ", (sumFwdContr/(nOss-nCont)):8:3, " ATR" );
+end;
+
+Plot1( 0, "x" );

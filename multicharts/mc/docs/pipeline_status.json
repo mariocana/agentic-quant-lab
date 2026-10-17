@@ -10,6 +10,7 @@
     "title": "Domenica di ricerca. Lunedi, se non c'e' altro, si parte con DriftPullback sola.",
     "note": "una viva su nove; la ricerca di oggi dice che il profilo prop non e' una proprieta' dei segnali",
     "items": [
+     "**Girare `DriftPersistence_Study` su @NQ, @YM, @RTY, @GC, @CL** (15 min, CT, 2020-2024, `ResetFile 0` dal secondo in poi). Misura la PREMESSA di DriftPullback — «dopo un drift di un'ora il prezzo continua?» — invece di provare un porting alla volta. **NQ e YM sono i controlli**: se escono diversi la misura e validata, se escono uguali la premessa e sbagliata.",
      "**Il run che vale di piu' e costa un'ora: DriftPullback portata su @YM.** Stop riscalato per ATR a **129 punti** (stessa frazione del range: 0,381), TP long 65, TP short 81, tutto il resto invariato. R per micro passa da $160 a **$64,57**.",
      "**Se passa il Gate 2, misurare SUBITO la correlazione giornaliera con la versione NQ.** Stessa logica e stesse ore su indici 0,8-0,95 correlati: sopra 0,6 non e' una seconda gamba, e' la stessa scommessa in doppio.",
      "**Finding della ricerca**: il profilo WR 54-72% con R:R 0,5-1 **non esiste come proprieta' di un segnale** — la letteratura sul momentum intraday replicato da WR 36-39% con payoff 2,09. Quel profilo lo impone il **bracket**, non l'ingresso.",
@@ -617,6 +618,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-18",
+   "text": "**Scritto `DriftPersistence_Study`: invece di scegliere lo strumento, si misura la premessa.** Il porting su YM e fallito pur trasferendo perfettamente la geometria, quindi l'edge e di NQ ma non sappiamo perche. Se la ragione e la **persistenza del momentum intraday**, quella e una proprieta misurabile dello strumento e si puo cercare dove esiste. Il metro e l'eccesso sul 50% (il caso), con soglia a 3 errori standard. **Questo misuratore non puo avere i bug degli altri tre**: non c'e primo tocco da risolvere quindi nessun tie-break dentro la barra, e non c'e niente di non risolto da escludere perche ogni osservazione ha un segno. Il calcolo e sfasato di `FwdBars` barre per evitare il look-ahead. **NQ e YM fanno da controllo**: se escono diversi la misura e validata e si puo credere a GC, CL e RTY; se escono uguali la premessa e sbagliata e la ragione per cui DriftPullback funziona e un'altra."
+  },
   {
    "date": "2026-10-18",
    "text": "**Verificata la regola news sul sito di Lucid, e e l'opposto di quello che pensavamo: su LucidFlex il news trading e PERMESSO.** *«Traders may enter or exit positions around scheduled or unscheduled news events on these plans without it being a breach»* — il divieto con hard breach vale solo su **LucidDaily**. Dallo stesso articolo: **strategie automatiche e trade copier permessi**, scaling/DCA permesso, scalping genuino permesso, e **flipping permesso**, cioe un trade dentro-fuori per far contare la giornata — che e la risposta ufficiale al problema dell'inattivita. **Resta vero che l'evento macro non si sviluppa**, ma per un'altra ragione: 2-3 rilasci a settimana non arrivano a 2 setup al giorno."
