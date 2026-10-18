@@ -1,0 +1,75 @@
+{ =====================================================================
+  Mario_PtnBaseSA_Check  -  indicatore di verifica (Stage 1)  -  PowerLanguage
+  ---------------------------------------------------------------------
+  Sull'ultima barra di ogni sessione stampa la data e una stringa di 40
+  cifre: la cifra k vale 1 se Mario_PtnBaseSA(k) e' vero. A fine sessione
+  "oggi" (indice 0) e' la sessione appena conclusa, completa.
+
+  Le 40 chiamate sono scritte una per una e fatte su OGNI barra: dentro
+  PtnBaseSA ci sono funzioni di serie (OpenS, HighS, ...) che vanno
+  aggiornate a ogni barra. Chiamarle solo a fine sessione, o dentro un
+  ciclo, rischierebbe valori sbagliati.
+
+  Lo script check_ptn.py rifa' gli stessi 40 calcoli sulle barre di
+  sessione CME di quantlake e confronta riga per riga.
+
+  CHART: @ES 30 min, session template 17:00-16:00 CT senza pause,
+         timezone Exchange. Una sola serie.
+  ===================================================================== }
+
+array: p[40](false);
+var: k(0), s(""), o0(0), h0(0), l0(0), c0(0);
+
+p[1] = Mario_PtnBaseSA(1);
+p[2] = Mario_PtnBaseSA(2);
+p[3] = Mario_PtnBaseSA(3);
+p[4] = Mario_PtnBaseSA(4);
+p[5] = Mario_PtnBaseSA(5);
+p[6] = Mario_PtnBaseSA(6);
+p[7] = Mario_PtnBaseSA(7);
+p[8] = Mario_PtnBaseSA(8);
+p[9] = Mario_PtnBaseSA(9);
+p[10] = Mario_PtnBaseSA(10);
+p[11] = Mario_PtnBaseSA(11);
+p[12] = Mario_PtnBaseSA(12);
+p[13] = Mario_PtnBaseSA(13);
+p[14] = Mario_PtnBaseSA(14);
+p[15] = Mario_PtnBaseSA(15);
+p[16] = Mario_PtnBaseSA(16);
+p[17] = Mario_PtnBaseSA(17);
+p[18] = Mario_PtnBaseSA(18);
+p[19] = Mario_PtnBaseSA(19);
+p[20] = Mario_PtnBaseSA(20);
+p[21] = Mario_PtnBaseSA(21);
+p[22] = Mario_PtnBaseSA(22);
+p[23] = Mario_PtnBaseSA(23);
+p[24] = Mario_PtnBaseSA(24);
+p[25] = Mario_PtnBaseSA(25);
+p[26] = Mario_PtnBaseSA(26);
+p[27] = Mario_PtnBaseSA(27);
+p[28] = Mario_PtnBaseSA(28);
+p[29] = Mario_PtnBaseSA(29);
+p[30] = Mario_PtnBaseSA(30);
+p[31] = Mario_PtnBaseSA(31);
+p[32] = Mario_PtnBaseSA(32);
+p[33] = Mario_PtnBaseSA(33);
+p[34] = Mario_PtnBaseSA(34);
+p[35] = Mario_PtnBaseSA(35);
+p[36] = Mario_PtnBaseSA(36);
+p[37] = Mario_PtnBaseSA(37);
+p[38] = Mario_PtnBaseSA(38);
+p[39] = Mario_PtnBaseSA(39);
+p[40] = Mario_PtnBaseSA(40);
+
+o0 = OpenS(0); h0 = HighS(0); l0 = LowS(0); c0 = CloseS(0);
+
+if SessionLastBar then begin
+    s = "";
+    for k = 1 to 40 begin
+        if p[k] then s = s + "1" else s = s + "0";
+    end;
+    Print("PTN ", Date:8:0, " ", Time:5:0, " ", s,
+          " O=", o0:8:2, " H=", h0:8:2, " L=", l0:8:2, " C=", c0:8:2);
+end;
+
+Plot1(0, "zero");

@@ -9,7 +9,7 @@
   last 5 days"). Descrizione di ogni pattern: README.md.
 
   COME SI CREA IN MULTICHARTS
-    PowerLanguage Editor -> New -> Function, nome "PtnBaseSA",
+    PowerLanguage Editor -> New -> Function, nome "Mario_PtnBaseSA",
     Return Type = TrueFalse, Function Storage = Auto-detect.
 
   USO: PtnBaseSA(n) = true se il pattern n e' vero sulla barra corrente.
@@ -102,4 +102,4 @@ definizioneptn[40] = (highd2<highd1 and lowd2>lowd1);
 definizioneptn[41] = true;
 definizioneptn[42] = false;
 
-PtnBaseSA = definizioneptn[numeropattern];
+Mario_PtnBaseSA = definizioneptn[numeropattern];

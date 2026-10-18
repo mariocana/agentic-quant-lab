@@ -1,4 +1,7 @@
-# PtnBaseSA — la funzione dei pattern base di Unger
+# Mario_PtnBaseSA — la funzione dei pattern base di Unger (`PtnBaseSA` nel corso)
+
+In MultiCharts la funzione si chiama **`Mario_PtnBaseSA`**: tutte le strategie ripulite la
+chiamano con questo nome (nel corso è `PtnBaseSA`).
 
 Non è una strategia: è la funzione che Trend Following, Counter Trend, Gap e BIAS usano come
 filtro d'ingresso (`MyPtnLY`, `MyPtnSY` = pattern che deve essere vero; `MyPtnLN`, `MyPtnSN` =
@@ -11,8 +14,8 @@ trascritto in `13. Codici` aveva errori di lettura e due copie diverse: non usat
 ## File
 | file | cosa |
 |---|---|
-| `PtnBaseSA.txt` | la funzione (Return Type **TrueFalse**) |
-| `PtnBaseSA_Check.txt` | indicatore per lo Stage 1: a fine sessione stampa 40 cifre, una per pattern |
+| `Mario_PtnBaseSA.txt` | la funzione (Return Type **TrueFalse**) |
+| `Mario_PtnBaseSA_Check.txt` | indicatore per lo Stage 1: a fine sessione stampa 40 cifre, una per pattern |
 | `check_ptn.py` | ricalcola i 40 pattern dal log e li confronta (solo libreria standard) |
 
 ## I pattern
@@ -54,10 +57,10 @@ sessioni fa. O/H/L/C = open, high, low, close della sessione.
 strategia intraday sono legittimi; su barre giornaliere sarebbero lookahead.
 
 ## Stage 1 (verifica, non è una strategia)
-1. PowerLanguage Editor → New → **Function** `PtnBaseSA`, Return Type **TrueFalse**, incolla
-   `PtnBaseSA.txt`, compila. Se `OpenS` / `HighS` / `LowS` / `CloseS` non esistono nella tua
+1. PowerLanguage Editor → New → **Function** `Mario_PtnBaseSA`, Return Type **TrueFalse**, incolla
+   `Mario_PtnBaseSA.txt`, compila. Se `OpenS` / `HighS` / `LowS` / `CloseS` non esistono nella tua
    versione di MultiCharts, la compilazione lo dice: mandami l'errore e le scrivo.
-2. New → **Indicator** `PtnBaseSA_Check`, incolla, compila.
+2. New → **Indicator** `Mario_PtnBaseSA_Check`, incolla, compila.
 3. Chart **@ES 30 min**, template **17:00–16:00 CT senza pause**, ultimi ~100 giorni;
    inserisci l'indicatore. Copia l'output del PowerLanguage Editor in un `.txt`.
 4. Mandami il `.txt`: lancio `python3 check_ptn.py log.txt`.
