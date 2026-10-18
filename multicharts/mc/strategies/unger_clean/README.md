@@ -15,7 +15,7 @@ Regole per ogni codice:
 
 | # | strategia | fonte | stato |
 |---|---|---|---|
-| 1 | **ESCounter** | modulo 9, video 9x04 e 9x05 | **Gate 1 passato** (18/10/2026) → Stage 2 |
+| 1 | **ESCounter** | modulo 9, video 9x04 e 9x05 | **cimitero, causa A** (18/10/2026): IS 2020–2024 t −2,02, perde anche prima dei costi |
 | 2 | `PtnBaseSA` (funzione dei pattern) | moduli 3–6 + `12x03 pattern base reference.docx` | da fare: serve a Trend Following, Counter Trend, Gap, BIAS |
 | 3 | Trend Following (`Develop`) | modulo 4 / 9x02 | da fare, dopo `PtnBaseSA` |
 | 4 | Counter Trend (`Develop`, GBPUSD 30 min) | modulo 5 | da fare, dopo `PtnBaseSA` |

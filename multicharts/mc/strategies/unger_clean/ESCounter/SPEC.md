@@ -101,3 +101,37 @@ tipo di uscita nella List of Trades. Per il Gate 2 conta il R:R *realizzato*: se
 **Kill**: gate della pipeline. In più, kill specifico se la variante A ha avg trade netto ≤ 0
 nell'IS: con parametri congelati vuol dire che l'effetto del 2008–2016 non c'è più, e la B
 non ha niente da proteggere.
+
+---
+
+# Stage 2 — **Gate 2 fallito** (18/10/2026) → **cimitero, causa A — edge assente**
+
+IS 2020‑03‑12 → 2024‑12‑31 (lo storico a 30 min del chart parte da lì), @ES 30 min + daily,
+template 17:00–16:00 senza pause, $15/contratto, 1 contratto, Bar Magnifier 1 min. Report in
+`reports/ESC_S2_*_IS.xlsx`. Il corpo sopra è la pre‑registrazione e non si riscrive.
+
+| run | n | WR | avg netto | t | PF | DD chiusi | net per anno |
+|---|---|---|---|---|---|---|---|
+| A originale | 356 | 28,4% | −$106,62 ± 52,74 | **−2,02** | 0,80 | $57.295 | 2020 +15.060 · 2021 −12.260 · 2022 −18.230 · 2023 −11.715 · 2024 −10.810 |
+| B prop | 478 | 35,6% | −$80,08 ± 39,79 | **−2,01** | 0,81 | $67.808 | 2020 +22.348 · 2021 −9.415 · 2022 −33.158 · 2023 −13.142 · 2024 −4.910 |
+
+**Kill pre‑registrato scattato**: la variante A ha avg netto ≤ 0 nell'IS, con t −2,02. Il Gate 2
+fallisce su avg, PF, WR, DD (A: $5.730 per MES contro $1.000) e tabella annuale.
+
+**Perde prima dei costi.** Il costo è $30 per andata e ritorno: lordo **−$77** a trade in A e
+**−$50** in B. Con stop e target fissi il R:R è 2,01, quindi il pareggio lordo richiede WR
+1 / (1 + 2,01) = **33,2%**; A fa **28,4%**. Non è una questione di costi o di conto: il
+falso breakout del minimo di ieri, a 30 minuti, su ES 2021–2024 non ha edge.
+
+**Il 2020 è l'unico anno positivo** (rimbalzo dopo il crollo di marzo, quando ogni ripresa
+del minimo di ieri ha funzionato). Dal 2021 perde ogni anno, in tutte e due le varianti.
+
+**Sul risultato di Unger** (2008–2016, PF 1,34): con i suoi parametri congelati, il periodo
+che lui non ha visto lo smentisce. Anche il suo rapporto vincita/perdita di 1,04 non era
+coerente con stop e target fissi (il nostro realizzato è 2,01 in tutti i giri): il backtest
+del video conteneva qualcosa che il codice mostrato non spiega.
+
+**Cosa la riaprirebbe**: niente fra le varianti pre‑registrate. Il target $1.250 (A'/B') era
+previsto solo se A o B passavano: abbassare il target a R:R 1,79 alza il WR di pareggio al
+35,8%, più lontano da 28,4%, non più vicino. Il 2016–2019, secondo periodo mai visto, non
+serve: con un IS significativamente negativo non cambierebbe la decisione.

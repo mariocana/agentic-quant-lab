@@ -619,19 +619,26 @@
    "path": "mc/strategies/unger_clean/ESCounter",
    "stages": {
     "0": "pass",
-    "1": "pass"
+    "1": "pass",
+    "2": "fail"
    },
-   "note": "Dal corso di Unger (Trading System Supremacy, modulo 9). Il codice trascritto non compilava: **ricostruito dal video 9x04** (fotogramma al secondo 20). Long quando il close a 30 min torna sopra il minimo della sessione precedente; stop $700 / target $1.500, nessuna uscita a tempo. **Parametri congelati a quelli del video (marzo 2016)**: l'IS 2020–2024 è fuori campione per l'autore. Variante A = originale; variante B (prop) = flat a fine sessione + max 2 ingressi. Primo counter trend della pipeline.",
+   "note": "**Causa di morte: A — edge assente, anche prima dei costi.** Dal corso di Unger (Trading System Supremacy, modulo 9). Il codice trascritto non compilava: **ricostruito dal video 9x04** (fotogramma al secondo 20). Long quando il close a 30 min torna sopra il minimo della sessione precedente; stop $700 / target $1.500, nessuna uscita a tempo. **Parametri congelati a quelli del video (marzo 2016)**: l'IS 2020–2024 è fuori campione per l'autore. Variante A = originale; variante B (prop) = flat a fine sessione + max 2 ingressi. Primo counter trend della pipeline.",
    "metrics": {
-    "dichiarate da Unger 2008-2016 (target $1.250)": "369 trade · avg $179,81 · PF 1,34 · WR 56,4% · W/L 1,04 (non coerente con stop e target fissi: il nostro realizzato è 2,01)"
+    "dichiarate da Unger 2008-2016 (target $1.250)": "369 trade · avg $179,81 · PF 1,34 · WR 56,4% · W/L 1,04 (non coerente con stop e target fissi: il nostro realizzato è 2,01)",
+    "IS 2020-2024 A originale": "356 trade · WR 28,4% · R:R 2,01 · avg −$106,62 ± 52,74 · **t −2,02** · PF 0,80 · DD $57.295 · lordo −$77/trade",
+    "IS 2020-2024 B prop": "478 trade · WR 35,6% · avg −$80,08 ± 39,79 · **t −2,01** · PF 0,81 · DD $67.808"
    },
    "log": [
     {
      "date": "2026-10-18",
      "text": "Spec + codice ricostruito dal video. Stage 1 in tre giri: il primo a 5 min invece che 30, il secondo con il template `CME: Equity Index Futures [E-mini] (Globex)` che **ha ancora la pausa 15:15–15:30** (tolta dal CME nel 2021). Terzo giro con template 17:00–16:00 senza pause: **Gate 1 passato**."
+    },
+    {
+     "date": "2026-10-18",
+     "text": "**Gate 2 fallito, cimitero, causa A.** Con i parametri di Unger congelati al 2016, l'IS 2020–2024 è negativo con t −2,02 (A) e −2,01 (B); unico anno positivo il 2020. Perde anche prima dei costi: WR 28,4% contro un pareggio lordo del 33,2% a R:R 2,01. Kill pre-registrato scattato."
     }
    ],
-   "next": "Stage 2: IS 2020–2024, run A e B a 1 contratto."
+   "next": "Chiusa. Nessuna variante pre-registrata la riapre."
   }
  ],
  "blockers": [
@@ -640,6 +647,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-18",
+   "text": "**ESCounter (Unger) in cimitero, causa A**: primo counter trend della pipeline e primo test di un codice del corso Unger su dati che l'autore non ha visto. IS 2020–2024 t −2,02, negativo anche lordo. Due lezioni: (1) **con parametri congelati, il periodo dopo la registrazione di un corso è un fuori campione gratuito** e va usato sempre; (2) i numeri mostrati nei video vanno controllati contro il codice mostrato (qui il rapporto vincita/perdita 1,04 era incompatibile con stop e target fissi)."
+  },
   {
    "date": "2026-10-18",
    "text": "**Il template di sessione predefinito di MultiCharts per ES/NQ (`CME: Equity Index Futures [E-mini] (Globex)`) ha ancora la pausa 15:15–15:30 e il venerdì chiuso alle 15:15**, tolte dal CME il 28/06/2021. Trovato su ESCounter (segnale artefatto alle 15:15) dopo averlo visto nell'export @ES di quantlake. **Ogni backtest su indici CME fatto con quel template manca di 15 minuti al giorno dal luglio 2021 e dei 45 minuti finali del venerdì**: da controllare sulle strategie vive, DriftPullback per prima. Template corretto: domenica–venerdì 17:00–16:00 CT, nessuna pausa, su tutte le serie del grafico."
