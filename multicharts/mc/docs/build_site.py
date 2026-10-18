@@ -54,6 +54,7 @@ PROP_DOCS = [
     ("Cosa uccide le strategie", "mc/docs/cosa_uccide_le_strategie.md"),
     ("Ricerca 18/10", "mc/docs/ricerca_18-10.md"),
     ("Fast Alpha: il paper di DriftPullback", "mc/docs/fast_alpha_zarattini.md"),
+    ("Come scegliere un paper", "mc/docs/come_scegliere_un_paper.md"),
     ("La seconda gamba", "mc/docs/seconda_gamba.md"),
     ("Il difetto nel metodo di misura", "mc/docs/bug_misura_primo_tocco.md"),
     ("Prop vs Live: due metodologie", "mc/docs/prop_vs_live.md"),

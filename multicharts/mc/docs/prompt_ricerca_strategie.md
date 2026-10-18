@@ -477,3 +477,29 @@ Le candidate **non entrano in pipeline automaticamente**. Il percorso resta:
    perché, date IS/OOS, varianti pre-registrate e condizione di kill.
 3. **Prima dello Stage 1**, per ogni candidata: misurare la distribuzione del rischio per
    trade sull'**IS**, non su un campione recente. È la lezione di Gold Asian Range.
+
+# IL FILTRO SUI PAPER — applicalo PRIMA di proporre qualunque candidata
+
+La maggior parte di cio' che e' pubblicato non regge: McLean-Pontiff (JF 2016) misurano
+rendimenti **58% piu' bassi dopo la pubblicazione**, Hou-Xue-Zhang (RFS 2020) trovano che una
+quota grande delle anomalie non si replica. Per ogni candidata, compila questa scheda:
+
+1. **Testato su futures** (o sull'indice che tradiamo)? — ELIMINATORIO
+2. **Replicato** da autori indipendenti, o su molti mercati/periodi?
+3. **Meccanismo di flusso forzato** (hedging, ribilanciamento, benchmark, liquidita')? — ELIMINATORIO
+4. **Costi riportati**, ed edge per trade > costo per trade?
+5. **Intraday con flat entro la sessione**, e quanti segnali al giorno? — ELIMINATORIO
+6. **Anni dalla pubblicazione** (oltre 3-4: aspettarsi meta' dell'edge)
+7. **t del paper >= 3**?
+
+Se 1, 3 o 5 mancano, la candidata NON entra, per quanto sembri promettente. Riporta la scheda
+compilata per ogni candidata, con la fonte di ogni risposta. Dettagli in
+`mc/docs/come_scegliere_un_paper.md`.
+
+**Non cercare strategie con un profilo ad alto win rate e basso R:R**: quel profilo lo impone
+il bracket, non il segnale (vedi `mc/docs/ricerca_18-10.md`). Cerca **segnali con un eccesso
+misurabile**, di qualunque forma.
+
+**Non proporre mean reversion a orizzonte corto come strategia autonoma**: Zarattini-Pagani
+(*Fast Alpha*, 2026) la danno non profittevole dopo i costi, e noi l'abbiamo verificato due
+volte. Come overlay di timing su una direzione di trend, invece, si'.
