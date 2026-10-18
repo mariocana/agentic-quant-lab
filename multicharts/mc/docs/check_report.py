@@ -234,6 +234,8 @@ def preliminari(cfg, cts):
             out.append((EH, 'Ultima barra %s -> session template **Globex 24h**' % ora))
         elif '14:55' <= ora < '15:05':
             out.append((EH, 'Ultima barra %s -> session template **RTH** (08:30-15:00 CT)' % ora))
+        elif '15:10' <= ora < '15:20':
+            out.append((EH, 'Ultima barra %s -> session template **RTH CME azionari** (08:30-15:15 CT)' % ora))
         else:
             out.append((EH, 'Ultima barra %s: giorno incompleto, il session template NON si '
                             'deduce. Verificalo sul grafico.' % ora))
