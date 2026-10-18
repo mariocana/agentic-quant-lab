@@ -1,4 +1,4 @@
-# CHECKLIST Stage 1 — ESCounter
+# CHECKLIST Stage 1 — ESCounter — **Gate 1 passato** (18/10/2026, terzo giro)
 
 ## Primo giro (18/10/2026) — **invalido: chart a 5 minuti invece che a 30**
 
@@ -64,3 +64,27 @@ Solo il session template, **su data1 e su data2**: domenica–venerdì **17:00�
 pausa** (Format Instrument → Sessions, oppure un template personalizzato). Poi A e B sullo
 stesso periodo. Il venerdì l'ultima barra deve chiudere alle **16:00**, e nel log non deve
 più comparire nessun `t= 1515`.
+
+---
+
+## Terzo giro (18/10/2026) — template 17:00–16:00 senza pause, **Gate 1 passato**
+
+Solo run B (a **10 contratti**: in Strategy Properties era rimasto 10), stesso periodo, log.
+`check_report.py`: ultima barra **16:00** → template Globex 24h.
+
+| # | controllo | esito |
+|---|---|---|
+| 1 | `MyLow` | ✅ identico ai giri precedenti |
+| 2 | segnali sulle chiusure a 30 min | ✅ tutti a :00 o :30; **nessun 15:15** nel log |
+| 3 | nessuna entrata fra 15:30 e 17:30 | ✅ il segnale delle 15:00 (08/10) entra nella barra 15:00–15:30 ed esce a fine sessione alle 16:00 |
+| 4 | stop e target | ✅ 9 `Stop Loss` a −14,00 e 5 `Profit Target` a +30,00 (= −$7.000 / +$15.000 su 10 contratti: lo stop per contratto scala) |
+| 5 | variante B | ✅ 5 `End of Day Exit` alle 16:00 (Labor Day alle 12:00); max 2 ingressi per sessione (11 × 1, 4 × 2); due trade entrano ed escono nella stessa barra (08/09, 28/09): stop attivo dalla barra d'ingresso |
+| 7 | scala ×10 | ✅ (secondo giro) |
+
+La variante A non è stata rifatta con il template nuovo: differisce dalla B solo per
+`FlatEOD` e `MaxEntries`, la meccanica comune è verificata.
+
+## Stage 2 — cosa lanciare
+IS **2020‑01‑01 → 2024‑12‑31**, template 17:00–16:00 su data1 e data2, **1 contratto**,
+$15/contratto, Bar Magnifier 1 min: run **A** (originale) e run **B** (prop). Senza log.
+Facoltativo: lo stesso su **2016‑04‑01 → 2019‑12‑31**, l'altro periodo mai visto da Unger.

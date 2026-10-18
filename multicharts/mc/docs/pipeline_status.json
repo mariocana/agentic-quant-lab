@@ -611,6 +611,27 @@
     }
    ],
    "next": "Chiusa. La riaprirebbe solo una nuova Stage 0 sull'effetto «stop all'estremo della prima mezz'ora», long e short insieme, su @BTC pieno con capitale proprio."
+  },
+  {
+   "name": "ESCounter (Unger)",
+   "family": "counter trend / falso breakout del minimo di ieri, solo long",
+   "instrument": "ES 30m + daily (MES)",
+   "path": "mc/strategies/unger_clean/ESCounter",
+   "stages": {
+    "0": "pass",
+    "1": "pass"
+   },
+   "note": "Dal corso di Unger (Trading System Supremacy, modulo 9). Il codice trascritto non compilava: **ricostruito dal video 9x04** (fotogramma al secondo 20). Long quando il close a 30 min torna sopra il minimo della sessione precedente; stop $700 / target $1.500, nessuna uscita a tempo. **Parametri congelati a quelli del video (marzo 2016)**: l'IS 2020–2024 è fuori campione per l'autore. Variante A = originale; variante B (prop) = flat a fine sessione + max 2 ingressi. Primo counter trend della pipeline.",
+   "metrics": {
+    "dichiarate da Unger 2008-2016 (target $1.250)": "369 trade · avg $179,81 · PF 1,34 · WR 56,4% · W/L 1,04 (non coerente con stop e target fissi: il nostro realizzato è 2,01)"
+   },
+   "log": [
+    {
+     "date": "2026-10-18",
+     "text": "Spec + codice ricostruito dal video. Stage 1 in tre giri: il primo a 5 min invece che 30, il secondo con il template `CME: Equity Index Futures [E-mini] (Globex)` che **ha ancora la pausa 15:15–15:30** (tolta dal CME nel 2021). Terzo giro con template 17:00–16:00 senza pause: **Gate 1 passato**."
+    }
+   ],
+   "next": "Stage 2: IS 2020–2024, run A e B a 1 contratto."
   }
  ],
  "blockers": [
@@ -619,6 +640,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-18",
+   "text": "**Il template di sessione predefinito di MultiCharts per ES/NQ (`CME: Equity Index Futures [E-mini] (Globex)`) ha ancora la pausa 15:15–15:30 e il venerdì chiuso alle 15:15**, tolte dal CME il 28/06/2021. Trovato su ESCounter (segnale artefatto alle 15:15) dopo averlo visto nell'export @ES di quantlake. **Ogni backtest su indici CME fatto con quel template manca di 15 minuti al giorno dal luglio 2021 e dei 45 minuti finali del venerdì**: da controllare sulle strategie vive, DriftPullback per prima. Template corretto: domenica–venerdì 17:00–16:00 CT, nessuna pausa, su tutte le serie del grafico."
+  },
   {
    "date": "2026-10-18",
    "text": "**Trovato il paper da cui nasce DriftPullback, e spiega due nostri risultati.** Zarattini e Pagani, *Improving Performance with Fast Alphas*, Concretum, febbraio 2026. **(1) Non e sui futures su indice: e su SPY a 5 minuti, 2007-2026.** La frase del corso «intraday drift on index futures is a documented effect» e la sua estensione, non la tesi del paper — coerente col fatto che l'edge ci sia su NQ (+2,52 pp) e non su YM (+0,07): non era un porting fallito, era un effetto mai dimostrato generale. **(2) Il segnale di mean reversion a orizzonte corto e NON profittevole da solo dopo i costi** (CAGR lordo ~32% e Sharpe oltre 2 senza frizioni, poi sparisce) — e **spiega le nostre due morti**, VWAP Fade a −0,62 pp e gap fade a +0,68: stavamo ri-scoprendo a spese nostre un risultato documentato. **(3) Lo stesso segnale funziona come overlay di esecuzione su una strategia di trend**: +200 punti base all'anno, Sharpe da 0,87 a 0,99. **Ed e il perche di DriftPullback**: non e momentum ne mean reversion, e **direzione dal drift e timing dal pullback**, cioe l'overlay del paper implementato come strategia unica. **Conseguenza: la seconda gamba non deve essere mean reverting**, deve avere lo stesso schema con un **segnale di direzione diverso**."
