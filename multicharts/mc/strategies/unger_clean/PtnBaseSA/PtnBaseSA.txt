@@ -1,0 +1,105 @@
+{ =====================================================================
+  PtnBaseSA  -  funzione dei pattern base di Unger  -  PowerLanguage
+  ---------------------------------------------------------------------
+  FONTE: codice letto nel video 4x01 del corso Trading System Supremacy
+  (editor di Unger, compilato il 20/01/2016): righe 1-35 al 12:30,
+  righe 38-79 e 81 al 3:00-3:40. Unica ricostruzione: la fine del
+  pattern 3, tagliata dal bordo della finestra, presa dalla slide 7 del
+  modulo 3 ("open of 5 days ago - close of yesterday < 50% of range of
+  last 5 days"). Descrizione di ogni pattern: README.md.
+
+  COME SI CREA IN MULTICHARTS
+    PowerLanguage Editor -> New -> Function, nome "PtnBaseSA",
+    Return Type = TrueFalse, Function Storage = Auto-detect.
+
+  USO: PtnBaseSA(n) = true se il pattern n e' vero sulla barra corrente.
+       Indice 0 = sessione in corso (valori "fino ad ora"), 1 = ieri,
+       ..., 5 = cinque sessioni fa. 41 = sempre vero, 42 = sempre falso
+       (servono come "nessun filtro" negli input delle strategie).
+
+  ATTENZIONE: i pattern che usano highd0 / lowd0 (4, 5, 6, 7, 12, 13, 20,
+  22, 35) cambiano durante la sessione: valgono "fino a questa barra".
+  In un backtest su barre giornaliere sarebbero lookahead.
+  ===================================================================== }
+
+[LegacyColorValue = true];
+
+input: numeropattern(numericsimple);
+array: definizioneptn[200](false);
+var: opend0(0), opend1(0), opend2(0), opend3(0), opend4(0), opend5(0);
+var: highd0(0), highd1(0), highd2(0), highd3(0), highd4(0), highd5(0);
+var: lowd0(0), lowd1(0), lowd2(0), lowd3(0), lowd4(0), lowd5(0);
+var: closed0(0), closed1(0), closed2(0), closed3(0), closed4(0), closed5(0);
+
+opend0 = OpenS(0);
+opend1 = OpenS(1);
+opend2 = OpenS(2);
+opend3 = OpenS(3);
+opend4 = OpenS(4);
+opend5 = OpenS(5);
+
+highd0 = HighS(0);
+highd1 = HighS(1);
+highd2 = HighS(2);
+highd3 = HighS(3);
+highd4 = HighS(4);
+highd5 = HighS(5);
+
+lowd0 = LowS(0);
+lowd1 = LowS(1);
+lowd2 = LowS(2);
+lowd3 = LowS(3);
+lowd4 = LowS(4);
+lowd5 = LowS(5);
+
+closed0 = CloseS(0);
+closed1 = CloseS(1);
+closed2 = CloseS(2);
+closed3 = CloseS(3);
+closed4 = CloseS(4);
+closed5 = CloseS(5);
+
+definizioneptn[1]  = absvalue(opend1-closed1) < 0.5*(highd1-lowd1);
+definizioneptn[2]  = absvalue(opend1-closed5) < 0.5*(highd5-closed1);
+definizioneptn[3]  = absvalue(opend5-closed1) < 0.5*(maxlist(highd1,highd2,highd3,highd4,highd5) - minlist(lowd1,lowd2,lowd3,lowd4,lowd5));
+definizioneptn[4]  = ((highd0-opend0) > ((highd1-opend1)*1));
+definizioneptn[5]  = ((highd0-opend0) > ((highd1-opend1)*1.5));
+definizioneptn[6]  = ((opend0-lowd0) > ((opend1-lowd1)*1));
+definizioneptn[7]  = ((opend0-lowd0) > ((opend1-lowd1)*1.5));
+definizioneptn[8]  = closed1>closed2 and closed2>closed3 and closed3>closed4;
+definizioneptn[9]  = closed1<closed2 and closed2<closed3 and closed3<closed4;
+definizioneptn[10] = highd1>highd2 and lowd1>lowd2;
+definizioneptn[11] = highd1<highd2 and lowd1<lowd2;
+definizioneptn[12] = ((highd0 > (lowd0+lowd0*0.75/100)));
+definizioneptn[13] = ((highd0 < (lowd0+lowd0*0.75/100)));
+definizioneptn[14] = (closed1>closed2);
+definizioneptn[15] = (closed1<closed2);
+definizioneptn[16] = (closed1<opend1);
+definizioneptn[17] = (closed1>opend1);
+definizioneptn[18] = ((closed1 < (closed2-closed2*0.5/100)));
+definizioneptn[19] = ((closed1 > (closed2+closed2*0.5/100)));
+definizioneptn[20] = (highd0>(highd1));
+definizioneptn[21] = (highd1>highd5);
+definizioneptn[22] = (lowd0<lowd1);
+definizioneptn[23] = (lowd1<lowd5);
+definizioneptn[24] = (highd1>highd2) and (highd1>highd3) and (highd1>highd4);
+definizioneptn[25] = (highd1<highd2) and (highd1<highd3) and (highd1<highd4);
+definizioneptn[26] = ((lowd1<lowd2) and (lowd1<lowd3) and (lowd1<lowd4));
+definizioneptn[27] = ((lowd1>lowd2) and (lowd1>lowd3) and (lowd1>lowd4));
+definizioneptn[28] = (closed1>closed2 and closed2>closed3 and opend0>closed1);
+definizioneptn[29] = (closed1<closed2 and closed2<closed3 and opend0<closed1);
+definizioneptn[30] = ((highd1-closed1) < 0.20*(highd1-lowd1));
+definizioneptn[31] = ((closed1-lowd1) < 0.20*(highd1-lowd1));
+definizioneptn[32] = (opend0<lowd1 or opend0>highd1);
+definizioneptn[33] = ((opend0 < (closed1-closed1*0.5/100)));
+definizioneptn[34] = ((opend0 > (closed1+closed1*0.5/100)));
+definizioneptn[35] = (highd0<highd1 and lowd0>lowd1);
+definizioneptn[36] = (highd1-lowd1) < (((highd2-lowd2)+(highd3-lowd3))/3);
+definizioneptn[37] = (highd1-lowd1) < (highd2-lowd2) and (highd2-lowd2) < (highd3-lowd3);
+definizioneptn[38] = (highd2>highd1 and lowd2<lowd1);
+definizioneptn[39] = (highd1<highd2 or lowd1>lowd2);
+definizioneptn[40] = (highd2<highd1 and lowd2>lowd1);
+definizioneptn[41] = true;
+definizioneptn[42] = false;
+
+PtnBaseSA = definizioneptn[numeropattern];
