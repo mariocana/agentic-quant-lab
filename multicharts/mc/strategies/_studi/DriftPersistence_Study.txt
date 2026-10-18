@@ -49,6 +49,7 @@ Vars:
     intrabarpersist sumAbsDrift( 0 ),
     intrabarpersist sumFwdCont( 0 ),
     intrabarpersist sumFwdContr( 0 ),
+    intrabarpersist nBarre( 0 ),
     intrabarpersist firstBar( true ),
     drift( 0 ), atr( 0 ), fwd( 0 ), inWin( false ),
     wr( 0 ), se( 0 );
@@ -69,11 +70,17 @@ atr = AvgTrueRange( AtrLen );
   quindi si smette FwdBars barre prima di SessEnd. }
 inWin = Time > SessStart and Time <= SessEnd;
 
-if inWin and atr > 0 and CurrentBar > DriftLen + FwdBars + AtrLen then begin
+{ il guard DEVE essere su atr[FwdBars], non su atr: e' quello il divisore.
+  Col guard sbagliato, quando atr[FwdBars] vale 0 la soglia diventa
+  |drift| >= 0 (sempre vera) e le divisioni danno inf/nan — era il difetto
+  del run RTY del 18/10, che stampava 'drift medio nan' e 'mossa se inverte inf'. }
+if inWin and atr[FwdBars] > 0 and CurrentBar > DriftLen + FwdBars + AtrLen then begin
 
     { drift delle ultime DriftLen barre, chiuso FwdBars barre fa cosi' che
       il rendimento forward sia gia' tutto disponibile e non ci sia look-ahead }
     drift = Close[FwdBars] - Close[FwdBars + DriftLen];
+
+    nBarre = nBarre + 1;
 
     if AbsValue( drift ) >= DriftThresh * atr[FwdBars] then begin
         fwd = Close - Close[FwdBars];
@@ -93,7 +100,11 @@ if ShowLog = 1 and LastBarOnChart and nOss > 0 then begin
     se = 100 * SquareRoot( 0.25 / nOss );
     Print( File(LogPath), "" );
     Print( File(LogPath), "=== ", Tag, " ===" );
+    Print( File(LogPath), "barre valide      ", nBarre:8:0 );
     Print( File(LogPath), "osservazioni      ", nOss:8:0 );
+    if nBarre > 0 then
+        Print( File(LogPath), "tasso d'armamento ", (100*nOss/nBarre):8:1,
+               "%   <- se e' oltre l'80% la soglia e' troppo bassa" );
     Print( File(LogPath), "continuazioni     ", nCont:8:0 );
     Print( File(LogPath), "PERSISTENZA       ", wr:8:2, "%" );
     Print( File(LogPath), "il caso           ", 50.00:8:2, "%" );

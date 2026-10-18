@@ -1,0 +1,13 @@
+DRIFTPERS symbol=rty DriftLen=  4 FwdBars=  2 DriftThresh=0.50 bigpointvalue=    50.00
+
+=== rty ===
+osservazioni         22710
+continuazioni        11327
+PERSISTENZA          49.88%
+il caso              50.00%
+ECCESSO              -0.12 pp
+errore standard       0.33 pp
+errori standard      -0.37   <- serve >= 3 per crederci
+drift medio            nan ATR
+mossa se continua    0.920 ATR
+mossa se inverte       inf ATR
