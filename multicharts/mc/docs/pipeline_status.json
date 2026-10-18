@@ -10,7 +10,7 @@
     "title": "Domenica di ricerca. Lunedi, se non c'e' altro, si parte con DriftPullback sola.",
     "note": "una viva su nove; la ricerca di oggi dice che il profilo prop non e' una proprieta' dei segnali",
     "items": [
-     "**Candidata che passa il filtro sui paper: Baltussen-Da-Lammers-Martens, *Hedging demand and market intraday momentum*, JFE 2021.** 60+ futures dal 1974 al 2020, meccanismo di gamma hedging (flusso obbligato), mezz'ora finale 14:30-15:00 CT dove DriftPullback e quasi assente. ~1 segnale/giorno: da seconda gamba. Ma e momentum come DriftPullback: correlazione da misurare.",
+     "**Last Half-Hour su @NQ: Stage 0 chiuso.** Prossimo: scrivere la strategia (ingresso 14:30 CT nella direzione del rendimento da ieri, uscita 15:00, niente stop, niente parametri) e Stage 1. Aspettativa dichiarata: t ~1,8 sull'IS, sotto soglia.",
      "~~DriftPersistence su 5 strumenti~~ **fatto: NQ e YM identici (50,15% e 50,18%), la premessa e sbagliata**. L'edge di DriftPullback sta nella congiunzione drift+pullback+trigger+uscita, non nella persistenza. GC anti-persistente a −6,34 errori standard ma con expectancy zero.",
      "**La seconda gamba NON deve essere mean reverting.** Il paper da cui nasce DriftPullback (Zarattini-Pagani, *Fast Alpha*) dice che il segnale di reversione a breve **non e profittevole da solo dopo i costi** — e noi l'abbiamo verificato due volte. Funziona come **overlay di timing** su una direzione di trend, che e esattamente cio che DriftPullback fa. Serve lo **stesso schema con un segnale di direzione diverso**.",
      "**Il run che vale di piu' e costa un'ora: DriftPullback portata su @YM.** Stop riscalato per ATR a **129 punti** (stessa frazione del range: 0,381), TP long 65, TP short 81, tutto il resto invariato. R per micro passa da $160 a **$64,57**.",
@@ -79,6 +79,29 @@
   }
  ],
  "strategies": [
+  {
+   "name": "Last Half-Hour",
+   "family": "momentum · flusso di hedging (gamma)",
+   "instrument": "@NQ 5m (scelto a priori: l'unico con potenza su 5 anni)",
+   "path": "mc/strategies/LastHalfHour",
+   "stages": {
+    "0": "pass"
+   },
+   "note": "**Stage 0, la prima candidata scelta col filtro sui paper.** Baltussen-Da-Lammers-Martens, JFE 2021: il rendimento dalla chiusura di ieri fino a 30 minuti prima della chiusura predice la mezz'ora finale, perche chi e corto gamma deve coprirsi nella direzione del mercato. Testato su 60+ futures dal 1974, **t 7,97 su NQ**, 4,97 su ES. **Nessun parametro, nessuno stop nel test.** Scelto NQ **a priori** perche su 5 anni e l'unico che puo superare t >= 2 anche a edge intatto (atteso 3,64; ES 1,81). Il campione del paper finisce a maggio 2020: **il nostro IS misura esattamente il decadimento post-pubblicazione**.",
+   "metrics": {
+    "paper, NQ": "t 7,97 · R² 4,10% · R² fuori campione 3,76% · 1996-2020",
+    "paper, portafoglio azionario": "6,86%/anno · Sharpe 1,73 · successo 55% · **senza costi**",
+    "potenza sul nostro IS": "t atteso 3,64 a edge intatto, 1,82 a edge dimezzato",
+    "aspettativa dichiarata": "edge dimezzato, t ~1,8: sotto la soglia"
+   },
+   "log": [
+    {
+     "date": "2026-10-18",
+     "text": "**Aperta, letto il paper per intero.** Passa i tre eliminatori del filtro: futures (ES, NQ, YM, RTY testati singolarmente), meccanismo di flusso forzato (gamma hedging, verificato condizionando sull'esposizione netta), intraday con uscita in chiusura. **Punto debole: i costi** — *«we do not consider transaction costs»*, solo la frase che su ES il Sharpe netto resta positivo con un tick. **Calcolo di potenza che decide lo strumento**: su 1.258 sessioni il t atteso a edge intatto e 3,64 su NQ, 2,53 su RTY, 1,81 su ES, 1,95 su YM — **solo NQ puo passare il Gate 2 anche senza decadimento**, quindi un fallimento su ES o YM non direbbe niente. Scelto NQ **prima** di guardare, per non selezionare il migliore fra quattro. **Il filtro «segnali concordi» del paper non si testa**: provarlo dopo la base sugli stessi dati sarebbe scegliere. **Aspettativa: edge dimezzato, t ~1,8, sotto soglia.**"
+    }
+   ],
+   "next": "Scrivere `LastHalfHour.txt` (strategia, una ventina di righe) e girare lo Stage 1."
+  },
   {
    "name": "ON Reversal",
    "family": "**mean reverting** · seconda gamba del basket",

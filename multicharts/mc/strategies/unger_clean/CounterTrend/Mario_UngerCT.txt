@@ -1,0 +1,86 @@
+{ =====================================================================
+  Mario_UngerCT  -  Counter Trend di Unger (DevelopRev)  -  PowerLanguage
+  ---------------------------------------------------------------------
+  FONTE: Trading System Supremacy, modulo 5. Codice nell'editor di Unger,
+  video 5x01 (righe 1-23 al 0:30, righe 28-35 al 6:00; compilato il
+  21/01/2016). Parametri finali sul grafico nel video 5x02 (dal 10:00):
+  DevelopRev(14, 15, 40, 40, 300, 8, 2359, 0, 0.01, 0, 20, 2), GBPUSD
+  forex 30 min, dati TradeStation, grafico in ora di New York.
+  Spec: SPEC.md. Richiede la funzione Mario_PtnBaseSA.
+
+  REGOLE (originale, variante A)
+    1) Bande di Bollinger sul close, Length 20, NumDevs 2.
+    2) Finestra: dalla barra di MyStartTime, per le prime `duration`
+       barre (mycount < duration), escluso il giorno DaytoFilter (0 = dom).
+    3) Short: il close incrocia AL RIBASSO la banda superiore, e
+       Mario_PtnBaseSA(MyPtnSY) vero e Mario_PtnBaseSA(MyPtnSN) falso.
+       Long: il close incrocia AL RIALZO la banda inferiore, con
+       MyPtnLY vero e MyPtnLN falso. Ingresso next bar at market.
+       Un segnale opposto con posizione aperta la inverte.
+    4) Uscite: stop MyStop (in prezzo: 0.01 = 100 pip), target MyProfit
+       (0 = nessuno). NESSUNA uscita a tempo.
+
+  ADATTAMENTO A 6B (futures CME, unita' minima su Lucid)
+    MyStop e MyProfit restano in PREZZO come nel codice di Unger e si
+    convertono in dollari con BigPointValue (6B: 62.500 -> 0.01 = $625).
+    MyStartTime: 03:00 New York = 02:00 Chicago -> 200 su chart CT.
+
+  AGGIUNTE PER LA PIPELINE (spente nella variante A)
+    FlatEOD = 1   flat a fine sessione (16:00 CT)   -> variante B
+    ShowLog = 1   log per lo Stage 1
+
+  CHART: @BP (6B) 30 min, session template CME Globex 17:00-16:00 CT,
+         timezone Exchange (CT), Bar Magnifier 1 min ON.
+  COSTI: 8.75$ per Contract (= $2,50 + 1 tick $6,25), slippage 0.
+  ===================================================================== }
+
+inputs:
+    MyPtnLY(14),        { Unger finale: 14 = ieri chiusura in rialzo }
+    MyPtnSY(15),        { Unger finale: 15 = ieri chiusura in ribasso }
+    MyPtnLN(40),        { Unger finale: 40 = ieri outside bar (escluso) }
+    MyPtnSN(40),
+    MyStartTime(200),   { 03:00 New York = 02:00 CT }
+    duration(8),        { barre della finestra (30 min) }
+    MyEndTime(2359),    { nel codice di Unger non e' usato: tenuto per fedelta' }
+    DaytoFilter(0),     { 0 = domenica esclusa }
+    MyStop(0.01),       { in prezzo: 0.01 = 100 pip }
+    MyProfit(0),        { in prezzo, 0 = nessun target }
+    Length(20),
+    NumDevs(2),
+    FlatEOD(0),
+    ShowLog(0);
+
+variables:
+    UpperBand(0), LowerBand(0), mycount(0),
+    pLY(false), pSY(false), pLN(false), pSN(false);
+
+{ pattern calcolati su ogni barra, fuori dalle condizioni (stesso risultato
+  del codice di Unger, che li chiama dentro l'if) }
+pLY = Mario_PtnBaseSA(MyPtnLY);
+pSY = Mario_PtnBaseSA(MyPtnSY);
+pLN = Mario_PtnBaseSA(MyPtnLN);
+pSN = Mario_PtnBaseSA(MyPtnSN);
+
+UpperBand = BollingerBand(c, Length, NumDevs);
+LowerBand = BollingerBand(c, Length, -NumDevs);
+
+if time = MyStartTime then mycount = 0;
+mycount = mycount + 1;
+
+if dayofweek(date) <> DaytoFilter and time > MyStartTime and mycount < duration then begin
+    if c crosses under UpperBand and pSY = true and (pSN = false) then begin
+        sellshort ("CT-S") next bar at market;
+        if ShowLog = 1 then
+            Print("CT S ", Date:8:0, " ", Time:5:0, " c=", c:8:5, " up=", UpperBand:8:5, " cnt=", mycount:2:0, " mp=", marketposition:2:0);
+    end;
+    if c crosses over LowerBand and pLY = true and (pLN = false) then begin
+        buy ("CT-L") next bar at market;
+        if ShowLog = 1 then
+            Print("CT L ", Date:8:0, " ", Time:5:0, " c=", c:8:5, " lo=", LowerBand:8:5, " cnt=", mycount:2:0, " mp=", marketposition:2:0);
+    end;
+end;
+
+setstopcontract;
+if MyStop > 0 then setstoploss(MyStop * BigPointValue);
+if MyProfit > 0 then setprofittarget(MyProfit * BigPointValue);
+if FlatEOD = 1 then setexitonclose;
