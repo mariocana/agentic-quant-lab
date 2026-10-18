@@ -65,3 +65,23 @@ strategia intraday sono legittimi; su barre giornaliere sarebbero lookahead.
 **Gate 1**: tutti i 40 pattern coincidono con il ricalcolo su tutte le sessioni con 5 giorni
 di storia. In più controllo a mano O/H/L/C di due sessioni contro il chart, e i valori di
 sessione contro le barre `1d_cme` di quantlake.
+
+## Stage 1 — **Gate 1 passato** (18/10/2026)
+
+Chart @ES 30 min, template 17:00–16:00 senza pause, 100 sessioni (01/06 → 16/10/2026).
+Log in `reports/PTN_S1_ES30_log.txt`. Compila così com'è: **`OpenS` / `HighS` / `LowS` /
+`CloseS` sono funzioni di MultiCharts**, non servono definizioni.
+
+- `check_ptn.py`: **tutti i 40 pattern coincidono con il ricalcolo su 95 sessioni su 95**
+  (le prime 5 non hanno storia). Le sessioni corte (19/06, 03/07, 07/09, chiuse alle 12:00)
+  sono trattate come sessioni normali, come vuole la funzione.
+- Frequenze sulle 95 sessioni, per orientarsi nella scelta dei filtri: 12 (espansione) 75,
+  39 (non outside) 85, 3 52, 6 54; rarissimi 33 (gap giù > 0,5%) 1, 34 (gap su > 0,5%) 3,
+  32 (gap fuori dal range di ieri) 4.
+- **Valori di sessione contro quantlake** (`1d_cme`, 93 sessioni in comune): 66 identiche,
+  27 diverse, **tutte nella direzione di dati mancanti in quantlake**: chiusure del venerdì
+  (l'export ha ancora il template che chiude il venerdì alle 15:15) e minimi più bassi /
+  massimi più alti nel chart (estremi caduti fra 15:15 e 16:00, assenti nell'export). Il
+  chart MultiCharts è quello giusto; lo storico @ES di quantlake va riesportato con il
+  template 17:00–16:00. La differenza sull'open del 01/06 è la prima sessione del chart,
+  caricata a metà.
