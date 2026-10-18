@@ -10,7 +10,7 @@
     "title": "Domenica di ricerca. Lunedi, se non c'e' altro, si parte con DriftPullback sola.",
     "note": "una viva su nove; la ricerca di oggi dice che il profilo prop non e' una proprieta' dei segnali",
     "items": [
-     "**Girare `DriftPersistence_Study` su @NQ, @YM, @RTY, @GC, @CL** (15 min, CT, 2020-2024, `ResetFile 0` dal secondo in poi). Misura la PREMESSA di DriftPullback — «dopo un drift di un'ora il prezzo continua?» — invece di provare un porting alla volta. **NQ e YM sono i controlli**: se escono diversi la misura e validata, se escono uguali la premessa e sbagliata.",
+     "~~DriftPersistence su 5 strumenti~~ **fatto: NQ e YM identici (50,15% e 50,18%), la premessa e sbagliata**. L'edge di DriftPullback sta nella congiunzione drift+pullback+trigger+uscita, non nella persistenza. GC anti-persistente a −6,34 errori standard ma con expectancy zero.",
      "**La seconda gamba NON deve essere mean reverting.** Il paper da cui nasce DriftPullback (Zarattini-Pagani, *Fast Alpha*) dice che il segnale di reversione a breve **non e profittevole da solo dopo i costi** — e noi l'abbiamo verificato due volte. Funziona come **overlay di timing** su una direzione di trend, che e esattamente cio che DriftPullback fa. Serve lo **stesso schema con un segnale di direzione diverso**.",
      "**Il run che vale di piu' e costa un'ora: DriftPullback portata su @YM.** Stop riscalato per ATR a **129 punti** (stessa frazione del range: 0,381), TP long 65, TP short 81, tutto il resto invariato. R per micro passa da $160 a **$64,57**.",
      "**Se passa il Gate 2, misurare SUBITO la correlazione giornaliera con la versione NQ.** Stessa logica e stesse ore su indici 0,8-0,95 correlati: sopra 0,6 non e' una seconda gamba, e' la stessa scommessa in doppio.",
@@ -647,6 +647,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-18",
+   "text": "**DriftPersistence su cinque strumenti: la premessa e sbagliata.** Run pulito, tasso d'armamento 65-70% ovunque. **NQ 50,15% e YM 50,18%: identici.** La regola scritta prima del run diceva che in quel caso l'edge di DriftPullback non e la persistenza del drift — e cosi e. Sta nella **congiunzione** drift + pullback + trigger + uscita, coerente con *Fast Alpha*: il valore e nel timing, non nella direzione da sola. **Strada chiusa.** **Dato secondario: GC anti-persistente, 47,86% a −6,34 errori standard** — il segnale statistico piu forte mai misurato — **ma con expectancy zero**: la mossa che inverte e piu piccola di quella che continua (0,755 contro 0,822 ATR) e fadare vale +0,0002 ATR. **Lezione**: un test sul segno puo essere significativissimo con expectancy nulla quando le ampiezze sono asimmetriche."
+  },
   {
    "date": "2026-10-18",
    "text": "**ESCounter (Unger) in cimitero, causa A**: primo counter trend della pipeline e primo test di un codice del corso Unger su dati che l'autore non ha visto. IS 2020–2024 t −2,02, negativo anche lordo. Due lezioni: (1) **con parametri congelati, il periodo dopo la registrazione di un corso è un fuori campione gratuito** e va usato sempre; (2) i numeri mostrati nei video vanno controllati contro il codice mostrato (qui il rapporto vincita/perdita 1,04 era incompatibile con stop e target fissi)."

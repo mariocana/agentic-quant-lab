@@ -1,0 +1,15 @@
+DRIFTPERS symbol=NQ DriftLen=  4 FwdBars=  2 DriftThresh=0.50 bigpointvalue=    20.00
+
+=== NQ ===
+barre valide         33040
+osservazioni         23071
+tasso d'armamento     69.8%   <- se e' oltre l'80% la soglia e' troppo bassa
+continuazioni        11570
+PERSISTENZA          50.15%
+il caso              50.00%
+ECCESSO               0.15 pp
+errore standard       0.33 pp
+errori standard       0.45   <- serve >= 3 per crederci
+drift medio          1.489 ATR
+mossa se continua    0.926 ATR
+mossa se inverte     0.881 ATR

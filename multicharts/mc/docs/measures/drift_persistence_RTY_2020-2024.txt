@@ -1,0 +1,15 @@
+DRIFTPERS symbol=rty DriftLen=  4 FwdBars=  2 DriftThresh=0.50 bigpointvalue=    50.00
+
+=== rty ===
+barre valide         33041
+osservazioni         22706
+tasso d'armamento     68.7%   <- se e' oltre l'80% la soglia e' troppo bassa
+continuazioni        11327
+PERSISTENZA          49.89%
+il caso              50.00%
+ECCESSO              -0.11 pp
+errore standard       0.33 pp
+errori standard      -0.35   <- serve >= 3 per crederci
+drift medio          1.491 ATR
+mossa se continua    0.920 ATR
+mossa se inverte     0.891 ATR
