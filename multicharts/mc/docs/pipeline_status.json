@@ -10,7 +10,7 @@
     "title": "Domenica di ricerca. Lunedi, se non c'e' altro, si parte con DriftPullback sola.",
     "note": "una viva su nove; la ricerca di oggi dice che il profilo prop non e' una proprieta' dei segnali",
     "items": [
-     "**Last Half-Hour su @NQ: Stage 0 chiuso.** Prossimo: scrivere la strategia (ingresso 14:30 CT nella direzione del rendimento da ieri, uscita 15:00, niente stop, niente parametri) e Stage 1. Aspettativa dichiarata: t ~1,8 sull'IS, sotto soglia.",
+     "**Stage 1 di Last Half-Hour su @NQ** (compilare come **Signal**, 100 giorni, `ShowLog 1`, poi x10). Attesi: ingressi tutti alle 14:35, uscite alle 15:05, direzione = segno di rROD al 100%, ~70 trade.",
      "~~DriftPersistence su 5 strumenti~~ **fatto: NQ e YM identici (50,15% e 50,18%), la premessa e sbagliata**. L'edge di DriftPullback sta nella congiunzione drift+pullback+trigger+uscita, non nella persistenza. GC anti-persistente a −6,34 errori standard ma con expectancy zero.",
      "**La seconda gamba NON deve essere mean reverting.** Il paper da cui nasce DriftPullback (Zarattini-Pagani, *Fast Alpha*) dice che il segnale di reversione a breve **non e profittevole da solo dopo i costi** — e noi l'abbiamo verificato due volte. Funziona come **overlay di timing** su una direzione di trend, che e esattamente cio che DriftPullback fa. Serve lo **stesso schema con un segnale di direzione diverso**.",
      "**Il run che vale di piu' e costa un'ora: DriftPullback portata su @YM.** Stop riscalato per ATR a **129 punti** (stessa frazione del range: 0,381), TP long 65, TP short 81, tutto il resto invariato. R per micro passa da $160 a **$64,57**.",
@@ -85,7 +85,8 @@
    "instrument": "@NQ 5m (scelto a priori: l'unico con potenza su 5 anni)",
    "path": "mc/strategies/LastHalfHour",
    "stages": {
-    "0": "pass"
+    "0": "pass",
+    "1": "run"
    },
    "note": "**Stage 0, la prima candidata scelta col filtro sui paper.** Baltussen-Da-Lammers-Martens, JFE 2021: il rendimento dalla chiusura di ieri fino a 30 minuti prima della chiusura predice la mezz'ora finale, perche chi e corto gamma deve coprirsi nella direzione del mercato. Testato su 60+ futures dal 1974, **t 7,97 su NQ**, 4,97 su ES. **Nessun parametro, nessuno stop nel test.** Scelto NQ **a priori** perche su 5 anni e l'unico che puo superare t >= 2 anche a edge intatto (atteso 3,64; ES 1,81). Il campione del paper finisce a maggio 2020: **il nostro IS misura esattamente il decadimento post-pubblicazione**.",
    "metrics": {
@@ -97,10 +98,14 @@
    "log": [
     {
      "date": "2026-10-18",
+     "text": "**Scritta `LastHalfHour.txt` e la checklist dello Stage 1.** Le regole del paper e nient'altro: segnale = rendimento dalla chiusura RTH di ieri alle 14:30, ingresso alle 14:30 nella sua direzione, uscita alle 15:00, niente stop, niente target, niente parametri. **La chiusura di ieri si prende dall'ultima barra RTH del giorno prima** riconoscendo il cambio di giorno con `Date <> lastRthDate`: funziona su Globex e su RTH, e nei giorni a chiusura anticipata prende la 12:15 invece di una 15:00 che non esiste — e il punto dove ON_Reversal aveva un difetto, quindi la checklist chiede di verificarlo a mano. **Va compilata come Signal**: contiene ordini."
+    },
+    {
+     "date": "2026-10-18",
      "text": "**Aperta, letto il paper per intero.** Passa i tre eliminatori del filtro: futures (ES, NQ, YM, RTY testati singolarmente), meccanismo di flusso forzato (gamma hedging, verificato condizionando sull'esposizione netta), intraday con uscita in chiusura. **Punto debole: i costi** — *«we do not consider transaction costs»*, solo la frase che su ES il Sharpe netto resta positivo con un tick. **Calcolo di potenza che decide lo strumento**: su 1.258 sessioni il t atteso a edge intatto e 3,64 su NQ, 2,53 su RTY, 1,81 su ES, 1,95 su YM — **solo NQ puo passare il Gate 2 anche senza decadimento**, quindi un fallimento su ES o YM non direbbe niente. Scelto NQ **prima** di guardare, per non selezionare il migliore fra quattro. **Il filtro «segnali concordi» del paper non si testa**: provarlo dopo la base sugli stessi dati sarebbe scegliere. **Aspettativa: edge dimezzato, t ~1,8, sotto soglia.**"
     }
    ],
-   "next": "Scrivere `LastHalfHour.txt` (strategia, una ventina di righe) e girare lo Stage 1."
+   "next": "**Stage 1 su @NQ**: 100 giorni, 1 contratto, $7,50/lato, `ShowLog 1`, poi il test x10."
   },
   {
    "name": "ON Reversal",
