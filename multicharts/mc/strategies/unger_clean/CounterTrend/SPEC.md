@@ -1,75 +1,94 @@
-# SPEC — Counter Trend di Unger su 6B (Stage 0)
+# SPEC — Counter Trend di Unger, porting su GC (Stage 0)
 
 **Ipotesi**: nella mattina di Londra, un eccesso oltre le bande di Bollinger contro la
-direzione del giorno prima rientra. Se ieri GBP ha chiuso in rialzo e stamattina il prezzo
-scende sotto la banda inferiore e poi ci rientra, si compra; specularmente short.
+direzione del giorno prima rientra. Se ieri il mercato ha chiuso in rialzo e stamattina il
+prezzo scende sotto la banda inferiore e poi ci rientra, si compra; specularmente short.
 **Perché**: all'apertura di Londra gli ordini accumulati in Asia producono spinte che spesso
-sono rumore di liquidità, non informazione; quando vanno contro il movimento del giorno
-prima vengono riassorbite. Chi perde: chi insegue il primo movimento della sessione europea.
+sono rumore di liquidità; quando vanno contro il movimento del giorno prima vengono
+riassorbite. Chi perde: chi insegue il primo movimento della sessione europea.
 **Fonte**: Andrea Unger, *Trading System Supremacy*, modulo 5. Codice `DevelopRev` nel video
 5x01 (compilato il 21/01/2016), parametri finali nel 5x02: **`DevelopRev(14, 15, 40, 40, 300,
-8, 2359, 0, 0.01, 0, 20, 2)`**, GBPUSD forex 30 min, dati TradeStation. Risultato mostrato,
-2008 → gennaio 2016 su 100.000 GBP: **net $157.956, PF 1,74, max DD $11.708, commissioni e
-slippage $0** (riga "Commission Paid $0,00, Slippage Paid $0,00" del report).
-**Ruolo**: il secondo counter trend della pipeline, e il primo su una **valuta**.
+8, 2359, 0, 0.01, 0, 20, 2)`**, **GBPUSD** forex 30 min, dati TradeStation, grafico in ora di
+New York. Risultato mostrato, 2008 → gennaio 2016 su 100.000 GBP: net $157.956, PF 1,74, max
+DD $11.708, **commissioni e slippage $0**.
+
+## Perché GC e non GBPUSD
+
+Su Lucid il forex esiste solo come futures interi (6B: 62.500 GBP): stop di 100 pip = $625 a
+contratto contro $500 di soglia, drawdown di Unger riportato a un 6B ~$7.300 contro un MLL di
+$2.000. **Causa B per costruzione**: testare 6B ha senso solo per un conto molto più grande,
+quindi non si testa (decisione dell'utente, 18/10/2026).
+
+La strategia è legata a **Londra**, non al pound. Il candidato naturale è l'**oro**: Londra è
+la sua piazza principale, la mattina europea è uno dei suoi momenti più liquidi, e c'è il micro
+(MGC). **ES e YM** si girano solo come esplorazione: per loro 02:00–05:00 CT è la sessione
+notturna e l'ipotesi si trasferisce male; un risultato buono lì andrebbe spiegato, non preso.
+
+## Regole
 
 | | |
 |---|---|
 | Famiglia | counter trend / ritorno dentro le bande, long e short |
-| Strumento · TF | **6B** (@BP, CME British Pound, 62.500 GBP, $6,25 a pip) · **30 min** · Globex 17:00–16:00 CT, chart CT |
-| Bande | Bollinger sul close, 20 periodi, 2 deviazioni |
-| Finestra | dalla barra delle **02:00 CT** (= 03:00 New York, mattina di Londra) per le prime 8 barre; domenica esclusa |
+| Strumento · TF | **@GC** (sviluppo) → **MGC** (÷10) · **30 min** · Globex 17:00–16:00 CT senza pause, chart CT |
+| Esplorativi | @ES → MES, @YM → MYM, stesse regole |
+| Bande | Bollinger sul close, 20 periodi, 2 deviazioni (Unger) |
+| Finestra | dalla barra delle **02:00 CT** (= 03:00 New York) per le prime 8 barre: segnali da 02:30 a 05:00 CT; domenica esclusa |
 | Long | close che incrocia al rialzo la banda inferiore, **ieri chiusura in rialzo** (pattern 14), **ieri non outside bar** (no 40) |
 | Short | close che incrocia al ribasso la banda superiore, **ieri chiusura in ribasso** (15), no 40 |
-| Stop / target | **100 pip = $625 a contratto** / nessuno |
-| Uscita a tempo | **nessuna** (variante A): esce a stop o per inversione su un segnale opposto |
+| Stop | **0,65% del close sulla barra del segnale**, congelato per il trade |
+| Target / uscita a tempo | nessuno / **nessuna** (variante A): stop o inversione |
 
-**Fuso orario.** Il grafico di Unger è in ora di New York: la sessione della domenica sul suo
-grafico parte alle 17:00 e dura poche ore, che è l'apertura del forex alle 17:00 ET. Le sue
-03:00 sono quindi 03:00 ET = **02:00 CT** sul chart di 6B.
+**Lo stop, regola unica senza ottimizzazione.** Gli 0,01 di Unger su GBPUSD, con una media
+2008–2016 di ~1,55, valevano lo 0,65% del prezzo. Si porta la stessa frazione: è l'unico
+parametro che cambia, e non si ottimizza. Bande, finestra e filtri restano quelli del video.
 
-**IS**: 2020‑01‑01 → 2024‑12‑31 · **OOS**: 2025‑01‑01 → oggi. Parametri **congelati** a quelli
-del video; tutto dopo gennaio 2016 è fuori campione per l'autore.
+| | prezzo | stop 0,65% | per micro |
+|---|---|---|---|
+| GC | ~4.100 | ~27 pt | **~$267 per MGC** |
+| ES | ~7.800 | ~50 pt | ~$250 per MES |
+| YM | ~45.000 | ~290 pt | ~$146 per MYM |
 
-## Il conto: per LucidFlex 50k la risposta è già nota (causa B)
+Tutti sotto la soglia del peggior trade ($500 per micro).
 
-Lucid non ha micro forex: l'unità minima è un 6B intero. Con i numeri di Unger, prima di
-qualsiasi run:
-- **peggior trade**: lo stop vale $625 a contratto, più costi e slittamento, contro la soglia
-  di $500 (25% dell'MLL). **Fallisce per costruzione.**
-- **drawdown**: il suo max DD di $11.708 su 100.000 GBP vale **~$7.300 su un 6B** (× 0,625),
-  contro $1.000 di soglia e $2.000 di MLL.
+**Fuso orario.** Il grafico di Unger è in ora di New York (la sessione della domenica parte
+alle 17:00 e dura poche ore: l'apertura del forex alle 17:00 ET). 03:00 ET = **02:00 CT**.
 
-Quindi su LucidFlex 50k la strategia **non entra** anche se l'edge esistesse: sarebbe causa
-B. Lo Stage 2 serve a misurare **se l'edge esiste**, per archiviarla con il numero giusto per
-un conto più grande o per capitale proprio (decisione dell'utente, 18/10/2026).
+**IS**: 2020‑01‑01 → 2024‑12‑31 · **OOS**: 2025‑01‑01 → oggi. Tutto dopo gennaio 2016 è fuori
+campione per l'autore; per GC/ES/YM lo è anche lo strumento.
 
 ## Varianti pre‑registrate
 
 | variante | `FlatEOD` | ruolo |
 |---|---|---|
-| **A** (originale) | 0 | fedele a Unger: la misura dell'edge |
-| **B** | 1 | flat a fine sessione (16:00 CT): l'edge resta se si toglie la posizione overnight? |
+| **A** (originale) | 0 | regole di Unger, posizione anche overnight |
+| **B** (prop) | 1 | flat a fine sessione (16:00 CT): rispetta "flat prima della chiusura" |
 
-## Criteri dello Stage 2 (edge, non conto)
+## Worst day strutturale
+- **B**: entrate solo fra 02:30 e 05:00, al massimo un'inversione nella finestra: **2 stop**
+  = ~$534 per MGC, più costi e slittamento. Sopra i $500 della soglia del peggior *trade*,
+  ma è un worst *day*: va letto contro l'MLL ($2.000), e regge.
+- **A**: non limitato. Le posizioni restano aperte giorni e attraversano i gap della domenica.
 
-Sul run A, costi veri:
-- avg trade netto > 0 con **t ≥ 2**;
-- almeno 3 anni su 5 positivi, nessun anno oltre il 50% del profitto;
-- confronto con Unger: PF dello stesso ordine (1,3+) **dopo i costi**, che lui non aveva.
+## Soglie del Gate 2 (LucidFlex 50k, ÷10 per il micro)
 
-Se A fallisce: causa A, cimitero. Se A passa: archiviata come "edge presente, causa B su
-LucidFlex 50k", con il DD per contratto misurato.
+| Metrica | GC | ES | YM |
+|---|---|---|---|
+| avg trade netto (≈5 × costo andata e ritorno) | ≥ $140 | ≥ $140 | ≥ $75 |
+| max DD sul contratto pieno | ≤ $10.000 | ≤ $10.000 | ≤ $10.000 |
+| peggior trade sul contratto pieno | ≤ $5.000 | ≤ $5.000 | ≤ $5.000 |
+| n trade IS, PF, WR, R:R, annuale | come pipeline: ≥ 200, ≥ 1,2, ≥ 55%, 0,5–1, nessun anno > 50% | | |
 
-**Costi**: `8.75$ per Contract` per lato ($2,50 + 1 tick $6,25; la commissione Lucid sulle
-valute è $2,40), slippage `0 ticks`.
+**Costi** per lato, slippage incluso: GC **12.5$**, ES **15$**, YM **7.5$** per Contract,
+campo slippage a 0.
+
+**Kill**: gate della pipeline, giudicati su **GC**. ES e YM non promuovono la strategia da
+soli: se passano solo loro, va scritto perché un'ipotesi "di Londra" funzionerebbe sugli
+indici USA nella loro notte, prima di andare avanti.
 
 ## Note
-- **Posizioni overnight e weekend** nella variante A: lo stop a 100 pip non protegge dai gap
-  della domenica sera. Il worst day non è limitato; la variante B lo limita a uno stop più
-  un'inversione (un solo ingresso per lato nella finestra).
-- **`MyEndTime`** è un input del codice di Unger che il codice non usa: tenuto per fedeltà.
-- **Spot contro futures**: GBPUSD spot e 6B si muovono insieme, ma 6B ha la sessione CME e
-  gli orari di liquidità del futures. Il segnale è sulle stesse ore.
-- **Back‑adjustment**: stop in prezzo, quindi in punti: il continuo aggiustato non lo
-  distorce. Le bande di Bollinger sono su differenze di prezzo, invarianti a uno spostamento.
+- **Back‑adjustment**: lo stop in percentuale si calcola sul prezzo del continuo aggiustato.
+  Su GC il contango sposta i livelli vecchi: allo Stage 1 si confronta il close di una
+  barra del 2020 con il prezzo reale di allora. Se lo scarto supera ~10%, lo stop in
+  percentuale nel 2020 è distorto della stessa misura e va annotato.
+- **Session template**: GC con il template `COMEX: Metals Futures (Electronic)` perdeva le
+  barre fra 07:45 e 14:15 (GAR, Stage 1). Qui serve 17:00–16:00 senza pause, come per ES.

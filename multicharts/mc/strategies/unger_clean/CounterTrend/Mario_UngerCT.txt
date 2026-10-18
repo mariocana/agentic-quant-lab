@@ -20,18 +20,24 @@
     4) Uscite: stop MyStop (in prezzo: 0.01 = 100 pip), target MyProfit
        (0 = nessuno). NESSUNA uscita a tempo.
 
-  ADATTAMENTO A 6B (futures CME, unita' minima su Lucid)
-    MyStop e MyProfit restano in PREZZO come nel codice di Unger e si
-    convertono in dollari con BigPointValue (6B: 62.500 -> 0.01 = $625).
+  PORTING (GC principale, ES e YM esplorativi; vedi SPEC.md)
+    Stop: StopPct > 0 -> stop = StopPct% del close sulla barra del
+    segnale, convertito in $ con BigPointValue e congelato per il trade.
+    0.65% = i 100 pip di Unger su GBPUSD (media 2008-2016 ~1,55).
+    Con StopPct = 0 vale MyStop in prezzo come nel codice originale
+    (6B: 0.01 x 62.500 = $625).
     MyStartTime: 03:00 New York = 02:00 Chicago -> 200 su chart CT.
 
   AGGIUNTE PER LA PIPELINE (spente nella variante A)
     FlatEOD = 1   flat a fine sessione (16:00 CT)   -> variante B
     ShowLog = 1   log per lo Stage 1
 
-  CHART: @BP (6B) 30 min, session template CME Globex 17:00-16:00 CT,
-         timezone Exchange (CT), Bar Magnifier 1 min ON.
-  COSTI: 8.75$ per Contract (= $2,50 + 1 tick $6,25), slippage 0.
+  CHART: @GC (o @ES, @YM) 30 min, session template Globex 17:00-16:00 CT
+         senza pause (GC: 24h come in GAR), timezone Exchange (CT),
+         Bar Magnifier 1 min ON.
+  COSTI per lato, slippage incluso, campo slippage 0:
+         GC 12.5$ ($2,50 + tick $10)   ES 15$ ($2,50 + tick $12,50)
+         YM 7.5$ ($2,50 + tick $5)
   ===================================================================== }
 
 inputs:
@@ -43,7 +49,8 @@ inputs:
     duration(8),        { barre della finestra (30 min) }
     MyEndTime(2359),    { nel codice di Unger non e' usato: tenuto per fedelta' }
     DaytoFilter(0),     { 0 = domenica esclusa }
-    MyStop(0.01),       { in prezzo: 0.01 = 100 pip }
+    MyStop(0.01),       { in prezzo: 0.01 = 100 pip (usato solo se StopPct = 0) }
+    StopPct(0.65),      { stop in % del prezzo al segnale (porting); 0 = usa MyStop }
     MyProfit(0),        { in prezzo, 0 = nessun target }
     Length(20),
     NumDevs(2),
@@ -51,7 +58,7 @@ inputs:
     ShowLog(0);
 
 variables:
-    UpperBand(0), LowerBand(0), mycount(0),
+    UpperBand(0), LowerBand(0), mycount(0), stopUSD(0),
     pLY(false), pSY(false), pLN(false), pSN(false);
 
 { pattern calcolati su ogni barra, fuori dalle condizioni (stesso risultato
@@ -70,17 +77,22 @@ mycount = mycount + 1;
 if dayofweek(date) <> DaytoFilter and time > MyStartTime and mycount < duration then begin
     if c crosses under UpperBand and pSY = true and (pSN = false) then begin
         sellshort ("CT-S") next bar at market;
+        if StopPct > 0 then stopUSD = c * StopPct / 100 * BigPointValue;
         if ShowLog = 1 then
-            Print("CT S ", Date:8:0, " ", Time:5:0, " c=", c:8:5, " up=", UpperBand:8:5, " cnt=", mycount:2:0, " mp=", marketposition:2:0);
+            Print("CT S ", Date:8:0, " ", Time:5:0, " c=", c:8:5, " up=", UpperBand:8:5, " cnt=", mycount:2:0, " mp=", marketposition:2:0, " stop$=", stopUSD:7:2);
     end;
     if c crosses over LowerBand and pLY = true and (pLN = false) then begin
         buy ("CT-L") next bar at market;
+        if StopPct > 0 then stopUSD = c * StopPct / 100 * BigPointValue;
         if ShowLog = 1 then
-            Print("CT L ", Date:8:0, " ", Time:5:0, " c=", c:8:5, " lo=", LowerBand:8:5, " cnt=", mycount:2:0, " mp=", marketposition:2:0);
+            Print("CT L ", Date:8:0, " ", Time:5:0, " c=", c:8:5, " lo=", LowerBand:8:5, " cnt=", mycount:2:0, " mp=", marketposition:2:0, " stop$=", stopUSD:7:2);
     end;
 end;
 
 setstopcontract;
-if MyStop > 0 then setstoploss(MyStop * BigPointValue);
+if StopPct > 0 then begin
+    if stopUSD > 0 then setstoploss(stopUSD);
+end
+else if MyStop > 0 then setstoploss(MyStop * BigPointValue);
 if MyProfit > 0 then setprofittarget(MyProfit * BigPointValue);
 if FlatEOD = 1 then setexitonclose;
