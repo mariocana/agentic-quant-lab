@@ -56,6 +56,10 @@ sources:
     type: SPX DIX / GEX daily (free CSV)
     modes: [rest]
     docs: https://squeezemetrics.com/monitor/dix
+  nasdaq_earnings:
+    type: earnings calendar, EPS surprises, stock daily OHLCV (api.nasdaq.com, free, no key)
+    modes: [rest]
+    docs: https://api.nasdaq.com/api/calendar/earnings?date=YYYY-MM-DD
   nasdaq:
     type: NDX cash index daily OHLC (api.nasdaq.com, free, no key)
     modes: [rest]
@@ -177,6 +181,24 @@ bronze:
     grain: 1d
     partition: [symbol, year, month]
     notes: SPX close, DIX, GEX since 2011, stamped 18:00 ET
+
+  nasdaq_earnings_calendar:
+    source: nasdaq_earnings
+    grain: per company per report date
+    partition: [symbol, year, month]
+    notes: time bmo/amc kept from when the report was upcoming (Nasdaq drops it afterwards); actual EPS filled by re-fetch (update_matched)
+
+  nasdaq_earnings_surprise:
+    source: nasdaq_earnings
+    grain: per company per reported quarter (last 4)
+    partition: [symbol, year, month]
+    notes: refreshed at most weekly, only for companies reporting in the next 5 weekdays
+
+  nasdaq_stock_daily:
+    source: nasdaq_earnings
+    grain: 1d
+    partition: [symbol, year, month]
+    notes: OHLCV stamped 16:15 ET, only for the screener's companies (market cap >= 2 bn)
 
   nasdaq_index_daily:
     source: nasdaq
@@ -557,6 +579,14 @@ gold:
       - one row per snapshot with a same-day SPXW expiry, full rebuild (gold/options.py)
       - forward from put-call parity (pre-open `spot` is yesterday's close), ATM straddle interpolated at the forward
       - em_pct = straddle / forward; pre_open = before 09:30 ET
+
+  earnings_screener/1d:
+    from: [bronze/nasdaq_earnings_calendar, bronze/nasdaq_earnings_surprise, bronze/nasdaq_stock_daily]
+    transforms:
+      - current snapshot, rebuilt each run (gold/earnings.py, historical/earnings.py); UI applications/equity_desk
+      - reported (last 5 weekdays) = BEAT (>= $0.01 and >= 1%) + reaction-session open gap > 2%
+      - upcoming (next 5 weekdays) = beat rate >= 75% over 4 quarters or 13-week return > +5%
+      - reaction session from bmo/amc, inferred from the larger gap when unknown (time_inferred)
 
   daily_context/1d:
     from: [silver/multicharts_ohlcv, bronze/cboe_index_daily, bronze/squeezemetrics, bronze/nasdaq_index_daily]

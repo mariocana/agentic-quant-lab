@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Equity Desk</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0a0a0b; --panel:#111113; --elev:#16161a; --ink:#e4e4e7; --muted:#8b8b94; --dim:#52525b;
+  --line:#1f1f23; --line2:#2a2a30; --acc:#f59e0b; --acc-soft:rgba(245,158,11,.10);
+  --up:#22c55e; --down:#f87171;
+  --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font:14px/1.5 var(--sans)}
+header{display:flex; flex-wrap:wrap; align-items:center; gap:14px 24px; padding:18px 24px;
+       border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:5}
+.brand{font-family:var(--mono); font-weight:600; letter-spacing:.06em}
+.brand::before{content:"◆ "; color:var(--acc)}
+.brand small{display:block; font-weight:400; color:var(--muted); letter-spacing:0; font-family:var(--sans)}
+.kpi{font-family:var(--mono)} .kpi b{font-size:1.25rem; color:var(--acc)} .kpi span{color:var(--muted); font-size:.75rem; margin-left:6px}
+.spacer{flex:1}
+button,select,input{font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line2);
+                    border-radius:4px; padding:6px 10px}
+button{cursor:pointer} button:hover{border-color:var(--acc); color:var(--acc)}
+button.on{background:var(--acc); color:var(--bg); border-color:var(--acc)}
+button:disabled{opacity:.6; cursor:default}
+.fresh{font-family:var(--mono); font-size:.75rem; color:var(--muted)}
+main{max-width:1280px; margin:0 auto; padding:18px 24px 60px}
+.bar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px}
+.bar label{font-size:.78rem; color:var(--muted); font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em}
+.seg{display:inline-flex; border:1px solid var(--line2); border-radius:4px; padding:2px}
+.seg button{border:none; padding:5px 12px}
+h2{font-size:1.05rem; margin:26px 0 2px}
+.sub{color:var(--muted); font-size:.82rem; margin:0 0 12px}
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:12px 14px}
+.card.fail{opacity:.55}
+.top{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.sym{font-family:var(--mono); font-weight:600; font-size:1.05rem}
+.name{color:var(--muted); font-size:.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:1px 0 8px}
+.tag{font-family:var(--mono); font-size:.66rem; padding:1px 6px; border-radius:3px; border:1px solid var(--line2); color:var(--muted)}
+.tag.beat{color:var(--up); border-color:rgba(34,197,94,.5)} .tag.miss{color:var(--down); border-color:rgba(248,113,113,.5)}
+.tag.acc{color:var(--acc); border-color:rgba(245,158,11,.5)}
+.score{margin-left:auto; font-family:var(--mono); font-weight:600; font-size:1.1rem; color:var(--acc)}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:6px 12px}
+.grid small{display:block; font-family:var(--mono); font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em}
+.grid b{font-family:var(--mono); font-weight:500}
+.pos{color:var(--up)} .neg{color:var(--down)}
+.foot{color:var(--dim); font-size:.72rem; margin-top:10px; font-family:var(--mono)}
+table{border-collapse:collapse; width:100%; font-size:.85rem}
+th,td{border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; white-space:nowrap}
+th{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+   background:var(--elev); position:sticky; top:0; cursor:pointer}
+td.n{font-family:var(--mono); text-align:right} th.n{text-align:right}
+tr.day td{background:var(--elev); font-family:var(--mono); color:var(--acc); font-size:.78rem}
+tr.today td{color:var(--ink)}
+.scroll{overflow-x:auto}
+.empty{color:var(--muted); padding:18px; border:1px dashed var(--line2); border-radius:5px}
+.note{color:var(--muted); font-size:.78rem; margin-top:28px; border-top:1px solid var(--line); padding-top:12px}
+.log{white-space:pre-wrap; font-family:var(--mono); font-size:.72rem; color:var(--muted); margin:0 0 12px}
+[hidden]{display:none!important}
+@media (max-width:640px){ header,main{padding-left:16px; padding-right:16px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">EQUITY DESK<small>Earnings scanner &amp; calendario</small></div>
+  <div class="kpi"><b id="k-up">–</b><span>in arrivo (5 gg)</span></div>
+  <div class="kpi"><b id="k-rep">–</b><span>pubblicate (5 gg)</span></div>
+  <div class="spacer"></div>
+  <span class="fresh" id="fresh"></span>
+  <button id="refresh" title="Scarica calendario, prezzi e sorprese EPS (~20 s, 1-5 min la prima volta)">aggiorna</button>
+</header>
+<main>
+  <pre class="log" id="log" hidden></pre>
+  <div class="bar">
+    <div class="seg" id="tabs"><button data-tab="screener" class="on">Screener</button><button data-tab="calendar">Calendario</button></div>
+    <span id="screener-ctl" class="bar" style="margin:0">
+      <label>ordina</label>
+      <select id="sort">
+        <option value="score">punteggio</option><option value="date">data</option>
+        <option value="gap">gap</option><option value="surprise">sorpresa EPS</option><option value="cap">capitalizzazione</option>
+      </select>
+      <div class="seg" id="view"><button data-view="cards" class="on">schede</button><button data-view="list">lista</button></div>
+      <label><input type="checkbox" id="showall"> mostra anche chi non passa</label>
+    </span>
+    <span id="calendar-ctl" class="bar" style="margin:0" hidden>
+      <input id="q" placeholder="cerca simbolo o nome" size="22">
+      <select id="mincap"><option value="0">tutte</option><option value="2e9" selected>cap ≥ 2 mld</option><option value="1e10">cap ≥ 10 mld</option></select>
+    </span>
+  </div>
+
+  <section id="screener">
+    <h2>Ultimi 5 giorni · BEAT + gap &gt; 2%</h2>
+    <p class="sub">EPS sopra la stima di almeno $0,01 e dell'1%, e la seduta di reazione apre più del 2% sopra la chiusura precedente.</p>
+    <div id="reported"></div>
+    <h2>Prossimi 5 giorni · setup rialzista</h2>
+    <p class="sub">Beat rate ≥ 75% negli ultimi 4 trimestri, oppure rendimento a 13 settimane &gt; +5% (entrambi = segnale più forte).
+      Circa 3 aziende su 4 battono le stime quasi ogni trimestre: questa lista è da scorrere per punteggio, non è selettiva.</p>
+    <div id="upcoming"></div>
+  </section>
+
+  <section id="calendar" hidden><div class="scroll"><table id="cal"></table></div></section>
+
+  <p class="note">Dati: Nasdaq.com (calendario, EPS, sorprese, prezzi giornalieri), aggiornati da
+    <code>applications/historical/earnings.py</code>. La stima dei ricavi non è disponibile gratis: al suo posto la capitalizzazione.
+    Titoli sotto i 2 mld di capitalizzazione esclusi dallo screener. BMO = prima dell'apertura, AMC = dopo la chiusura;
+    "dedotto" = orario non fornito, ricavato dalla seduta con il gap maggiore (può sbagliare).
+    Punteggi: pubblicate 50 × min(sorpresa/25%, 1) + 50 × min(gap/8%, 1); in arrivo 60 × beat rate + 40 × min(rend. 13 sett./20%, 1).</p>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+const state = {tab: "screener", view: "cards", sort: "score", showall: false, screener: [], calendar: [], today: null};
+const fmt = (x, d = 2) => x == null ? "–" : x.toLocaleString("it-IT", {minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: true});
+const pct = (x, d = 1) => x == null ? "–" : (x > 0 ? "+" : "") + fmt(x * 100, d) + "%";
+const cls = (x) => x == null ? "" : (x > 0 ? "pos" : x < 0 ? "neg" : "");
+const cap = (x) => x == null ? "–" : x >= 1e12 ? fmt(x / 1e12, 2) + " T" : x >= 1e9 ? fmt(x / 1e9, 1) + " mld" : fmt(x / 1e6, 0) + " mln";
+const day = (iso) => iso ? new Date(iso + "T12:00:00").toLocaleDateString("it-IT", {weekday: "short", day: "2-digit", month: "2-digit"}) : "–";
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const timeTag = (t, inferred) => t && t !== "na"
+  ? `<span class="tag">${t.toUpperCase()}${inferred ? " dedotto" : ""}</span>` : `<span class="tag">orario n.d.</span>`;
+
+const SORTS = {
+  score: (r) => r.score ?? -1, date: (r) => r.report_date, gap: (r) => r.gap_pct ?? -9,
+  surprise: (r) => r.surprise_pct ?? -999, cap: (r) => r.market_cap ?? 0,
+};
+function sorted(rows) {
+  const k = SORTS[state.sort], asc = state.sort === "date";
+  return [...rows].sort((a, b) => (k(a) > k(b) ? 1 : k(a) < k(b) ? -1 : 0) * (asc ? 1 : -1));
+}
+
+function repCard(r) {
+  return `<div class="card ${r.passes ? "" : "fail"}">
+    <div class="top"><span class="sym">${esc(r.symbol)}</span>${timeTag(r.time_used || r.time, r.time_inferred)}
+      <span class="tag ${r.result === "BEAT" ? "beat" : r.result === "MISS" ? "miss" : ""}">${r.result ?? ""}</span>
+      <span class="score">${r.score ?? "–"}</span></div>
+    <div class="name">${esc(r.name)}</div>
+    <div class="grid">
+      <div><small>Gap</small><b class="${cls(r.gap_pct)}">${pct(r.gap_pct)}</b></div>
+      <div><small>Sorpresa EPS</small><b class="${cls(r.surprise_pct)}">${r.surprise_pct == null ? "–" : (r.surprise_pct > 0 ? "+" : "") + fmt(r.surprise_pct, 1) + "%"}</b></div>
+      <div><small>EPS / stima</small><b>${fmt(r.eps)} / ${fmt(r.eps_forecast)}</b></div>
+      <div><small>Dall'apertura</small><b class="${cls(r.since_open_pct)}">${pct(r.since_open_pct)}</b></div>
+      <div><small>Capitalizzazione</small><b>${cap(r.market_cap)}</b></div>
+      <div><small>Dal report</small><b class="${cls(r.since_report_pct)}">${pct(r.since_report_pct)}</b></div>
+    </div>
+    <div class="foot">pubblicata ${day(r.report_date)}${r.reaction_day ? " · reazione " + day(r.reaction_day) : " · reazione non ancora aperta"}</div>
+  </div>`;
+}
+function upCard(r) {
+  const tags = (r.quarters ? `<span class="tag ${r.beat_rate >= 0.75 ? "acc" : ""}">${r.beats}/${r.quarters} beat</span>` : "")
+    + (r.ret_13w != null && r.ret_13w > 0.05 ? `<span class="tag acc">${pct(r.ret_13w)} 13 sett.</span>` : "");
+  return `<div class="card ${r.passes ? "" : "fail"}">
+    <div class="top"><span class="sym">${esc(r.symbol)}</span>${timeTag(r.time)}<span class="tag">${day(r.report_date)}</span>
+      <span class="score">${r.score ?? "–"}</span></div>
+    <div class="name">${esc(r.name)}</div>
+    <div class="top" style="margin-bottom:8px">${tags}</div>
+    <div class="grid">
+      <div><small>Stima EPS</small><b>${fmt(r.eps_forecast)}</b></div>
+      <div><small>Capitalizzazione</small><b>${cap(r.market_cap)}</b></div>
+      <div><small>Beat rate</small><b>${r.beat_rate == null ? "–" : Math.round(r.beat_rate * 100) + "%"}</b></div>
+      <div><small>Rend. 13 settimane</small><b class="${cls(r.ret_13w)}">${pct(r.ret_13w)}</b></div>
+    </div>
+  </div>`;
+}
+function repRow(r) {
+  return `<tr><td><b>${esc(r.symbol)}</b></td><td>${(r.time_used || r.time || "").toUpperCase()}${r.time_inferred ? "*" : ""}</td>
+    <td>${day(r.report_date)}</td><td>${r.result ?? ""}</td><td class="n">${r.score ?? "–"}</td>
+    <td class="n ${cls(r.gap_pct)}">${pct(r.gap_pct)}</td><td class="n ${cls(r.surprise_pct)}">${fmt(r.surprise_pct, 1)}%</td>
+    <td class="n">${fmt(r.eps)} / ${fmt(r.eps_forecast)}</td><td class="n ${cls(r.since_open_pct)}">${pct(r.since_open_pct)}</td>
+    <td class="n">${cap(r.market_cap)}</td><td>${esc(r.name)}</td></tr>`;
+}
+function upRow(r) {
+  return `<tr><td><b>${esc(r.symbol)}</b></td><td>${(r.time || "").toUpperCase()}</td><td>${day(r.report_date)}</td>
+    <td class="n">${r.score ?? "–"}</td><td class="n">${r.quarters ? r.beats + "/" + r.quarters : "–"}</td>
+    <td class="n ${cls(r.ret_13w)}">${pct(r.ret_13w)}</td><td class="n">${fmt(r.eps_forecast)}</td>
+    <td class="n">${cap(r.market_cap)}</td><td>${esc(r.name)}</td></tr>`;
+}
+
+function renderScreener() {
+  const rows = state.screener;
+  const rep = sorted(rows.filter((r) => r.list === "reported" && (state.showall || r.passes)));
+  const up = sorted(rows.filter((r) => r.list === "upcoming" && (state.showall || r.passes)));
+  $("#k-up").textContent = rows.filter((r) => r.list === "upcoming").length;
+  $("#k-rep").textContent = rows.filter((r) => r.list === "reported").length;
+  const block = (list, card, row, head) => !list.length ? `<div class="empty">Nessun titolo.</div>`
+    : state.view === "cards" ? `<div class="cards">${list.map(card).join("")}</div>`
+    : `<div class="scroll"><table><tr>${head.map((h) => `<th class="${h[1] || ""}">${h[0]}</th>`).join("")}</tr>${list.map(row).join("")}</table></div>`;
+  $("#reported").innerHTML = block(rep, repCard, repRow,
+    [["Simbolo"], ["Ora"], ["Data"], ["Esito"], ["Punt.", "n"], ["Gap", "n"], ["Sorpresa", "n"], ["EPS / stima", "n"], ["Da apertura", "n"], ["Cap", "n"], ["Nome"]]);
+  $("#upcoming").innerHTML = block(up, upCard, upRow,
+    [["Simbolo"], ["Ora"], ["Data"], ["Punt.", "n"], ["Beat", "n"], ["13 sett.", "n"], ["Stima EPS", "n"], ["Cap", "n"], ["Nome"]]);
+}
+
+function renderCalendar() {
+  const q = $("#q").value.trim().toLowerCase(), min = Number($("#mincap").value);
+  const rows = state.calendar.filter((r) => (r.market_cap ?? 0) >= min
+    && (!q || r.symbol.toLowerCase().includes(q) || (r.name || "").toLowerCase().includes(q)));
+  let html = `<tr><th>Ora</th><th>Simbolo</th><th>Nome</th><th class="n">Stima EPS</th><th class="n">EPS</th>
+    <th class="n">Sorpresa</th><th>Esito</th><th class="n">Cap</th><th class="n">Stime</th></tr>`, last = null;
+  for (const r of rows) {
+    if (r.report_date !== last) {
+      last = r.report_date;
+      const n = rows.filter((x) => x.report_date === last).length;
+      html += `<tr class="day ${last === state.today ? "today" : ""}"><td colspan="9">${day(last)}${last === state.today ? " · oggi" : ""} · ${n}</td></tr>`;
+    }
+    const tag = r.result ? `<span class="tag ${r.result === "BEAT" ? "beat" : r.result === "MISS" ? "miss" : ""}">${r.result}</span>` : "";
+    html += `<tr><td>${r.time && r.time !== "na" ? r.time.toUpperCase() : "–"}</td><td><b>${esc(r.symbol)}</b></td><td>${esc(r.name)}</td>
+      <td class="n">${fmt(r.eps_forecast)}</td><td class="n">${fmt(r.eps)}</td>
+      <td class="n ${cls(r.surprise_pct)}">${r.surprise_pct == null ? "–" : fmt(r.surprise_pct, 1) + "%"}</td>
+      <td>${tag}</td><td class="n">${cap(r.market_cap)}</td><td class="n">${r.n_estimates ?? "–"}</td></tr>`;
+  }
+  $("#cal").innerHTML = rows.length ? html : `<tr><td class="empty">Nessun evento.</td></tr>`;
+}
+
+async function load() {
+  const [s, c] = await Promise.all([fetch("/api/screener").then((r) => r.json()), fetch("/api/calendar").then((r) => r.json())]);
+  state.screener = s.rows; state.calendar = c.rows; state.today = c.today;
+  $("#fresh").textContent = s.as_of ? "aggiornato " + new Date(s.as_of).toLocaleString("it-IT", {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"}) : "mai aggiornato";
+  renderScreener(); renderCalendar();
+}
+
+function seg(id, key, after) {
+  $(id).addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+    state[key] = b.dataset[key]; after();
+  });
+}
+seg("#tabs", "tab", () => {
+  $("#screener").hidden = $("#screener-ctl").hidden = state.tab !== "screener";
+  $("#calendar").hidden = $("#calendar-ctl").hidden = state.tab !== "calendar";
+});
+seg("#view", "view", renderScreener);
+$("#sort").addEventListener("change", (e) => { state.sort = e.target.value; renderScreener(); });
+$("#showall").addEventListener("change", (e) => { state.showall = e.target.checked; renderScreener(); });
+$("#q").addEventListener("input", renderCalendar);
+$("#mincap").addEventListener("change", renderCalendar);
+
+async function poll() {
+  const s = await fetch("/api/refresh/status").then((r) => r.json());
+  if (s.state === "running") { setTimeout(poll, 3000); return; }
+  $("#refresh").disabled = false; $("#refresh").textContent = "aggiorna";
+  $("#log").hidden = !s.output; $("#log").textContent = s.output;
+  await load();
+}
+$("#refresh").addEventListener("click", async () => {
+  $("#refresh").disabled = true; $("#refresh").textContent = "aggiorno…";
+  await fetch("/api/refresh", {method: "POST"});
+  setTimeout(poll, 3000);
+});
+load();
+</script>
+</body>
+</html>
