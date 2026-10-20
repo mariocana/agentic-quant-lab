@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from alphaquant.validation import (
-    LUCIDFLEX_50K, GateConfig, TradeLog, bootstrap_mean, gate2, gate3, gate5, gate6, gate7, max_drawdown,
+    LUCIDFLEX_50K, GateConfig, LiveConfig, TradeLog, bootstrap_mean, gate2, gate5, gate6, gate7, max_drawdown,
     measure, monte_carlo, simulate, split_sample,
 )
 from alphaquant.validation.prop import FAIL, OPEN, PASS, attempt
@@ -81,25 +81,31 @@ def test_bootstrap_interval_contains_the_mean():
     assert b.p_le_zero < 0.05
 
 
-def test_gate2_on_prop_profile():
-    g = gate2(prop_profile(), GateConfig(min_avg_trade=25.0))
-    by_name = {c.name: c for c in g.checks}
-    assert by_name["win rate"].passed and by_name["R:R (avg win / avg loss)"].passed
-    assert by_name["max DD / micro"].passed                     # $600 / 10
+def test_gate2_judges_the_prop_profile_on_prop_criteria_only():
+    # avg trade $30 fails the live $70: frozen, so the prop verdict ignores it
+    g = gate2(prop_profile())
     assert g.passed and g.complete
+    assert "avg trade (net)" in [c.name for c in g.live if c.passed is False]
+    assert "frozen" in g.report().lower()
 
 
-def test_gate2_fails_on_few_trades_and_marks_missing_years():
-    g = gate2(TradeLog.from_pnl([250.0, 250.0, -300.0] * 10, datetime(2025, 1, 2)))
+def test_live_criteria_count_only_when_unfrozen():
+    g = gate2(prop_profile(), live=LiveConfig(frozen=False))
     assert not g.passed
+    assert [c.name for c in g.failures] == ["avg trade (net)"]
+
+
+def test_gate2_fails_on_few_trades_and_a_coin_flip():
+    g = gate2(TradeLog.from_pnl([250.0, 250.0, -300.0] * 10, datetime(2025, 1, 2)))
     assert "trades IS" in [c.name for c in g.failures]
-    assert not g.complete                                       # no 2021-23 trades
-
-
-def test_gate3_passes_a_steady_edge_and_fails_a_coin_flip():
-    assert gate3(prop_profile(), GateConfig(mc_sims=300)).passed
     flip = TradeLog.from_pnl(list(np.random.default_rng(0).choice([300.0, -300.0], 400)))
-    assert not gate3(flip, GateConfig(mc_sims=300)).passed
+    assert "t (avg / error bar)" in [c.name for c in gate2(flip).failures]
+
+
+def test_gate2_checks_the_declared_period():
+    log = prop_profile()                                        # 2021-01-04 -> 2025-05-...
+    assert gate2(log, period=(date(2021, 1, 1), date(2025, 5, 31))).passed
+    assert not gate2(log, period=(date(2020, 1, 1), date(2025, 5, 31))).passed
 
 
 def test_split_sample_needs_both_halves():

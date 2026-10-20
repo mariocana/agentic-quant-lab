@@ -1,48 +1,51 @@
-"""Gates 2-7 of mc/docs/pipeline_prop.md as functions: trade list in, verdict out.
+"""The gates of the pipeline as functions: trade list in, verdict out.
 
-Every threshold lives in GateConfig, with the doc's values as defaults (NQ at
-1 contract, LucidFlex 50k). A Check with passed=None could not be evaluated
-(missing data, or a rule not modeled); it does not fail the gate, but the
-gate is then not `complete` and the report says why.
+Two methodologies, kept apart (mc/docs/prop_vs_live.md, 15/10/2026):
 
-Money: the input is the full-size list at 1 contract; gates divide by
-`micro_ratio` where the doc says "÷ 10".
+    prop  passing an eval. Active. Its checks make the verdict.
+    live  own capital. FROZEN until payouts start (mc/docs/metodologia_live.md).
+          Its checks are computed and printed, marked as live, and never touch
+          the verdict while LiveConfig.frozen is True.
+
+Prop gates (mc/docs/pipeline_semplice.md):
+    2  IS: does the edge exist?         n, t >= 2, WR >= 55%, R:R 0.5-1
+    4  improvements, IS only            split-sample, <= 3 inputs, Gate 2 again
+    5  OOS, once: does it hold?         t >= 1.3, WR >= 50%, R:R 0.5-1, DD <= 1.5x IS
+    6  bootstrap EV, IS + OOS           EV > 0, P(EV <= 0), CI overlap
+    7  prop simulator: is it enough?    pass rate, cumulated over attempts; size is an output
+The old Gate 3 (Monte Carlo drawdown against the MLL) is retired: the drawdown
+enters only as the MLL inside the Stage 7 simulation.
+
+A Check with passed=None could not be evaluated (a rule not modeled, a period
+not given); it does not fail the gate, but the gate is then not `complete`.
 """
 from dataclasses import dataclass, field
+from datetime import date
 
 import numpy as np
 
 from alphaquant.validation.metrics import Metrics, measure
 from alphaquant.validation.prop import LUCIDFLEX_50K, PropAccount, PropReport, cumulative, simulate
-from alphaquant.validation.resampling import bootstrap_mean, dd_at_horizons, monte_carlo
+from alphaquant.validation.resampling import bootstrap_mean, dd_at_horizons
 from alphaquant.validation.trades import TradeLog
 
 
 @dataclass(frozen=True)
 class GateConfig:
+    """Prop thresholds."""
     account: PropAccount = LUCIDFLEX_50K
     micro_ratio: float = 10.0          # NQ -> MNQ
     # Gate 2
     min_trades: int = 200
-    min_avg_trade: float = 70.0        # NQ $70 (MNQ $7); GC $140
-    min_pf: float = 1.2
+    min_t: float = 2.0
     min_win_rate: float = 55.0
     rr_range: tuple[float, float] = (0.5, 1.0)
-    max_dd_share_of_mll: float = 0.5   # one historical path: half the MLL as margin
-    max_worst_share_of_mll: float = 0.25
-    max_year_share: float = 0.5
-    early_years: tuple[int, int] = (2021, 2023)
-    late_from_year: int = 2024
-    # Gate 3
-    mc_sims: int = 1000
-    max_losing_share: float = 0.10
-    dd_pct: float = 95.0               # the tail already: no margin, 100% of the MLL
+    period_slack_days: int = 31        # first/last trade this close to the declared range
     # Gate 4
     max_optimized_inputs: int = 3
     # Gate 5
-    oos_min_win_rate: float = 50.0
     oos_min_t: float = 1.3
-    oos_min_avg_share: float = 0.5     # "same order of magnitude": OOS avg >= half the IS avg
+    oos_min_win_rate: float = 50.0
     oos_max_dd_ratio: float = 1.5
     # Gate 6
     boot_sims: int = 10_000
@@ -64,6 +67,17 @@ class GateConfig:
 
 
 @dataclass(frozen=True)
+class LiveConfig:
+    """Own-capital thresholds, frozen on 15/10/2026 (metodologia_live.md)."""
+    frozen: bool = True
+    min_pf: float = 1.2
+    min_avg_trade: float = 70.0        # NQ $70 (MNQ $7); GC $140
+    max_year_share: float = 0.5
+    early_years: tuple[int, int] = (2021, 2023)
+    late_from_year: int = 2024
+
+
+@dataclass(frozen=True)
 class Check:
     name: str
     passed: bool | None
@@ -75,25 +89,33 @@ class Check:
 class GateResult:
     stage: int
     title: str
-    checks: list[Check]
+    checks: list[Check]                               # prop: these make the verdict
+    live: list[Check] = field(default_factory=list)   # own capital: frozen, informative
+    live_frozen: bool = True
     data: dict = field(default_factory=dict)
+
+    def _verdict_checks(self) -> list[Check]:
+        return self.checks if self.live_frozen else self.checks + self.live
 
     @property
     def passed(self) -> bool:
-        return all(c.passed is not False for c in self.checks)
+        return all(c.passed is not False for c in self._verdict_checks())
 
     @property
     def complete(self) -> bool:
-        return all(c.passed is not None for c in self.checks)
+        return all(c.passed is not None for c in self._verdict_checks())
 
     @property
     def failures(self) -> list[Check]:
-        return [c for c in self.checks if c.passed is False]
+        return [c for c in self._verdict_checks() if c.passed is False]
 
     def report(self) -> str:
         mark = {True: "OK ", False: "NO ", None: "?  "}
-        lines = [f"Gate {self.stage} - {self.title}"]
-        lines += [f"  {mark[c.passed]} {c.name:<34} {c.value:<22} {c.threshold}" for c in self.checks]
+        row = lambda c: f"  {mark[c.passed]} {c.name:<34} {c.value:<22} {c.threshold}"
+        lines = [f"Gate {self.stage} - {self.title}"] + [row(c) for c in self.checks]
+        if self.live:
+            state = "FROZEN, informative, not in the verdict" if self.live_frozen else "ACTIVE"
+            lines += [f"  -- live criteria (own capital): {state}"] + [row(c) for c in self.live]
         verdict = "PASS" if self.passed else "FAIL"
         if self.passed and not self.complete:
             verdict += " (incomplete: checks marked ? not evaluated)"
@@ -105,49 +127,56 @@ def _usd(x: float) -> str:
     return f"${x:,.0f}"
 
 
-def gate2(log: TradeLog, cfg: GateConfig = GateConfig()) -> GateResult:
-    """IS backtest, 1 contract, costs on: does the edge exist?"""
-    m = measure(log)
-    mll, r = cfg.account.mll, cfg.micro_ratio
+def _rr(m: Metrics, cfg: GateConfig, label: str) -> Check:
     lo, hi = cfg.rr_range
-    early = [v for y, v in m.by_year.items() if cfg.early_years[0] <= y <= cfg.early_years[1]]
-    late = [v for y, v in m.by_year.items() if y >= cfg.late_from_year]
-    stable = None if not early or not late else (sum(early) > 0) == (sum(late) > 0)
-    share = m.top_year_share
+    return Check(label, lo <= m.rr <= hi, f"{m.rr:.2f}", f"{lo}-{hi}")
+
+
+def live_checks(m: Metrics, live: LiveConfig = LiveConfig(), long_horizon: bool = True) -> list[Check]:
+    """Own-capital criteria. `long_horizon` adds those that judge years, not an eval."""
     checks = [
-        Check("trades IS", m.n >= cfg.min_trades, str(m.n), f">= {cfg.min_trades}"),
-        Check("avg trade (net)", m.avg >= cfg.min_avg_trade, f"${m.avg:,.2f}", f">= ${cfg.min_avg_trade:,.2f}"),
-        Check("profit factor", m.pf >= cfg.min_pf, f"{m.pf:.3f}", f">= {cfg.min_pf}"),
-        Check("win rate", m.win_rate >= cfg.min_win_rate, f"{m.win_rate:.1f}%", f">= {cfg.min_win_rate:.0f}%"),
-        Check("R:R (avg win / avg loss)", lo <= m.rr <= hi, f"{m.rr:.2f}", f"{lo}-{hi}"),
-        Check("max DD / micro", m.max_dd / r <= cfg.max_dd_share_of_mll * mll,
-              _usd(m.max_dd / r), f"<= {_usd(cfg.max_dd_share_of_mll * mll)}"),
-        Check("worst trade / micro", -m.worst_trade / r <= cfg.max_worst_share_of_mll * mll,
-              _usd(m.worst_trade / r), f">= -{_usd(cfg.max_worst_share_of_mll * mll)}"),
-        Check("largest year share of net", None if share is None else share <= cfg.max_year_share,
-              "n/a (net <= 0)" if share is None else f"{100 * share:.0f}%", f"<= {100 * cfg.max_year_share:.0f}%"),
-        Check(f"same sign {cfg.early_years[0]}-{cfg.early_years[1] % 100} vs {cfg.late_from_year}+", stable,
+        Check("avg trade (net)", m.avg >= live.min_avg_trade, f"${m.avg:,.2f}", f">= ${live.min_avg_trade:,.2f}"),
+    ]
+    if not long_horizon:
+        return checks
+    share = m.top_year_share
+    early = [v for y, v in m.by_year.items() if live.early_years[0] <= y <= live.early_years[1]]
+    late = [v for y, v in m.by_year.items() if y >= live.late_from_year]
+    stable = None if not early or not late else (sum(early) > 0) == (sum(late) > 0)
+    return [
+        Check("profit factor", m.pf >= live.min_pf, f"{m.pf:.3f}", f">= {live.min_pf}"),
+        *checks,
+        Check("largest year share of net", None if share is None else share <= live.max_year_share,
+              "n/a (net <= 0)" if share is None else f"{100 * share:.0f}%", f"<= {100 * live.max_year_share:.0f}%"),
+        Check(f"same sign {live.early_years[0]}-{live.early_years[1] % 100} vs {live.late_from_year}+", stable,
               "n/a (a period is empty)" if stable is None else f"{sum(early):,.0f} / {sum(late):,.0f}", "same sign"),
     ]
-    return GateResult(2, "IS backtest: does the edge exist?", checks, {"metrics": m})
 
 
-def gate3(log: TradeLog, cfg: GateConfig = GateConfig()) -> GateResult:
-    """Monte Carlo on the IS list.
-
-    The drawdown tail comes from the reshuffle, as in MultiCharts. Median net and
-    share of losing paths come from draws with replacement: under a pure reshuffle
-    the net is the same in every path, and those two criteria would say nothing.
-    """
-    mc = monte_carlo(log.pnl, cfg.mc_sims, cfg.seed)
-    dd = mc.dd_pct(cfg.dd_pct) / cfg.micro_ratio
+def gate2(
+    log: TradeLog,
+    cfg: GateConfig = GateConfig(),
+    live: LiveConfig = LiveConfig(),
+    period: tuple[date, date] | None = None,
+) -> GateResult:
+    """IS, 1 contract, costs on: does the edge exist? `period` is the IS range declared in SPEC.md."""
+    m = measure(log)
     checks = [
-        Check("median net (resample)", mc.median_net > 0, _usd(mc.median_net), "> $0"),
-        Check("losing paths (resample)", mc.losing_share < cfg.max_losing_share,
-              f"{100 * mc.losing_share:.1f}%", f"< {100 * cfg.max_losing_share:.0f}%"),
-        Check(f"DD p{cfg.dd_pct:.0f} / micro (reshuffle)", dd <= cfg.account.mll, _usd(dd), f"<= {_usd(cfg.account.mll)}"),
+        Check("trades IS", m.n >= cfg.min_trades, str(m.n), f">= {cfg.min_trades}"),
+        Check("t (avg / error bar)", m.t >= cfg.min_t, f"{m.t:.2f}", f">= {cfg.min_t}"),
+        Check("win rate", m.win_rate >= cfg.min_win_rate, f"{m.win_rate:.1f}%", f">= {cfg.min_win_rate:.0f}%"),
+        _rr(m, cfg, "R:R (avg win / avg loss)"),
     ]
-    return GateResult(3, "Monte Carlo IS", checks, {"monte_carlo": mc})
+    if period is not None:
+        first = log.frame["entry_time"].min().date()
+        last = log.frame["entry_time"].max().date()
+        slack = cfg.period_slack_days
+        covered = (first - period[0]).days <= slack and (period[1] - last).days <= slack
+        checks.append(Check("time range covers the declared IS", covered, f"{first} -> {last}",
+                            f"{period[0]} -> {period[1]}"))
+    # a number to look at, not a threshold (Live 002, 245)
+    checks.append(Check("avg trade (net), to look at", True, f"${m.avg:,.2f}", "info"))
+    return GateResult(2, "IS: does the edge exist?", checks, live_checks(m, live), live.frozen, {"metrics": m})
 
 
 def split_sample(base: TradeLog, variant: TradeLog) -> Check:
@@ -158,36 +187,35 @@ def split_sample(base: TradeLog, variant: TradeLog) -> Check:
                  f"{v1 - b1:+,.2f} / {v2 - b2:+,.2f}", "better in both halves")
 
 
-def gate4(base: TradeLog, variant: TradeLog, optimized_inputs: int, cfg: GateConfig = GateConfig()) -> GateResult:
-    """Improvements, IS only: split-sample, few inputs, then Gates 2 and 3 again on the variant."""
-    g2, g3 = gate2(variant, cfg), gate3(variant, cfg)
+def gate4(base: TradeLog, variant: TradeLog, optimized_inputs: int, cfg: GateConfig = GateConfig(),
+          live: LiveConfig = LiveConfig()) -> GateResult:
+    """Improvements, IS only: split-sample, few inputs, then Gate 2 again on the variant."""
+    g2 = gate2(variant, cfg, live)
     checks = [
         split_sample(base, variant),
         Check("optimized inputs", optimized_inputs <= cfg.max_optimized_inputs,
               str(optimized_inputs), f"<= {cfg.max_optimized_inputs}"),
         Check("Gate 2 on the variant", g2.passed, ", ".join(c.name for c in g2.failures) or "all ok", "pass"),
-        Check("Gate 3 on the variant", g3.passed, ", ".join(c.name for c in g3.failures) or "all ok", "pass"),
         Check("rules simple and explainable", None, "judged by a person", ""),
     ]
-    return GateResult(4, "Improvements (IS only)", checks, {"gate2": g2, "gate3": g3})
+    return GateResult(4, "Improvements (IS only)", checks, live_frozen=live.frozen, data={"gate2": g2})
 
 
-def gate5(is_log: TradeLog, oos_log: TradeLog, cfg: GateConfig = GateConfig()) -> GateResult:
+def gate5(is_log: TradeLog, oos_log: TradeLog, cfg: GateConfig = GateConfig(),
+          live: LiveConfig = LiveConfig()) -> GateResult:
     """OOS, parameters frozen, once. A fail goes to the cemetery: there is no second try."""
     mi, mo = measure(is_log), measure(oos_log)
-    lo, hi = cfg.rr_range
     checks = [
-        Check("avg trade OOS vs IS", mo.avg > 0 and mo.avg >= cfg.oos_min_avg_share * mi.avg,
-              f"${mo.avg:,.2f} vs ${mi.avg:,.2f}", f">= {100 * cfg.oos_min_avg_share:.0f}% of IS"),
-        Check("win rate OOS", mo.win_rate >= cfg.oos_min_win_rate, f"{mo.win_rate:.1f}%",
+        Check("t OOS", mo.t >= cfg.oos_min_t, f"{mo.t:.2f} (IS {mi.t:.2f})", f">= {cfg.oos_min_t}"),
+        Check("win rate OOS", mo.win_rate >= cfg.oos_min_win_rate, f"{mo.win_rate:.1f}% (IS {mi.win_rate:.1f}%)",
               f">= {cfg.oos_min_win_rate:.0f}%"),
-        Check("profit factor OOS", mo.pf > 1.0, f"{mo.pf:.3f} (IS {mi.pf:.3f})", "> 1"),
-        Check("R:R OOS", lo <= mo.rr <= hi, f"{mo.rr:.2f}", f"{lo}-{hi}"),
-        Check("t OOS (equity drifts up)", mo.t >= cfg.oos_min_t, f"{mo.t:.2f}", f">= {cfg.oos_min_t}"),
+        _rr(mo, cfg, "R:R OOS"),
         Check("DD OOS vs IS", mo.max_dd <= cfg.oos_max_dd_ratio * mi.max_dd,
               f"{_usd(mo.max_dd)} vs {_usd(mi.max_dd)}", f"<= {cfg.oos_max_dd_ratio}x IS"),
+        Check("avg trade OOS, to look at", True, f"${mo.avg:,.2f} (IS ${mi.avg:,.2f})", "info"),
     ]
-    return GateResult(5, "Out-of-sample (once)", checks, {"is": mi, "oos": mo})
+    return GateResult(5, "Out-of-sample (once)", checks, live_checks(mo, live, long_horizon=False), live.frozen,
+                      {"is": mi, "oos": mo})
 
 
 def gate6(is_log: TradeLog, oos_log: TradeLog, risk_per_contract: float, cfg: GateConfig = GateConfig()) -> GateResult:
@@ -215,8 +243,9 @@ def gate6(is_log: TradeLog, oos_log: TradeLog, risk_per_contract: float, cfg: Ga
               f"[{is_usd.lo:,.0f}, {is_usd.hi:,.0f}] [{oos_usd.lo:,.0f}, {oos_usd.hi:,.0f}]", "overlap"),
     ]
     yardstick = dd_at_horizons(np.concatenate([is_log.pnl, oos_log.pnl]), cfg.dd_horizons, seed=cfg.seed)
-    return GateResult(6, "Bootstrap EV (IS + OOS)", checks,
-                      {"is_usd": is_usd, "is_r": is_r, "oos_usd": oos_usd, "oos_r": oos_r, "dd_yardstick": yardstick})
+    return GateResult(6, "Bootstrap EV (IS + OOS)", checks, data={
+        "is_usd": is_usd, "is_r": is_r, "oos_usd": oos_usd, "oos_r": oos_r, "dd_yardstick": yardstick,
+    })
 
 
 def gate7(oos_log: TradeLog, cfg: GateConfig = GateConfig()) -> GateResult:
@@ -240,4 +269,4 @@ def gate7(oos_log: TradeLog, cfg: GateConfig = GateConfig()) -> GateResult:
         Check("size <= reliable size", rep.best <= rep.reliable, f"{rep.best} vs {rep.reliable}", "p95 loss per micro"),
         Check("FUNDED: qualification and payout", None, "not modeled", "funded rules not in the simulator"),
     ]
-    return GateResult(7, f"Prop simulator, single strategy ({cfg.account.name})", checks, {"prop": rep})
+    return GateResult(7, f"Prop simulator, single strategy ({cfg.account.name})", checks, data={"prop": rep})
