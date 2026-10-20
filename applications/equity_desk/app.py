@@ -1,14 +1,16 @@
-"""Equity Desk — local Flask UI for the earnings scanner (and later insiders / 13F).
+"""Equity Desk — local Flask UI: earnings scanner and insider purchases (later 13F).
 
-Reads gold/earnings_screener/1d and bronze/nasdaq_earnings_calendar; the
-"aggiorna" button runs applications/historical/earnings.py in the background.
+Reads gold/earnings_screener/1d, bronze/nasdaq_earnings_calendar and
+gold/insider_activity/1d; the "aggiorna" button runs the loader of the open
+tab (applications/historical/earnings.py or insiders.py) in the background.
 Local only: binds to 127.0.0.1.
 
 Routes:
   GET  /                    page
   GET  /api/screener        screener rows (reported + upcoming)
   GET  /api/calendar        every company in the calendar window
-  POST /api/refresh         run the earnings loader (one at a time)
+  GET  /api/insiders        insider buys / large sales of the last 30 days
+  POST /api/refresh?job=    run a loader: earnings (default) or insiders, one at a time
   GET  /api/refresh/status  state + last lines of its output
   GET  /health
 
@@ -26,17 +28,18 @@ from zoneinfo import ZoneInfo
 
 import polars as pl
 from deltalake import DeltaTable
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 
 from quantlake.config import BRONZE_ROOT, GOLD_ROOT
 
 APP_DIR = Path(__file__).resolve().parents[1]
-LOADER = APP_DIR / "historical" / "earnings.py"
+LOADERS = {"earnings": APP_DIR / "historical" / "earnings.py",
+           "insiders": APP_DIR / "historical" / "insiders.py"}
 NY = ZoneInfo("America/New_York")
 CAL_DAYS = 7          # calendar tab: weekdays shown on each side of today
 
 app = Flask(__name__)
-_refresh = {"state": "idle", "started": None, "finished": None, "output": ""}
+_refresh = {"state": "idle", "job": None, "started": None, "finished": None, "output": ""}
 _lock = threading.Lock()
 
 
@@ -93,10 +96,10 @@ def api_calendar():
     return jsonify({"today": today.isoformat(), "rows": _rows(cal)})
 
 
-def _run_loader() -> None:
+def _run_loader(job: str) -> None:
     try:
-        r = subprocess.run([sys.executable, str(LOADER)], cwd=APP_DIR.parent, capture_output=True, text=True,
-                           timeout=1800)
+        r = subprocess.run([sys.executable, str(LOADERS[job])], cwd=APP_DIR.parent, capture_output=True, text=True,
+                           timeout=3 * 3600)
         out = (r.stdout + r.stderr).strip()
         state = "done" if r.returncode == 0 else "error"
     except Exception as exc:  # timeout, missing python...
@@ -105,13 +108,26 @@ def _run_loader() -> None:
         _refresh.update(state=state, finished=datetime.now().isoformat(), output="\n".join(out.splitlines()[-12:]))
 
 
+@app.route("/api/insiders")
+def api_insiders():
+    df = _table(GOLD_ROOT / "insider_activity" / "1d")
+    form4 = BRONZE_ROOT / "sec_form4"
+    last = None
+    if DeltaTable.is_deltatable(str(form4)):
+        last = pl.from_arrow(DeltaTable(str(form4)).to_pyarrow_table(columns=["filed_date"]))["filed_date"].max()
+    return jsonify({"last_filed": last.isoformat() if last else None, "rows": _rows(df)})
+
+
 @app.route("/api/refresh", methods=["POST"])
 def api_refresh():
+    job = request.args.get("job", "earnings")
+    if job not in LOADERS:
+        return jsonify({"error": f"job must be one of {list(LOADERS)}"}), 400
     with _lock:
         if _refresh["state"] == "running":
             return jsonify(_refresh), 409
-        _refresh.update(state="running", started=datetime.now().isoformat(), finished=None, output="")
-    threading.Thread(target=_run_loader, daemon=True).start()
+        _refresh.update(state="running", job=job, started=datetime.now().isoformat(), finished=None, output="")
+    threading.Thread(target=_run_loader, args=(job,), daemon=True).start()
     return jsonify(_refresh)
 
 
