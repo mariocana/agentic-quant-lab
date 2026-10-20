@@ -56,6 +56,10 @@ sources:
     type: SPX DIX / GEX daily (free CSV)
     modes: [rest]
     docs: https://squeezemetrics.com/monitor/dix
+  sec_edgar:
+    type: SEC EDGAR daily index + Form 4 filings (free; requires SEC_USER_AGENT with a contact, <= 8 req/s)
+    modes: [rest-bulk]
+    docs: https://www.sec.gov/Archives/edgar/daily-index/
   nasdaq_earnings:
     type: earnings calendar, EPS surprises, stock daily OHLCV (api.nasdaq.com, free, no key)
     modes: [rest]
@@ -199,6 +203,12 @@ bronze:
     grain: 1d
     partition: [symbol, year, month]
     notes: OHLCV stamped 16:15 ET, only for the screener's companies (market cap >= 2 bn)
+
+  sec_form4:
+    source: sec_edgar
+    grain: per non-derivative transaction
+    partition: [year, month]
+    notes: one row per Form 4 / 4/A transaction (issuer, owner, role, code P/S/A/M..., shares, price, 10b5-1); a filed day is rewritten as a whole
 
   nasdaq_index_daily:
     source: nasdaq
@@ -587,6 +597,14 @@ gold:
       - reported (last 5 weekdays) = BEAT (>= $0.01 and >= 1%) + reaction-session open gap > 2%
       - upcoming (next 5 weekdays) = beat rate >= 75% over 4 quarters or 13-week return > +5%
       - reaction session from bmo/amc, inferred from the larger gap when unknown (time_inferred)
+
+  insider_activity/1d:
+    from: [bronze/sec_form4, bronze/nasdaq_stock_daily]
+    transforms:
+      - current snapshot, rebuilt each run (gold/insiders.py, historical/insiders.py); UI applications/equity_desk
+      - last 30 filed days, fills merged per insider / trade day / side
+      - buys = code P >= $10K, sells = code S >= $1M (10b5-1 flag); cluster = distinct buyers in 14 days
+      - since_price = last close / price paid - 1 (Nasdaq daily prices)
 
   daily_context/1d:
     from: [silver/multicharts_ohlcv, bronze/cboe_index_daily, bronze/squeezemetrics, bronze/nasdaq_index_daily]
