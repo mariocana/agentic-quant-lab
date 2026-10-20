@@ -85,7 +85,7 @@ def main() -> None:
         todo = weekdays_back(today, BACKFILL)
 
     for day in sorted(set(todo)):
-        r = sec.get(daily_index_url(day))
+        r = sec.get(daily_index_url(day), missing=(403, 404))
         if r is None:
             print(f"[{day}] no daily index yet (holiday or not published)")
             continue

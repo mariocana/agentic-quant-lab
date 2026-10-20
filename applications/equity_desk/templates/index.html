@@ -118,7 +118,8 @@ tr.today td{color:var(--ink)}
     <p class="sub">Più persone della stessa azienda comprano sul mercato con soldi propri: è il segnale insider più studiato.</p>
     <div id="clusters"></div>
     <h2>Acquisti sul mercato · ultimi 30 giorni</h2>
-    <p class="sub">Form 4 codice P (acquisto in borsa). Esclusi stock option, premi e piani automatici.</p>
+    <p class="sub">Form 4 codice P (acquisto in borsa). Esclusi stock option, premi e piani automatici.
+      "Fuori mercato?" = prezzo pagato oltre il 25% lontano dalla chiusura del giorno (collocamenti, conversioni, ADR): escluso dagli acquisti di gruppo.</p>
     <div id="buys"></div>
     <h2>Vendite rilevanti · sopra $1M</h2>
     <p class="sub">Codice S. Le vendite hanno molte ragioni (tasse, diversificazione): 10b5-1 = vendita programmata in anticipo.</p>
@@ -245,7 +246,10 @@ const roleOk = (r) => { const f = $("#rolef").value;
 function buyCard(r) {
   return `<div class="card">
     <div class="top"><span class="sym">${esc(r.symbol)}</span><span class="tag acc">${esc(r.role)}</span>
-      ${r.direct ? "" : '<span class="tag">indiretto</span>'}<span class="score">${usd(r.value)}</span></div>
+      ${r.direct ? "" : '<span class="tag">indiretto</span>'}
+      ${r.off_market ? `<span class="tag miss" title="prezzo pagato lontano dalla chiusura del giorno (${fmt(r.day_close)}): probabile collocamento privato o conversione">fuori mercato?</span>` : ""}
+      ${r.joint_filers > 1 ? `<span class="tag" title="stessa operazione dichiarata da soggetti collegati">${r.joint_filers} dichiaranti</span>` : ""}
+      <span class="score">${usd(r.value)}</span></div>
     <div class="name">${esc(r.issuer_name)} · ${esc(r.owner_name)}</div>
     <div class="grid">
       <div><small>Azioni @ prezzo</small><b>${fmt(r.shares, 0)} @ ${fmt(r.price)}</b></div>
@@ -268,8 +272,12 @@ function renderInsiders() {
       <div class="top"><span class="sym">${esc(sym)}</span><span class="tag acc">${rs[0].cluster_buyers} insider</span>
         <span class="score">${usd(rs[0].cluster_value)}</span></div>
       <div class="name">${esc(rs[0].issuer_name)}</div>
-      ${rs.map((r) => `<div class="top" style="justify-content:space-between;font-size:.8rem"><span>${esc(r.owner_name)} · ${esc(r.role)}</span>
-        <b style="font-family:var(--mono);font-weight:500">${usd(r.value)} @ ${fmt(r.price)}</b></div>`).join("")}
+      ${Object.values(rs.reduce((acc, r) => {          // one line per person: total and average price
+          const k = r.owner_name; const a = acc[k] ??= {name: r.owner_name, role: r.role, value: 0, shares: 0, n: 0};
+          a.value += r.value; a.shares += r.shares; a.n += 1; return acc; }, {}))
+        .sort((x, y) => y.value - x.value)
+        .map((a) => `<div class="top" style="justify-content:space-between;font-size:.8rem"><span>${esc(a.name)} · ${esc(a.role)}${a.n > 1 ? ` (${a.n} giorni)` : ""}</span>
+        <b style="font-family:var(--mono);font-weight:500">${usd(a.value)} @ ${fmt(a.value / a.shares)}</b></div>`).join("")}
       <div class="foot">dal prezzo pagato (primo): <span class="${cls(rs[0].since_price)}">${pct(rs[0].since_price)}</span></div>
     </div>`).join("")}</div>`;
   const head = (h) => `<tr>${h.map((x) => `<th class="${x[1] || ""}">${x[0]}</th>`).join("")}</tr>`;
@@ -278,7 +286,7 @@ function renderInsiders() {
     : `<div class="scroll"><table>${head([["Simbolo"], ["Insider"], ["Ruolo"], ["Valore", "n"], ["Azioni", "n"], ["Prezzo", "n"],
         ["Dal prezzo", "n"], ["Comprato"], ["Depositato"], ["Società"]])}${buys.map((r) => `<tr><td><b>${esc(r.symbol)}</b></td>
         <td>${esc(r.owner_name)}</td><td>${esc(r.role)}</td><td class="n">${usd(r.value)}</td><td class="n">${fmt(r.shares, 0)}</td>
-        <td class="n">${fmt(r.price)}</td><td class="n ${cls(r.since_price)}">${pct(r.since_price)}</td><td>${day(r.trade_date)}</td>
+        <td class="n">${fmt(r.price)}${r.off_market ? " ⚠" : ""}</td><td class="n ${cls(r.since_price)}">${pct(r.since_price)}</td><td>${day(r.trade_date)}</td>
         <td>${day(r.filed_date)}</td><td>${esc(r.issuer_name)}</td></tr>`).join("")}</table></div>`;
   $("#sells").innerHTML = !sells.length ? `<div class="empty">Nessuna vendita sopra $1M.</div>` :
     `<div class="scroll"><table>${head([["Simbolo"], ["Insider"], ["Ruolo"], ["Valore", "n"], ["Azioni", "n"], ["Prezzo", "n"],

@@ -10,6 +10,15 @@ open-market purchases (code P) and sales (S) filed in the last WINDOW_DAYS days.
              days (by trade date): two or more is the strongest pattern.
 
 since_price = last close / price paid - 1, for the buys (prices from Nasdaq).
+
+Cleaning:
+  symbol     "NONE" / "N/A" are dropped; "HEI, HEI.A" keeps the first class
+  joint      the same trade (symbol, date, shares, price) reported by related
+             filers (a fund and its partner, a person and their trust) is
+             kept once: `joint_filers` says how many reported it
+  off_market price paid more than OFF_MARKET away from that day's close
+             (private placements, conversions coded P): flagged, kept out of
+             the clusters
 """
 from datetime import date, timedelta
 
@@ -24,6 +33,8 @@ WINDOW_DAYS = 30
 CLUSTER_DAYS = 14
 MIN_BUY = 10_000
 MIN_SELL = 1_000_000
+OFF_MARKET = 0.25
+BAD_SYMBOLS = ["NONE", "N/A", "NA", "", "-"]
 
 
 def role(df: pl.DataFrame) -> pl.Expr:
@@ -40,6 +51,10 @@ def build(form4: pl.DataFrame, prices: pl.DataFrame, today: date) -> pl.DataFram
     if form4.is_empty():
         return pl.DataFrame()
     start = today - timedelta(days=WINDOW_DAYS)
+    form4 = form4.with_columns(
+        pl.col("symbol").str.split(",").list.first().str.strip_chars().str.to_uppercase().alias("symbol"))
+    form4 = form4.with_columns(
+        pl.when(pl.col("symbol").is_in(BAD_SYMBOLS)).then(None).otherwise(pl.col("symbol")).alias("symbol"))
     tx = form4.filter(
         (pl.col("filed_date") >= start) & pl.col("symbol").is_not_null()
         & pl.col("code").is_in(["P", "S"]) & (pl.col("value") > 0)
@@ -59,14 +74,33 @@ def build(form4: pl.DataFrame, prices: pl.DataFrame, today: date) -> pl.DataFram
         pl.col("filed_date").max(), pl.col("delay_days").max(), pl.col("accession").first(),
         pl.col("n_owners").max(),
     ).with_columns((pl.col("value") / pl.col("shares")).alias("price"))
+    # the same trade reported by related filers -> once
+    tx = tx.with_columns(pl.col("price").round(4).alias("_px")).group_by(
+        ["list", "symbol", "trade_date", "shares", "_px"], maintain_order=True).agg(
+        pl.all().first(), pl.col("owner_cik").n_unique().alias("joint_filers"),
+        pl.col("owner_name").alias("_names")).drop("_px").with_columns(
+        pl.col("_names").list.unique().list.join(" / ").alias("owner_name")).drop("_names")
     tx = tx.filter(
         ((pl.col("list") == "buy") & (pl.col("value") >= MIN_BUY))
         | ((pl.col("list") == "sell") & (pl.col("value") >= MIN_SELL))
     )
 
-    recent = tx.filter((pl.col("list") == "buy") & (pl.col("trade_date") >= today - timedelta(days=CLUSTER_DAYS)))
+    # price paid vs that day's close: far away = not an open-market trade
+    if not prices.is_empty():
+        day_close = prices.with_columns(
+            pl.col("timestamp").dt.convert_time_zone("America/New_York").dt.date().alias("trade_date")
+        ).select("symbol", "trade_date", pl.col("close").alias("day_close"))
+        tx = tx.join(day_close, on=["symbol", "trade_date"], how="left")
+    else:
+        tx = tx.with_columns(pl.lit(None, pl.Float64).alias("day_close"))
+    tx = tx.with_columns(
+        ((pl.col("price") / pl.col("day_close") - 1).abs() > OFF_MARKET).fill_null(False).alias("off_market"))
+
+    recent = tx.filter((pl.col("list") == "buy") & ~pl.col("off_market")
+                       & (pl.col("trade_date") >= today - timedelta(days=CLUSTER_DAYS)))
+    # distinct people by name: a person and their holding vehicle file under different CIKs
     cluster = recent.group_by("symbol").agg(
-        pl.col("owner_cik").n_unique().alias("cluster_buyers"),
+        pl.col("owner_name").str.to_lowercase().str.replace_all(r"[^a-z ]", "").n_unique().alias("cluster_buyers"),
         pl.col("value").sum().alias("cluster_value"),
     )
     tx = tx.join(cluster, on="symbol", how="left").with_columns(

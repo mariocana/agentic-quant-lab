@@ -39,6 +39,7 @@ NY = ZoneInfo("America/New_York")
 CAL_DAYS = 7          # calendar tab: weekdays shown on each side of today
 
 app = Flask(__name__)
+app.config["TEMPLATES_AUTO_RELOAD"] = True   # page edits show up without a restart
 _refresh = {"state": "idle", "job": None, "started": None, "finished": None, "output": ""}
 _lock = threading.Lock()
 
