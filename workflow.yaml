@@ -210,6 +210,12 @@ bronze:
     partition: [year, month]
     notes: one row per Form 4 / 4/A transaction (issuer, owner, role, code P/S/A/M..., shares, price, 10b5-1); a filed day is rewritten as a whole
 
+  sec_13f_holdings:
+    source: sec_edgar
+    grain: per 13F position (fund x quarter x CUSIP)
+    partition: [year]
+    notes: last 3 original 13F-HR of the funds in symbols.SUPERINVESTORS, keyed by accession; values in dollars (x1000 before 2023-01-03)
+
   nasdaq_index_daily:
     source: nasdaq
     grain: 1d
@@ -605,6 +611,20 @@ gold:
       - last 30 filed days, fills merged per insider / trade day / side
       - buys = code P >= $10K, sells = code S >= $1M (10b5-1 flag); cluster = distinct buyers in 14 days
       - since_price = last close / price paid - 1 (Nasdaq daily prices)
+
+  superinvestor_moves/1q:
+    from: [bronze/sec_13f_holdings, reference/cusip_ticker]
+    transforms:
+      - quarter = latest period filed by >= 40% of the funds (gold/superinvestors.py, historical/superinvestors.py)
+      - per fund and CUSIP, long stock only: NEW / ADD / REDUCE / SOLD / HOLD vs the previous quarter
+      - "flow_w = weight traded (bought: new shares x price now / book now; sold: shares sold x price before / book before)"
+      - filers still reporting in thousands detected (median value per share < $1) and scaled
+      - tickers from OpenFIGI (cached), only for moves of 2+ funds or >= 0.5% of a book; UI applications/equity_desk
+
+  superinvestor_funds/1q:
+    from: [bronze/sec_13f_holdings]
+    transforms:
+      - every tracked fund: latest period, in the quarter or stale, positions, book value
 
   daily_context/1d:
     from: [silver/multicharts_ohlcv, bronze/cboe_index_daily, bronze/squeezemetrics, bronze/nasdaq_index_daily]
