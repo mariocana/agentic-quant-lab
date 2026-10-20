@@ -15,6 +15,7 @@ src/alphaquant/
   data/            loader del gold (sola lettura), controllo schema, report di qualità
   instruments/     Instrument, costi configurabili, calendari di sessione, InstrumentSource
   engine/          tipi comuni ai due livelli di simulazione (Trade, SimResult)
+  validation/      gate 2-7 di mc/docs/pipeline_prop.md: lista trade -> verdetto
 config/costs.yaml  commissioni e slippage per strumento (valori da verificare)
 legacy/            codice originale del corso, solo come riferimento
 ```
