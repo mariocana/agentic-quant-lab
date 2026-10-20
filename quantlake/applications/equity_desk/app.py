@@ -1,8 +1,9 @@
-"""Equity Desk — local Flask UI: earnings scanner and insider purchases (later 13F).
+"""Equity Desk — local Flask UI: earnings scanner, insider purchases, superinvestors (13F).
 
 Reads gold/earnings_screener/1d, bronze/nasdaq_earnings_calendar and
-gold/insider_activity/1d; the "aggiorna" button runs the loader of the open
-tab (applications/historical/earnings.py or insiders.py) in the background.
+gold/insider_activity/1d, gold/superinvestor_moves + _funds/1q; the "aggiorna"
+button runs the loader of the open tab (applications/historical/earnings.py,
+insiders.py or superinvestors.py) in the background.
 Local only: binds to 127.0.0.1.
 
 Routes:
@@ -10,7 +11,8 @@ Routes:
   GET  /api/screener        screener rows (reported + upcoming)
   GET  /api/calendar        every company in the calendar window
   GET  /api/insiders        insider buys / large sales of the last 30 days
-  POST /api/refresh?job=    run a loader: earnings (default) or insiders, one at a time
+  GET  /api/13f             stocks most bought / sold by the superinvestors, fund list
+  POST /api/refresh?job=    run a loader: earnings (default), insiders or 13f, one at a time
   GET  /api/refresh/status  state + last lines of its output
   GET  /health
 
@@ -34,7 +36,10 @@ from quantlake.config import BRONZE_ROOT, GOLD_ROOT
 
 APP_DIR = Path(__file__).resolve().parents[1]
 LOADERS = {"earnings": APP_DIR / "historical" / "earnings.py",
-           "insiders": APP_DIR / "historical" / "insiders.py"}
+           "insiders": APP_DIR / "historical" / "insiders.py",
+           "13f": APP_DIR / "historical" / "superinvestors.py"}
+BUY, SELL = ["NEW", "ADD"], ["REDUCE", "SOLD"]
+TOP_N = 25
 NY = ZoneInfo("America/New_York")
 CAL_DAYS = 7          # calendar tab: weekdays shown on each side of today
 
@@ -117,6 +122,37 @@ def api_insiders():
     if DeltaTable.is_deltatable(str(form4)):
         last = pl.from_arrow(DeltaTable(str(form4)).to_pyarrow_table(columns=["filed_date"]))["filed_date"].max()
     return jsonify({"last_filed": last.isoformat() if last else None, "rows": _rows(df)})
+
+
+def _ranked(mv: pl.DataFrame, side: list[str], other: list[str]) -> list[dict]:
+    """Stocks acted on by the most funds on one side, then by summed weight change."""
+    acts = mv.filter(pl.col("action").is_in(side))
+    if acts.is_empty():
+        return []
+    opp = mv.filter(pl.col("action").is_in(other)).group_by("key").agg(pl.col("cik").n_unique().alias("n_opposite"))
+    g = acts.with_columns(pl.col("flow_w").abs().alias("abs_w")).sort("abs_w", descending=True).group_by(
+        "key", maintain_order=True).agg(
+        pl.col("cik").n_unique().alias("n"), pl.col("flow_w").sum().abs().alias("sum_w"),
+        pl.col("ticker").first(), pl.col("issuer").first(),
+        pl.struct("manager", "action", "shares_change", pl.col("flow_w").alias("delta_w")).head(3).alias("top"),
+    ).join(opp, on="key", how="left").with_columns(pl.col("n_opposite").fill_null(0))
+    g = g.filter(pl.col("n") >= 2).sort(["n", "sum_w"], descending=True).head(TOP_N)
+    return _rows(g)
+
+
+@app.route("/api/13f")
+def api_13f():
+    mv = _table(GOLD_ROOT / "superinvestor_moves" / "1q")
+    fd = _table(GOLD_ROOT / "superinvestor_funds" / "1q")
+    if mv.is_empty():
+        return jsonify({"quarter": None, "bought": [], "sold": [], "funds": _rows(fd)})
+    mv = mv.with_columns(pl.coalesce("ticker", "cusip").alias("key"))
+    return jsonify({
+        "quarter": mv["quarter"][0].isoformat(),
+        "bought": _ranked(mv, BUY, SELL),
+        "sold": _ranked(mv, SELL, BUY),
+        "funds": _rows(fd.sort(["in_quarter", "book_value"], descending=True, nulls_last=True)),
+    })
 
 
 @app.route("/api/refresh", methods=["POST"])

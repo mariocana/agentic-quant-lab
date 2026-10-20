@@ -67,17 +67,17 @@ tr.today td{color:var(--ink)}
 </head>
 <body>
 <header>
-  <div class="brand">EQUITY DESK<small>Earnings · calendario · insider</small></div>
+  <div class="brand">EQUITY DESK<small>Earnings · calendario · insider · 13F</small></div>
   <div class="kpi"><b id="k-up">–</b><span>in arrivo (5 gg)</span></div>
   <div class="kpi"><b id="k-rep">–</b><span>pubblicate (5 gg)</span></div>
   <div class="spacer"></div>
-  <span class="fresh" id="fresh"></span>
+  <span class="fresh" id="fresh">carico i dati…</span>
   <button id="refresh" title="Scarica calendario, prezzi e sorprese EPS (~20 s, 1-5 min la prima volta)">aggiorna</button>
 </header>
 <main>
   <pre class="log" id="log" hidden></pre>
   <div class="bar">
-    <div class="seg" id="tabs"><button data-tab="screener" class="on">Screener</button><button data-tab="calendar">Calendario</button><button data-tab="insiders">Insider</button></div>
+    <div class="seg" id="tabs"><button data-tab="screener" class="on">Screener</button><button data-tab="calendar">Calendario</button><button data-tab="insiders">Insider</button><button data-tab="13f">13F</button></div>
     <span id="screener-ctl" class="bar" style="margin:0">
       <label>ordina</label>
       <select id="sort">
@@ -126,6 +126,20 @@ tr.today td{color:var(--ink)}
     <div id="sells"></div>
   </section>
 
+  <section id="f13" hidden>
+    <p class="sub" id="f13-fresh"></p>
+    <h2>I più comprati nel trimestre</h2>
+    <p class="sub">Titoli comprati (nuova posizione o aumento) dal maggior numero di fondi, poi per peso aggiunto ai portafogli.
+      I 13F escono fino a 45 giorni dopo la fine del trimestre: sono posizioni di 1-4 mesi fa, idee e non segnali.</p>
+    <div id="bought"></div>
+    <h2>I più venduti nel trimestre</h2>
+    <p class="sub">Riduzioni e uscite complete.</p>
+    <div id="sold"></div>
+    <h2>Fondi seguiti</h2>
+    <p class="sub">Lista in <code>applications/symbols.py</code> (SUPERINVESTORS). "Fermo" = nessun 13F per il trimestre: non entra nelle classifiche.</p>
+    <div id="funds"></div>
+  </section>
+
   <section id="calendar" hidden><div class="scroll"><table id="cal"></table></div></section>
 
   <p class="note">Dati: Nasdaq.com (calendario, EPS, sorprese, prezzi giornalieri), aggiornati da
@@ -133,6 +147,7 @@ tr.today td{color:var(--ink)}
     Titoli sotto i 2 mld di capitalizzazione esclusi dallo screener. BMO = prima dell'apertura, AMC = dopo la chiusura;
     "dedotto" = orario non fornito, ricavato dalla seduta con il gap maggiore (può sbagliare).
     Insider: Form 4 dalla SEC (EDGAR), con <code>applications/historical/insiders.py</code>.
+    13F: depositi 13F-HR dei fondi seguiti (SEC), ticker da OpenFIGI, con <code>applications/historical/superinvestors.py</code>.
     Punteggi: pubblicate 50 × min(sorpresa/25%, 1) + 50 × min(gap/8%, 1); in arrivo 60 × beat rate + 40 × min(rend. 13 sett./20%, 1).</p>
 </main>
 <script>
@@ -295,14 +310,46 @@ function renderInsiders() {
       <td>${r.plan_10b5_1 ? '<span class="tag">piano</span>' : ""}</td><td>${day(r.trade_date)}</td><td>${esc(r.issuer_name)}</td></tr>`).join("")}</table></div>`;
 }
 
+const ACT = {NEW: "nuova", ADD: "aumenta", REDUCE: "riduce", SOLD: "esce"};
+const qlabel = (iso) => iso ? "T" + (Math.floor((Number(iso.slice(5, 7)) - 1) / 3) + 1) + " " + iso.slice(0, 4) : "–";
+function moveCard(r, side) {
+  const net = r.n_opposite === 0 ? "tutti d'accordo" : r.n > r.n_opposite ? `${r.n_opposite} sul lato opposto` : `misto (${r.n_opposite} opposti)`;
+  return `<div class="card">
+    <div class="top"><span class="sym">${esc(r.ticker || r.key)}</span>
+      <span class="tag ${side === "buy" ? "beat" : "miss"}">${r.n} fondi ${side === "buy" ? "comprano" : "vendono"}</span>
+      <span class="score" title="variazione di peso sommata sui portafogli">${side === "buy" ? "+" : "−"}${fmt(r.sum_w * 100, 1)}%</span></div>
+    <div class="name">${esc(r.issuer)} · ${net}</div>
+    ${r.top.map((m) => `<div class="top" style="justify-content:space-between;font-size:.8rem">
+      <span>${esc(m.manager)} · ${ACT[m.action]}${m.action === "ADD" || m.action === "REDUCE" ? " " + pct(m.shares_change, 0) : ""}</span>
+      <b style="font-family:var(--mono);font-weight:500" class="${cls(m.delta_w)}">${pct(m.delta_w, 2)}</b></div>`).join("")}
+    ${r.n > 3 ? `<div class="foot">+${r.n - 3} altri fondi</div>` : ""}
+  </div>`;
+}
+function render13f() {
+  const d = state.f13;
+  if (!d) return;
+  $("#f13-fresh").textContent = d.quarter
+    ? `Trimestre al ${day(d.quarter)} (${qlabel(d.quarter)}) · ${d.funds.filter((f) => f.in_quarter).length}/${d.funds.length} fondi hanno già depositato`
+    : "Nessun dato 13F: premi «aggiorna» su questa scheda (la prima volta qualche minuto).";
+  $("#bought").innerHTML = d.bought.length ? `<div class="cards">${d.bought.map((r) => moveCard(r, "buy")).join("")}</div>` : `<div class="empty">Nessun titolo comprato da almeno 2 fondi.</div>`;
+  $("#sold").innerHTML = d.sold.length ? `<div class="cards">${d.sold.map((r) => moveCard(r, "sell")).join("")}</div>` : `<div class="empty">Nessun titolo venduto da almeno 2 fondi.</div>`;
+  const book = (x) => x == null ? "–" : x >= 1e9 ? "$" + fmt(x / 1e9, 1) + " mld" : "$" + fmt(x / 1e6, 0) + " mln";
+  $("#funds").innerHTML = `<div class="scroll"><table><tr><th>Fondo</th><th>Ultimo 13F</th><th>Stato</th><th class="n">Posizioni</th><th class="n">Valore</th></tr>
+    ${d.funds.map((f) => `<tr><td>${esc(f.manager)}</td><td>${qlabel(f.latest_period)}</td>
+      <td>${f.in_quarter ? (f.has_previous ? '<span class="tag beat">nel trimestre</span>' : '<span class="tag">senza trimestre precedente</span>') : '<span class="tag miss">fermo</span>'}</td>
+      <td class="n">${f.positions ?? "–"}</td><td class="n">${book(f.book_value)}</td></tr>`).join("")}</table></div>`;
+}
+
 async function load() {
-  const [s, c, ins] = await Promise.all([fetch("/api/screener").then((r) => r.json()),
-    fetch("/api/calendar").then((r) => r.json()), fetch("/api/insiders").then((r) => r.json())]);
+  const [s, c, ins, f13] = await Promise.all([fetch("/api/screener").then((r) => r.json()),
+    fetch("/api/calendar").then((r) => r.json()), fetch("/api/insiders").then((r) => r.json()),
+    fetch("/api/13f").then((r) => r.json())]);
+  state.f13 = f13;
   state.screener = s.rows; state.calendar = c.rows; state.today = c.today; state.insiders = ins.rows;
   $("#ins-fresh").textContent = ins.last_filed ? "Form 4 SEC depositati fino al " + day(ins.last_filed)
     : "Nessun dato insider: premi «aggiorna» su questa scheda (la prima volta ~20-30 minuti).";
   $("#fresh").textContent = s.as_of ? "aggiornato " + new Date(s.as_of).toLocaleString("it-IT", {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"}) : "mai aggiornato";
-  renderScreener(); renderCalendar(); renderInsiders();
+  renderScreener(); renderCalendar(); renderInsiders(); render13f();
 }
 
 function seg(id, key, after) {
@@ -316,8 +363,10 @@ seg("#tabs", "tab", () => {
   $("#screener").hidden = $("#screener-ctl").hidden = state.tab !== "screener";
   $("#calendar").hidden = $("#calendar-ctl").hidden = state.tab !== "calendar";
   $("#insiders").hidden = $("#insiders-ctl").hidden = state.tab !== "insiders";
+  $("#f13").hidden = state.tab !== "13f";
   $("#refresh").title = state.tab === "insiders"
     ? "Scarica i Form 4 SEC dei giorni mancanti (qualche minuto; la prima volta ~20-30 minuti)"
+    : state.tab === "13f" ? "Scarica i 13F nuovi dei fondi seguiti (secondi; la prima volta qualche minuto)"
     : "Scarica calendario, prezzi e sorprese EPS (~20 s, 1-5 min la prima volta)";
 });
 seg("#iview", "iview", renderInsiders);
@@ -338,7 +387,7 @@ async function poll() {
 }
 $("#refresh").addEventListener("click", async () => {
   $("#refresh").disabled = true; $("#refresh").textContent = "aggiorno…";
-  await fetch("/api/refresh?job=" + (state.tab === "insiders" ? "insiders" : "earnings"), {method: "POST"});
+  await fetch("/api/refresh?job=" + ({insiders: "insiders", "13f": "13f"}[state.tab] || "earnings"), {method: "POST"});
   setTimeout(poll, 3000);
 });
 load();

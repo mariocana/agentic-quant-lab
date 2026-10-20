@@ -169,3 +169,60 @@ NDVI_AOIS = [
 
 # Harvest years. Each new season costs one ~3 GB CDL download (one-time).
 NDVI_SEASONS = [2021, 2023, 2025]
+
+
+# ── Superinvestors (13F-HR, applications/historical/superinvestors.py) ───
+# (name shown in the desk, SEC CIK). Every CIK checked on data.sec.gov
+# (2026-10-20): name matches and the fund files 13F-HR. Funds that stopped
+# filing (Scion, Greenlight) stay listed: the desk marks them as stale.
+SUPERINVESTORS = [
+    ("Warren Buffett - Berkshire Hathaway", 1067983),
+    ("Bill Ackman - Pershing Square", 1336528),
+    ("David Einhorn - Greenlight Capital", 1079114),
+    ("Daniel Loeb - Third Point", 1040273),
+    ("Howard Marks - Oaktree Capital", 949509),
+    ("Seth Klarman - Baupost Group", 1061768),
+    ("David Tepper - Appaloosa", 1656456),
+    ("Michael Burry - Scion Asset Management", 1649339),
+    ("Stan Druckenmiller - Duquesne Family Office", 1536411),
+    ("Mohnish Pabrai - Dalal Street", 1549575),
+    ("Terry Smith - Fundsmith", 1569205),
+    ("Li Lu - Himalaya Capital", 1709323),
+    ("Chase Coleman - Tiger Global", 1167483),
+    ("Stephen Mandel - Lone Pine Capital", 1061165),
+    ("Andreas Halvorsen - Viking Global", 1103804),
+    ("John Armitage - Egerton Capital", 1581811),
+    ("Chuck Akre - Akre Capital", 1112520),
+    ("Bruce Berkowitz - Fairholme", 1056831),
+    ("Yacktman Asset Management", 905567),
+    ("David Rolfe - Wedgewood Partners", 859804),
+    ("Polen Capital", 1034524),
+    ("Dodge & Cox", 200217),
+    ("First Eagle Investment Management", 1325447),
+    ("Nelson Peltz - Trian Fund", 1345471),
+    ("Chris Hohn - TCI Fund", 1647251),
+    ("William Von Mueffling - Cantillon Capital", 1279936),
+    ("Duan Yongping - H&H International", 1759760),
+    ("Wallace Weitz - Weitz Investment", 883965),
+    ("Glenn Greenberg - Brave Warrior Advisors", 1553733),
+    ("Richard Pzena - Pzena Investment", 1027796),
+    ("C.T. Fitzpatrick - Vulcan Value Partners", 1556785),
+    ("Triple Frond Partners", 1454502),
+    ("Francois Rochon - Giverny Capital", 1641864),
+    ("AKO Capital", 1376879),
+    ("Lindsell Train", 1484150),
+    ("Leon Cooperman - Omega Family Office", 898382),
+    ("David Abrams - Abrams Capital", 1358706),
+    ("Abrams Bison Investments", 1317588),
+    ("Tom Russo - Gardner Russo & Quinn", 860643),
+    ("Tom Gayner - Markel Group", 1096343),
+    ("Chris Bloomstran - Semper Augustus", 1115373),
+    ("Charlie Munger - Daily Journal", 783412),
+    ("Mairs & Power", 1070134),
+    ("Greenhaven Associates", 846222),
+    ("AltaRock Partners", 1631014),
+    ("Pat Dorsey - Dorsey Asset Management", 1671657),
+    ("Robert Vinall - RV Capital", 1766596),
+    ("Dennis Hong - ShawSpring Partners", 1766908),
+    ("Clifford Sosin - CAS Investment Partners", 1697591),
+]
