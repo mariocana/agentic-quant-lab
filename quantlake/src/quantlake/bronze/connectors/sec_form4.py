@@ -44,7 +44,9 @@ class SECClient:
         self._client = httpx.Client(timeout=30, headers={"User-Agent": self.user_agent,
                                                          "Accept-Encoding": "gzip, deflate"})
 
-    def get(self, url: str, retries: int = 4) -> httpx.Response | None:
+    def get(self, url: str, retries: int = 4, missing: tuple[int, ...] = (404,)) -> httpx.Response | None:
+        """None when the status is in `missing`. A daily index that does not exist
+        (holiday, not yet published) answers 403, not 404: pass missing=(403, 404)."""
         for attempt in range(retries):
             with self._lock:
                 wait = self._next - time.monotonic()
@@ -56,7 +58,7 @@ class SECClient:
             except httpx.HTTPError:
                 time.sleep(2 * (attempt + 1))
                 continue
-            if r.status_code == 404:
+            if r.status_code in missing:
                 return None
             if r.status_code in (429, 503):
                 time.sleep(5 * (attempt + 1))
