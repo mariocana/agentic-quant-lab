@@ -22,12 +22,21 @@ def _run(cmd: list[str], cwd: Path) -> None:
     subprocess.run(cmd, cwd=cwd, check=True)
 
 
+def _build_is_stale() -> bool:
+    """True when a frontend source is newer than the build (e.g. after a git pull)."""
+    built = FRONTEND_DIST / "index.html"
+    if not built.exists():
+        return True
+    sources = [FRONTEND_DIR / "index.html", *(FRONTEND_DIR / "src").rglob("*")]
+    return any(p.is_file() and p.stat().st_mtime > built.stat().st_mtime for p in sources)
+
+
 def _ensure_frontend_build(force: bool = False) -> None:
     if not FRONTEND_DIR.exists():
         print(f"[dashboard] No frontend directory at {FRONTEND_DIR} — skipping build.")
         return
-    if FRONTEND_DIST.exists() and not force:
-        print("[dashboard] Frontend build found, skipping (use --rebuild to force).")
+    if not force and not _build_is_stale():
+        print("[dashboard] Frontend build up to date, skipping (use --rebuild to force).")
         return
     npm = shutil.which("npm")
     if npm is None:
