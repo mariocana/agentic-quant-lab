@@ -1,7 +1,14 @@
-"""FastAPI app exposing the dashboard API and serving the React build."""
+"""FastAPI app exposing the dashboard API and serving the React build.
+
+The COT desk and the Equity desk (Flask apps in applications/) are mounted
+under /cot and /equity, so one server shows every tab; GET /api/apps lists
+the ones that loaded. They still run on their own too (python app.py).
+"""
 from __future__ import annotations
 
+import importlib.util
 import math
+import sys
 import os
 from dataclasses import asdict
 from datetime import datetime, date
@@ -11,6 +18,7 @@ from pathlib import Path
 import yaml
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.wsgi import WSGIMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -172,6 +180,39 @@ def get_stats(
         ts_to=ts_to,
     )
     return JSONResponse(_json_safe(payload))
+
+
+# ── Desks mounted as tabs ────────────────────────────────────────────────
+DESKS = [
+    ("cot", "COT", PROJECT_ROOT / "applications" / "cot_desk" / "app.py"),
+    ("equity", "Equity", PROJECT_ROOT / "applications" / "equity_desk" / "app.py"),
+]
+_mounted: list[dict] = []
+
+
+def _mount_desk(key: str, label: str, path: Path) -> None:
+    """Import a desk's Flask app from its file and mount it under /<key>."""
+    try:
+        for p in (path.parent, path.parents[1]):        # its own modules, then applications/ (symbols)
+            if str(p) not in sys.path:
+                sys.path.insert(0, str(p))
+        spec = importlib.util.spec_from_file_location(f"{key}_desk_app", path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = mod        # Flask finds templates/ from the module's file
+        spec.loader.exec_module(mod)
+        app.mount(f"/{key}", WSGIMiddleware(mod.app))
+        _mounted.append({"key": key, "label": label, "path": f"/{key}/"})
+    except Exception as exc:  # a desk that fails to import must not take the dashboard down
+        print(f"[dashboard] {label} desk not mounted: {exc}")
+
+
+@app.get("/api/apps")
+def get_apps():
+    return {"apps": _mounted}
+
+
+for _key, _label, _path in DESKS:
+    _mount_desk(_key, _label, _path)
 
 
 # Serve the React build when it exists (production mode).

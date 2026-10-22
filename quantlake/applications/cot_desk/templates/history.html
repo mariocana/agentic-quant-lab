@@ -10,6 +10,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script>
+const BASE = {{ request.script_root|tojson }};
+
   // Chart.js in the quantlake dashboard type and palette
   Chart.defaults.font.family = "'JetBrains Mono', Menlo, ui-monospace, monospace";
   Chart.defaults.color = '#71717a';
@@ -104,7 +106,7 @@
     <h1><span class="ticker">{{ ticker }}</span> · {{ name }}</h1>
     <div class="sub" id="sub">{{ category }} · Loading history...</div>
   </div>
-  <a class="back" href="/">← Back to desk</a>
+  <a class="back" href="{{ request.script_root }}/">← Back to desk</a>
 </header>
 
 <main>
@@ -143,7 +145,7 @@ function cls(n) { return n > 0 ? 'pos' : (n < 0 ? 'neg' : ''); }
 
 async function load() {
   try {
-    const r = await fetch('/api/history/' + TICKER);
+    const r = await fetch(BASE + '/api/history/' + TICKER);
     const d = await r.json();
     if (!d.ok) {
       $('#loadingBox').innerHTML = '<div class="error-box">⚠ ' + (d.error || 'Failed to load') + '</div>';

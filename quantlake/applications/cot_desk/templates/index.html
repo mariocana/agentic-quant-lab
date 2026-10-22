@@ -10,6 +10,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script>
+const BASE = {{ request.script_root|tojson }};  // mount prefix (/cot in the dashboard, empty when standalone)
+
   // Chart.js in the quantlake dashboard type and palette
   Chart.defaults.font.family = "'JetBrains Mono', Menlo, ui-monospace, monospace";
   Chart.defaults.color = '#71717a';
@@ -527,7 +529,7 @@ function heatColor(v) {
 // ===== Populate report date dropdown on load =====
 async function loadReportDates() {
   try {
-    const r = await fetch('/api/report-dates');
+    const r = await fetch(BASE + '/api/report-dates');
     const data = await r.json();
     if (!data.ok || !data.dates.length) {
       dateSelect.innerHTML = '<option value="">No dates available</option>';
@@ -559,7 +561,7 @@ function setSyncStatus(text, cls) {
 // Freshness check on load (no CFTC API call server-side)
 async function refreshSyncStatus() {
   try {
-    const r = await fetch('/api/data-status');
+    const r = await fetch(BASE + '/api/data-status');
     const d = await r.json();
     if (!d.ok) { setSyncStatus('status unavailable', 'err'); return; }
     if (d.syncing) { startSyncPolling(); return; }
@@ -580,7 +582,7 @@ syncBtn.addEventListener('click', async () => {
   syncBtn.textContent = '⏳ SYNCING…';
   setSyncStatus('checking for new data…');
   try {
-    const res = await fetch('/api/sync', {
+    const res = await fetch(BASE + '/api/sync', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({}),
@@ -610,7 +612,7 @@ function startSyncPolling() {
   if (syncPolling) clearInterval(syncPolling);
   syncPolling = setInterval(async () => {
     try {
-      const r = await fetch('/api/sync/status');
+      const r = await fetch(BASE + '/api/sync/status');
       const d = await r.json();
       if (d.state === 'running') {
         setSyncStatus(d.status_msg || 'syncing…');
@@ -658,7 +660,7 @@ async function startRun() {
     const body = {};
     // Only send report_date if user picked a non-default option
     if (dateSelect.value) body.report_date = dateSelect.value;
-    const res = await fetch('/run', {
+    const res = await fetch(BASE + '/run', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body),
@@ -674,18 +676,18 @@ async function startRun() {
 function pollStatus(jobId) {
   polling = setInterval(async () => {
     try {
-      const res = await fetch('/status/' + jobId);
+      const res = await fetch(BASE + '/status/' + jobId);
       const data = await res.json();
       $('#progressMsg').textContent = data.status_msg || 'Working...';
       if (data.state === 'done') {
         clearInterval(polling);
-        const r = await fetch('/result/' + jobId);
+        const r = await fetch(BASE + '/result/' + jobId);
         const result = await r.json();
         render(result);
         finishRun();
       } else if (data.state === 'error' || data.state === 'not_found') {
         clearInterval(polling);
-        const r = await fetch('/result/' + jobId);
+        const r = await fetch(BASE + '/result/' + jobId);
         const result = await r.json();
         showError(result.error || 'Analysis failed');
         finishRun();
@@ -862,7 +864,7 @@ $('#aiTop3Btn').addEventListener('click', async () => {
   try {
     const body = {};
     if (currentReportDate) body.report_date = currentReportDate;
-    const res = await fetch('/ai/top3', {
+    const res = await fetch(BASE + '/ai/top3', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body),
@@ -889,7 +891,7 @@ $('#aiAssetBtn').addEventListener('click', async () => {
   try {
     const body = { ticker };
     if (currentReportDate) body.report_date = currentReportDate;
-    const res = await fetch('/ai/asset', {
+    const res = await fetch(BASE + '/ai/asset', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body),
@@ -925,11 +927,11 @@ function renderAIResult(ai, subject) {
 async function openChart(ticker) {
   $('#modalTitle').textContent = ticker;
   $('#modalSub').textContent = 'Loading...';
-  $('#modalLink').href = '/history/' + ticker;
+  $('#modalLink').href = BASE + '/history/' + ticker;
   $('#modal').classList.add('active');
 
   try {
-    const res = await fetch('/api/history/' + ticker);
+    const res = await fetch(BASE + '/api/history/' + ticker);
     const data = await res.json();
     if (!data.ok) {
       $('#modalSub').textContent = '⚠ ' + (data.error || 'Failed to load');

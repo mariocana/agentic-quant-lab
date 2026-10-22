@@ -151,6 +151,8 @@ tr.today td{color:var(--ink)}
     Punteggi: pubblicate 50 × min(sorpresa/25%, 1) + 50 × min(gap/8%, 1); in arrivo 60 × beat rate + 40 × min(rend. 13 sett./20%, 1).</p>
 </main>
 <script>
+const BASE = {{ request.script_root|tojson }};  // mount prefix (/equity in the dashboard, empty when standalone)
+
 const $ = (s) => document.querySelector(s);
 const state = {tab: "screener", view: "cards", iview: "cards", sort: "score", showall: false, screener: [], calendar: [],
   insiders: [], today: null};
@@ -341,9 +343,9 @@ function render13f() {
 }
 
 async function load() {
-  const [s, c, ins, f13] = await Promise.all([fetch("/api/screener").then((r) => r.json()),
-    fetch("/api/calendar").then((r) => r.json()), fetch("/api/insiders").then((r) => r.json()),
-    fetch("/api/13f").then((r) => r.json())]);
+  const [s, c, ins, f13] = await Promise.all([fetch(BASE + "/api/screener").then((r) => r.json()),
+    fetch(BASE + "/api/calendar").then((r) => r.json()), fetch(BASE + "/api/insiders").then((r) => r.json()),
+    fetch(BASE + "/api/13f").then((r) => r.json())]);
   state.f13 = f13;
   state.screener = s.rows; state.calendar = c.rows; state.today = c.today; state.insiders = ins.rows;
   $("#ins-fresh").textContent = ins.last_filed ? "Form 4 SEC depositati fino al " + day(ins.last_filed)
@@ -379,7 +381,7 @@ $("#q").addEventListener("input", renderCalendar);
 $("#mincap").addEventListener("change", renderCalendar);
 
 async function poll() {
-  const s = await fetch("/api/refresh/status").then((r) => r.json());
+  const s = await fetch(BASE + "/api/refresh/status").then((r) => r.json());
   if (s.state === "running") { setTimeout(poll, 5000); return; }
   $("#refresh").disabled = false; $("#refresh").textContent = "aggiorna";
   $("#log").hidden = !s.output; $("#log").textContent = s.output;
@@ -387,7 +389,7 @@ async function poll() {
 }
 $("#refresh").addEventListener("click", async () => {
   $("#refresh").disabled = true; $("#refresh").textContent = "aggiorno…";
-  await fetch("/api/refresh?job=" + ({insiders: "insiders", "13f": "13f"}[state.tab] || "earnings"), {method: "POST"});
+  await fetch(BASE + "/api/refresh?job=" + ({insiders: "insiders", "13f": "13f"}[state.tab] || "earnings"), {method: "POST"});
   setTimeout(poll, 3000);
 });
 load();

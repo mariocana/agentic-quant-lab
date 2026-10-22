@@ -78,6 +78,12 @@ export interface Workflow {
   gold: Record<string, WorkflowNode>;
 }
 
+export interface DeskApp {
+  key: string;
+  label: string;
+  path: string;
+}
+
 type Params = Record<string, string | number | boolean | undefined | null>;
 
 async function get<T>(path: string, params: Params = {}): Promise<T> {
@@ -98,6 +104,8 @@ const csv = (xs?: string[]) => (xs && xs.length ? xs.join(",") : undefined);
 
 export const api = {
   layers: () => get<{ layers: Layer[] }>("/api/layers"),
+
+  apps: () => get<{ apps: DeskApp[] }>("/api/apps"),
 
   workflow: () => get<Workflow>("/api/workflow"),
 

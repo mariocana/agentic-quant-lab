@@ -4,6 +4,7 @@ import { ChartPanel } from "./components/ChartPanel";
 import { TablePanel } from "./components/TablePanel";
 import { TableHeader } from "./components/TableHeader";
 import { WorkflowPanel } from "./components/WorkflowPanel";
+import { TopTabs, useDeskTab } from "./components/TopTabs";
 import { useQuery } from "@tanstack/react-query";
 import { api, type Layer } from "./lib/api";
 
@@ -20,6 +21,7 @@ export function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [normalized, setNormalized] = useState(false);
   const [view, setView] = useState<"chart" | "workflow">("chart");
+  const { tab, setTab, apps, visited } = useDeskTab();
 
   const schemaQuery = useQuery({
     queryKey: ["schema", selection?.layer, selection?.name],
@@ -45,7 +47,14 @@ export function App() {
   }, [selection?.layer, selection?.name, tablesQuery.data]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-bg text-fg">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-bg text-fg">
+      <TopTabs tab={tab} apps={apps} onChange={setTab} />
+      {/* desks (COT, Equity) run in the same server; iframes stay mounted once opened so they keep their state */}
+      {apps.filter((a) => visited.has(a.key)).map((a) => (
+        <iframe key={a.key} src={a.path} title={a.label}
+                className={tab === a.key ? "min-h-0 w-full flex-1 border-0 bg-bg" : "hidden"} />
+      ))}
+    <div className={tab === "data" ? "flex min-h-0 flex-1 overflow-hidden" : "hidden"}>
       <Sidebar
         selection={selection}
         onSelect={(s) => { setSelection(s); setSymbols([]); }}
@@ -107,6 +116,7 @@ export function App() {
           </>
         )}
       </main>
+    </div>
     </div>
   );
 }
