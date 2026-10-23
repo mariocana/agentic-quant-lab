@@ -97,17 +97,22 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "run"
+    "2": "fail"
    },
-   "note": "**Stage 0, la prima candidata scelta col filtro sui paper.** Baltussen-Da-Lammers-Martens, JFE 2021: il rendimento dalla chiusura di ieri fino a 30 minuti prima della chiusura predice la mezz'ora finale, perche chi e corto gamma deve coprirsi nella direzione del mercato. Testato su 60+ futures dal 1974, **t 7,97 su NQ**, 4,97 su ES. **Nessun parametro, nessuno stop nel test.** Scelto NQ **a priori** perche su 5 anni e l'unico che puo superare t >= 2 anche a edge intatto (atteso 3,64; ES 1,81). Il campione del paper finisce a maggio 2020: **il nostro IS misura esattamente il decadimento post-pubblicazione**.",
+   "note": "**Morta al Gate 2: t 0,52.** La prima candidata scelta col filtro sui paper, e la lezione piu netta sul decadimento. **Dentro il campione del paper (gen-apr 2020, 82 trade): avg $305,85, t 1,49. Dopo (mag 2020 → 2024, 1.165 trade): avg −$5,85, t −0,22.** McLean-Pontiff misurano −58% in media dopo la pubblicazione: qui −100%. Positiva negli anni ribassisti e volatili (2020, 2022), negativa nel 2023-24, coerente col meccanismo del gamma dei dealer — ma senza dati GEX non si costruisce un filtro: sceglierlo dopo aver visto gli anni sarebbe ri-ottimizzare.",
    "metrics": {
     "paper, NQ": "t 7,97 · R² 4,10% · R² fuori campione 3,76% · 1996-2020",
     "paper, portafoglio azionario": "6,86%/anno · Sharpe 1,73 · successo 55% · **senza costi**",
     "potenza sul nostro IS": "t atteso 3,64 a edge intatto, 1,82 a edge dimezzato",
     "aspettativa dichiarata": "edge dimezzato, t ~1,8: sotto la soglia",
-    "Stage 1 (meccanica, 2026)": "96 trade · 7 controlli su 7 · x10 esatto · WR 49% · R:R 1,31 · avg $109,17 (annotato, non giudicato)"
+    "Stage 1 (meccanica, 2026)": "96 trade · 7 controlli su 7 · x10 esatto · WR 49% · R:R 1,31 · avg $109,17 (annotato, non giudicato)",
+    "Stage 2 IS 2020-2024": "1.247 trade · avg $14,65 · **t 0,52** (atteso 3,64 a edge intatto: sopravvissuto il 14%) · **prima di maggio 2020 t 1,49, dopo t −0,22**"
    },
    "log": [
+    {
+     "date": "2026-10-23",
+     "text": "**Gate 2 fallito: t = 0,52, sopravvissuto il 14% dell'edge del paper.** Avevo previsto 1,8, ed ero ottimista. **La spaccatura a maggio 2020 e il dato vero**: sugli 82 trade dentro il campione del paper avg $305,85 e t 1,49, sui 1.165 dopo **avg −$5,85 e t −0,22**. Il decadimento dopo la pubblicazione e totale. **Pattern per anno**: +$78 nel 2020, +$109 nel 2022, −$36 nel 2023, −$89 nel 2024 — positiva negli anni ribassisti e volatili, negativa nel 2023-24, **coerente col meccanismo** (dealer corti gamma → momentum, lunghi gamma → reversione, e le 0DTE hanno cambiato il loro posizionamento). **Non se ne ricava un filtro**: non abbiamo dati GEX, e scegliere una proxy dopo aver visto 2022 contro 2023 sarebbe la ri-ottimizzazione che il gate vieta. Cimitero."
+    },
     {
      "date": "2026-10-19",
      "text": "**Stage 1 chiuso, sette controlli su sette.** 96 ingressi su 96 giorni distinti, **tutti alle 14:35**, uscite **tutte alle 15:05** coi soli nomi previsti, direzione uguale al segno di `rROD` **96 su 96**, e `priorClose` mai uguale al prezzo delle 14:30 del giorno prima. Test x10 esatto. Le vigilie a chiusura anticipata non sono verificabili in questo intervallo. **Annotato senza giudicare**: WR 49% contro il 55% del paper, indistinguibili su 96 trade (errore standard 5,1 punti); ~$10,9 al giorno per micro contro i $18,34 di DriftPullback. Il grafico usa il template RTH CME dei futures azionari, che chiude alle 15:15: `check_report.py` ora lo riconosce."
@@ -121,7 +126,7 @@
      "text": "**Aperta, letto il paper per intero.** Passa i tre eliminatori del filtro: futures (ES, NQ, YM, RTY testati singolarmente), meccanismo di flusso forzato (gamma hedging, verificato condizionando sull'esposizione netta), intraday con uscita in chiusura. **Punto debole: i costi** — *«we do not consider transaction costs»*, solo la frase che su ES il Sharpe netto resta positivo con un tick. **Calcolo di potenza che decide lo strumento**: su 1.258 sessioni il t atteso a edge intatto e 3,64 su NQ, 2,53 su RTY, 1,81 su ES, 1,95 su YM — **solo NQ puo passare il Gate 2 anche senza decadimento**, quindi un fallimento su ES o YM non direbbe niente. Scelto NQ **prima** di guardare, per non selezionare il migliore fra quattro. **Il filtro «segnali concordi» del paper non si testa**: provarlo dopo la base sugli stessi dati sarebbe scegliere. **Aspettativa: edge dimezzato, t ~1,8, sotto soglia.**"
     }
    ],
-   "next": "**Stage 2: IS 2020-2024 su @NQ**, stessi settaggi, TradeStartEL 1200101 / TradeEndEL 1241231. Soglia t >= 2; attesi 3,64 a edge intatto e 1,82 dimezzato."
+   "next": "**Chiusa.** L'OOS 2025-2026 resta intatto: valido solo per una strategia nuova con dati GEX veri."
   },
   {
    "name": "ON Reversal",
@@ -714,6 +719,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-23",
+   "text": "**Last Half-Hour morta al Gate 2, ed e il caso piu netto di decadimento post-pubblicazione che potessimo trovare**: t 1,49 sui dati del paper, −0,22 dal giorno dopo. **Il filtro sui paper ha fatto il suo lavoro** — ha scelto una fonte solida, meccanismo vero, t 7,97, e un solo run ha deciso — **ma non protegge dal decadimento**, che e esattamente il punto 6 del filtro. Lezione: per gli effetti pubblicati **l'IS successivo alla pubblicazione e l'unico test che conta**, e va pre-registrato aspettandosi molto meno della meta."
+  },
   {
    "date": "2026-10-22",
    "text": "**Ricercatore, prime ricerche v5–v8: nessuna candidata.** v5 (Opus) e v8 (Sonnet high) non trovano strategie che rispettino i vincoli; v6 e v7 erano prove di funzionamento. Scartati fix FX (i profitti spariscono con i costi, ~$3,4 lordi per micro al giorno) e FOMC reversal (~8 trade l'anno, nessun flusso forzato). **Resta una pista aperta: il drift overnight dell'E-mini nella finestra Globex europea** (comunicato MSU Broad: tutto il rendimento medio 2006–2018 in una finestra di 4 ore, attribuito all'inventario degli intermediari). Da leggere **Boyarchenko-Larsen-Whelan** prima di spendere un run; il falsificatore è già scritto: rendimento medio per mezz'ora della sessione europea su MES 2020–2024, servono ≥ 2,6 punti netti. Nato `research_db.json`, la memoria del ricercatore (fonti, query, costi)."

@@ -88,3 +88,18 @@ trovare la strategia giusta: serve a non spendere un giorno su una che parte gia
 - [Hou, Xue, Zhang, *Replicating Anomalies* — sintesi Alpha Architect](https://alphaarchitect.com/replicating-anomalies/)
 - [Baltussen, Da, Lammers, Martens — working paper](https://www3.nd.edu/~zda/intramom.pdf) · [scheda RePEc](https://ideas.repec.org/a/eee/jfinec/v142y2021i1p377-403.html)
 - [Alpha Architect sul gamma hedging](https://alphaarchitect.com/hot-topic-does-gamma-hedging-actually-affect-stock-prices/)
+
+---
+
+## Il primo caso alla prova (23/10/2026)
+
+**Baltussen et al. ha passato il filtro ed e' morto al primo run**: t 0,52 sul 2020-2024
+contro 3,64 attesi. Sugli 82 trade dentro il suo campione (gen-apr 2020) t 1,49; sui 1.165
+dopo, **t −0,22**. Decadimento totale.
+
+**Cosa ci dice sul filtro:** ha fatto il suo lavoro — fonte solida, meccanismo vero, un solo
+run per decidere invece di una settimana — **ma il punto 6 va corretto**. «Aspettarsi meta'
+dell'edge» era ottimista: per un effetto intraday su futures liquidissimi, pubblicato e
+replicato, **va pre-registrato aspettandosi anche zero**. Il valore del filtro non e'
+promettere un edge: e' far morire in fretta le idee che lo hanno perso.
+

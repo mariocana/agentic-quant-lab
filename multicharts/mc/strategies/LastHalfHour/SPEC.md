@@ -127,3 +127,62 @@ intraday) o **spostato** la copertura prima della mezz'ora finale. Il test lo di
 Stesso strumento, famiglia simile (momentum), **finestra diversa**: DriftPullback ha
 **22 ingressi su 1.439** nell'ora delle 14:00 nell'OOS, e chiude alle 14:55. **Si misura dopo
 il Gate 2**, non si assume.
+
+---
+
+## Gate 2 FALLITO (19-23/10/2026): t = 0,52. Cimitero.
+
+Report `reports/LHH_S2_IS_2020-2024.xlsx`, log `reports/LHH_S2_log.txt`. @NQ, 1.247 trade,
+$7,50/lato, Bar Magnifier 1 min, Globex.
+
+avg **$14,65 ± 28,03**, **t 0,52**, WR 50,1%, net $18.270.
+
+**Lettura pre-registrata:** passava se dell'edge del paper fosse sopravvissuto almeno il ~55%
+(t ≥ 2 contro i 3,64 attesi a edge intatto). Misurato **0,52 / 3,64 = 14%**. Chiusa. La mia
+previsione era 1,8 — edge dimezzato — ed era **troppo ottimista**.
+
+### Il numero che conta: la spaccatura a maggio 2020
+
+| | n | avg | WR | t |
+|---|---|---|---|---|
+| **dentro il campione del paper** (gen-apr 2020) | 82 | **$305,85** | 59,8% | 1,49 |
+| **dopo il campione del paper** (mag 2020 → 2024) | 1.165 | **−$5,85** | 49,4% | **−0,22** |
+
+**Sui dati su cui il paper e' stato scritto l'effetto c'e'. Dal giorno dopo, zero.** McLean e
+Pontiff misurano un calo medio del 58% dopo la pubblicazione; qui e' **il 100%**. E il filtro
+lo segnalava al punto 6 — *«oltre 3-4 anni dalla pubblicazione, aspettarsi meta' dell'edge»*
+— ma la meta' era ottimista.
+
+### Il pattern per anno, e cosa NON se ne fa
+
+| anno | avg | t |
+|---|---|---|
+| 2020 | +$78,52 | 0,97 |
+| 2021 | +$9,28 | 0,20 |
+| **2022** | **+$108,74** | **1,57** |
+| 2023 | −$35,50 | −0,81 |
+| **2024** | **−$88,99** | **−1,37** |
+
+Positivo negli anni di alta volatilita' e mercato ribassista (2020, 2022), negativo nel 2023-24.
+**E' coerente col meccanismo del paper**: l'effetto dipende dall'esposizione gamma netta dei
+dealer. Quando sono corti gamma coprono *nella* direzione del mercato (momentum in chiusura);
+quando sono lunghi gamma coprono *contro* (reversione). E dal 2023 l'esplosione delle 0DTE ha
+cambiato il loro posizionamento.
+
+**Ma non si costruisce un filtro di regime da qui.** Due ragioni:
+
+1. **Non abbiamo i dati di gamma** (esposizione netta dei dealer). Qualunque proxy — VIX,
+   range del giorno prima — la sceglieremmo **dopo aver visto** che il 2022 funziona e il
+   2023 no: e' esattamente l'ottimizzazione sui dati che il Gate 2 serve a impedire.
+2. **Il corso e' esplicito**: *«if the strategy fails a pre-register gate, I kill it and I lock
+   it in the graveyard, no re-optimization»* (Live 002).
+
+Se un giorno avessimo i dati GEX veri, sarebbe una **strategia nuova** con il suo Stage 0, e
+l'unico test valido sarebbe l'OOS 2025-2026, che per questa resta intatto.
+
+### Nota tecnica
+
+Su Windows i nomi di file non distinguono maiuscole e minuscole: la copia del codice in
+`C:\mc_out\LastHalfHour.txt` e il log `lasthalfhour.txt` sono **lo stesso file**, e il log ha
+sovrascritto il codice. Nessun danno — il codice sta nel repo — ma le prossime copie vanno
+con un nome diverso dal log.
