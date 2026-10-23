@@ -56,6 +56,7 @@ PROP_DOCS = [
     ("Ricerca 18/10", "mc/docs/ricerca_18-10.md"),
     ("Fast Alpha: il paper di DriftPullback", "mc/docs/fast_alpha_zarattini.md"),
     ("Come scegliere un paper", "mc/docs/come_scegliere_un_paper.md"),
+    ("Ricerca: gamma dei dealer e 0DTE", "mc/docs/ricerca_gamma_0dte.md"),
     ("La seconda gamba", "mc/docs/seconda_gamba.md"),
     ("Il difetto nel metodo di misura", "mc/docs/bug_misura_primo_tocco.md"),
     ("Prop vs Live: due metodologie", "mc/docs/prop_vs_live.md"),

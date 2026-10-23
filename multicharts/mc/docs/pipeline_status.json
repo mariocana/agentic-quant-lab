@@ -14,7 +14,8 @@
      "R|Trader Pro: login e **File → Allow Plugins**, senza MC non si collega. Poi Rithmic come data source e come broker in MC.",
      "Grafico identico al backtest, **2 contratti**, symbol mapping **@NQ → MNQZ6**; auto trading **asincrono**, conferma ordini tolta.",
      "**MultiCharts su VPS**: 1 licenza = 1 computer alla volta, e due istanze manderebbero ordini doppi.",
-     "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover MNQZ6 → MNQH7."
+     "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover MNQZ6 → MNQH7.",
+     "**Ricerca in parallelo: effetti intraday condizionati al gamma dei dealer** (`mc/docs/ricerca_gamma_0dte.md`). Letteratura 2024-25 su dati 0DTE: gamma positivo → reversione, negativo → momentum. Spiega sia la morte di LastHalfHour dopo il 2022 sia lo zero delle mean reversion non condizionate. **GEX giornaliero pubblico** su SqueezeMetrics, 2011-2026."
     ]
    },
    {
@@ -730,6 +731,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-23",
+   "text": "**Il filtro sui paper ha due domande in piu, e la ricerca ha una direzione che spiega i nostri dati.** (8) Il campione arriva oltre il 2021? Due effetti con dati fino al 2020 sono morti dopo: LastHalfHour e l'*overnight drift* di Boyarchenko-Larsen-Whelan (RFS 2023), **che gli stessi autori hanno dichiarato scomparso a luglio 2026**. (9) I dati del segnale sono accessibili? **La direzione**: Dim-Eraker-Vilkov e Adams-Fontaine-Ornthanalai, su dati 0DTE, trovano che il gamma positivo dei dealer produce **reversione** intraday — coerente con LastHalfHour positiva nel 2022 (gamma corto) e negativa nel 2023-24, e con lo zero delle nostre mean reversion non condizionate. **Il GEX giornaliero e pubblico** su SqueezeMetrics dal 2011. Verificato anche: su LucidFlex **nessuno scaling plan in valutazione**, e posizioni chiuse d'ufficio alle 16:45 ET."
+  },
   {
    "date": "2026-10-23",
    "text": "**Last Half-Hour morta al Gate 2, ed e il caso piu netto di decadimento post-pubblicazione che potessimo trovare**: t 1,49 sui dati del paper, −0,22 dal giorno dopo. **Il filtro sui paper ha fatto il suo lavoro** — ha scelto una fonte solida, meccanismo vero, t 7,97, e un solo run ha deciso — **ma non protegge dal decadimento**, che e esattamente il punto 6 del filtro. Lezione: per gli effetti pubblicati **l'IS successivo alla pubblicazione e l'unico test che conta**, e va pre-registrato aspettandosi molto meno della meta."

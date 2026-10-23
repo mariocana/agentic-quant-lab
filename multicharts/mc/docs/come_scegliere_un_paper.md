@@ -103,3 +103,19 @@ dell'edge» era ottimista: per un effetto intraday su futures liquidissimi, pubb
 replicato, **va pre-registrato aspettandosi anche zero**. Il valore del filtro non e'
 promettere un edge: e' far morire in fretta le idee che lo hanno perso.
 
+---
+
+## Due domande in piu', dopo i casi di ottobre (23/10/2026)
+
+| # | domanda | perche' |
+|---|---|---|
+| 8 | **Il campione arriva oltre il 2021, o un lavoro recente conferma che l'effetto e' vivo?** | Due effetti sui futures su indice con dati fino al 2020 sono **morti entrambi dopo il 2021**: il momentum dell'ultima mezz'ora (Baltussen et al., nostro test: t −0,22 dopo maggio 2020) e l'*overnight drift* (Boyarchenko-Larsen-Whelan, *RFS* 2023), **dichiarato scomparso dagli stessi autori** a luglio 2026: la finestra 2-3 ET rendeva il 3,7% annuo ed e' vicina a zero dal 2021, anche su Nasdaq e Dow |
+| 9 | **I dati che il segnale richiede sono accessibili a noi?** | un effetto condizionato su dati proprietari non e' testabile, per quanto sia vero |
+
+**La regola che ne viene:** prima di spendere un run su un paper con dati pre-2021, **cercare
+un follow-up recente** — spesso degli stessi autori. Per l'overnight drift avrebbe risparmiato
+un'intera giornata di lavoro: la risposta era gia' pubblicata.
+
+E il motivo probabile della moria e' uno solo: **dal 2022 le opzioni 0DTE hanno cambiato il
+posizionamento gamma dei dealer**, e gli effetti intraday sui futures su indice dipendono da li'.
+
