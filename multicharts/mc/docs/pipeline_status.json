@@ -733,6 +733,10 @@
  "log": [
   {
    "date": "2026-10-23",
+   "text": "**Direzione gamma/0DTE chiusa come fonte di strategie, ma spiega tutte le nostre morti.** Incrocio VWAP fade × terzili di GEX: **NQ monotono** (WR risolti 40,38% col gamma basso, 44,92% col gamma alto, +4,54 pp a 2,29 errori standard), **YM piatto**; e su NQ nessun terzile supera il caso — col gamma basso il fade *perde*, cioe li il prezzo continua. **Il paper per intero** (Adams-Dim-Eraker-Fontaine-Ornthanalai-Vilkov, luglio 2026, 2018-2024): momentum +0,7 punti base nel quartile basso di gamma, reversione 1-2 punti base nel quartile alto, differenza 1-3 punti base fra 30 minuti e 2 ore. **Gli autori stessi scrivono che non e una strategia praticabile perche il gamma netto dei dealer non e osservabile**: e intraday e proprietario, il nostro proxy giornaliero e stimato. Cade alla domanda 9 del filtro. **Resta pero la spiegazione**: LastHalfHour positiva nel 2022 e negativa dopo, le mean reversion a zero perche mescolano i regimi. Domanda aperta: DriftPullback, che e momentum, rende di piu col gamma basso? Sarebbe un indicatore di rischio, non un filtro — l'OOS e gia stato usato."
+  },
+  {
+   "date": "2026-10-23",
    "text": "**Il filtro sui paper ha due domande in piu, e la ricerca ha una direzione che spiega i nostri dati.** (8) Il campione arriva oltre il 2021? Due effetti con dati fino al 2020 sono morti dopo: LastHalfHour e l'*overnight drift* di Boyarchenko-Larsen-Whelan (RFS 2023), **che gli stessi autori hanno dichiarato scomparso a luglio 2026**. (9) I dati del segnale sono accessibili? **La direzione**: Dim-Eraker-Vilkov e Adams-Fontaine-Ornthanalai, su dati 0DTE, trovano che il gamma positivo dei dealer produce **reversione** intraday — coerente con LastHalfHour positiva nel 2022 (gamma corto) e negativa nel 2023-24, e con lo zero delle nostre mean reversion non condizionate. **Il GEX giornaliero e pubblico** su SqueezeMetrics dal 2011. Verificato anche: su LucidFlex **nessuno scaling plan in valutazione**, e posizioni chiuse d'ufficio alle 16:45 ET."
   },
   {

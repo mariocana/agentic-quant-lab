@@ -125,3 +125,71 @@ che i nostri test non hanno colto — oppure e' cosi' piccolo che i costi lo man
 
 **Prima di scrivere qualunque Stage 0, va letto l'orizzonte nei paper**: se la reversione che
 documentano e' a 10 minuti e in punti base, per noi non esiste.
+
+---
+
+## Incrocio VWAP fade × GEX (23/10/2026) — indizio, non misura
+
+Log giornalieri del VWAP fade 2020-2024 (versione col riarmo corretto) incrociati col GEX della
+sera prima, per terzili calcolati sull'IS. **Avvertenza registrata prima di guardare**: il
+misuratore aveva due distorsioni legate alla volatilita' (sforamento d'ingresso che abbassa il
+caso, tie-break che gonfia le vincite), di segno opposto, e il GEX basso coincide coi giorni
+volatili. Si legge solo la differenza fra terzili, e con cautela.
+
+| GEX di ieri | YM: WR risolti | NQ: WR risolti |
+|---|---|---|
+| basso (< 2,08 mld) | 42,91% | **40,38%** |
+| medio | **47,37%** | 42,96% |
+| alto (≥ 5,01 mld) | 43,27% | **44,92%** |
+| **alto − basso** | +0,36 pp (0,18 es) | **+4,54 pp (2,29 es)** |
+
+**NQ monotono nella direzione del meccanismo, YM no.** E su NQ **nessun terzile supera il caso**
+(~44%): non c'e' reversione sfruttabile nemmeno col gamma alto. Quello che cambia e' che **col
+gamma basso il fade perde** di circa 4 punti contro il caso — cioe' li' il prezzo continua.
+
+## Il paper per intero: Adams, Dim, Eraker, Fontaine, Ornthanalai, Vilkov (luglio 2026)
+
+Unisce i due working paper (*0DTEs: Trading, Gamma Risk and Volatility Propagation* e il
+lavoro sulla volatilita'). 75 pagine.
+
+| | |
+|---|---|
+| campione | gennaio 2018 - dicembre 2024, futures E-mini e indice cash |
+| gamma | netto dei market maker, **intraday**, ricostruito da **dati proprietari** sulle posizioni |
+| orizzonte | reversione del flusso d'ordini significativa per **~30 minuti**, spenta entro l'ora; momentum misurato da 10 minuti a 2 ore |
+| quartile basso di gamma | momentum **positivo**, fino a **~0,7 punti base** a 1-2 ore |
+| quartile alto | momentum **negativo** (reversione) di **~1-2 punti base** |
+| **differenza alto − basso** | **da −1 a −3 punti base**, significativa fra 30 minuti e 2 ore |
+
+E gli autori lo dicono da soli (p. 33): *«this result does not translate into a feasible
+trading strategy since the market makers' net gamma is not observable to other investors.»*
+
+**Amaya, Garcia-Ares, Pearson, Vasquez** (2025): studia l'effetto sulla **volatilita'**, non sui
+rendimenti, e usa dati proprietari Cboe. Non serve a una strategia.
+
+## Verdetto: la direzione si chiude come fonte di strategie
+
+Cade alla **domanda 9 del filtro**: *i dati che il segnale richiede sono accessibili a noi?* No.
+Il segnale vero e' il gamma **intraday e proprietario**; il nostro proxy e' **giornaliero e
+stimato**, e diluisce un effetto che vale 1-3 punti base — cioe' **$5-15 per micro** contro
+$1,50 di costo, **prima** della diluizione.
+
+## Ma resta, ed e' la cosa piu' utile di questa settimana: **spiega tutte le nostre morti**
+
+| strategia | cosa e' successo | spiegazione |
+|---|---|---|
+| LastHalfHour | positiva nel 2022, negativa nel 2023-24 | momentum quando i dealer sono corti gamma, reversione quando sono lunghi; dal 2023 sono quasi sempre lunghi |
+| VWAP fade, gap fade | zero su 2020-2024 | una mean reversion non condizionata mescola i due regimi e la media si annulla |
+| il fade su NQ per terzili | perde col gamma basso, pareggia col gamma alto | stessa cosa, vista dall'altro lato |
+
+## Una domanda che resta aperta, e riguarda la strategia viva
+
+**DriftPullback e' momentum per la direzione.** Se il meccanismo e' giusto, dovrebbe rendere di
+piu' nei giorni a gamma basso e di meno in quelli a gamma alto. Se fosse cosi', il GEX non
+sarebbe un segnale ma un **indicatore di regime per dimensionare il rischio** di una strategia
+che gia' funziona.
+
+**Il vincolo di metodo**: l'OOS 2025-2026 di DriftPullback e' gia' stato usato. Un filtro
+aggiunto adesso sarebbe una DriftPullback v2, validabile solo su dati nuovi — cioe' sul live.
+Si puo' guardare la ripartizione per terzili sull'IS come **informazione sul rischio**, non come
+modifica della strategia.
