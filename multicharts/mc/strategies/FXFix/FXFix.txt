@@ -1,0 +1,124 @@
+{ =====================================================================
+  FXFix  -  il dollaro intorno ai fixing valutari (Krohn-Mueller-Whelan)
+  ---------------------------------------------------------------------
+  Fonte: Krohn, Mueller, Whelan, "Foreign Exchange Fixings and Returns
+  around the Clock", Journal of Finance 79 (2024). Spec: SPEC.md.
+
+  IPOTESI: chi deve eseguire al prezzo di fixing crea uno sbilanciamento
+  verso il dollaro; i dealer lo assorbono, il dollaro si apprezza prima
+  del fixing e si deprezza dopo. Sull'EUR 1999-2018:
+     02:00 ET -> fixing BCE 08:15 ET   -9,12% annuo (t -7,13)
+     fixing Londra 11:00 -> 17:00 ET   +7,22% annuo (t  6,83)
+
+  DUE FINESTRE, ciascuna attivabile da sola (si testano separatamente):
+    A  LONG  6E dal fixing di Londra (16:00 ora di Londra) alle AExit
+    B  SHORT 6E dalle 02:00 ET al fixing BCE/WMR (14:15 ora di Francoforte)
+
+  ORA LEGALE: Londra e Francoforte cambiano ora l'ultima domenica di marzo
+  e di ottobre; gli Stati Uniti la seconda domenica di marzo e la prima
+  di novembre. Nelle settimane in mezzo l'Europa e' un'ora "piu' vicina":
+     normale:         fixing Londra 10:00 CT, fixing BCE 07:15 CT
+     disallineamento: fixing Londra 11:00 CT, fixing BCE 08:15 CT
+  Entrare prima del fixing vorrebbe dire entrare nella fase in cui il
+  dollaro si apprezza, cioe' contro: per questo l'ora si calcola, non si
+  fissa. La partenza di B (02:00 ET = 01:00 CT) e l'uscita di A sono
+  orari americani e non cambiano.
+
+  NIENTE stop, NIENTE target, NIENTE parametri da ottimizzare: e' una
+  stagionalita' a orari fissi, come nel paper.
+
+  USCITA DI A alle 15:40 CT: Lucid chiude d'ufficio alle 16:45 ET (15:45
+  CT). Il paper teneva fino alle 17:00 ET; perdiamo l'ultima ora e venti.
+
+  COSTI: $2,40/lato di commissione Lucid + 1 tick ($6,25) di slippage per
+  lato, cioe' commissione MultiCharts $8,65 per contratto per lato.
+
+  CHART: 6E 5 min, Globex 24h, timezone Exchange (CT). Va compilato come
+         SIGNAL. Il log va su un file con nome DIVERSO dalla copia del
+         codice (su Windows LastHalfHour.txt e lasthalfhour.txt erano lo
+         stesso file).
+  ===================================================================== }
+
+Inputs:
+    TradeWinA( 1 ),            { 1 = finestra dopo Londra (long) }
+    TradeWinB( 1 ),            { 1 = finestra prima della BCE (short) }
+    BStart( 100 ),             { 02:00 ET = 01:00 CT }
+    AExit( 1540 ),             { 5 minuti prima della chiusura d'ufficio Lucid }
+    Num_Contracts( 1 ),
+    TradeStartEL( 0 ),
+    TradeEndEL( 0 ),
+    ShowLog( 0 ),
+    LogPath( "C:\mc_out\fxfix_log.txt" );
+
+Vars:
+    yy( 0 ), mm( 0 ), dd( 0 ),
+    usDst( false ), euDst( false ), disall( false ),
+    sunUS1( 0 ), sunUS2( 0 ), sunEU1( 0 ), sunEU2( 0 ),
+    londonFix( 0 ), ecbFix( 0 ),
+    dateOK( false ),
+    intrabarpersist lastDate( 0 ),
+    intrabarpersist entDate( 0 ),
+    intrabarpersist doneA( false ),
+    intrabarpersist doneB( false );
+
+dateOK = ( TradeStartEL = 0 or Date >= TradeStartEL )
+     and ( TradeEndEL   = 0 or Date <= TradeEndEL );
+
+{ ===== ora legale del giorno (Date = YYYMMDD) ===== }
+yy = IntPortion( Date / 10000 );
+mm = Mod( IntPortion( Date / 100 ), 100 );
+dd = Mod( Date, 100 );
+
+{ USA: dalla seconda domenica di marzo alla prima di novembre }
+sunUS1 = 1 + Mod( 7 - DayOfWeek( yy * 10000 + 301 ), 7 ) + 7;    { 2a dom. marzo }
+sunUS2 = 1 + Mod( 7 - DayOfWeek( yy * 10000 + 1101 ), 7 );      { 1a dom. novembre }
+usDst = ( mm > 3 and mm < 11 ) or ( mm = 3 and dd >= sunUS1 ) or ( mm = 11 and dd < sunUS2 );
+
+{ Europa: dall'ultima domenica di marzo all'ultima di ottobre }
+sunEU1 = 31 - DayOfWeek( yy * 10000 + 331 );                     { ultima dom. marzo }
+sunEU2 = 31 - DayOfWeek( yy * 10000 + 1031 );                    { ultima dom. ottobre }
+euDst = ( mm > 3 and mm < 10 ) or ( mm = 3 and dd >= sunEU1 ) or ( mm = 10 and dd < sunEU2 );
+
+disall = usDst and euDst = false;
+if disall then begin
+    londonFix = 1100; ecbFix = 815;
+end
+else begin
+    londonFix = 1000; ecbFix = 715;
+end;
+
+if Date <> lastDate then begin
+    lastDate = Date; doneA = false; doneB = false;
+end;
+
+{ ===== FINESTRA B: short dalle 01:00 CT al fixing BCE/WMR ===== }
+if TradeWinB = 1 and dateOK and MarketPosition = 0 and doneB = false
+   and Time = BStart then begin
+    SellShort ( "FX-B-S" ) Num_Contracts contracts next bar at market;
+    doneB = true; entDate = Date;
+    if ShowLog = 1 then
+        Print( File(LogPath), "FXB ", Date:8:0, " ingresso ", Time:4:0,
+               " uscita prevista ", ecbFix:4:0, " disallineamento=", IffString( disall, "si", "no" ) );
+end;
+if MarketPosition = -1 and Time >= ecbFix and Time < 1200 then
+    BuyToCover ( "FX-B-x" ) next bar at market;
+
+{ ===== FINESTRA A: long dal fixing di Londra alle 15:40 CT ===== }
+if TradeWinA = 1 and dateOK and MarketPosition = 0 and doneA = false
+   and Time = londonFix then begin
+    Buy ( "FX-A-L" ) Num_Contracts contracts next bar at market;
+    doneA = true; entDate = Date;
+    if ShowLog = 1 then
+        Print( File(LogPath), "FXA ", Date:8:0, " ingresso ", Time:4:0,
+               " uscita ", AExit:4:0, " disallineamento=", IffString( disall, "si", "no" ) );
+end;
+if MarketPosition = 1 and Time >= AExit then
+    Sell ( "FX-A-x" ) next bar at market;
+
+{ rete di sicurezza: nessuna posizione deve sopravvivere al cambio di data
+  (giorni a chiusura anticipata, es. vigilia di Natale: la barra delle
+  15:40 non esiste e A resterebbe aperta) }
+if MarketPosition <> 0 and Date <> entDate then begin
+    if MarketPosition = 1  then Sell       ( "FX-safe-L" ) next bar at market;
+    if MarketPosition = -1 then BuyToCover ( "FX-safe-S" ) next bar at market;
+end;
