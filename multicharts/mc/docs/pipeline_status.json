@@ -7,6 +7,17 @@
   "updated": "2026-10-23",
   "groups": [
    {
+    "title": "Lunedi 26/10: DriftPullback va live su LucidFlex 50k",
+    "note": "checklist completa in mc/docs/go_live.md",
+    "items": [
+     "**Comprare la eval con connessione RITHMIC**, non CQG: MultiCharts e solo fra le piattaforme Rithmic.",
+     "R|Trader Pro: login e **File → Allow Plugins**, senza MC non si collega. Poi Rithmic come data source e come broker in MC.",
+     "Grafico identico al backtest, **2 contratti**, symbol mapping **@NQ → MNQZ6**; auto trading **asincrono**, conferma ordini tolta.",
+     "**MultiCharts su VPS**: 1 licenza = 1 computer alla volta, e due istanze manderebbero ordini doppi.",
+     "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover MNQZ6 → MNQH7."
+    ]
+   },
+   {
     "title": "Aperti al 23/10",
     "note": "ricostruiti dai commit dopo il 18/10",
     "items": [
