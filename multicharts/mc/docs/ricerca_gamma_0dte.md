@@ -59,3 +59,69 @@ stesso anno — ma sapere che il 2022 era positivo inquina. **Il test che conta 
    2020: se il GEX e' quasi sempre positivo, il ramo «momentum» ha troppo pochi giorni per essere
    testato.
 3. Solo dopo, lo Stage 0.
+
+---
+
+## Controllo dei regimi (23/10/2026): **il ramo «momentum» non si puo' testare**
+
+`DIX.csv` scaricato in `mc/data/squeezemetrics/` (223.372 byte, **fuori da git** — sono dati con
+termini d'uso di SqueezeMetrics). Regime di oggi = GEX di **ieri sera**. Contati solo i giorni:
+**non incrociati coi trade di LastHalfHour**, per non guardare il risultato condizionato prima
+di pre-registrarlo.
+
+| anno | GEX < 0 | GEX > 0 | % negativi |
+|---|---|---|---|
+| 2016 | 22 | 230 | 8,7% |
+| 2017 | 2 | 249 | 0,8% |
+| 2018 | 38 | 213 | 15,1% |
+| 2019 | 19 | 233 | 7,5% |
+| 2020 | 31 | 222 | 12,3% |
+| 2021 | 16 | 236 | 6,3% |
+| **2022** | **104** | 147 | **41,4%** |
+| 2023 | 23 | 227 | 9,2% |
+| **2024** | **1** | 251 | **0,4%** |
+| 2025 | 9 | 241 | 3,6% |
+| 2026 | 9 | 194 | 4,4% |
+
+| blocco | GEX < 0 | GEX > 0 |
+|---|---|---|
+| **IS 2020-2024** | **175** (104 nel solo 2022) | 1.083 |
+| **OOS 2025-2026** | **18** | 435 |
+
+Livello dal 2020, in miliardi: p5 **−1,13**, p25 1,77, **mediana 4,31**, p75 6,38, p95 9,97.
+
+### Potenza
+
+Con la deviazione per trade di LastHalfHour (**$990**), il t raggiungibile:
+
+| ramo | n | avg $50 | avg $100 | avg $150 |
+|---|---|---|---|---|
+| GEX < 0, IS | 175 | 0,67 | 1,34 | 2,00 |
+| **GEX < 0, OOS** | **18** | 0,21 | **0,43** | 0,64 |
+| GEX > 0, IS | 1.083 | 1,66 | 3,32 | 4,99 |
+| GEX > 0, OOS | 435 | 1,05 | 2,11 | 3,16 |
+
+### Tre conseguenze
+
+**1. Il ramo «momentum quando il gamma e' negativo» e' morto come test.** Nell'OOS ci sono **18
+giorni**: anche con un edge da $100 a trade si arriva a **t 0,43**. E nell'IS quel ramo e', per
+il 60%, **il 2022 — che abbiamo gia' visto** (+$109).
+
+**2. Il segno del GEX, oggi, non filtra quasi niente.** Dal 2023 e' positivo il **96%** dei
+giorni. «Reversione quando il gamma e' positivo» equivale in pratica a **«reversione sempre»**.
+
+**3. L'unico condizionamento che ha senso e' sul LIVELLO, non sul segno.** I paper dicono che
+**piu' gamma = piu' reversione**: una relazione dose-risposta. Dividere i giorni per terzili di
+GEX (con la mediana a 4,3 miliardi c'e' parecchia dispersione) e verificare che la reversione
+**cresca col livello** e' un test del **meccanismo**, molto piu' forte di un test sul segno.
+
+### L'avvertenza che pesa di piu'
+
+**Nel 2020-2024 l'86% dei giorni aveva gamma positivo, e le nostre mean reversion — VWAP fade e
+gap fade — hanno dato zero.** E' un indizio **contro** una reversione sfruttabile alle nostre
+frequenze. Se il fenomeno dei paper esiste, sta su un **orizzonte** o su un **livello di GEX**
+che i nostri test non hanno colto — oppure e' cosi' piccolo che i costi lo mangiano, come dice
+*Fast Alpha* per la reversione a breve.
+
+**Prima di scrivere qualunque Stage 0, va letto l'orizzonte nei paper**: se la reversione che
+documentano e' a 10 minuti e in punti base, per noi non esiste.
