@@ -98,10 +98,12 @@ STRATEGY_FILES = ["SPEC.md", "CHECKLIST*.md", "README*.md", "NOTES*.md"]
 DOC_LABEL = {"SPEC": "Spec", "CHECKLIST": "Checklist", "README": "Readme", "NOTES": "Note"}
 
 LABEL = {"pass": "passato", "waiver": "passato per override registrato",
-         "active": "in corso", "blocked": "bloccato",
-         "fail": "fallito", "pending": "da fare", "na": "n/a"}
-SYMBOL = {"pass": "✓", "waiver": "!", "active": "●", "blocked": "■", "fail": "✕",
-          "pending": "·", "na": "—"}
+         "active": "in corso", "run": "in corso", "blocked": "bloccato",
+         "fail": "fallito", "pending": "da fare", "skip": "saltato", "na": "n/a"}
+SYMBOL = {"pass": "✓", "waiver": "!", "active": "●", "run": "●", "blocked": "■", "fail": "✕",
+          "pending": "·", "skip": "↷", "na": "—"}
+# stati scritti dagli agenti con un altro nome: stessa casella colorata
+CHIP_CLASS = {"run": "active"}
 GIORNI = ["lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato", "domenica"]
 MESI = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio",
         "agosto", "settembre", "ottobre", "novembre", "dicembre"]
@@ -210,7 +212,7 @@ def board(st, link=True):
             v = s["stages"].get(str(g["id"]), "na")
             cells.append(
                 '<td><span class="chip %s" title="%s: %s">%s</span></td>'
-                % (v, esc(g["name"]), LABEL.get(v, v), SYMBOL.get(v, "?")))
+                % (CHIP_CLASS.get(v, v), esc(g["name"]), LABEL.get(v, v), SYMBOL.get(v, "?")))
         name = esc(s["name"]) + (" †" if is_dead(s) else "")
         if link and s.get("path"):
             name = '<a href="#%s">%s</a>' % (strategy_id(s["name"]), name)
@@ -229,6 +231,7 @@ def board(st, link=True):
   <span class="chip blocked">■</span> bloccato
   <span class="chip fail">✕</span> fallito
   <span class="chip pending">·</span> da fare
+  <span class="chip skip">↷</span> saltato
   &nbsp;· † nel cimitero
 </p>""" % (head, "".join(rows))
 
@@ -301,7 +304,7 @@ def strategy_page(s, st, by_path):
     if s.get("stages"):
         chips = "".join(
             '<span class="stage"><span class="chip %s" title="%s">%s</span><small>%s</small></span>'
-            % (s["stages"].get(str(g["id"]), "na"), esc(g["gate"]),
+            % (CHIP_CLASS.get(s["stages"].get(str(g["id"]), "na"), s["stages"].get(str(g["id"]), "na")), esc(g["gate"]),
                SYMBOL.get(s["stages"].get(str(g["id"]), "na"), "?"), esc(g["short"]))
             for g in st["stages"])
         parts.append('<div class="stages">%s</div>' % chips)
@@ -611,6 +614,7 @@ main{overflow-x:hidden}
 .chip.blocked{background:color-mix(in srgb,var(--blocked) 16%,transparent); color:var(--blocked); border-color:color-mix(in srgb,var(--blocked) 50%,transparent)}
 .chip.waiver{background:color-mix(in srgb,var(--waiver) 16%,transparent); color:var(--waiver); border:1px dashed var(--waiver)}
 .chip.pending{color:var(--pending)}
+.chip.skip{color:var(--dim); border-style:dashed}
 .legend{font-size:.76rem; color:var(--muted); display:flex; align-items:center;
         gap:6px; flex-wrap:wrap; font-family:var(--sans)}
 .legend .chip{width:19px; height:19px; font-size:.7rem}
@@ -871,8 +875,7 @@ def build():
 
     alive = [s for s in strategies if not is_dead(s)]
     dead = [s for s in strategies if is_dead(s)]
-    nav = ['<a class="main" href="#home" data-title="Pipeline prop">Pipeline prop</a>',
-           '<a class="main" href="#contesto" data-title="Contesto sessione">Contesto sessione</a>']
+    nav = ['<a class="main" href="#home" data-title="Pipeline prop">Pipeline prop</a>']
     # tutto il resto in un solo gruppo richiudibile
     altro = ["<h4>Prop</h4>", nav_link("prossimi-passi", "Prossimi passi"), nav_link("diario", "Diario di bordo")]
     altro += [nav_link(slug(rel), t) for t, rel in docs["Prop"]]
@@ -881,7 +884,9 @@ def build():
     altro += [nav_link(strategy_id(s["name"]), s["name"] + " †") for s in dead]
     for sec in ("Discrezionale", "Ricerca", "Archivio MQL5"):
         if docs[sec]:
-            altro.append("<h4>%s</h4>" % sec)
+            altro.append("<h4>%s</h4>" % (sec + " · congelato" if sec == "Discrezionale" else sec))
+            if sec == "Discrezionale":   # parte discrezionale congelata dal 23/10/2026
+                altro.append(nav_link("contesto", "Contesto sessione"))
             altro += [nav_link(slug(rel), t) for t, rel in docs[sec]]
     nav.append('<details class="altro"><summary>Altro</summary>%s</details>' % "".join(altro))
 

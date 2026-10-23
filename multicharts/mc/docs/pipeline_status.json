@@ -1,11 +1,21 @@
 {
- "updated": "2026-10-19",
+ "updated": "2026-10-23",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
-  "updated": "2026-10-18",
+  "updated": "2026-10-23",
   "groups": [
+   {
+    "title": "Aperti al 23/10",
+    "note": "ricostruiti dai commit dopo il 18/10",
+    "items": [
+     "**Last Half-Hour, Stage 2: IS 2020-2024 su @NQ** — è la seconda gamba candidata per DriftPullback ed è ferma dal 19/10.",
+     "**Counter Trend (Unger) su GC, Stage 1 secondo giro**: @GC 30 min, template 17:00–16:00 senza pause, run A / A10 / B.",
+     "**Pista overnight drift (ricercatore v8)**: leggere Boyarchenko-Larsen-Whelan, poi il falsificatore su MES 2020–2024 (≥ 2,6 punti netti per mezz'ora europea), un'ora di lavoro.",
+     "**Storico @ES / @NQ di quantlake da riesportare con il template 17:00–16:00**: il controllo di `Mario_PtnBaseSA` ha trovato 27 sessioni su 93 diverse dal chart, tutte per dati mancanti nell'export (chiusure del venerdì alle 15:15, estremi fra 15:15 e 16:00)."
+    ]
+   },
    {
     "title": "Domenica di ricerca. Lunedi, se non c'e' altro, si parte con DriftPullback sola.",
     "note": "una viva su nove; la ricerca di oggi dice che il profilo prop non e' una proprieta' dei segnali",
@@ -674,6 +684,28 @@
     }
    ],
    "next": "Chiusa. Nessuna variante pre-registrata la riapre."
+  },
+  {
+   "name": "Counter Trend (Unger)",
+   "family": "counter trend / rientro nelle bande di Bollinger nella mattina di Londra, long e short",
+   "instrument": "GC 30m → MGC (ES, YM esplorativi)",
+   "path": "mc/strategies/unger_clean/CounterTrend",
+   "stages": {
+    "0": "pass",
+    "1": "run"
+   },
+   "note": "Dal corso di Unger (*Trading System Supremacy*, modulo 5): codice `DevelopRev` ricostruito dal video 5x01, parametri finali dal 5x02, nato su **GBPUSD 30 min**. Su Lucid il forex esiste solo come futures interi (6B): **causa B per costruzione**, quindi non si testa (decisione del 18/10). L'ipotesi è legata a **Londra**, non al pound: porting su **GC → MGC**, ES e YM solo esplorativi. Bande, finestra (02:00–05:00 CT) e filtri restano quelli del video; l'unico parametro portato è lo **stop allo 0,65% del prezzo** (la stessa frazione degli 0,01 di Unger su GBPUSD), non ottimizzato: ~$267 per MGC. Variante A = originale (stop o inversione), B = flat a fine sessione. IS 2020–2024, OOS 2025–oggi.",
+   "log": [
+    {
+     "date": "2026-10-19",
+     "text": "**Stage 1, primo giro invalido** per le impostazioni del chart: grafico a **5 min** invece di 30 (finestra di 40 minuti invece di 4 ore), **template a giorno di calendario** invece della sessione CME (i filtri su ieri di `Mario_PtnBaseSA` leggono il giorno sbagliato) e run A con `FlatEOD` acceso. Verificato comunque: lo stop è allo **0,651–0,654%** dall'entrata, e i segnali nella direzione della posizione già aperta vengono ignorati. Report non conservati."
+    },
+    {
+     "date": "2026-10-18",
+     "text": "Spec e codice `Mario_UngerCT` dal video 5x01-5x02; porting da GBPUSD a GC con stop 0,65% del prezzo pre-registrato."
+    }
+   ],
+   "next": "**Stage 1, secondo giro**: @GC **30 min**, template **17:00–16:00 CT senza pause** (quello di ESCounter). Run A (`FlatEOD 0`, `ShowLog 1`), A10 (stessi input, 10 contratti), B (`FlatEOD 1`). Annotare il close di @GC al 02/01/2020 (prezzo reale ~1.525)."
   }
  ],
  "blockers": [
@@ -682,6 +714,18 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-22",
+   "text": "**Ricercatore, prime ricerche v5–v8: nessuna candidata.** v5 (Opus) e v8 (Sonnet high) non trovano strategie che rispettino i vincoli; v6 e v7 erano prove di funzionamento. Scartati fix FX (i profitti spariscono con i costi, ~$3,4 lordi per micro al giorno) e FOMC reversal (~8 trade l'anno, nessun flusso forzato). **Resta una pista aperta: il drift overnight dell'E-mini nella finestra Globex europea** (comunicato MSU Broad: tutto il rendimento medio 2006–2018 in una finestra di 4 ore, attribuito all'inventario degli intermediari). Da leggere **Boyarchenko-Larsen-Whelan** prima di spendere un run; il falsificatore è già scritto: rendimento medio per mezz'ora della sessione europea su MES 2020–2024, servono ≥ 2,6 punti netti. Nato `research_db.json`, la memoria del ricercatore (fonti, query, costi)."
+  },
+  {
+   "date": "2026-10-19",
+   "text": "**Counter Trend (Unger) su GC: Stage 1, primo giro invalido** — chart a 5 min invece di 30, template a giorno di calendario, `FlatEOD` acceso nel run A. Lo stop allo 0,65% e il blocco dei segnali nella direzione della posizione funzionano. Da rifare con il template 17:00–16:00."
+  },
+  {
+   "date": "2026-10-19",
+   "text": "**Last Half-Hour: Stage 1 chiuso, sette controlli su sette e x10 esatto.** 96 ingressi tutti alle 14:35, uscite tutte alle 15:05, direzione uguale al segno del rendimento da ieri in 96 casi su 96. Annotato senza giudicare: WR 49% contro il 55% del paper (indistinguibili su 96 trade), ~$10,9 al giorno per micro contro i $18,34 di DriftPullback, cioè un ordine di grandezza da seconda gamba. Prossimo: Stage 2, IS 2020–2024 su @NQ."
+  },
   {
    "date": "2026-10-18",
    "text": "**Scritto il filtro per scegliere un paper prima di spenderci un run.** Parte da due dati verificati: McLean-Pontiff (JF 2016) misurano rendimenti **58% piu bassi dopo la pubblicazione**, e Hou-Xue-Zhang (RFS 2020) trovano che una quota grande delle anomalie non si replica, di piu con t >= 3. Sette domande, tre eliminatorie: **testato su futures**, **meccanismo di flusso forzato**, **intraday con flat entro la sessione**. Messo anche nel prompt dell'agente di ricerca. **Il limite strutturale va detto**: la letteratura solida e quasi tutta a frequenza giornaliera o mensile, e quella intraday ad alta frequenza vuole il book e la mangiano i costi — lo spazio utile e stretto, ed e per questo che e difficile. **Esempio che passa**: Baltussen-Da-Lammers-Martens, *Hedging demand and market intraday momentum*, JFE 2021 — 60+ futures dal 1974, gamma hedging come meccanismo, mezz'ora finale."
