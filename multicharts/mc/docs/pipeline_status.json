@@ -572,9 +572,14 @@
      "drawdown vs MLL": "a 2 micro il DD storico vale $7.627 contro $2.000 di MLL (3,8x) e il pass rate resta 42%"
     },
     "porting su @YM (fallito)": "3.393 trade · WR 61,8% · R:R 0,62 · **eccesso +0,07 pp** contro i +2,52 di NQ · expectancy 0,0012 R contro 0,0414 · avg $1,54 · **t 0,20**. La geometria si trasferisce, l'edge no.",
-    "Stage 7 col degrado (18/10)": "2 micro/60gg: **42,7%** per tentativo e **89,2%** entro 4 come da backtest; **24,2% / 67,0%** con WR −3 pp e P&L −10%; **12,4% / 41,1%** con −5 pp e −15%. Il piano veloce e piu ROBUSTO del lento (1 micro senza limite crolla a 4,3% gia a −5 pp)."
+    "Stage 7 col degrado (18/10)": "2 micro/60gg: **42,7%** per tentativo e **89,2%** entro 4 come da backtest; **24,2% / 67,0%** con WR −3 pp e P&L −10%; **12,4% / 41,1%** con −5 pp e −15%. Il piano veloce e piu ROBUSTO del lento (1 micro senza limite crolla a 4,3% gia a −5 pp).",
+    "per regime di gamma (23/10)": "avg per terzile di GEX: basso $73 / $91, medio $50 / $53, alto $39 / $52 (IS / OOS) — monotono ma NON significativo (0,77 e 0,40 es), positivo in tutti i terzili. Pass rate col solo GEX alto: **33-40% per tentativo, 80-87% entro quattro**"
    },
    "log": [
+    {
+     "date": "2026-10-23",
+     "text": "**Ripartizione per regime di gamma: calibra l'aspettativa, non cambia la strategia.** Con il GEX della sera prima per terzili, l'avg per trade cala col gamma — IS $73 / $50 / $39, OOS $91 / $53 / $52 — e il win rate pure, **in tutti e due i campioni**, nella direzione del meccanismo. **Ma non e significativo** (0,77 e 0,40 errori standard), ed e **positivo in tutti i terzili**. **Il numero utile per lunedi**: dal 2025 il GEX e alto il 63% dei giorni, e simulando solo quei giorni il pass rate e **40,2% per tentativo e 87,2% entro quattro sull'OOS, 33,0% e 79,8% sull'IS**, contro il 42%/89% medio. Nessuna modifica: l'OOS e gia stato usato e la differenza non e significativa. Una size piu alta col gamma basso sarebbe una v2 da pre-registrare e validare sul live."
+    },
     {
      "date": "2026-10-18",
      "text": "**Stage 7 rifatto col degrado, e il numero che decide e questo.** Aggiunti al simulatore gli scenari che il Colab del corso ha e il mio non aveva. **2 micro, 60 giorni**: 42,7% per tentativo e 89,2% entro quattro come da backtest, ma **24,2% e 67,0% con appena −3 punti di WR e −10% di P&L**, e 12,4% e 41,1% a −5 punti. **La strategia e fragile al degrado**, e il motivo e strutturale: expectancy **0,0414 R**, togline un po' e va a zero. **Seconda cosa, controintuitiva: il piano veloce e piu ROBUSTO del lento.** A −5 punti di WR da 12,4% contro il 4,3% di 1 micro senza limite, e a −8 punti 1,5% contro 0,0%. Il piano lento vive sull'**accumulo** dell'edge su ~77 giorni e degradandolo la marcia diventa un sanguinamento dentro l'MLL; il veloce chiude in 22 giorni mediani e vive sulla **varianza**, che il degrado non toglie. **Se si parte, si parte col piano veloce** — lo diceva gia la riserva sul drawdown corrente, ora lo dice anche il degrado. **Con $400 e quattro tentativi: 89% se il backtest regge, 67% se degrada di 3 punti, 41% se di 5.**"

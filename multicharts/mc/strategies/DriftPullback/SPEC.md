@@ -731,3 +731,50 @@ sappiamo:
 
 **Con $400 di budget e 4 tentativi: 89% se il backtest regge, 67% se degrada di 3 punti, 41%
 se degrada di 5.**
+
+## DriftPullback per regime di gamma (23/10/2026) — informazione sul rischio, non una modifica
+
+GEX della sera prima (SqueezeMetrics), terzili fissati sull'IS: basso < 2,08 mld, alto ≥ 5,01.
+**L'OOS e' gia' stato usato: qui non si cambia la strategia, si calibra l'aspettativa.**
+
+### P&L per terzile
+
+| GEX di ieri | IS avg | IS WR | OOS avg | OOS WR |
+|---|---|---|---|---|
+| basso | $73,25 (t 2,37) | 66,5% | $90,71 (n 196) | 66,3% |
+| medio | $49,80 | 62,6% | $52,99 | 64,9% |
+| alto | $38,71 (t 1,18) | 60,7% | $51,64 (n 867) | 63,9% |
+| **basso − alto** | **+$34,54, 0,77 es** | | **+$39,07, 0,40 es** | |
+
+**Monotono in tutti e due i campioni, nella direzione del meccanismo** (momentum migliore col
+gamma basso), sia sull'avg sia sul win rate. **Ma non significativo**: la differenza sta sotto
+un errore standard in entrambi.
+
+**E positiva in tutti e tre i terzili, in tutti e due i campioni.** Non c'e' nessun regime in
+cui la strategia perda.
+
+### Pass rate per regime (2 micro, finestra 60 giorni, iid)
+
+| | giorni | per tentativo | entro 4 |
+|---|---|---|---|
+| OOS, tutti | 456 | 42,0% | 88,6% |
+| **OOS, solo GEX alto** | 287 | **40,2%** | **87,2%** |
+| OOS, solo GEX basso | 56 | 53,0% | 95,1% |
+| IS, tutti | 1.275 | 41,9% | 88,6% |
+| **IS, solo GEX alto** | 423 | **33,0%** | **79,8%** |
+| IS, solo GEX basso | 426 | 51,3% | 94,4% |
+
+**Dal 2025 il regime e' alto il 63% dei giorni** (285 su 453; basso 57, medio 111). Il numero
+realistico per la eval che parte il 26/10 non e' quindi il 42%/89% medio, ma quello dei giorni ad
+alto gamma: **fra 33% e 40% per tentativo, fra 80% e 87% entro quattro**. L'OOS, piu' vicino al
+regime attuale, sta in alto in quella forchetta.
+
+### Cosa se ne fa, e cosa no
+
+- **Non si spegne nei giorni ad alto gamma**: rende anche li'.
+- **Non si cambia la size per regime adesso**: la differenza non e' significativa e l'OOS e'
+  gia' stato usato. Se mai, e' un'ipotesi per una v2 — size piu' alta col GEX basso — da
+  validare **sul live**, pre-registrandola prima.
+- **Si guarda il GEX ogni sera** come informazione: un tentativo che capita in un periodo di
+  gamma basso (mercati in tensione) ha probabilita' migliori, uno in un periodo calmo ad alto
+  gamma peggiori.
