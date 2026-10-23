@@ -20,7 +20,7 @@ Regole per ogni codice:
 | 3 | Trend Following (`Develop`) | modulo 4 / 9x02 | da fare, dopo `PtnBaseSA` |
 | 4 | **Counter Trend** (`DevelopRev`, GBPUSD 30 min) | video 5x01 (codice) e 5x02 (parametri) | **cimitero, causa A** (23/10/2026): su GC B perde anche lordo (t −2,19); ES e YM non la salvano (migliore YM B t 1,01). 6B non testato: causa B per costruzione |
 | 5 | Gap (`GoldGapper`, `MyGapFinder`) | modulo 7 + `GapsFunctions.pla` | da fare |
-| 6 | BIAS (`Develop`, `DevelopEURUSDFineTune`) | modulo 6 + screenshot dei settaggi | da fare, dopo `PtnBaseSA` |
+| 6 | **BIAS** (`DevelopBIAS`, `DevelopBIASEURUSDFineTune`) | video 6x01 e 6x03 + screenshot dei settaggi | **trascritta e archiviata senza run** (23/10/2026): EURUSD 60 min, su Lucid solo 6E intero con stop di 160 pip = $2.000 = MLL; bias orario non portabile |
 | 7 | Dax FirstHour, Night FIB | `0. Risorse/MC-TS` (già puliti) | solo da portare nella pipeline |
 
 Nota: i file `9x02` e `9x03` del modulo 9 sono **lo stesso video** (stesso md5): manca la

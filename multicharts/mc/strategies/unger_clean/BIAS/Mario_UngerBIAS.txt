@@ -1,0 +1,61 @@
+{ =====================================================================
+  Mario_UngerBIAS  -  bias orario di Unger, versione generica (DevelopBIAS)
+  ---------------------------------------------------------------------
+  FONTE: Trading System Supremacy, modulo 6. Codice nell'editor di Unger,
+  video 6x01 (righe 21-45 al 1:45-2:10). Input dallo screenshot
+  13. Codici/BIAS/setting1.png. EURUSD forex 60 min, dati TradeStation.
+  Le righe 34 e 36 nel video escono dal bordo destro: completate con
+  "then buy / sellshort next bar at market", come le righe 35 e 37.
+  ARCHIVIO: non testata (vedi README.md).
+
+  USO
+    testphase = 1  scansione: compra alla barra numero `mycounter` della
+                   sessione e chiude alla barra dopo. Si ottimizza
+                   mycounter da 1 a 24 per vedere quali ore hanno un bias.
+    testphase = 0  strategia: long dalla barra MyLEbar alla MyLXbar,
+                   short dalla MySEbar alla MySXbar, con i filtri di
+                   pattern e il giorno della settimana da escludere.
+  mycount = numero della barra nella sessione (1 = prima barra).
+  Richiede la funzione Mario_PtnBaseSA.
+  ===================================================================== }
+
+inputs:
+    MyPtnLY(41),
+    MyPtnSY(41),
+    MyPtnLN(42),
+    MyPtnSN(42),
+    MyLEbar(19),
+    MyLXbar(1),
+    MySEbar(10),
+    MySXbar(19),
+    MyNotLEDay(0),
+    MyNotSEDay(0),
+    MyStop(0),          { in prezzo (Unger su EURUSD: 0.016); convertito con BigPointValue }
+    MyProfit(0),        { in prezzo }
+    mycounter(0),
+    testphase(0);
+
+variables:
+    mycount(0);
+
+if sessionlastbar[1] then mycount = 0;
+mycount = mycount + 1;
+
+if testphase = 1 then begin
+    if mycounter = mycount then buy next bar at market;
+    if marketposition = 1 then sell next bar at market;
+end;
+
+if testphase = 0 then begin
+    if mycount = MyLEbar and Mario_PtnBaseSA(MyPtnLY) and (Mario_PtnBaseSA(MyPtnLN) = false) and dayofweek(date) <> MyNotLEDay then buy next bar at market;
+    if mycount = MyLXbar then sell next bar at market;
+    if mycount = MySEbar and Mario_PtnBaseSA(MyPtnSY) and (Mario_PtnBaseSA(MyPtnSN) = false) and dayofweek(date) <> MyNotSEDay then sellshort next bar at market;
+    if mycount = MySXbar then buytocover next bar at market;
+end;
+
+{ Unger: setstoploss(MyStop) con setstopcontract su forex spot (BigPointValue 1
+  per unita'). Moltiplicato per BigPointValue vale uguale sullo spot e da'
+  il valore giusto su un futures (6E: 0.016 x 125.000 = $2.000). }
+setstopcontract;
+if MyStop > 0 then setstoploss(MyStop * BigPointValue);
+if MyProfit > 0 then setprofittarget(MyProfit * BigPointValue);

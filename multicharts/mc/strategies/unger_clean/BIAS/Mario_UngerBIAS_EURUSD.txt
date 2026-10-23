@@ -1,0 +1,62 @@
+{ =====================================================================
+  Mario_UngerBIAS_EURUSD  -  bias orario di Unger su EURUSD
+                             (DevelopBIASEURUSDFineTune)
+  ---------------------------------------------------------------------
+  FONTE: Trading System Supremacy, modulo 6, video 6x03. Codice
+  nell'editor (righe 12-36 al 6:40); parametri sul grafico all'8:48:
+  DevelopBIASEURUSDFineTune(41, 9, 23, 4, 0, 0, 0, 0, 0, 0, 0.016, 0, 0).
+  Dopo quel punto Unger ottimizza ancora MyPtnLN, MyNotLEDay e
+  MyNotSEDay, ma i valori scelti non sono visibili nel video: qui restano
+  quelli leggibili. Lo screenshot del corso (SETTING EURUSDFineTune.png)
+  ha 42 al posto di 23: e' una versione precedente.
+  EURUSD forex 60 min, dati TradeStation, grafico in ora di New York.
+  ARCHIVIO: non testata (vedi README.md).
+
+  LE QUATTRO GAMBE (mycount = barra della sessione, 1 = la prima)
+    long  barra 19 -> barra 1 del giorno dopo  se pattern 38 (ieri inside
+          bar) e non 31 (ieri chiusura nel 20% basso), non di martedi'
+    short barra 10 -> barra 19                 se pattern 2 e non 9,
+          non di lunedi'
+    long  barra 5 -> barra 10                  se pattern 36 e non MyPtnLN,
+          giorno <> MyNotLEDay
+    short barra 1 -> barra 5                   se MyPtnSY e non MyPtnSN,
+          giorno <> MyNotSEDay
+  Le barre delle prime due gambe e i loro pattern sono scritti nel codice;
+  la terza e la quarta usano gli input. Stop 0.016 = 160 pip.
+  Richiede la funzione Mario_PtnBaseSA.
+  ===================================================================== }
+
+inputs:
+    MyPtnLY(41),
+    MyPtnSY(9),
+    MyPtnLN(23),
+    MyPtnSN(4),
+    MyLEbar(0),
+    MyLXbar(0),
+    MySEbar(0),
+    MySXbar(0),
+    MyNotLEDay(0),
+    MyNotSEDay(0),
+    MyStop(0.016),      { in prezzo: 160 pip }
+    MyProfit(0),
+    mycounter(0);
+
+variables:
+    mycount(0);
+
+if sessionlastbar[1] then mycount = 0;
+mycount = mycount + 1;
+
+if mycount = 19 and Mario_PtnBaseSA(38) and (Mario_PtnBaseSA(31) = false) and dayofweek(date) <> 2 then buy next bar at market;
+if mycount = 1 then sell next bar at market;
+if mycount = 10 and Mario_PtnBaseSA(2) and (Mario_PtnBaseSA(9) = false) and dayofweek(date) <> 1 then sellshort next bar at market;
+if mycount = 19 then buytocover next bar at market;
+
+if mycount = 5 and Mario_PtnBaseSA(36) and (Mario_PtnBaseSA(MyPtnLN) = false) and dayofweek(date) <> MyNotLEDay then buy next bar at market;
+if mycount = 10 then sell next bar at market;
+if mycount = 1 and Mario_PtnBaseSA(MyPtnSY) and (Mario_PtnBaseSA(MyPtnSN) = false) and dayofweek(date) <> MyNotSEDay then sellshort next bar at market;
+if mycount = 5 then buytocover next bar at market;
+
+setstopcontract;
+if MyStop > 0 then setstoploss(MyStop * BigPointValue);
+if MyProfit > 0 then setprofittarget(MyProfit * BigPointValue);
