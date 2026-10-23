@@ -15,7 +15,8 @@
      "Grafico identico al backtest, **2 contratti**, symbol mapping **@NQ → MNQZ6**; auto trading **asincrono**, conferma ordini tolta.",
      "**MultiCharts su VPS**: 1 licenza = 1 computer alla volta, e due istanze manderebbero ordini doppi.",
      "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover MNQZ6 → MNQH7.",
-     "**Ricerca in parallelo: effetti intraday condizionati al gamma dei dealer** (`mc/docs/ricerca_gamma_0dte.md`). Letteratura 2024-25 su dati 0DTE: gamma positivo → reversione, negativo → momentum. Spiega sia la morte di LastHalfHour dopo il 2022 sia lo zero delle mean reversion non condizionate. **GEX giornaliero pubblico** su SqueezeMetrics, 2011-2026."
+     "**Ricerca in parallelo: effetti intraday condizionati al gamma dei dealer** (`mc/docs/ricerca_gamma_0dte.md`). Letteratura 2024-25 su dati 0DTE: gamma positivo → reversione, negativo → momentum. Spiega sia la morte di LastHalfHour dopo il 2022 sia lo zero delle mean reversion non condizionate. **GEX giornaliero pubblico** su SqueezeMetrics, 2011-2026.",
+     "**FX Fix (EUR)**: Stage 0 fatto. Prossimo: la strategia con le due finestre e l'ora legale di Londra calcolata, poi Stage 1 su 6E."
     ]
    },
    {
@@ -101,6 +102,28 @@
   }
  ],
  "strategies": [
+  {
+   "name": "FX Fix (EUR)",
+   "family": "stagionalita intraday da flusso obbligato · valute",
+   "instrument": "6E (euro, contratto intero: niente micro su Lucid)",
+   "path": "mc/strategies/FXFix",
+   "stages": {
+    "0": "pass"
+   },
+   "note": "**Stage 0. Seconda gamba cercata fuori dagli indici azionari**, che dipendono dal gamma dei dealer. Krohn-Mueller-Whelan (JF 2024): il dollaro si apprezza prima dei fixing valutari e si deprezza dopo, perche chi deve eseguire al fixing crea uno sbilanciamento che i dealer assorbono. Sull'EUR, 1999-2018: **−9,12% annuo fra le 02:00 e il fixing BCE (t −7,13)**, **+7,22% dopo il fixing di Londra (t 6,83)**, quasi zero sulla giornata intera. Due finestre pre-registrate entrambe. **Problema strutturale: niente micro sulle valute**, quindi un contratto da $125.000 e costi che a edge dimezzato si mangiano quasi tutto.",
+   "metrics": {
+    "paper, EUR": "02:00→08:15 ET −9,12%/anno t −7,13 · 11:00→17:00 ET +7,22%/anno t 6,83 · 1999-2018",
+    "netto stimato a edge intatto": "~$21 (A) e ~$31 (B) per contratto al giorno, dopo ~$17 di costi",
+    "aspettativa": "passa una delle due, probabilmente la finestra mattutina (B)"
+   },
+   "log": [
+    {
+     "date": "2026-10-23",
+     "text": "**Aperta. Prima candidata fuori dagli indici azionari.** Letto il working paper di Krohn-Mueller-Whelan (49 pagine, 1999-2018). Passa i tre eliminatori con una deroga motivata: e testato su spot e non su futures, ma 6E e EUR/USD sono lo stesso sottostante legato dall'arbitraggio, a differenza del caso SPY/YM che aveva fatto nascere la regola. Il fixing BCE e stato spostato nel 2015, ma dal 2016 c'e il benchmark WM/Reuters delle 14:00 CET che ne ha preso il posto. **Due finestre pre-registrate**: A long 6E dopo il fixing di Londra, B short 6E dalle 02:00 alle 08:15 ET (08:00-14:15 italiane, fuori da ogni sovrapposizione con DriftPullback). **Il rischio vero e la dimensione del contratto**: su Lucid non ci sono micro sulle valute."
+    }
+   ],
+   "next": "Scrivere `FXFix.txt` con le due finestre e l'ora legale calcolata, poi Stage 1 su 6E."
+  },
   {
    "name": "Last Half-Hour",
    "family": "momentum · flusso di hedging (gamma)",
