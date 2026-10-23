@@ -18,7 +18,7 @@ Regole per ogni codice:
 | 1 | **ESCounter** | modulo 9, video 9x04 e 9x05 | **cimitero, causa A** (18/10/2026): IS 2020–2024 t −2,02, perde anche prima dei costi |
 | 2 | `PtnBaseSA` (funzione dei pattern) | video 4x01 (codice) + modulo 3 (slide) | **Gate 1 passato** (18/10/2026): 40 pattern su 95 sessioni identici al ricalcolo |
 | 3 | Trend Following (`Develop`) | modulo 4 / 9x02 | da fare, dopo `PtnBaseSA` |
-| 4 | **Counter Trend** (`DevelopRev`, GBPUSD 30 min) | video 5x01 (codice) e 5x02 (parametri) | **Gate 1 passato** su GC (23/10/2026). Porting su GC (ES e YM esplorativi), stop 0,65%. 6B non testato: causa B per costruzione |
+| 4 | **Counter Trend** (`DevelopRev`, GBPUSD 30 min) | video 5x01 (codice) e 5x02 (parametri) | **cimitero, causa A** (23/10/2026): su GC B perde anche lordo (t −2,19); ES e YM non la salvano (migliore YM B t 1,01). 6B non testato: causa B per costruzione |
 | 5 | Gap (`GoldGapper`, `MyGapFinder`) | modulo 7 + `GapsFunctions.pla` | da fare |
 | 6 | BIAS (`Develop`, `DevelopEURUSDFineTune`) | modulo 6 + screenshot dei settaggi | da fare, dopo `PtnBaseSA` |
 | 7 | Dax FirstHour, Night FIB | `0. Risorse/MC-TS` (già puliti) | solo da portare nella pipeline |
