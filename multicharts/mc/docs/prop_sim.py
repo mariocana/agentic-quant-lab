@@ -17,28 +17,77 @@ Fa quattro cose, in ordine di importanza:
      possibile partenza. Cattura la correlazione fra tentativi senza inventarsi un
      parametro: e' l'effetto che Live 004 chiama *"attempts correlation"*.
   4. CUMULATO SUI TENTATIVI e costo per arrivare funded.
+  5. SIZE A GRADINI -- pochi micro finche' il conto non ha un cuscinetto, poi la size
+     piena (Colab della Live 003, cella 8b: la domanda di Francesco).
 
-Regole LucidFlex 50k (verificate sui transcript): nessuna regola di consistency, MLL
-trailing EOD, flat EOD obbligatorio. Il minimo di $150/giorno riguarda il payout da funded,
-non il passaggio, quindi non entra qui.
+Le regole delle prop stanno in `prop_firms.ini`, una sezione per conto; il default e'
+LucidFlex 50k. Solo le regole dell'eval: il funded ha regole sue e non entra qui.
 
 Uso:
     python3 mc/docs/prop_sim.py reports/DPB_S5_OOS_2025-2026.xlsx
     python3 mc/docs/prop_sim.py report.xlsx --micro 1,2,3,4,6,8 --sim 20000
     python3 mc/docs/prop_sim.py report.xlsx --comm-micro 2.50     # sensibilita' ai costi
+    python3 mc/docs/prop_sim.py report.xlsx --prop apex_50k_eod   # un'altra prop
+    python3 mc/docs/prop_sim.py report.xlsx --confronta           # tutte le prop del file
+    python3 mc/docs/prop_sim.py report.xlsx --buffer 1000 --ratchet
 """
-import sys, os, math, random, datetime
+import sys, os, math, random, datetime, configparser
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from check_report import leggi, _data   # riuso del parser, niente duplicazione
 
 # ----------------------------------------------------------- conto e strumento
-CONTO   = 50000.0
-TARGET  = 3000.0     # balance 53.000
-MLL     = 2000.0     # trailing EOD
-LOCK    = 50100.0    # il trailing si ferma qui (quando il picco EOD tocca 52.100)
-COMM_FULL  = 15.00   # $/round-turn gia' dentro il P&L del report (NQ: 7,50 per lato)
-COMM_MICRO = 1.50    # $/round-turn effettivo su MNQ
-COSTO_TENT = 100.0   # $ per tentativo
+PROP_FILE    = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'prop_firms.ini')
+PROP_DEFAULT = 'lucidflex_50k'
+COMM_FULL    = 15.00   # $/round-turn gia' dentro il P&L del report (NQ: 7,50 per lato)
+GUARDIA_GG   = 60      # senza scadenza, un tentativo ancora aperto dopo 60 giorni conta come non passato
+
+# regole del conto in uso: le imposta usa_prop()
+CONTO = TARGET = MLL = LOCK = COMM_MICRO = 0.0
+COSTO_TENT = None
+PROP = {}
+
+
+def leggi_prop():
+    """Tutte le prop di prop_firms.ini, come {sezione: dict}."""
+    cp = configparser.ConfigParser(inline_comment_prefixes=('#',))
+    if not cp.read(PROP_FILE, encoding='utf8'):
+        raise SystemExit('manca %s' % PROP_FILE)
+    def num(v):
+        return None if v.strip().lower() == 'none' else float(v)
+    out = {}
+    for s in cp.sections():
+        c = cp[s]
+        out[s] = dict(sezione=s, nome=c['nome'], conto=num(c['conto']), target=num(c['target']),
+                      mll=num(c['mll']), trailing=c['trailing'].strip().lower(),
+                      lock_sopra_conto=num(c['lock_sopra_conto']),
+                      giorni_max=int(num(c['giorni_max']) or 0),
+                      costo_tentativo=num(c['costo_tentativo']),
+                      comm_micro_rt=num(c['comm_micro_rt']), max_micro=num(c['max_micro']),
+                      fonte=c.get('fonte', ''), verificato=c.get('verificato', 'none'))
+    return out
+
+
+def usa_prop(p):
+    """Imposta le regole del conto su cui girano tentativo() e il resto."""
+    global CONTO, TARGET, MLL, LOCK, COMM_MICRO, COSTO_TENT, PROP
+    if p['trailing'] != 'eod':
+        raise SystemExit('%s: trailing %r non supportato, solo eod' % (p['nome'], p['trailing']))
+    PROP = p
+    CONTO, TARGET, MLL = p['conto'], p['target'], p['mll']
+    LOCK = CONTO + p['lock_sopra_conto']    # il trailing si ferma qui
+    COMM_MICRO = p['comm_micro_rt']
+    COSTO_TENT = p['costo_tentativo']
+
+
+def wilson(k, n, z=1.96):
+    """Intervallo di confidenza 95% su una proporzione k/n (come il Colab del corso)."""
+    if n == 0:
+        return float('nan'), float('nan')
+    p = k / float(n)
+    den = 1 + z * z / n
+    centro = (p + z * z / (2 * n)) / den
+    marg = (z / den) * math.sqrt(p * (1 - p) / n + z * z / (4.0 * n * n))
+    return max(0.0, centro - marg), min(1.0, centro + marg)
 
 
 def per_giorno(path, comm_micro):
@@ -101,18 +150,29 @@ def stato_attuale(giorni):
                 p50=peggiori[len(peggiori) // 2], p95=peggiori[int(0.95 * len(peggiori))])
 
 
-def tentativo(seq_giorni, n_micro, giorni_max):
+def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
     """Un tentativo. seq_giorni = iterabile di liste di P&L per micro.
+
+    gradini = (micro_iniziali, buffer, ratchet): si tradano micro_iniziali finche' il
+    profitto e' sotto +buffer, poi n_micro. La size si decide all'ingresso di ogni trade.
+    Con ratchet=False si torna piccoli se il profitto riscende sotto il buffer.
 
     Ritorna ('pass'|'fail'|'aperto', giorni_usati).
     """
     bal, picco_eod, limite = CONTO, CONTO, CONTO - MLL
+    grande = gradini is None
     g = 0
     for g, trades in enumerate(seq_giorni, 1):
         for t, giu in trades:
-            if bal + giu * n_micro <= limite:  # sfondato DENTRO il trade, non alla chiusura
+            n = n_micro
+            if gradini is not None:
+                piccolo, buffer, ratchet = gradini
+                sopra = bal - CONTO >= buffer
+                grande = (grande or sopra) if ratchet else sopra
+                n = n_micro if grande else piccolo
+            if bal + giu * n <= limite:        # sfondato DENTRO il trade, non alla chiusura
                 return 'fail', g
-            bal += t * n_micro
+            bal += t * n
             if bal <= limite:
                 return 'fail', g
             if bal >= CONTO + TARGET:
@@ -135,6 +195,25 @@ def sim_iid(giorni, n_micro, n_sim, giorni_max, rng):
         if e == 'pass':
             durate.append(g)
     return esiti, durate
+
+
+def sim_gradini(giorni, n_micro, iniziali, buffer, n_sim, giorni_max, seed, ratchet):
+    """Size piena contro partenze ridotte, sulle STESSE sequenze di giorni.
+
+    Stesse sequenze per tutte le varianti (numeri casuali comuni): la differenza fra
+    le righe e' l'effetto dei gradini, non del campionamento.
+    Ritorna [(micro_iniziali, pass, n), ...], la prima riga e' la size piena.
+    """
+    pool = [t for _, t in giorni]
+    rng = random.Random(seed)
+    seqs = [[pool[rng.randrange(len(pool))] for _ in range(giorni_max or GUARDIA_GG)]
+            for _ in range(n_sim)]
+    out = []
+    for m in [n_micro] + iniziali:
+        grad = None if m == n_micro else (m, buffer, ratchet)
+        k = sum(1 for s in seqs if tentativo(s, n_micro, giorni_max, grad)[0] == 'pass')
+        out.append((m, k, n_sim))
+    return out
 
 
 def sim_contiguo(giorni, n_micro, giorni_max):
@@ -251,24 +330,46 @@ def main():
         if nome in arg:
             i = arg.index(nome); v = tipo(arg[i + 1]); del arg[i:i + 2]; return v
         return default
+    def flag(nome):
+        if nome in arg:
+            arg.remove(nome); return True
+        return False
     n_sim      = int(opt('--sim', 20000))
-    giorni_max = int(opt('--giorni-max', 60))
-    comm_micro = opt('--comm-micro', COMM_MICRO)
+    giorni_opt = opt('--giorni-max', None)
+    comm_opt   = opt('--comm-micro', None)
     tent_max   = int(opt('--tentativi', 4))
     griglia    = opt('--micro', '1,2,3,4,6,8', str)
     griglia    = [int(x) for x in griglia.split(',')]
+    nome_prop  = opt('--prop', PROP_DEFAULT, str)
+    buffer     = opt('--buffer', 1000.0)
+    ratchet    = flag('--ratchet')
+    confronta  = flag('--confronta')
     path = arg[0]
+
+    props = leggi_prop()
+    if confronta:
+        return confronto(path, props, griglia, n_sim, comm_opt, giorni_opt)
+    if nome_prop not in props:
+        raise SystemExit('prop %r non in %s (ci sono: %s)'
+                         % (nome_prop, os.path.basename(PROP_FILE), ', '.join(props)))
+    usa_prop(props[nome_prop])
+    comm_micro = COMM_MICRO if comm_opt is None else comm_opt
+    giorni_max = int(giorni_opt) if giorni_opt is not None else (PROP['giorni_max'] or GUARDIA_GG)
 
     cfg, giorni = per_giorno(path, comm_micro)
     rng = random.Random(20261015)
 
     print('=' * 78)
-    print('STAGE 7 -- %s' % os.path.basename(path))
+    print('STAGE 7 -- %s -- %s' % (os.path.basename(path), PROP['nome']))
     print('=' * 78)
     d1, d2 = _data(cfg.get('Start Date')), _data(cfg.get('End Date'))
     tot = sum(len(t) for _, t in giorni)
-    print('Conto $%s | target +$%s | MLL $%s trailing EOD (lock $%s) | tentativo $%s'
-          % (f'{CONTO:,.0f}', f'{TARGET:,.0f}', f'{MLL:,.0f}', f'{LOCK:,.0f}', f'{COSTO_TENT:,.0f}'))
+    print('Conto $%s | target +$%s | MLL $%s trailing EOD (lock $%s) | tentativo %s'
+          % (f'{CONTO:,.0f}', f'{TARGET:,.0f}', f'{MLL:,.0f}', f'{LOCK:,.0f}', _dollari(COSTO_TENT)))
+    print('Scadenza: %s | regole verificate: %s'
+          % ('%d giorni' % PROP['giorni_max'] if PROP['giorni_max']
+             else 'nessuna (tentativo aperto dopo %d giorni = non passato)' % giorni_max,
+             PROP['verificato']))
     print('Dati: %s -> %s | %d giorni | %d trade | costo micro $%.2f/round-turn'
           % (d1, d2, len(giorni), tot, comm_micro))
     avg = sum(x for _, t in giorni for x, _g in t) / tot
@@ -289,23 +390,30 @@ def main():
         print('   OK vicino al massimo: e\' il momento buono per partire')
 
     print('\n2. PASS RATE per numero di micro   (finestra max %d giorni)' % giorni_max)
-    print('   %-7s %-28s %-28s' % ('', 'iid (tentativi indipendenti)', 'contiguo (storico vero)'))
-    print('   %-7s %7s %7s %8s   %7s %7s %8s'
-          % ('micro', 'pass%', 'fail%', 'gg mediani', 'pass%', 'fail%', 'gg mediani'))
+    print('   %-7s %-40s %-28s' % ('', 'iid (tentativi indipendenti)', 'contiguo (storico vero)'))
+    print('   %-7s %7s %11s %7s %8s   %7s %7s %8s'
+          % ('micro', 'pass%', 'IC 95%', 'fail%', 'gg mediani', 'pass%', 'fail%', 'gg mediani'))
     risultati = {}
     for n in griglia:
         ei, di = sim_iid(giorni, n, n_sim, giorni_max, rng)
         ec, dc = sim_contiguo(giorni, n, giorni_max)
         pi = 100.0 * ei['pass'] / sum(ei.values())
         pc = 100.0 * ec['pass'] / sum(ec.values())
+        lo, hi = wilson(ei['pass'], sum(ei.values()))
         mi = sorted(di)[len(di) // 2] if di else 0
         mc = sorted(dc)[len(dc) // 2] if dc else 0
         risultati[n] = (pi / 100.0, pc / 100.0, mi, mc)
-        print('   %-7d %7.1f %7.1f %8d   %7.1f %7.1f %8d'
-              % (n, pi, 100.0 * ei['fail'] / sum(ei.values()), mi,
-                 pc, 100.0 * ec['fail'] / sum(ec.values()), mc))
+        fuori = PROP['max_micro'] is not None and n > PROP['max_micro']
+        print('   %-7d %7.1f %5.1f-%-5.1f %7.1f %8d   %7.1f %7.1f %8d%s'
+              % (n, pi, 100 * lo, 100 * hi, 100.0 * ei['fail'] / sum(ei.values()), mi,
+                 pc, 100.0 * ec['fail'] / sum(ec.values()), mc,
+                 '   oltre il limite di contratti' if fuori else ''))
+    print('   IC 95%%: l\'incertezza della SIMULAZIONE (%d giri), non quella dei dati.' % n_sim)
+    print('   Quella dei dati e\' piu\' larga: lo storico e\' uno solo.')
 
-    migliore = max(risultati, key=lambda n: risultati[n][0])   # si scegle sullo iid
+    ammessi = [n for n in risultati
+               if PROP['max_micro'] is None or n <= PROP['max_micro']] or list(risultati)
+    migliore = max(ammessi, key=lambda n: risultati[n][0])     # si scegle sullo iid
     pi, pc, mi, mc = risultati[migliore]
     print('\n   Il contiguo NON e\' una stima conservativa: le finestre si sovrappongono e')
     print('   cavalcano i cluster favorevoli dello storico, quindi sopravvaluta. Lo numero')
@@ -348,13 +456,84 @@ def main():
         p2 = e2['pass'] / float(sum(e2.values()))
         print('   %-24s %7.1f%% %11.1f%%' % (nome, 100 * p2, 100 * cumulato(p2, 4)))
 
-    print('\n6. COSTO PER ARRIVARE FUNDED  (%d micro)' % migliore)
-    if pi > 0:
-        print('   iid         tentativi attesi %.1f -> $%.0f  |  ~%.1f mesi'
-              % (1 / pi, COSTO_TENT / pi, (mi * (1 / pi)) / 21.0))
-    if seq[tent_max] > 0:
-        print('   sequenziale %.1f%% entro %d tentativi, costo massimo $%.0f'
-              % (100 * seq[tent_max], tent_max, COSTO_TENT * tent_max))
+    print('\n6. SIZE A GRADINI  (meno micro finche\' il profitto e\' sotto +$%.0f, poi %d)'
+          % (buffer, migliore))
+    print('   %s' % ('ratchet: superato il buffer una volta, si resta pieni' if ratchet
+                     else 'dinamico: se il profitto riscende sotto il buffer si torna piccoli'))
+    iniziali = sorted({max(1, int(round(f * migliore))) for f in (0.25, 0.50, 0.75)} - {migliore})
+    if not iniziali:
+        print('   con %d micro non c\'e\' una size piu\' piccola da provare' % migliore)
+    else:
+        righe = sim_gradini(giorni, migliore, iniziali, buffer, n_sim, giorni_max, 20261024, ratchet)
+        _m0, k0, n0 = righe[0]
+        lo0, hi0 = wilson(k0, n0)
+        print('   %-14s %7s %11s %9s' % ('partenza', 'pass%', 'IC 95%', 'vs pieni'))
+        print('   %-14s %7.1f %5.1f-%-5.1f %9s' % ('%d pieni' % migliore, 100.0 * k0 / n0,
+                                                  100 * lo0, 100 * hi0, 'base'))
+        meglio = peggio = False
+        for m, k, n in righe[1:]:
+            lo, hi = wilson(k, n)
+            print('   %-14s %7.1f %5.1f-%-5.1f %+8.1f pp' % ('%d -> %d' % (m, migliore), 100.0 * k / n,
+                                                         100 * lo, 100 * hi, 100.0 * (k - k0) / n))
+            meglio = meglio or lo > hi0
+            peggio = peggio or hi < lo0
+        if meglio:
+            print('   -> partire piccoli AIUTA, fuori dagli intervalli di confidenza')
+        elif peggio and not meglio:
+            print('   -> partire piccoli PEGGIORA: il tempo speso piccoli costa piu\' della protezione')
+        else:
+            print('   -> nessuna differenza distinguibile: partire piccoli non aiuta ne\' danneggia')
+        print('   Stesse sequenze di giorni per tutte le righe: la differenza e\' solo dei gradini.')
+        if not PROP['giorni_max']:
+            print('   Senza scadenza la partenza lenta costa poco, ma la guardia a %d giorni la penalizza.'
+                  % giorni_max)
+
+    print('\n7. COSTO PER ARRIVARE FUNDED  (%d micro)' % migliore)
+    if COSTO_TENT is None:
+        print('   costo del tentativo non verificato in %s' % os.path.basename(PROP_FILE))
+    else:
+        if pi > 0:
+            print('   iid         tentativi attesi %.1f -> $%.0f  |  ~%.1f mesi'
+                  % (1 / pi, COSTO_TENT / pi, (mi * (1 / pi)) / 21.0))
+        if seq[tent_max] > 0:
+            print('   sequenziale %.1f%% entro %d tentativi, costo massimo $%.0f'
+                  % (100 * seq[tent_max], tent_max, COSTO_TENT * tent_max))
+    print()
+
+
+def _dollari(v):
+    return 'n/d' if v is None else '$%s' % f'{v:,.0f}'
+
+
+def confronto(path, props, griglia, n_sim, comm_opt, giorni_opt):
+    """Lo stesso report su tutte le prop del file: pass rate iid per micro e costo atteso."""
+    print('=' * 78)
+    print('CONFRONTO FRA PROP -- %s' % os.path.basename(path))
+    print('=' * 78)
+    print('Pass rate iid (%d giri per cella). Stesse sequenze casuali per ogni prop.' % n_sim)
+    print('   %-24s %-10s' % ('prop', 'scadenza') + ''.join('%8s' % ('%d mic' % n) for n in griglia)
+          + '%14s' % 'costo atteso')
+    for s, p in props.items():
+        usa_prop(p)
+        comm = COMM_MICRO if comm_opt is None else comm_opt
+        gmax = int(giorni_opt) if giorni_opt is not None else (p['giorni_max'] or GUARDIA_GG)
+        _cfg, giorni = per_giorno(path, comm)
+        celle, migliore = [], None
+        for n in griglia:
+            rng = random.Random(20261015)
+            e, _d = sim_iid(giorni, n, n_sim, gmax, rng)
+            pr = e['pass'] / float(sum(e.values()))
+            fuori = p['max_micro'] is not None and n > p['max_micro']
+            celle.append('%8s' % ('oltre' if fuori else '%.1f' % (100 * pr)))
+            if not fuori and (migliore is None or pr > migliore[1]):
+                migliore = (n, pr)
+        costo = ('n/d' if COSTO_TENT is None or not migliore or migliore[1] == 0
+                 else '$%.0f (%d mic)' % (COSTO_TENT / migliore[1], migliore[0]))
+        scad = '%d gg' % p['giorni_max'] if p['giorni_max'] else 'nessuna'
+        print('   %-24s %-10s' % (p['nome'][:24], scad) + ''.join(celle) + '%14s' % costo)
+    print('\nNon verificate: ' + (', '.join(p['nome'] for p in props.values()
+                                            if p['verificato'] in ('none', '')) or 'nessuna'))
+    print('Una prop con scadenza conta i giorni CON trade, non i feriali: e\' un po\' ottimista.')
     print()
 
 

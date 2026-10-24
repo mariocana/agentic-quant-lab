@@ -47,11 +47,15 @@ Su una strategia sola, quindi, i due danno la stessa risposta a parità di regol
    - pesi: screening sullo Sharpe giornaliero, poi la short-list passa per il simulatore;
      **il peso uguale resta, a meno che il vincitore lo batta fuori dagli intervalli di
      confidenza** ("an optimized mix inside the noise is fitted noise").
-2. **L'intervallo di confidenza sul pass rate** (Wilson). Si aggiunge in poche righe.
-3. **Sizing a gradini** (cella 8b): size ridotta fino a +$1.000, poi quella piena. Risponde
-   alla domanda di Francesco nella Live 003. Il docente stesso avverte che senza scadenza,
-   cioè nel nostro caso, il risultato può cambiare.
-4. **Il conto funded** (payout, ciclo di vita, inattività). Il Colab usa le regole Apex 4.0:
+2. ~~**L'intervallo di confidenza sul pass rate** (Wilson).~~ **Fatto il 24/10.** Misura il
+   rumore della simulazione, non quello dei dati: lo dice anche l'output.
+3. ~~**Sizing a gradini** (cella 8b).~~ **Fatto il 24/10**, sezione 6 di `prop_sim.py`. Su
+   DriftPullback la risposta **dipende dalla guardia**: con 60 giorni partire da 1 micro
+   costa −10 pp (33% contro 43%), con 250 giorni guadagna +10 pp (52% contro 42%). Il
+   docente l'aveva previsto: senza scadenza il risultato può cambiare.
+4. **Le regole delle prop in un file** (`prop_firms.ini`), con `--prop` e `--confronta`. Per
+   ora LucidFlex 50k e Apex 50K EOD (questo dal Colab, da verificare).
+5. **Il conto funded** (payout, ciclo di vita, inattività). Il Colab usa le regole Apex 4.0:
    per noi servono quelle di LucidFlex funded. Va fatto dopo aver passato l'eval.
 
 ## Differenze verificate che per noi non contano
