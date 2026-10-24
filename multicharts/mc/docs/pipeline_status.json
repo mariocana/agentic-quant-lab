@@ -16,7 +16,7 @@
      "**MultiCharts su VPS**: 1 licenza = 1 computer alla volta, e due istanze manderebbero ordini doppi.",
      "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover MNQZ6 → MNQH7.",
      "**Ricerca in parallelo: effetti intraday condizionati al gamma dei dealer** (`mc/docs/ricerca_gamma_0dte.md`). Letteratura 2024-25 su dati 0DTE: gamma positivo → reversione, negativo → momentum. Spiega sia la morte di LastHalfHour dopo il 2022 sia lo zero delle mean reversion non condizionate. **GEX giornaliero pubblico** su SqueezeMetrics, 2011-2026.",
-     "**FX Fix (EUR)**: strategia scritta. Prossimo: Stage 1 su 6E, febbraio-maggio 2024 (contiene il disallineamento dell'ora legale)."
+     "**FX Fix (EUR)**: Stage 1 passato, ora legale compresa. Prossimo: Stage 2 sull'IS 2020-2024, A e B separate. OOS accorciato a 01/2025-06/2026 (il primo run aveva visto luglio-ottobre 2026)."
     ]
    },
    {
@@ -109,7 +109,8 @@
    "path": "mc/strategies/FXFix",
    "stages": {
     "0": "pass",
-    "1": "active"
+    "1": "pass",
+    "2": "active"
    },
    "note": "**Stage 0. Seconda gamba cercata fuori dagli indici azionari**, che dipendono dal gamma dei dealer. Krohn-Mueller-Whelan (JF 2024): il dollaro si apprezza prima dei fixing valutari e si deprezza dopo, perche chi deve eseguire al fixing crea uno sbilanciamento che i dealer assorbono. Sull'EUR, 1999-2018: **−9,12% annuo fra le 02:00 e il fixing BCE (t −7,13)**, **+7,22% dopo il fixing di Londra (t 6,83)**, quasi zero sulla giornata intera. Due finestre pre-registrate entrambe. **Problema strutturale: niente micro sulle valute**, quindi un contratto da $125.000 e costi che a edge dimezzato si mangiano quasi tutto.",
    "metrics": {
@@ -125,9 +126,13 @@
     {
      "date": "2026-10-23",
      "text": "**Scritto `FXFix.txt`.** Due finestre a orari fissi, niente stop né target né parametri da ottimizzare. L'ora del fixing di Londra e di quello BCE si calcola dalle regole reali dell'ora legale americana ed europea: nelle settimane di disallineamento il fixing cade un'ora dopo in ora di Chicago, ed entrare un'ora prima vorrebbe dire entrare contro. Rete di sicurezza per i giorni a chiusura anticipata. Stage 1 sul febbraio-maggio 2024, che contiene il disallineamento di marzo e lascia intatto l'OOS."
+    },
+    {
+     "date": "2026-10-24",
+     "text": "**Stage 1 chiuso: sei controlli su sei.** Su `@EC` (così si chiama il 6E su TradeStation), febbraio-maggio 2024: B 01:05 → 07:20, A 10:05 → 15:45, e nelle settimane di disallineamento (11-28/03) B esce alle 08:20 e A entra alle 11:05, come doveva. x10 esatto. **Il primo run era partito per errore su luglio-ottobre 2026, dentro l'OOS: l'OOS si accorcia a 01/01/2025 → 29/06/2026.** Quel run ha mostrato anche l'unica uscita di sicurezza (03/07/2026, chiusura anticipata): funziona ma tiene il weekend, 3-4 giorni l'anno da guardare a parte."
     }
    ],
-   "next": "Stage 1 su 6E 5 min, 01/02-15/05/2024, A e B accese: orari e disallineamento come da `CHECKLIST_Stage1.md`."
+   "next": "Stage 2 sull'IS 2020-2024, una finestra alla volta (A poi B), commissione $8,65, soglia t ≥ 2 per ciascuna."
   },
   {
    "name": "Last Half-Hour",

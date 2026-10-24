@@ -170,7 +170,10 @@ def preliminari(cfg, cts):
 
     # size variabile: il P&L per trade non e' piu' confrontabile fra IS e OOS
     distinti = sorted(set(cts))
-    if distinti and distinti != ['1']:
+    if len(distinti) == 1 and distinti != ['1']:
+        out.append((EH, 'Size fissa a %s contratti su tutti i %d trade (test x%s?)'
+                        % (distinti[0], len(cts), distinti[0])))
+    elif distinti and distinti != ['1']:
         from collections import Counter
         det = '  '.join('%sct: %d' % (k, v) for k, v in sorted(Counter(cts).items()))
         out.append((NO, 'Size VARIABILE (%s) -> avg trade e t non confrontabili con una '
@@ -209,7 +212,8 @@ def preliminari(cfg, cts):
                 chiesto = datetime.date(anno, mese, gg)
             except (ValueError, OverflowError):
                 continue
-            scarto = abs((atteso - chiesto).days)
+            # conta solo se il grafico e' PIU' STRETTO del richiesto; piu' largo va bene
+            scarto = (atteso - chiesto).days if verso == 'inizio' else (chiesto - atteso).days
             if scarto > 7:
                 out.append((NO, '%s chiede %s ma i dati %s il %s: %d giorni mancanti. '
                                 'Il range del GRAFICO vince, allargalo e rigira.'

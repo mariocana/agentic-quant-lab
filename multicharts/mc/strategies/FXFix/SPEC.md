@@ -101,10 +101,10 @@ DriftPullback va verificata nel simulatore, non assunta.
 
 | | |
 |---|---|
-| strumento | **6E**, chart **Globex 24h**, timezone Exchange (CT), 5 min |
+| strumento | **6E** (su TradeStation **`@EC`**), chart **Globex 24h**, timezone Exchange (CT), 5 min |
 | costi | **$2,40/lato** (Lucid) + 1 tick ($6,25) di slippage per lato nel codice |
 | IS | **2020-2024** — interamente successivo al campione del paper |
-| OOS | **2025-2026, una volta** |
+| OOS | **01/01/2025 → 29/06/2026, una volta**. Accorciato il 24/10: il primo run dello Stage 1 è partito per errore sul 30/06-23/10/2026 e quel pezzo è stato visto (A+B insieme, 167 trade, t −0,95) |
 | Gate 2 | **t ≥ 2** per ciascuna finestra |
 
 **Potenza**: il t del paper su 20 anni, riportato a 5, vale **~3,4** (A) e **~3,6** (B) a edge
