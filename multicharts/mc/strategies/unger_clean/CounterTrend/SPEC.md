@@ -138,3 +138,21 @@ dimensione dei trade, non sul segno.
 
 **Cosa la riaprirebbe**: un conto che regga un 6B intero (stop $625, DD stimato ~$7.300) e un
 test su 6B o GBPUSD con costi veri. Nessuna variante pre‑registrata la riapre sull'oro.
+
+
+---
+
+## Verdetto su GC **sospeso** (24/10/2026): fuso del chart sbagliato
+
+Scoperto testando GoldGapper: per TradeStation l'exchange di @GC è il **COMEX di New York**,
+non Chicago. Con `Time Zone: Exchange` il chart di GC era in ora di New York, e i run di GC
+(Stage 1 e Stage 2) sono stati fatti:
+- con **`MyStartTime 200`** = finestra dalle **02:00 di New York**, un'ora **prima** di quella di
+  Unger (03:00 NY, le 08:00 di Londra);
+- con il template "CME Globex 17-16 no break", che su GC vale 17:00–16:00 di New York: l'ultima
+  ora dell'oro (16:00–17:00 NY) è tagliata, e la chiusura "di ieri" dei pattern 14/15/40 è
+  quella delle 16:00 invece che delle 17:00.
+
+ES e YM non sono toccati (exchange Chicago, template e orario giusti). Il verdetto su GC
+qui sopra resta scritto ma **non vale** finché non si rifanno GC A e B sull'IS con template
+18:00–17:00 e `MyStartTime 300`.

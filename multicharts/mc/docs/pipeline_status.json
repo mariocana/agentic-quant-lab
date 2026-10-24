@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-23",
+ "updated": "2026-10-24",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -765,9 +765,9 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "fail"
+    "2": "run"
    },
-   "note": "**Causa di morte: A — edge assente.** `DevelopRev` di Unger (modulo 5), ricostruito dal video: GBPUSD 30 min, Bollinger 20/2, finestra 03:00 NY per 8 barre, long dopo giorno in rialzo / short dopo giorno in ribasso, no outside bar, stop 100 pip, uscita solo a stop o per inversione. Unger: PF 1,74 2008–2016 **a costi zero**. Su Lucid il forex è solo 6B intero (stop $625, DD ~$7.300): causa B per costruzione, non testato. Porting sull'oro con stop 0,65% del prezzo (= i 100 pip di Unger): GC B perde anche lordo (t −2,19).",
+   "note": "**Verdetto su GC sospeso (24/10/2026).** **Causa di morte: A — edge assente.** `DevelopRev` di Unger (modulo 5), ricostruito dal video: GBPUSD 30 min, Bollinger 20/2, finestra 03:00 NY per 8 barre, long dopo giorno in rialzo / short dopo giorno in ribasso, no outside bar, stop 100 pip, uscita solo a stop o per inversione. Unger: PF 1,74 2008–2016 **a costi zero**. Su Lucid il forex è solo 6B intero (stop $625, DD ~$7.300): causa B per costruzione, non testato. Porting sull'oro con stop 0,65% del prezzo (= i 100 pip di Unger): GC B perde anche lordo (t −2,19).",
    "metrics": {
     "IS GC A": "213 trade · WR 31,9% · avg −$129 · t −0,68 · PF 0,88 · 75 inversioni",
     "IS GC B": "279 trade · WR 43,4% · avg −$200 · **t −2,50** · PF 0,69 · lordo t −2,19",
@@ -782,9 +782,13 @@
     {
      "date": "2026-10-23",
      "text": "Stage 1 in due giri (il primo a 5 min e con template a giorno di calendario). Gate 1 passato. **Gate 2 fallito su GC, causa A.** YM B miglior run (t 1,01) su sei: compatibile con il caso, e comunque fuori dai gate."
+    },
+    {
+     "date": "2026-10-24",
+     "text": "**Verdetto su GC sospeso.** Per TradeStation l'exchange di @GC è il COMEX di New York: i run di GC erano su un chart in ora di New York con `MyStartTime 200` (finestra un'ora prima di Unger) e con il template 17-16, che su GC taglia l'ultima ora e sposta la chiusura di ieri. Da rifare GC A e B con template 18-17 e `MyStartTime 300`. ES e YM validi."
     }
    ],
-   "next": "Chiusa sull'oro. La riaprirebbe solo un conto che regga un 6B intero."
+   "next": "Rifare l'IS di GC A e B con template 18:00-17:00 (exchange New York) e MyStartTime 300."
   }
  ],
  "blockers": [
@@ -793,6 +797,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-24",
+   "text": "**Il fuso di @GC in TradeStation è New York, non Chicago.** Con `Time Zone: Exchange` il chart dell'oro è in ora di New York (prima barra dopo la pausa: 18:05), mentre quello di ES/NQ/YM è in ora di Chicago. Conseguenze: il template personalizzato \"17-16 no break\" su GC taglia l'ultima ora (16-17 NY) e non ha la barra delle 18:00, e ogni orario scritto per Chicago su GC è sbagliato di un'ora. Trovato perché l'uscita a tempo di GoldGapper non scattava mai. Il verdetto del Counter Trend su GC è sospeso; per l'oro serve un template 18:00-17:00."
+  },
   {
    "date": "2026-10-23",
    "text": "**Counter Trend di Unger in cimitero, causa A.** Secondo codice Unger su dati che l'autore non ha visto, secondo counter trend: su GC perde anche prima dei costi (variante B t lordo −2,19). Lezione sui giri esplorativi: **su sei run il migliore con t ≈ 1 è il caso** (YM B), e la regola pre-registrata che gli esplorativi non promuovono una strategia l'ha tenuto fuori senza discussioni."

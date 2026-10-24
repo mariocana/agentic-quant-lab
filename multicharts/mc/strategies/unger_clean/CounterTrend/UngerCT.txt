@@ -26,15 +26,18 @@
     0.65% = i 100 pip di Unger su GBPUSD (media 2008-2016 ~1,55).
     Con StopPct = 0 vale MyStop in prezzo come nel codice originale
     (6B: 0.01 x 62.500 = $625).
-    MyStartTime: 03:00 New York = 02:00 Chicago -> 200 su chart CT.
+    MyStartTime: 03:00 New York. Su @ES / @YM (exchange Chicago) = 200.
+    Su @GC l'exchange per TradeStation e' il COMEX di New York, quindi il
+    chart e' gia' in ora di New York: MyStartTime = 300 (come Unger).
 
   AGGIUNTE PER LA PIPELINE (spente nella variante A)
     FlatEOD = 1   flat a fine sessione (16:00 CT)   -> variante B
     ShowLog = 1   log per lo Stage 1
 
-  CHART: @GC (o @ES, @YM) 30 min, session template Globex 17:00-16:00 CT
-         senza pause (GC: 24h come in GAR), timezone Exchange (CT),
-         Bar Magnifier 1 min ON.
+  CHART: 30 min, timezone Exchange, senza pause, Bar Magnifier 1 min ON.
+         @ES / @YM: template 17:00-16:00 (exchange = Chicago).
+         @GC: template 18:00-17:00 (exchange = New York); il 17:00-16:00
+         su GC taglia l'ultima ora e sposta la chiusura di "ieri".
   COSTI per lato, slippage incluso, campo slippage 0:
          GC 12.5$ ($2,50 + tick $10)   ES 15$ ($2,50 + tick $12,50)
          YM 7.5$ ($2,50 + tick $5)

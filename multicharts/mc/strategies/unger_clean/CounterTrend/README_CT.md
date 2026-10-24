@@ -1,12 +1,14 @@
 # Counter Trend di Unger (GC; ES e YM esplorativi) — istruzioni
 
-Codice: `Mario_UngerCT.txt` (signal). Richiede la funzione **`Mario_PtnBaseSA`** già compilata.
+Codice: `UngerCT.txt` (signal). Richiede la funzione **`Mario_PtnBaseSA`** già compilata.
 Spec: `SPEC.md`.
 
 ## Chart (uguale per i tre strumenti)
-- **@GC** (poi @ES, @YM) · **30 min**, data source TradeStation, timezone **Exchange** (CT).
-- Session template **17:00–16:00 CT senza pause** (quello personalizzato di ESCounter). Su GC
-  **non** il template `COMEX: Metals Futures (Electronic)`.
+- **@GC** (poi @ES, @YM) · **30 min**, data source TradeStation, timezone **Exchange**.
+- **Attenzione al fuso**: per TradeStation l'exchange di @ES / @YM è Chicago, quello di @GC è
+  il COMEX di **New York** (verificato il 24/10/2026). Quindi:
+  - @ES, @YM: template **17:00–16:00**, `MyStartTime 200`;
+  - @GC: template **18:00–17:00** (es. "COMEX Globex 18-17 no break"), `MyStartTime 300`.
 - Bar Magnifier **1 min ON**, Backtesting Mode Classic, Max bars back 50.
 - Costi per contratto, slippage `0 ticks`: **GC `12.5$`**, ES `15$`, YM `7.5$`.
 - Input ai default (Unger + `MyStartTime 200`, `StopPct 0.65`).
