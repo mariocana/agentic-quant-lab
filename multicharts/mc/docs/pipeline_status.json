@@ -105,7 +105,7 @@
   {
    "name": "Rebalancing (fondi 60/40)",
    "family": "flusso forzato da ribilanciamento · contrarian giornaliero",
-   "instrument": "@ES 5m → MES, con @TY come solo dato",
+   "instrument": "@ES 5m → MES, con @TY e $SPX.X come soli dati",
    "path": "mc/strategies/Rebalancing",
    "stages": {
     "0": "pass",
@@ -121,9 +121,13 @@
     {
      "date": "2026-10-24",
      "text": "**Aperta col filtro nuovo.** Dieci filoni scartati prima di trovarla (trend following giornaliero, crypto su Binance, aste Treasury senza ZN, apertura europea già morta, EIA informativo). Regole prese dall'Appendice B senza modifiche: 26 portafogli a soglia δ = 0-2,5%, uno a calendario, peso = ½(−Threshold/1,5%) + ½ CalMod, direzione = segno. `@TY` serve solo al segnale: su Lucid si trada MES. Scritto anche un ricalcolo Python indipendente del segnale dal log, per lo Stage 1."
+    },
+    {
+     "date": "2026-10-24",
+     "text": "**Stage 1, primo giro: segnale giusto, due correzioni.** Il ricalcolo Python coincide con MultiCharts su 2.196 giorni su 2.196. Ma **`@ES` di TradeStation è traslato all'indietro per somma** (gen 2024: 5.448 contro ~4.770 reali), e i rendimenti calcolati sulla serie traslata sono sottostimati del 12-25%: il rendimento azionario ora si prende dall'S&P 500 cash (`$SPX.X`). E **il venerdì la sessione finisce alle 15:15**: con l'uscita alle 15:40, 16 trade su 84 restavano aperti nel weekend. Uscita spostata alle 15:10. Annotato: il segnale è short il 76% dei giorni."
     }
    ],
-   "next": "Stage 1 su @ES + @TY 5 min, grafico dal 2018, trade gen-apr 2024: orari, direzione e ricalcolo Python identico."
+   "next": "Stage 1, secondo giro: data3 $SPX.X, uscita 15:10, stessi input. Ricalcolo Python, nessun trade nel weekend."
   },
   {
    "name": "FX Fix (EUR)",

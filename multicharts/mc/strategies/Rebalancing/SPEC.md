@@ -42,7 +42,7 @@ rende ~10% annuo con Sharpe **1,11**, **0,90** escludendo la crisi 2008-09 e mar
 
 ## Le regole, prese dal paper così come sono (Appendice B e sezione 4)
 
-**Prezzi:** `@ES` e `@TY` alle **15:00 CT** di ogni giorno. Il paper usa le chiusure e in una nota
+**Prezzi:** **S&P 500 cash (`$SPX.X`)** e `@TY` alle **15:00 CT** di ogni giorno (perché il cash e non `@ES`: vedi lo Stage 1 sotto). Il paper usa le chiusure e in una nota
 riporta che con i prezzi delle 15:30 ET i risultati non cambiano: l'orario non è critico.
 
 **Pesi simulati**, aggiornati ogni giorno con i rendimenti `rs` (S&P) e `rb` (T-note):
@@ -68,16 +68,16 @@ riporta che con i prezzi delle 15:30 ET i risultati non cambiano: l'orario non �
 ## L'adattamento a Lucid
 
 Il paper tiene da chiusura a chiusura. Noi **entriamo alla riapertura delle 17:00 CT e usciamo
-alle 15:40 CT del giorno dopo**: è un'unica giornata di trading Lucid (18:00 → 16:45 ET), quindi
-flat a fine giornata. Si perde l'ora fra le 15:00 e le 16:00 CT del giorno del segnale.
+alle 15:10 CT del giorno dopo**: è un'unica giornata di trading Lucid (18:00 → 16:45 ET), quindi
+flat a fine giornata. Si perdono le ore fra le 15:00 e le 17:00 CT del giorno del segnale (in parte a mercato chiuso).
 
-Il weekend: segnale del venerdì, ingresso alla riapertura della domenica, uscita lunedì alle 15:40.
+Il weekend: segnale del venerdì, ingresso alla riapertura della domenica, uscita lunedì alle 15:10.
 
 ## Strumento, campione, soglie
 
 | | |
 |---|---|
-| sviluppo | **`@ES` 5 min** Globex 24h, timezone Exchange (CT), **data2 `@TY` 5 min** stessa sessione |
+| sviluppo | **`@ES` 5 min** Globex 24h, timezone Exchange (CT), **data2 `@TY` 5 min**, **data3 `$SPX.X` 5 min** |
 | operatività | **MES** (1/10). `@TY` resta solo un dato: su Lucid non si trada |
 | costi | $0,50/lato Lucid + 1 tick ($1,25) per MES → **$11,25/lato** su `@ES` in MultiCharts |
 | lead-in | il grafico parte dal **01/01/2018**: due anni per far derivare i 26 portafogli |
@@ -114,3 +114,29 @@ variante.
 
 **Correlazione con DriftPullback:** questa è contrarian, DriftPullback momentum. Ci aspettiamo
 correlazione bassa o negativa. Va misurata sui trade, non assunta.
+
+---
+
+## Stage 1, primo giro (24/10/2026): segnale giusto, due errori di dati e orari
+
+**La logica del segnale è giusta.** Il ricalcolo Python indipendente coincide con MultiCharts su
+**2.196 giorni su 2.196** (2018 → 23/10/2026): `thr`, `cal`, `calMod`, `dir` identici.
+
+**Errore 1: `@ES` è traslato.** TradeStation aggiusta `@ES` all'indietro **per somma**: il
+02/01/2024 vale 5.448 contro ~4.770 del contratto reale, il 02/01/2020 4.066 contro ~3.260. Il
+rendimento `Close/Close[1] − 1` di una serie traslata verso l'alto è **sottostimato**: −12% nel
+2024, −25% nel 2020. Il segnale pesa i rendimenti azionari contro quelli obbligazionari, quindi
+ne esce distorto. **Correzione:** il rendimento azionario si prende dall'**S&P 500 cash**
+(`$SPX.X`, data3). Il paper usa i futures, ma riporta che con l'indice i risultati sono gli stessi
+(Appendice, Tabella D.4); la differenza fra i due è il carry, ~1-2 bp al giorno contro movimenti
+da 100. Su `@TY` la traslazione è ~1% (113,45 contro ~112,3): trascurabile, resta.
+
+**Errore 2: il venerdì la sessione del grafico finisce alle 15:15.** Con l'uscita alle 15:40 i
+trade del giovedì restavano aperti **tutto il weekend** (16 casi su 84) e uscivano con la rete di
+sicurezza la domenica sera. **Correzione:** uscita alle **15:10**, prima della chiusura del
+venerdì. Altri 2 casi erano festività con chiusura alle 12:00 (MLK, Presidents' Day): restano
+alla rete di sicurezza, che esce alla riapertura delle 17:00. Sono ~8 giorni l'anno.
+
+**Da annotare, non da giudicare:** il segnale è **short il 76% dei giorni** (1.672 su 2.196),
+long il 24%. È l'avvertenza 2 resa concreta: la gamba azionaria da sola va contro il rialzo di
+fondo.

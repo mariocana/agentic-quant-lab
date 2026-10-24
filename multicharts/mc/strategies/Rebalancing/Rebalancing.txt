@@ -18,13 +18,20 @@
                segno(Calendar a T-4) il primo giorno lavorativo, 0 altrimenti
     - direzione = segno del peso, sempre Num_Contracts
 
-  PREZZI: data1 e data2 alle 15:00 CT (il paper: con le 15:30 ET i
-  risultati non cambiano).
+  PREZZI: S&P 500 cash (data3) e T-note (data2) alle 15:00 CT (il paper:
+  con le 15:30 ET i risultati non cambiano). Il rendimento azionario si
+  prende dall'indice cash e NON da @ES: @ES su TradeStation e' aggiustato
+  all'indietro per somma (gen 2024: 5.448 contro ~4.770 reali), e il
+  rapporto Close/Close[1] di una serie traslata sottostima i rendimenti
+  (-12% nel 2024, -25% nel 2020). Su @TY la traslazione e' ~1%.
 
-  ORARI: ingresso alla riapertura delle 17:00 CT, uscita alle 15:40 CT
-  del giorno dopo. Per Lucid e' un'unica giornata (18:00 -> 16:45 ET).
+  ORARI: ingresso alla riapertura delle 17:00 CT, uscita alle 15:10 CT
+  del giorno dopo (il venerdi' la sessione del grafico chiude alle 15:15:
+  con l'uscita alle 15:40 il trade del giovedi' restava aperto tutto il
+  weekend). Per Lucid e' un'unica giornata (18:00 -> 16:45 ET).
 
-  CHART: data1 @ES 5 min (live: MES), data2 @TY 5 min, Globex 24h,
+  CHART: data1 @ES 5 min (live: MES), data2 @TY 5 min, data3 $SPX.X
+         5 min, Globex 24h (SPX: sessione sua),
          timezone Exchange (CT). Il grafico parte dal 01/01/2018 (lead-in
          per far derivare i portafogli). Compilare come SIGNAL.
          Log su un file con nome DIVERSO dalla copia del codice.
@@ -32,7 +39,7 @@
 
 Inputs:
     SigTime( 1500 ),           { ora dei prezzi del segnale, CT }
-    ExitTime( 1540 ),          { 5 minuti prima della chiusura d'ufficio Lucid }
+    ExitTime( 1510 ),          { prima delle 15:15, ultima barra del venerdi' }
     Num_Contracts( 1 ),
     TradeStartEL( 0 ),
     TradeEndEL( 0 ),
@@ -56,7 +63,7 @@ Vars:
 { ===== 1. SEGNALE, una volta al giorno sulla barra delle 15:00 ===== }
 if Time = SigTime and Date <> sigDate then begin
     sigDate = Date;
-    esC = Close;
+    esC = Close of data3;                   { S&P 500 cash: non traslato }
     tyC = Close of data2;
 
     yy = IntPortion( Date / 10000 );
@@ -111,7 +118,7 @@ if Time = SigTime and Date <> sigDate then begin
     pendDir = Sign( peso );
 
     if ShowLog = 1 then
-        Print( File(LogPath), "RB ", Date:8:0, " ES ", esC:6:2, " TY ", tyC:4:6,
+        Print( File(LogPath), "RB ", Date:8:0, " ES ", esC:6:2, " ESadj ", Close:6:2, " TY ", tyC:4:6,
                " thr ", thr:2:6, " cal ", cal:2:6, " rest ", rest:2:0,
                " calMod ", calMod:2:0, " peso ", peso:2:4, " dir ", pendDir:2:0 );
 end;
@@ -119,13 +126,13 @@ end;
 dateOK = ( TradeStartEL = 0 or Date >= TradeStartEL )
      and ( TradeEndEL   = 0 or Date <= TradeEndEL );
 
-{ ===== 2. USCITA alle 15:40 ===== }
+{ ===== 2. USCITA alle 15:10 ===== }
 if MarketPosition <> 0 and Time >= ExitTime and Time < 1700 then begin
     if MarketPosition = 1  then Sell       ( "RB-L-x" ) next bar at market;
     if MarketPosition = -1 then BuyToCover ( "RB-S-x" ) next bar at market;
 end;
 
-{ rete di sicurezza: uscita delle 15:40 saltata (chiusura anticipata), si
+{ rete di sicurezza: uscita delle 15:10 saltata (chiusura anticipata), si
   esce alla prima barra della sessione successiva }
 if MarketPosition <> 0 and Time >= 1700 and Date <> entDate then begin
     if MarketPosition = 1  then Sell       ( "RB-safe-L" ) next bar at market;
