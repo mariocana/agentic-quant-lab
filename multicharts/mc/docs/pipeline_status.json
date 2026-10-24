@@ -16,7 +16,7 @@
      "**MultiCharts su VPS**: 1 licenza = 1 computer alla volta, e due istanze manderebbero ordini doppi.",
      "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover MNQZ6 → MNQH7.",
      "**Ricerca in parallelo: effetti intraday condizionati al gamma dei dealer** (`mc/docs/ricerca_gamma_0dte.md`). Letteratura 2024-25 su dati 0DTE: gamma positivo → reversione, negativo → momentum. Spiega sia la morte di LastHalfHour dopo il 2022 sia lo zero delle mean reversion non condizionate. **GEX giornaliero pubblico** su SqueezeMetrics, 2011-2026.",
-     "**Rebalancing (fondi 60/40)**: Stage 0 fatto, prima candidata col filtro stretto (Harvey-Mazzoleni-Melone, dati fino a marzo 2023). Stage 1 passato. Prossimo: Stage 2 sull'IS 2020-2024. FX Fix chiusa al Gate 2, causa A."
+     "**Rebalancing (fondi 60/40)**: chiusa al Gate 2 (t 0,58). Il timing del paper c'è (t 1,80 sul null) ma la gamba azionaria da sola, short il 74% delle volte, eredita il rialzo dell'S&P; dopo la pubblicazione t 0,52. FX Fix chiusa al Gate 2, causa A."
     ]
    },
    {
@@ -110,13 +110,14 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "active"
+    "2": "fail"
    },
    "note": "**Stage 0. Prima candidata col filtro stretto (campione oltre il 2021).** Harvey-Mazzoleni-Melone (NBER 2025, versione gen 2026), 1997 → marzo 2023: i fondi 60/40 devono vendere azioni quando sono sovrappesati, a soglia o a fine mese, e il flusso è prevedibile dai rendimenti passati. Sulla sola gamba azionaria **t 3,11 (soglia) e 3,52 (calendario × ultima settimana)**, −16/−17 bp sul giorno dopo per una deviazione standard. Adattata a Lucid: ingresso alla riapertura delle 17:00 CT, uscita alle 15:40 CT. **Il rischio è l'opposto del profilo prop**: tutta la giornata senza stop.",
    "metrics": {
     "paper, gamba azionaria": "soglia t 3,11 · calendario t 3,52 · strategia ES−TY Sharpe 1,11 (0,90 senza crisi)",
     "potenza (grezza)": "IS t ~2,9 intatto / ~1,5 dimezzato · OOS t ~1,8 / ~0,9",
-    "aspettativa": "passa il Gate 2 (IS in gran parte del paper), il rischio vero è l'OOS"
+    "aspettativa": "passa il Gate 2 (IS in gran parte del paper), il rischio vero è l'OOS",
+    "IS 2020-2024": "1.248 trade · t 0,58 · eccesso sul null $117 (t 1,80), dopo il paper t 0,52"
    },
    "log": [
     {
@@ -130,9 +131,13 @@
     {
      "date": "2026-10-24",
      "text": "**Stage 1 chiuso al secondo giro: sette controlli su sette.** Ingressi 17:10 e uscite 15:15, direzione uguale al log su 84/84, ricalcolo Python identico su 2.196 giorni, fine mese e primo giorno del mese corretti, nessun trade nel weekend, `RB-safe` solo a MLK e Presidents' Day. L'S&P cash nel log coincide col reale (4.743 il 02/01/2024). Annotato: short 73 volte su 84 nel rialzo di gen-apr 2024, t −0,92."
+    },
+    {
+     "date": "2026-10-24",
+     "text": "**Gate 2 fallito: t 0,58. Cimitero, causa A nella forma tradabile.** Il timing del paper si vede: contro un null con la stessa quota di long e short batte di $117 a trade (t 1,80) e cresce con l'intensità del segnale ($87 → $99 → $162 per terzili). Ma senza marzo-aprile 2020 scende a t 1,24 e **dopo la pubblicazione a t 0,52**. E soprattutto il segnale è short il 74% delle volte, mentre la sessione media dell'S&P nel 2020-2024 vale +$116: nel paper lo toglieva la gamba T-note, che su Lucid non c'è. I soli long fanno t 2,02, ma è un risultato scelto guardando i dati e sarebbero ~64 trade l'anno: nessuna variante. **Lezione per il filtro: un segnale relativo tradato su una gamba sola eredita il drift di quella gamba.**"
     }
    ],
-   "next": "Stage 2 sull'IS: TradeStartEL 1200101, TradeEndEL 1241230, stessi settaggi. Soglia t ≥ 2."
+   "next": "Chiusa. Cimitero, causa A. OOS 2025-2026 intatto."
   },
   {
    "name": "FX Fix (EUR)",

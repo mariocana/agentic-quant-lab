@@ -140,3 +140,48 @@ alla rete di sicurezza, che esce alla riapertura delle 17:00. Sono ~8 giorni l'a
 **Da annotare, non da giudicare:** il segnale è **short il 76% dei giorni** (1.672 su 2.196),
 long il 24%. È l'avvertenza 2 resa concreta: la gamba azionaria da sola va contro il rialzo di
 fondo.
+
+---
+
+# Gate 2 (24/10/2026): t 0,58, non passa. Cimitero, causa A nella forma tradabile
+
+IS 2020-2024 su `@ES` 5 min con `@TY` e `$SPX.X`, $11,25/lato, Bar Magnifier 1 min. Report
+`reports/RB_S2_IS.xlsx`. 1.248 trade · WR 47,0% · R:R 1,18 · avg **$37,69** · **t 0,58**. 38
+uscite `RB-safe`, tutte festività con chiusura anticipata (~8 l'anno).
+
+## Dove sta l'effetto e dove no
+
+Scomposizione fatta dopo il verdetto, per capire, non per salvare. Il **null** è una strategia
+con la stessa quota di long e short ma tempi casuali: l'eccesso sul null misura il **timing**,
+cioè la parte del paper.
+
+| | n | lordo/trade | t lordo | long | eccesso sul null | t |
+|---|---|---|---|---|---|---|
+| **tutto l'IS** | 1.248 | $60 | 0,92 | 26% | **$117** | **1,80** |
+| dentro il campione del paper | 805 | $138 | 1,57 | 31% | $168 | 1,90 |
+| **dopo il paper** (apr 2023 →) | 443 | −$81 | −0,91 | 16% | $46 | **0,52** |
+| senza mar-apr 2020 | 1.198 | $13 | 0,22 | 25% | $75 | 1,24 |
+| \|peso\| terzile basso / medio / alto | 416 ×3 | $4 / $33 / $143 | | | $87 / $99 / $162 | 0,77 / 1,00 / 1,29 |
+
+**Tre letture.**
+
+1. **Il timing del paper c'è, ma non abbastanza.** Batte il null di $117 a trade (t 1,80), e
+   cresce con l'intensità del segnale: terzili $87 → $99 → $162. È il meccanismo che si vede.
+   Ma senza marzo-aprile 2020 scende a t 1,24, e **dopo la pubblicazione a t 0,52**.
+2. **Il rialzo di fondo dell'S&P se lo mangia.** Il segnale è short il 74% delle volte, e una
+   sessione media dell'S&P nel 2020-2024 vale **+$116** sul contratto pieno. Nel paper la gamba
+   T-note toglieva questo rialzo, perché la strategia è S&P *contro* bond. **Su Lucid il T-note
+   non c'è**, quindi la parte azionaria da sola si porta dietro tutto il rialzo, contro di sé.
+3. **Esattamente la lettura pre-registrata**: Gate 2 fallito con dati in gran parte del paper →
+   la gamba azionaria da sola non porta l'effetto. Nessuna variante.
+
+**La tentazione da non seguire:** i soli long fanno $345 lordi a trade, t 2,02. È un risultato
+scelto guardando i dati. E anche se reggesse, sarebbero ~64 trade l'anno: troppo pochi per una
+seconda gamba. L'OOS 2025-2026 resta intatto.
+
+## La lezione per il filtro
+
+**Un segnale relativo (A contro B) tradato su una gamba sola eredita il drift di quella gamba.**
+Se la gamba di copertura non è tradabile sul conto, il prior va calcolato sul segnale meno il
+drift, non sullo Sharpe long-short del paper. Qui era dichiarato come avvertenza 2. Andava
+trattato come una domanda del filtro.

@@ -146,3 +146,17 @@ fattore comune e' piu' semplice: **effetto pubblicato, campione vecchio**.
 **Come si applica in pratica:** il primo controllo su un paper e' la data di fine del campione.
 Se e' prima del 2021, si cerca "citato da" su Google Scholar e un follow-up degli autori; se non
 c'e' evidenza post-2021, ci si ferma li', prima di leggere il resto.
+
+---
+
+## Domanda 10: il segnale è relativo? Allora tutte le gambe devono essere tradabili (24/10/2026)
+
+**Il caso: Rebalancing** (Harvey-Mazzoleni-Melone). Il paper trada S&P *contro* T-note, Sharpe
+1,11. Su Lucid il T-note non c'è, quindi abbiamo tradato solo la gamba azionaria. Il timing del
+paper si vedeva (t 1,80 contro un null con la stessa quota di long e short), ma il segnale era
+short il 74% delle volte e **la gamba sola si è portata dietro tutto il rialzo dell'S&P**: t 0,58.
+
+**Regola:** se il paper misura un rendimento relativo (A − B, long-short, cross-asset) e una
+gamba non è tradabile sul conto, il prior non è lo Sharpe del paper. È **il timing meno il drift
+della gamba che resta**, e va stimato prima dello Stage 0. Se il segnale ha una direzione
+prevalente contro il drift di fondo, il paper non entra.
