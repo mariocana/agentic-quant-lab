@@ -62,3 +62,14 @@ Mandami lo Stage 1 prima.
   finestra), ed è il costo principale della versione A.
 - Il filtro del pattern 1 non si può ricontrollare qui (nessun dato di 6E in quantlake); la
   funzione `Mario_PtnBaseSA` è già verificata (Gate 1 del 18/10).
+
+**Run B su @EC (24/10/2026) — invalido, e con lui il run A.** 20 trade, ingressi fra le 02:29
+e le 03:59 CT (giusto), stop $937,50 / target $3.125 (giusto), un ingresso al giorno. Ma
+l'uscita di fine sessione arriva alle **23:59**, e solo il venerdì alle 15:59: il chart di @EC
+ha un template **a giorno di calendario** (00:00–23:59), probabilmente quello rimasto da FX Fix,
+non il "CME Globex 17-16 no break". Conseguenze:
+- in B la posizione resta aperta 8 ore oltre la chiusura delle 16:00, attraverso la pausa;
+- in A e in B il massimo e il minimo "di oggi" partono da mezzanotte invece che dalle 17:00
+  del giorno prima, e i pattern di "ieri" leggono il giorno di calendario.
+Da rifare A e B su @EC con il template 17-16. Il run B è stato fatto con il vecchio
+`Mario_UngerTF_B` (log `TFB`), con la stessa logica di `Versione 1`.
