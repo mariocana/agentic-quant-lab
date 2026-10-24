@@ -85,3 +85,9 @@ Da rifare A e B su @EC con il template 17-16. Il run B è stato fatto con il vec
   anticipata per Juneteenth.
 - **Commissione impostata a 8.65$** (quella di @EC) invece di 12.5$: non cambia la meccanica, ma
   nello Stage 2 su GC va 12.5$.
+
+**Run B su @EC, secondo giro (24/10/2026) — template giusto, input sbagliati.** Le uscite di fine
+sessione ora sono alle 15:59 CT (31 su 32): il template 17-16 è a posto. Ma sul grafico sono
+rimasti gli input di GC: `MyStartTrade 300` / `MyEndTrade 500` (ingressi 03:30–05:00 CT, un'ora
+dopo la finestra di Unger) e `StopPct 0.56` / `ProfitPct 1.9` (stop ~$810 invece dei $937,50
+fissi). Report non conservato. Da rifare con tutti gli input a 0 tranne `Versione 1`.
