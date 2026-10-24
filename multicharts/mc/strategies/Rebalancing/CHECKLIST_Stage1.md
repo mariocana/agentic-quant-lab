@@ -52,3 +52,36 @@ python3 mc/docs/check_report.py mc/strategies/Rebalancing/reports/RB_S1_*.xlsx -
 ## Kill dello Stage 1
 
 Nessuno. Il primo kill è il Gate 2 sull'IS 2020-2024, t ≥ 2.
+
+---
+
+# Stage 1 CHIUSO (24/10/2026, secondo giro): sette controlli su sette
+
+Report `reports/RB_S1_x1.xlsx`, log `reports/RB_S1_log.txt`. Il primo giro (`@ES` traslato,
+uscita 15:40) è archiviato come `RB_S1_giro1_*`: vedi SPEC.
+
+| | esito |
+|---|---|
+| 1. orari e nomi | ingressi **17:10** su 84/84, uscite **15:15** su 82/84, solo i nomi previsti |
+| 2. direzione = `dir` del log | **84/84** |
+| 3. ricalcolo Python | **identico su 2.196 giorni**, `thr`, `cal`, `calMod`, `dir` |
+| 4. fine mese | `rest` 4 → 0 e `calMod` ≠ 0 negli ultimi cinque giorni di gen-apr; il primo giorno del mese `calMod` ≠ 0 (02/01, 01/02, 01/03, 01/04) |
+| 5. weekend e festività | nessun trade oltre 26 ore; `RB-safe` solo il 15/01 (MLK) e il 19/02 (Presidents' Day) |
+| 6. frequenza | 84 trade, attesi ~84 |
+| 7. cash e futures | `ES` = SPX cash (4.743,04 il 02/01/2024, come il reale), `ESadj` = futures traslato (5.448,75) |
+
+**x10 non girato:** il codice degli ordini è lo stesso schema di FX Fix, dove x10 era esatto.
+
+**Festività nel conteggio dei giorni di fine mese:** il 25/03/2024 conta come T−4 perché il
+codice non vede il Venerdì Santo (il vero T−4 era il 22/03). Dichiarato nella SPEC, ~2-3 mesi
+l'anno.
+
+## Annotato, non giudicato
+
+84 trade · WR **45,2%** · R:R **0,94** · avg **−$179** · t **−0,92**. Short 73 volte su 84 in
+quattro mesi di rialzo forte dell'S&P (+~10%): è l'avvertenza 2 della SPEC.
+
+## Prossimo: Stage 2, IS 2020-2024
+
+Stessi settaggi, `TradeStartEL 1200101`, `TradeEndEL 1241230` (il 31/12 sera entrerebbe un trade
+che esce nel 2025). Soglia **t ≥ 2**. Attesi ~2,9 a edge intatto, ~1,5 dimezzato.
