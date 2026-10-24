@@ -16,7 +16,7 @@
      "**MultiCharts su VPS**: 1 licenza = 1 computer alla volta, e due istanze manderebbero ordini doppi.",
      "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover MNQZ6 → MNQH7.",
      "**Ricerca in parallelo: effetti intraday condizionati al gamma dei dealer** (`mc/docs/ricerca_gamma_0dte.md`). Letteratura 2024-25 su dati 0DTE: gamma positivo → reversione, negativo → momentum. Spiega sia la morte di LastHalfHour dopo il 2022 sia lo zero delle mean reversion non condizionate. **GEX giornaliero pubblico** su SqueezeMetrics, 2011-2026.",
-     "**FX Fix (EUR)**: Stage 1 passato, ora legale compresa. Prossimo: Stage 2 sull'IS 2020-2024, A e B separate. OOS accorciato a 01/2025-06/2026 (il primo run aveva visto luglio-ottobre 2026)."
+     "**FX Fix (EUR)**: chiusa al Gate 2, causa A. Il lordo ha il segno del paper ma ne vale un quarto (t lordo ~1), sotto i costi del contratto intero."
     ]
    },
    {
@@ -110,13 +110,14 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "active"
+    "2": "fail"
    },
    "note": "**Stage 0. Seconda gamba cercata fuori dagli indici azionari**, che dipendono dal gamma dei dealer. Krohn-Mueller-Whelan (JF 2024): il dollaro si apprezza prima dei fixing valutari e si deprezza dopo, perche chi deve eseguire al fixing crea uno sbilanciamento che i dealer assorbono. Sull'EUR, 1999-2018: **−9,12% annuo fra le 02:00 e il fixing BCE (t −7,13)**, **+7,22% dopo il fixing di Londra (t 6,83)**, quasi zero sulla giornata intera. Due finestre pre-registrate entrambe. **Problema strutturale: niente micro sulle valute**, quindi un contratto da $125.000 e costi che a edge dimezzato si mangiano quasi tutto.",
    "metrics": {
     "paper, EUR": "02:00→08:15 ET −9,12%/anno t −7,13 · 11:00→17:00 ET +7,22%/anno t 6,83 · 1999-2018",
     "netto stimato a edge intatto": "~$21 (A) e ~$31 (B) per contratto al giorno, dopo ~$17 di costi",
-    "aspettativa": "passa una delle due, probabilmente la finestra mattutina (B)"
+    "aspettativa": "passa una delle due, probabilmente la finestra mattutina (B)",
+    "IS 2020-2024": "A t −1,10 (lordo 23% del paper) · B t −0,41 (lordo 28%, positivo tutti gli anni)"
    },
    "log": [
     {
@@ -130,9 +131,13 @@
     {
      "date": "2026-10-24",
      "text": "**Stage 1 chiuso: sei controlli su sei.** Su `@EC` (così si chiama il 6E su TradeStation), febbraio-maggio 2024: B 01:05 → 07:20, A 10:05 → 15:45, e nelle settimane di disallineamento (11-28/03) B esce alle 08:20 e A entra alle 11:05, come doveva. x10 esatto. **Il primo run era partito per errore su luglio-ottobre 2026, dentro l'OOS: l'OOS si accorcia a 01/01/2025 → 29/06/2026.** Quel run ha mostrato anche l'unica uscita di sicurezza (03/07/2026, chiusura anticipata): funziona ma tiene il weekend, 3-4 giorni l'anno da guardare a parte."
+    },
+    {
+     "date": "2026-10-24",
+     "text": "**Gate 2 fallito su entrambe le finestre. Cimitero, causa A.** A long dopo Londra: 1.292 trade, t −1,10. B short prima della BCE: 1.291 trade, t −0,41. **La direzione del paper sopravvive, la dimensione no**: il lordo vale 0,66 bp/giorno su A e 1,01 su B, cioè il 23% e il 28% dell'effetto 1999-2018. Su B il lordo e positivo in tutti e cinque gli anni, ma il t lordo e ~1: non passerebbe neanche a costi zero, e i costi del contratto intero (1,36 bp a giro) superano il lordo. Quarta candidata con campione del paper finito prima del 2021 che conserva meno di meta dell'effetto."
     }
    ],
-   "next": "Stage 2 sull'IS 2020-2024, una finestra alla volta (A poi B), commissione $8,65, soglia t ≥ 2 per ciascuna."
+   "next": "Chiusa. Cimitero, causa A."
   },
   {
    "name": "Last Half-Hour",

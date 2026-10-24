@@ -117,3 +117,32 @@ il piu' noto ai market maker — Melvin-Prins e Evans lo documentano gia' nel 20
 piu' esposto all'arbitraggio dopo la pubblicazione. La finestra mattutina e' meno citata.
 
 **E se passano entrambe, il problema diventa la dimensione del contratto**, non l'edge.
+
+---
+
+# Gate 2 (24/10/2026): non passa nessuna delle due. Cimitero, causa A
+
+IS 2020-2024 su `@EC` 5 min, $8,50/lato, Bar Magnifier 1 min. Report `reports/FX_S2_IS_A.xlsx`
+e `FX_S2_IS_B.xlsx`.
+
+| | n | WR | R:R | avg netto | t | lordo bp/giorno | quota del paper | t lordo |
+|---|---|---|---|---|---|---|---|---|
+| A long dopo Londra | 1.292 | 48,2% | 0,99 | −$8,81 | **−1,10** | 0,66 | **23%** | 1,03 |
+| B short prima della BCE | 1.291 | 48,5% | 1,03 | −$4,38 | **−0,41** | 1,01 | **28%** | 1,18 |
+
+Nessuna uscita `FX-safe` nell'IS: i giorni a chiusura anticipata non hanno tenuto posizioni.
+
+**La direzione del paper c'è ancora, la dimensione no.** Su entrambe le finestre il lordo ha il
+segno giusto, e su B è positivo in tutti e cinque gli anni (da 0,64 a 1,52 bp/giorno). Ma è
+**un quarto** dell'effetto 1999-2018, sotto la soglia pre-registrata del ~55%. A quella misura
+**non passerebbe nemmeno a costi zero** (t lordo ~1), e i costi (1,36 bp a giro sul contratto
+intero) sono più del lordo.
+
+Coerente con quanto visto sugli indici: l'effetto era pubblicato, il campione del paper finisce
+nel 2018, e dal 2020 ne resta una frazione (McLean-Pontiff stimano −58% in media dopo la
+pubblicazione; qui −72/−77%). Non si rigira niente: nessuna variante di orari dopo un gate
+fallito.
+
+**Cosa resta come lezione:** il filtro dei paper lasciava passare il rischio "campione che
+finisce prima del 2021". Su quattro candidate con dati fino al 2018-2020 (LastHalfHour,
+overnight drift, ON reversal, FX Fix) nessuna ha conservato più di metà dell'effetto.
