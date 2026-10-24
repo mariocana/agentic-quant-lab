@@ -16,8 +16,8 @@ laterale.
 | **A** | `DevelopFineTune` (4x03, multi‑day) | `(6, 4, 18, 19, 400, 1330, 1200, 1100, 0.011, 0.035, 0, 0)` | 4x03 al 9:50 | equity da $100.000 a ~$245.000, piatta 2013–2015 |
 | **B** | `DevelopID` (4x04, intraday) | `(1, 1, 35, 35, 300, 500, 1200, 1100, 0.0075, 0.025)` | 4x04 allo 0:40 | 539 trade, WR 52,9%, avg $114, vinc. $613 / perd. $446, su 100.000 € |
 
-Costi nei test di Unger: non visibili. Trascrizioni fedeli: `UngerTF.txt`, `UngerTF_ID.txt`.
-Codici per i futures: `UngerTF_A.txt`, `UngerTF_B.txt`.
+Costi nei test di Unger: non visibili. Trascrizioni fedeli in appendice. Codice per i futures,
+unico per le due versioni: `UngerTF.txt` (input `Versione` 0 = A, 1 = B).
 
 ## Regole
 
@@ -100,3 +100,44 @@ campione per l'autore.
 
 **Kill**: gate della pipeline su **B**, strumento per strumento. Kill generale se A e B hanno
 avg netto ≤ 0 su tutti e quattro.
+
+## Appendice — trascrizioni fedeli dal video (forex, non da usare)
+
+`DevelopFineTune` (4x03 al 9:50; le righe 7–8 escono dal bordo destro e sono completate dalla trascrizione del corso):
+
+```
+Input: MyPtnLY(6), MyPtnSY(4), MyPtnLN(18), MyPtnSN(19);
+Input: MyStartTrade(400), MyEndTrade(1330), MyStartPause(1200), MyEndPause(1100);
+Input: MyStop(0.011), MyProfit(0.035);
+input: MyNoLongDay(0), MyNoShortDay(0);
+
+If Time > MyStartTrade And time < MyEndTrade and (Time < MyStartPause or time > MyEndPause) and PtnBaseSA(1) then begin
+	If (PtnBaseSA(MyPtnLY)= True or PtnBaseSA(39) = true) and PtnBaseSA(MyPtnLN) = False and dayofweek(date) <> MyNoLongDay then buy next bar at Highd(0) stop;
+	If (PtnBaseSA(MyPtnSY)= True or PtnBaseSA(39) = true) and PtnBaseSA(MyPtnSN) = False and dayofweek(date) <> MyNoShortDay then sellshort next bar at lowd(0) stop;
+end;
+
+Setstopcontract;
+If MyStop > 0 then setstoploss(MyStop);
+If MyProfit > 0 then setprofittarget(MyProfit);
+```
+
+`DevelopID` (4x04 allo 0:40, codice originale; qui i pattern erano chiamati dentro l'`if`):
+
+```
+Input: MyPtnLY(41), MyPtnSY(41), MyPtnLN(42), MyPtnSN(42);
+Input: MyStartTrade(00), MyEndTrade(00), MyStartPause(1200), MyEndPause(1100);
+Input: MyStop(100), MyProfit(0);
+
+If Time > MyStartTrade And time < MyEndTrade and (Time < MyStartPause or time > MyEndPause) then begin
+	If PtnBaseSA(MyPtnLY)= True and PtnBaseSA(MyPtnLN) = False then buy next bar at Highd(0) stop;
+	If PtnBaseSA(MyPtnSY)= True and PtnBaseSA(MyPtnSN) = False then sellshort next bar at lowd(0) stop;
+end;
+
+Setstopcontract;
+If MyStop > 0 then setstoploss(MyStop);
+If MyProfit > 0 then setprofittarget(MyProfit);
+
+setexitonclose;
+```
+
+Parametri finali sul grafico: `DevelopID(1, 1, 35, 35, 300, 500, 1200, 1100, 0.0075, 0.025)`. Stop e target sono in $ per unità: sul forex 0.0075 = 75 pip.

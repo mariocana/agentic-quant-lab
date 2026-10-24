@@ -1,8 +1,7 @@
 # Trend Following di Unger (6E, GC, ES, NQ) — istruzioni
 
-Codici: **`UngerTF_A.txt`** → salva come `Mario_UngerTF_A`, **`UngerTF_B.txt`** →
-`Mario_UngerTF_B` (signal). Richiedono la funzione **`Mario_PtnBaseSA`**. Spec: `SPEC.md`.
-`UngerTF.txt` e `UngerTF_ID.txt` sono le trascrizioni fedeli dal video (forex), non da usare.
+Codice unico: **`UngerTF.txt`** → salva come **`Mario_UngerTF`** (signal); input **`Versione`**
+0 = A (multi‑day), 1 = B (intraday). Richiede la funzione **`Mario_PtnBaseSA`**. Spec: `SPEC.md`.
 
 ## Chart
 - **15 min**, data source TradeStation, timezone **Exchange**, Bar Magnifier **1 min ON**,
@@ -11,25 +10,27 @@ Codici: **`UngerTF_A.txt`** → salva come `Mario_UngerTF_A`, **`UngerTF_B.txt`*
 - **@GC**: exchange New York, template **"COMEX Globex 18-17 no break"**.
 - Costi per contratto, slippage `0 ticks`: @EC `8.65$`, @GC `12.5$`, @ES `15$`, @NQ `7.5$`.
 
-## Input per strumento (tutto il resto ai default)
+## Input per strumento
+Gli input a 0 prendono il default della versione (orari di Chicago, stop e target di Unger in
+prezzo). Si cambia solo questo:
 
-| | A: `MyStartTrade` / `MyEndTrade` | A: stop / target | B: `MyStartTrade` / `MyEndTrade` | B: stop / target |
-|---|---|---|---|---|
-| @EC | 300 / 1230 (default) | default (`StopPts 0.011`, `ProfitPts 0.035`) | 200 / 400 (default) | default (`StopPts 0.0075`, `ProfitPts 0.025`) |
-| @GC | **400 / 1330** | `StopPct 0.83`, `ProfitPct 2.6`, `StopPts 0`, `ProfitPts 0` | **300 / 500** | `StopPct 0.56`, `ProfitPct 1.9`, `StopPts 0`, `ProfitPts 0` |
-| @ES, @NQ | default | come GC | default | come GC |
+| | A (`Versione 0`) | B (`Versione 1`) |
+|---|---|---|
+| @EC | niente | niente |
+| @ES, @NQ | `StopPct 0.83`, `ProfitPct 2.6` | `StopPct 0.56`, `ProfitPct 1.9` |
+| @GC | `MyStartTrade 400`, `MyEndTrade 1330`, `StopPct 0.83`, `ProfitPct 2.6` | `MyStartTrade 300`, `MyEndTrade 500`, `StopPct 0.56`, `ProfitPct 1.9` |
 
 Controlla gli input in *Format Signals* prima di ogni run: ricompilare non aggiorna quelli di
 una strategia già sul grafico.
 
 ## Stage 1 — meccanica, ~100 giorni
 
-| run | chart | size | file in `reports/` |
-|---|---|---|---|
-| A | @EC | 1 | `TF_S1_EC_A_x1.xlsx` + log (`ShowLog 1`) |
-| A10 | @EC | 10 | `TF_S1_EC_A_x10.xlsx` |
-| B | @EC | 1 | `TF_S1_EC_B_x1.xlsx` + log |
-| B | @GC (input di GC) | 1 | `TF_S1_GC_B_x1.xlsx` + log |
+| run | chart | size | file in `reports/` | |
+|---|---|---|---|---|
+| A | @EC | 1 | `TF_S1_EC_A_x1.xlsx` + log (`ShowLog 1`) | ✅ 24/10 (con `Mario_UngerTF_A`, stessa logica) |
+| A10 | @EC | 10 | `TF_S1_EC_A_x10.xlsx` | |
+| B (`Versione 1`) | @EC | 1 | `TF_S1_EC_B_x1.xlsx` + log | |
+| B (`Versione 1`) | @GC (input di GC) | 1 | `TF_S1_GC_B_x1.xlsx` + log | |
 
 ### Controlli (Gate 1)
 1. **Finestra**: in A gli ingressi cadono fra le 03:15 e le 12:30 CT (GC: un'ora dopo, NY), in
@@ -46,3 +47,18 @@ una strategia già sul grafico.
 ## Stage 2 — IS 2020‑01‑01 → 2024‑12‑31, 1 contratto, senza log
 A e B su @EC, @GC, @ES, @NQ: 8 run, file `TF_S2_<EC|GC|ES|NQ>_<A|B>_IS.xlsx`.
 Mandami lo Stage 1 prima.
+
+## Note dello Stage 1
+**Run A su @EC (24/10/2026)**: 38 trade in 114 giorni, report `TF_S1_EC_A_x1.xlsx`, log
+`TF_S1_EC_A_log.txt`.
+- Ingressi fra le 03:30 e le 12:14 CT, in 21 giornate su ~80: dentro la finestra.
+- Ingresso a `hiD` / `loD` del momento (il log stampa i valori a fine barra, quando il
+  massimo può essere già salito oltre l'entrata).
+- Stop $1.375 e target $4.375 a contratto, come da spec. In 114 giorni **non scatta né lo stop
+  né il target**: tutte le uscite sono inversioni, perché il livello opposto (il minimo o il
+  massimo del giorno) è quasi sempre più vicino di 110 pip. È la meccanica di Unger.
+- **Inversioni a raffica nei giorni laterali**: il 28/08 sette trade in sei ore, con perdite
+  da $110 a $225 ciascuno. Previsto dal codice (i due stop d'ingresso restano attivi tutta la
+  finestra), ed è il costo principale della versione A.
+- Il filtro del pattern 1 non si può ricontrollare qui (nessun dato di 6E in quantlake); la
+  funzione `Mario_PtnBaseSA` è già verificata (Gate 1 del 18/10).
