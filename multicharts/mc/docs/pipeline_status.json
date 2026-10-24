@@ -16,7 +16,8 @@
      "**MultiCharts su VPS**: 1 licenza = 1 computer alla volta, e due istanze manderebbero ordini doppi.",
      "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover MNQZ6 → MNQH7.",
      "**Ricerca in parallelo: effetti intraday condizionati al gamma dei dealer** (`mc/docs/ricerca_gamma_0dte.md`). Letteratura 2024-25 su dati 0DTE: gamma positivo → reversione, negativo → momentum. Spiega sia la morte di LastHalfHour dopo il 2022 sia lo zero delle mean reversion non condizionate. **GEX giornaliero pubblico** su SqueezeMetrics, 2011-2026.",
-     "**Rebalancing (fondi 60/40)**: chiusa al Gate 2 (t 0,58). Il timing del paper c'è (t 1,80 sul null) ma la gamba azionaria da sola, short il 74% delle volte, eredita il rialzo dell'S&P; dopo la pubblicazione t 0,52. FX Fix chiusa al Gate 2, causa A."
+     "**Rebalancing (fondi 60/40)**: chiusa al Gate 2 (t 0,58). Il timing del paper c'è (t 1,80 sul null) ma la gamba azionaria da sola, short il 74% delle volte, eredita il rialzo dell'S&P; dopo la pubblicazione t 0,52. FX Fix chiusa al Gate 2, causa A.",
+     "**ORB su ES**: chiusa al Gate 2 (long t −0,19, anche lordo ~0,5). Il rischio per trade su ES sta a ~$84 per MES su cinque anni: utile per la prossima candidata ancorata al range d'apertura."
     ]
    },
    {
@@ -110,20 +111,26 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "active"
+    "2": "fail"
    },
-   "note": "**Riprova dell'ORB su ES, pre-registrata in `SPEC_ES.md`.** Su NQ era morto per l'unità di rischio (~$180 per micro, DD 95° $3.121) e poi fuori campione (t 0,80). ES risponde alla prima — perdita media ~$92 per MES nello Stage 1 — ma non alla seconda. Configurazione base, senza i filtri tarati su NQ. Aspettativa dichiarata: non passa.",
+   "note": "**Causa di morte: A — edge assente.** Riprova dell'ORB su ES, pre-registrata in `SPEC_ES.md`.** Su NQ era morto per l'unità di rischio (~$180 per micro, DD 95° $3.121) e poi fuori campione (t 0,80). ES risponde alla prima — perdita media ~$92 per MES nello Stage 1 — ma non alla seconda. Configurazione base, senza i filtri tarati su NQ. Aspettativa dichiarata: non passa.",
    "metrics": {
     "riferimento NQ base": "IS t 1,39 (costi $2,50/lato)",
-    "aspettativa": "t 0,5-1,5"
+    "aspettativa": "t 0,5-1,5",
+    "IS 2020-2024 long": "868 trade · t −0,19 · WR 54,4% · R:R 0,83 · lordo t ~0,5",
+    "rischio per MES (perdite long)": "media $84 · mediana $67 · p90 $166 · 74% sotto $110"
    },
    "log": [
     {
      "date": "2026-10-24",
      "text": "**Pre-registrata.** Stage 1 già fatto su @ES il 17/09 (64 trade, meccanica corretta). Base senza filtri: `MaxRisk_USD`, delta e cutoff erano tarati su NQ e ritararli su ES sarebbe ottimizzare. Costi $11,25/lato. OOS 2025-26 contaminato per correlazione con NQ: verdetto asimmetrico."
+    },
+    {
+     "date": "2026-10-24",
+     "text": "**Gate 2 fallito, sotto l'aspettativa.** Long pre-registrato: 868 trade, **t −0,19**, WR 54,4%. Anche a costi zero t ~0,5: su NQ la base faceva 1,39, su ES il breakout d'apertura non c'è. Girati anche long+short (t −0,73) e short (t −1,68), fuori pre-registrazione: falliscono, nessuno scelto. **Resta il dato sul rischio**: perdite per MES media $84, mediana $67, p90 $166, 74% sotto $110 su cinque anni (2022: $131). Lo Stage 1 sul 2026 non era un'anomalia."
     }
    ],
-   "next": "Stage 2: @ES 5 min RTH, 2020-2024, base, $11,25/lato, Bar Magnifier 1 min."
+   "next": "Chiusa. Cimitero, causa A. OOS 2025-2026 su ES intatto."
   },
   {
    "name": "Rebalancing (fondi 60/40)",

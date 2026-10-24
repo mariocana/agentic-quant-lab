@@ -54,3 +54,33 @@ sull'S&P che sul Nasdaq, e niente di quello che abbiamo visto lo suggerisce.
 **Cosa ci dà comunque:** la distribuzione del rischio per trade su ES **nell'IS**, non sul
 2026. Se il range di ES sta davvero a ~$90 per MES su cinque anni, è un dato che vale per
 qualunque strategia ancorata al range di apertura su ES.
+
+## Verdetto Stage 2 (24/10/2026): Gate 2 fallito, causa A
+
+| run | n | avg | t | WR | R:R | |
+|---|---|---|---|---|---|---|
+| **long (pre-registrato)** | 868 | −$6,08 | **−0,19** | 54,4% | 0,83 | `ORB_ES_S2_IS_long.xlsx` |
+| long + short | 1.269 | −$20,90 | −0,73 | 51,5% | 0,89 | fuori pre-registrazione |
+| short | 782 | −$60,56 | −1,68 | 46,2% | 1,01 | fuori pre-registrazione |
+
+**Sotto l'aspettativa dichiarata** (t 0,5-1,5). I due run long+short e short non erano
+pre-registrati: non cambiano niente perché falliscono anch'essi, e nessuno viene scelto.
+
+**Nemmeno a costi zero.** Il long lordo vale $16,42 a trade ($22,50 di costi a giro), cioè
+t ~0,5. Su NQ la base faceva t 1,39: su ES il breakout d'apertura non c'è. Lo short perde
+anche lordo (−$38): eredita il rialzo dell'S&P.
+
+**Il dato che resta: il rischio per trade su ES, cinque anni.** Perdite del long, per MES:
+
+| media | mediana | p75 | p90 | p95 | max |
+|---|---|---|---|---|---|
+| $84 | $67 | $112 | $166 | $198 | $444 |
+
+Per anno la media sta fra $56 (2021) e $131 (2022). Il 74% delle perdite è sotto $110. Quindi
+lo Stage 1 sul 2026 ($92) non era un'anomalia: **su ES una strategia ancorata al range di
+apertura sta dentro la finestra $60-110 per micro**, salvo negli anni come il 2022.
+
+**Template**: il report finisce alle 16:00, quindi Globex 24h invece di RTH. Non cambia
+niente: il codice costruisce il range e chiude per orario (08:30-09:00, uscita 14:00).
+
+OOS 2025-26 su ES non toccato.
