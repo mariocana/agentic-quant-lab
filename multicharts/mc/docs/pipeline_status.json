@@ -103,6 +103,29 @@
  ],
  "strategies": [
   {
+   "name": "ORB Breakout su ES",
+   "family": "breakout del range di apertura · momentum",
+   "instrument": "@ES 5m RTH → MES",
+   "path": "mc/strategies/ORB_Breakout",
+   "stages": {
+    "0": "pass",
+    "1": "pass",
+    "2": "active"
+   },
+   "note": "**Riprova dell'ORB su ES, pre-registrata in `SPEC_ES.md`.** Su NQ era morto per l'unità di rischio (~$180 per micro, DD 95° $3.121) e poi fuori campione (t 0,80). ES risponde alla prima — perdita media ~$92 per MES nello Stage 1 — ma non alla seconda. Configurazione base, senza i filtri tarati su NQ. Aspettativa dichiarata: non passa.",
+   "metrics": {
+    "riferimento NQ base": "IS t 1,39 (costi $2,50/lato)",
+    "aspettativa": "t 0,5-1,5"
+   },
+   "log": [
+    {
+     "date": "2026-10-24",
+     "text": "**Pre-registrata.** Stage 1 già fatto su @ES il 17/09 (64 trade, meccanica corretta). Base senza filtri: `MaxRisk_USD`, delta e cutoff erano tarati su NQ e ritararli su ES sarebbe ottimizzare. Costi $11,25/lato. OOS 2025-26 contaminato per correlazione con NQ: verdetto asimmetrico."
+    }
+   ],
+   "next": "Stage 2: @ES 5 min RTH, 2020-2024, base, $11,25/lato, Bar Magnifier 1 min."
+  },
+  {
    "name": "Rebalancing (fondi 60/40)",
    "family": "flusso forzato da ribilanciamento · contrarian giornaliero",
    "instrument": "@ES 5m → MES, con @TY e $SPX.X come soli dati",
