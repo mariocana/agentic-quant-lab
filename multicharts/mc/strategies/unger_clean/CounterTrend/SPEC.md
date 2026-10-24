@@ -156,3 +156,26 @@ non Chicago. Con `Time Zone: Exchange` il chart di GC era in ora di New York, e 
 ES e YM non sono toccati (exchange Chicago, template e orario giusti). Il verdetto su GC
 qui sopra resta scritto ma **non vale** finché non si rifanno GC A e B sull'IS con template
 18:00–17:00 e `MyStartTime 300`.
+
+---
+
+## Stage 2 rifatto su GC con il fuso giusto (24/10/2026) → **cimitero, causa A, confermato**
+
+IS 2020–2024 (dati dal 13/01/2020), 30 min, template **18:00–17:00 di New York**,
+**`MyStartTime 300`**, 1 contratto, costi della spec. Ingressi fra le 04:00 e le 06:30 NY
+(segnali sulle barre 03:30–06:00), come da regole. Report in `reports/CT_S2_GC_{A,B}_IS.xlsx`
+(sostituiscono quelli del 23/10).
+
+| run | n | WR | avg netto | t | PF | DD chiusi | lordo/trade (t) | uscite |
+|---|---|---|---|---|---|---|---|---|
+| **GC A** | 202 | 33,2% | +$68 | 0,31 | 1,06 | $30.870 | +$93 (0,43) | 127 stop, 74 inversioni |
+| **GC B** | 273 | 49,8% | −$91 | −1,15 | 0,84 | $33.250 | −$66 (−0,83) | 72 stop, 201 fine sessione |
+
+Con l'orario giusto i numeri migliorano (B da t −2,50 a −1,15, A passa in positivo), ma
+nessuno dei due si avvicina a un edge:
+- **A**: t 0,31, WR 33%, R:R 2,14, un anno (il 2022) vale il 118% del profitto e il 2021
+  perde l'87%; DD $3.087 per MGC contro $1.000.
+- **B** (il caso prop): negativo in 4 anni su 5, anche lordo.
+
+Gate 2 fallito su t, WR e annuale in A; su t, avg, PF e WR in B. Il verdetto del 23/10 resta,
+ora su dati con il fuso corretto: **causa A, edge assente sull'oro**. ES e YM non cambiano.

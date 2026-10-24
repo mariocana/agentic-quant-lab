@@ -23,6 +23,11 @@ trade. Se le tre funzioni esistono già nel tuo MultiCharts, sovrascrivile con q
 
 ## Run dello Stage 1
 
+**Controlla gli input sul chart.** Ricompilare cambia i default solo per le strategie inserite
+dopo: quella già sul grafico tiene i valori di prima. Apri *Format Signals → Inputs* e verifica
+`sBeg 2005`, `sEnd 1900` (o `1600` per B). Il giro del 24/10 è stato invalidato proprio da
+questo (`sBeg 1905`, `sEnd 1800` rimasti dal codice vecchio).
+
 | run | input | size | file in `reports/` |
 |---|---|---|---|
 | A | default (`sBeg 2005`, `sEnd 1900`) + `ShowLog 1` | 1 | `GG_S1_A_x1.xlsx` + log |

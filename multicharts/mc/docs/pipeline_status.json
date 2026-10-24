@@ -746,28 +746,6 @@
    "next": "Chiusa. Nessuna variante pre-registrata la riapre."
   },
   {
-   "name": "Counter Trend (Unger)",
-   "family": "counter trend / rientro nelle bande di Bollinger nella mattina di Londra, long e short",
-   "instrument": "GC 30m → MGC (ES, YM esplorativi)",
-   "path": "mc/strategies/unger_clean/CounterTrend",
-   "stages": {
-    "0": "pass",
-    "1": "run"
-   },
-   "note": "Dal corso di Unger (*Trading System Supremacy*, modulo 5): codice `DevelopRev` ricostruito dal video 5x01, parametri finali dal 5x02, nato su **GBPUSD 30 min**. Su Lucid il forex esiste solo come futures interi (6B): **causa B per costruzione**, quindi non si testa (decisione del 18/10). L'ipotesi è legata a **Londra**, non al pound: porting su **GC → MGC**, ES e YM solo esplorativi. Bande, finestra (02:00–05:00 CT) e filtri restano quelli del video; l'unico parametro portato è lo **stop allo 0,65% del prezzo** (la stessa frazione degli 0,01 di Unger su GBPUSD), non ottimizzato: ~$267 per MGC. Variante A = originale (stop o inversione), B = flat a fine sessione. IS 2020–2024, OOS 2025–oggi.",
-   "log": [
-    {
-     "date": "2026-10-19",
-     "text": "**Stage 1, primo giro invalido** per le impostazioni del chart: grafico a **5 min** invece di 30 (finestra di 40 minuti invece di 4 ore), **template a giorno di calendario** invece della sessione CME (i filtri su ieri di `Mario_PtnBaseSA` leggono il giorno sbagliato) e run A con `FlatEOD` acceso. Verificato comunque: lo stop è allo **0,651–0,654%** dall'entrata, e i segnali nella direzione della posizione già aperta vengono ignorati. Report non conservati."
-    },
-    {
-     "date": "2026-10-18",
-     "text": "Spec e codice `Mario_UngerCT` dal video 5x01-5x02; porting da GBPUSD a GC con stop 0,65% del prezzo pre-registrato."
-    }
-   ],
-   "next": "**Stage 1, secondo giro**: @GC **30 min**, template **17:00–16:00 CT senza pause** (quello di ESCounter). Run A (`FlatEOD 0`, `ShowLog 1`), A10 (stessi input, 10 contratti), B (`FlatEOD 1`). Annotare il close di @GC al 02/01/2020 (prezzo reale ~1.525)."
-  },
-  {
    "name": "Counter Trend (Unger) su GC",
    "family": "counter trend / rientro nelle Bollinger nella mattina di Londra, long e short",
    "instrument": "GC 30m (MGC); ES, YM esplorativi",
@@ -775,19 +753,27 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "run"
+    "2": "fail"
    },
-   "note": "**Verdetto su GC sospeso (24/10/2026).** **Causa di morte: A — edge assente.** `DevelopRev` di Unger (modulo 5), ricostruito dal video: GBPUSD 30 min, Bollinger 20/2, finestra 03:00 NY per 8 barre, long dopo giorno in rialzo / short dopo giorno in ribasso, no outside bar, stop 100 pip, uscita solo a stop o per inversione. Unger: PF 1,74 2008–2016 **a costi zero**. Su Lucid il forex è solo 6B intero (stop $625, DD ~$7.300): causa B per costruzione, non testato. Porting sull'oro con stop 0,65% del prezzo (= i 100 pip di Unger): GC B perde anche lordo (t −2,19).",
+   "note": "**Causa di morte: A — edge assente.** `DevelopRev` di Unger (modulo 5), ricostruito dal video: GBPUSD 30 min, Bollinger 20/2, finestra 03:00 NY per 8 barre, long dopo giorno in rialzo / short dopo giorno in ribasso, no outside bar, stop 100 pip, uscita solo a stop o per inversione. Unger: PF 1,74 2008–2016 **a costi zero**. Su Lucid il forex è solo 6B intero (stop $625, DD ~$7.300): causa B per costruzione, non testato. Porting sull'oro con stop 0,65% del prezzo (= i 100 pip di Unger): GC B perde anche lordo (t −2,19).",
    "metrics": {
-    "IS GC A": "213 trade · WR 31,9% · avg −$129 · t −0,68 · PF 0,88 · 75 inversioni",
-    "IS GC B": "279 trade · WR 43,4% · avg −$200 · **t −2,50** · PF 0,69 · lordo t −2,19",
+    "IS GC A": "202 trade · WR 33,2% · avg +$68 · t 0,31 · PF 1,06 · DD $30.870 · 2022 = 118% del profitto (fuso giusto, 24/10)",
+    "IS GC B": "273 trade · WR 49,8% · avg −$91 · **t −1,15** · PF 0,84 · lordo t −0,83 (fuso giusto, 24/10)",
     "IS ES A / B": "t 0,02 / 0,50",
     "IS YM A / B": "t −0,33 / **1,01** (PF 1,17, 5 anni su 5 positivi, ma fallisce WR, R:R, PF, DD)"
    },
    "log": [
     {
      "date": "2026-10-18",
+     "text": "Spec e codice `Mario_UngerCT` dal video 5x01-5x02; porting da GBPUSD a GC con stop 0,65% del prezzo pre-registrato."
+    },
+    {
+     "date": "2026-10-18",
      "text": "Codice e parametri finali ricostruiti dai video 5x01/5x02; 6B scartato per costruzione; porting su GC con ES e YM esplorativi."
+    },
+    {
+     "date": "2026-10-19",
+     "text": "**Stage 1, primo giro invalido** per le impostazioni del chart: grafico a **5 min** invece di 30 (finestra di 40 minuti invece di 4 ore), **template a giorno di calendario** invece della sessione CME (i filtri su ieri di `Mario_PtnBaseSA` leggono il giorno sbagliato) e run A con `FlatEOD` acceso. Verificato comunque: lo stop è allo **0,651–0,654%** dall'entrata, e i segnali nella direzione della posizione già aperta vengono ignorati. Report non conservati."
     },
     {
      "date": "2026-10-23",
@@ -796,9 +782,34 @@
     {
      "date": "2026-10-24",
      "text": "**Verdetto su GC sospeso.** Per TradeStation l'exchange di @GC è il COMEX di New York: i run di GC erano su un chart in ora di New York con `MyStartTime 200` (finestra un'ora prima di Unger) e con il template 17-16, che su GC taglia l'ultima ora e sposta la chiusura di ieri. Da rifare GC A e B con template 18-17 e `MyStartTime 300`. ES e YM validi."
+    },
+    {
+     "date": "2026-10-24",
+     "text": "**GC rifatto con il fuso giusto** (template 18:00–17:00 di New York, `MyStartTime 300`): A t 0,31, B t −1,15, negativo anche lordo. Meglio del giro con l'orario sbagliato (B era a t −2,50) ma lontano da un edge: **cimitero, causa A, confermato**."
     }
    ],
    "next": "Rifare l'IS di GC A e B con template 18:00-17:00 (exchange New York) e MyStartTime 300."
+  },
+  {
+   "name": "GoldGapper (Unger)",
+   "family": "mean reversion / chiusura del gap all'apertura asiatica, long e short",
+   "instrument": "GC 5m → MGC",
+   "path": "mc/strategies/unger_clean/Gap",
+   "stages": {
+    "0": "pass",
+    "1": "run"
+   },
+   "note": "Dal corso di Unger (*Trading System Supremacy*, modulo 7), codice dei video 7x01/7x02 con le funzioni di `GapsFunctions.pla`. Giornata 20:05–19:00 New York: se la barra delle 20:05 apre fuori dal range di ieri, stop d'ingresso sul bordo del range nella direzione della chiusura del gap. Stop $2.000 (20 punti), uscita alla barra `sEnd`. A = `sEnd 1900` (originale), B = `sEnd 1600` (flat prima della chiusura, caso prop). Rischio dichiarato: pochi trade, Gate 2 a rischio su n ≥ 200.",
+   "log": [
+    {
+     "date": "2026-10-23",
+     "text": "Spec e codice dai video; il `_DayDefinition.txt` di maggio 2016 non fa trade, si usa quello del `.pla`. Primo giro di Stage 1: uscita a tempo mai scattata, da cui la scoperta del fuso di @GC (New York)."
+    },
+    {
+     "date": "2026-10-24",
+     "text": "Secondo giro **invalido**: sul chart la strategia aveva ancora `sBeg 1905` / `sEnd 1800` (ricompilare non cambia gli input di una strategia già inserita). Il resto della meccanica è verificato: ingressi ai livelli `hi_ieri` / `lo_ieri`, stop a 20 punti ($2.025 con i costi), un ingresso per data e due per giornata, uscita alle 16:05 in B, A10 = 10 × A. Da rifare A e B con `sBeg 2005`."
+    }
+   ]
   }
  ],
  "blockers": [
@@ -807,6 +818,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-24",
+   "text": "**In MultiCharts ricompilare un signal non aggiorna gli input della strategia già sul grafico**: tiene i valori vecchi. Dopo ogni cambio di default, controllare *Format Signals → Inputs* (o reinserire la strategia). Ha invalidato un giro di GoldGapper."
+  },
   {
    "date": "2026-10-24",
    "text": "**Il fuso di @GC in TradeStation è New York, non Chicago.** Con `Time Zone: Exchange` il chart dell'oro è in ora di New York (prima barra dopo la pausa: 18:05), mentre quello di ES/NQ/YM è in ora di Chicago. Conseguenze: il template personalizzato \"17-16 no break\" su GC taglia l'ultima ora (16-17 NY) e non ha la barra delle 18:00, e ogni orario scritto per Chicago su GC è sbagliato di un'ora. Trovato perché l'uscita a tempo di GoldGapper non scattava mai. Il verdetto del Counter Trend su GC è sospeso; per l'oro serve un template 18:00-17:00."
