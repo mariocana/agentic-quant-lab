@@ -73,3 +73,32 @@ GC · peggior trade ≤ $5.000 su GC · nessun anno > 50% del profitto.
 **Costi**: `12.5$ per Contract` per lato, slippage 0.
 
 **Kill**: gate della pipeline su B. In più, kill se A e B hanno avg netto ≤ 0.
+
+---
+
+# Stage 2 — **Gate 2 fallito** (24/10/2026) → **cimitero, causa A — edge assente**
+
+IS 2020–2024, @GC 5 min, template 18:00–17:00 di New York, 1 contratto, costi della spec,
+Bar Magnifier 1 min. Report in `reports/GG_S2_{A,B}_IS.xlsx`. Il corpo sopra è la
+pre‑registrazione e non si riscrive.
+
+| run | n | WR | avg netto | t | PF | DD chiusi | lordo/trade (t) | uscite |
+|---|---|---|---|---|---|---|---|---|
+| A (`sEnd 1900`) | 94 | 46,8% | +$69 | 0,48 | 1,14 | $10.015 | +$94 (0,65) | 82 a tempo, 12 stop |
+| **B** (`sEnd 1600`, prop) | 50 | 44,0% | −$132 | −0,59 | 0,81 | $9.445 | −$107 (−0,48) | 37 a tempo, 13 stop |
+
+**Verdetto.** Il caso base per la prop (B) perde, anche prima dei costi. A è positivo ma con
+t 0,48 e il 2020 da solo vale il 90% del profitto; 2022 e 2023 in perdita. Gate 2 fallito su
+t, WR, R:R e n in tutti e due; in A anche sull'annuale.
+
+**Pochi trade, come previsto.** 94 e 50 trade in cinque anni (A 15–25 l'anno, B 4–16), contro
+i 200 del Gate 2: anche con un edge, la strategia non sarebbe da eval. Il rischio dichiarato
+prima dei run si è avverato.
+
+**Sul risultato di Unger** (2008–inizio 2016, equity a gradini da $100.000 a ~$147.000): non
+replicato fuori campione. Lo stop fisso di $2.000 su un oro a 1.500–2.700 è più stretto in
+proporzione (rischio dichiarato), ma esce solo nel 13% dei trade di A e nel 26% di B: non è
+lo stop a togliere l'edge.
+
+**Cosa la riaprirebbe**: niente fra le varianti pre‑registrate. Una variante con lo stop in
+percentuale non cambierebbe il numero di trade, che da solo la esclude dalla pipeline prop.

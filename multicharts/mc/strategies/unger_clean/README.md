@@ -19,7 +19,7 @@ Regole per ogni codice:
 | 2 | `PtnBaseSA` (funzione dei pattern) | video 4x01 (codice) + modulo 3 (slide) | **Gate 1 passato** (18/10/2026): 40 pattern su 95 sessioni identici al ricalcolo |
 | 3 | Trend Following (`Develop`) | modulo 4 / 9x02 | da fare, dopo `PtnBaseSA` |
 | 4 | **Counter Trend** (`DevelopRev`, GBPUSD 30 min) | video 5x01 (codice) e 5x02 (parametri) | **cimitero, causa A** (rifatto il 24/10/2026 con il chart di GC in ora di New York, template 18-17 e `MyStartTime 300`): GC A t 0,31, GC B t −1,15 (negativo anche lordo). ES e YM senza edge (migliore YM B t 1,01) |
-| 5 | **Gap** (`GoldGapper`) | video 7x01 e 7x02 + `GapsFunctions.pla` | **Stage 1 passato** (24/10/2026, terzo giro con `sBeg 2005`): ingressi, stop, uscite a tempo verificati trade per trade. Stage 2 (IS 2020–2024, A e B) da lanciare. Funzioni dal `.pla` |
+| 5 | **Gap** (`GoldGapper`) | video 7x01 e 7x02 + `GapsFunctions.pla` | **cimitero, causa A** (24/10/2026): IS 2020–2024 A t 0,48 (94 trade), B t −0,59 (50 trade, negativo anche lordo). Troppo pochi trade comunque per la prop |
 | 6 | **BIAS** (`DevelopBIAS`, `DevelopBIASEURUSDFineTune`) | video 6x01 e 6x03 + screenshot dei settaggi | **trascritta e archiviata senza run** (23/10/2026): EURUSD 60 min, su Lucid solo 6E intero con stop di 160 pip = $2.000 = MLL; bias orario non portabile |
 | 7 | Dax FirstHour, Night FIB | `0. Risorse/MC-TS` (già puliti) | solo da portare nella pipeline |
 

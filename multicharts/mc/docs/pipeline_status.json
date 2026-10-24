@@ -821,9 +821,9 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "run"
+    "2": "fail"
    },
-   "note": "Dal corso di Unger (*Trading System Supremacy*, modulo 7), codice dei video 7x01/7x02 con le funzioni di `GapsFunctions.pla`. Giornata 20:05–19:00 New York: se la barra delle 20:05 apre fuori dal range di ieri, stop d'ingresso sul bordo del range nella direzione della chiusura del gap. Stop $2.000 (20 punti), uscita alla barra `sEnd`. A = `sEnd 1900` (originale), B = `sEnd 1600` (flat prima della chiusura, caso prop). Rischio dichiarato: pochi trade, Gate 2 a rischio su n ≥ 200.",
+   "note": "**Causa di morte: A — edge assente.** Dal corso di Unger (*Trading System Supremacy*, modulo 7), codice dei video 7x01/7x02 con le funzioni di `GapsFunctions.pla`. Giornata 20:05–19:00 New York: se la barra delle 20:05 apre fuori dal range di ieri, stop d'ingresso sul bordo del range nella direzione della chiusura del gap. Stop $2.000 (20 punti), uscita alla barra `sEnd`. A = `sEnd 1900` (originale), B = `sEnd 1600` (flat prima della chiusura, caso prop). Rischio dichiarato: pochi trade, Gate 2 a rischio su n ≥ 200.",
    "log": [
     {
      "date": "2026-10-23",
@@ -836,8 +836,16 @@
     {
      "date": "2026-10-24",
      "text": "Terzo giro con `sBeg 2005`: **Gate 1 passato**. 9 giorni di gap in 95 sessioni, ingresso in 6; ingressi ai livelli (o peggio se il prezzo salta), secondo ingresso dopo mezzanotte, stop 20 punti, uscite alle 19:05 (A) e 16:05 (B). Prossimo: IS 2020–2024, A e B. A ~2 gap a settimana con ingresso in due terzi, l'IS darà circa 150–200 trade: il minimo di 200 è al limite."
+    },
+    {
+     "date": "2026-10-24",
+     "text": "**Gate 2 fallito, cimitero causa A.** B (caso prop) perde anche lordo; A t 0,48 con un solo anno buono. 94 e 50 trade in cinque anni: anche con un edge non sarebbe da eval."
     }
-   ]
+   ],
+   "metrics": {
+    "IS 2020-2024 A (sEnd 1900)": "94 trade · WR 46,8% · avg +$69 · t 0,48 · PF 1,14 · 2020 = 90% del profitto",
+    "IS 2020-2024 B (sEnd 1600, prop)": "50 trade · WR 44,0% · avg −$132 · **t −0,59** · PF 0,81 · lordo −$107/trade"
+   }
   }
  ],
  "blockers": [
@@ -846,6 +854,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-24",
+   "text": "**GoldGapper (Unger) in cimitero, causa A**: terzo codice del corso Unger morto fuori campione (dopo ESCounter e Counter Trend). B perde anche prima dei costi; e con 50–94 trade in cinque anni non avrebbe comunque passato il Gate 2. Lezione: **il rischio \"pochi trade\" dichiarato in Stage 0 si può stimare dal log dello Stage 1** (9 gap in 95 sessioni) prima di lanciare l'IS."
+  },
   {
    "date": "2026-10-24",
    "text": "**In MultiCharts ricompilare un signal non aggiorna gli input della strategia già sul grafico**: tiene i valori vecchi. Dopo ogni cambio di default, controllare *Format Signals → Inputs* (o reinserire la strategia). Ha invalidato un giro di GoldGapper."
