@@ -48,3 +48,27 @@ questo (`sBeg 1905`, `sEnd 1800` rimasti dal codice vecchio).
 6. **Scala ×10**: A10 = 10 × A.
 
 Mandami i tre `.xlsx` e il log del run A.
+
+## Stage 1 — **passato** (24/10/2026, terzo giro)
+Con `sBeg 2005` le righe `GAP DAY` sono alle 20:05. Controllati trade per trade:
+- 9 giorni di gap nel log del run A (7/6, 9/6, 18/6, 5/8, 9/8, 10/8, 16/8, 18/10, 19/10);
+  ingresso in 6, negli altri 3 il prezzo non è mai tornato sul bordo (es. 9/6: minimo di ieri
+  4.315,30, il giorno dopo il prezzo resta sotto, a 4.130);
+- ingressi a `hi_ieri` / `lo_ieri`, o peggio quando il prezzo salta il livello (9/8 buy stop
+  a 4.392,10 eseguito a 4.400,60);
+- secondo ingresso dopo mezzanotte allo stesso livello dopo uno stop (5–6/8, 9–10/8, 19–20/10);
+- stop a 20 punti, uscita a tempo alle 19:05 in A e alle 16:05 in B, nessuna posizione di B
+  oltre le 17:00.
+
+Run A: 10 trade, WR 60%, avg +$1.364; run B: 12 trade, WR 33%, avg +$809. Su così pochi trade
+non dicono niente sull'edge.
+
+## Stage 2 — IS 2020‑01‑01 → 2024‑12‑31, 1 contratto, senza log
+Stesso chart (@GC 5 min, template 18-17, Bar Magnifier 1 min, costi 12.5$):
+
+| run | input | file in `reports/` |
+|---|---|---|
+| A | `sBeg 2005`, `sEnd 1900` | `GG_S2_A_IS.xlsx` |
+| B | `sBeg 2005`, `sEnd 1600` | `GG_S2_B_IS.xlsx` |
+
+`ShowLog 0`. Prima di lanciare, controlla gli input in *Format Signals*.
