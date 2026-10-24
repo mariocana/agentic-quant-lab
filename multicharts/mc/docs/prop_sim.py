@@ -42,8 +42,8 @@ COMM_FULL    = 15.00   # $/round-turn gia' dentro il P&L del report (NQ: 7,50 pe
 GUARDIA_GG   = 60      # senza scadenza, un tentativo ancora aperto dopo 60 giorni conta come non passato
 
 # regole del conto in uso: le imposta usa_prop()
-CONTO = TARGET = MLL = LOCK = COMM_MICRO = 0.0
-COSTO_TENT = None
+CONTO = TARGET = MLL = LOCK = COMM_MICRO = DLL = 0.0
+COSTO_TENT = ATTIVAZIONE = None
 PROP = {}
 
 
@@ -59,9 +59,9 @@ def leggi_prop():
         c = cp[s]
         out[s] = dict(sezione=s, nome=c['nome'], conto=num(c['conto']), target=num(c['target']),
                       mll=num(c['mll']), trailing=c['trailing'].strip().lower(),
-                      lock_sopra_conto=num(c['lock_sopra_conto']),
+                      lock_sopra_conto=num(c['lock_sopra_conto']), dll=num(c['dll']) or 0.0,
                       giorni_max=int(num(c['giorni_max']) or 0),
-                      costo_tentativo=num(c['costo_tentativo']),
+                      costo_tentativo=num(c['costo_tentativo']), attivazione=num(c['attivazione']),
                       comm_micro_rt=num(c['comm_micro_rt']), max_micro=num(c['max_micro']),
                       fonte=c.get('fonte', ''), verificato=c.get('verificato', 'none'))
     return out
@@ -69,7 +69,7 @@ def leggi_prop():
 
 def usa_prop(p):
     """Imposta le regole del conto su cui girano tentativo() e il resto."""
-    global CONTO, TARGET, MLL, LOCK, COMM_MICRO, COSTO_TENT, PROP
+    global CONTO, TARGET, MLL, LOCK, COMM_MICRO, DLL, COSTO_TENT, ATTIVAZIONE, PROP
     if p['trailing'] != 'eod':
         raise SystemExit('%s: trailing %r non supportato, solo eod' % (p['nome'], p['trailing']))
     PROP = p
@@ -77,6 +77,8 @@ def usa_prop(p):
     LOCK = CONTO + p['lock_sopra_conto']    # il trailing si ferma qui
     COMM_MICRO = p['comm_micro_rt']
     COSTO_TENT = p['costo_tentativo']
+    ATTIVAZIONE = p['attivazione']
+    DLL = p['dll']
 
 
 def wilson(k, n, z=1.96):
@@ -157,12 +159,17 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
     profitto e' sotto +buffer, poi n_micro. La size si decide all'ingresso di ogni trade.
     Con ratchet=False si torna piccoli se il profitto riscende sotto il buffer.
 
+    Daily loss limit (DLL > 0): se la perdita della giornata, aperti inclusi, arriva al
+    DLL, la posizione si chiude li' e la giornata finisce; il conto resta vivo (Apex).
+    Si assume l'uscita esattamente sulla soglia: dal vivo e' a mercato, un po' sopra o sotto.
+
     Ritorna ('pass'|'fail'|'aperto', giorni_usati).
     """
     bal, picco_eod, limite = CONTO, CONTO, CONTO - MLL
     grande = gradini is None
     g = 0
     for g, trades in enumerate(seq_giorni, 1):
+        stop_dll = bal - DLL if DLL else None
         for t, giu in trades:
             n = n_micro
             if gradini is not None:
@@ -170,7 +177,11 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
                 sopra = bal - CONTO >= buffer
                 grande = (grande or sopra) if ratchet else sopra
                 n = n_micro if grande else piccolo
-            if bal + giu * n <= limite:        # sfondato DENTRO il trade, non alla chiusura
+            fondo = bal + giu * n
+            if stop_dll is not None and fondo <= stop_dll and stop_dll > limite:
+                bal = stop_dll                 # il DLL arriva prima dell'MLL: giornata chiusa
+                break
+            if fondo <= limite:                # sfondato DENTRO il trade, non alla chiusura
                 return 'fail', g
             bal += t * n
             if bal <= limite:
@@ -366,9 +377,10 @@ def main():
     tot = sum(len(t) for _, t in giorni)
     print('Conto $%s | target +$%s | MLL $%s trailing EOD (lock $%s) | tentativo %s'
           % (f'{CONTO:,.0f}', f'{TARGET:,.0f}', f'{MLL:,.0f}', f'{LOCK:,.0f}', _dollari(COSTO_TENT)))
-    print('Scadenza: %s | regole verificate: %s'
+    print('Scadenza: %s | DLL %s | regole verificate: %s'
           % ('%d giorni' % PROP['giorni_max'] if PROP['giorni_max']
              else 'nessuna (tentativo aperto dopo %d giorni = non passato)' % giorni_max,
+             '$%s (chiude la giornata, non il conto)' % f'{DLL:,.0f}' if DLL else 'nessuno',
              PROP['verificato']))
     print('Dati: %s -> %s | %d giorni | %d trade | costo micro $%.2f/round-turn'
           % (d1, d2, len(giorni), tot, comm_micro))
@@ -495,6 +507,9 @@ def main():
         if pi > 0:
             print('   iid         tentativi attesi %.1f -> $%.0f  |  ~%.1f mesi'
                   % (1 / pi, COSTO_TENT / pi, (mi * (1 / pi)) / 21.0))
+            if ATTIVAZIONE:
+                print('               + attivazione del funded $%.0f = $%.0f'
+                      % (ATTIVAZIONE, COSTO_TENT / pi + ATTIVAZIONE))
         if seq[tent_max] > 0:
             print('   sequenziale %.1f%% entro %d tentativi, costo massimo $%.0f'
                   % (100 * seq[tent_max], tent_max, COSTO_TENT * tent_max))
@@ -528,7 +543,8 @@ def confronto(path, props, griglia, n_sim, comm_opt, giorni_opt):
             if not fuori and (migliore is None or pr > migliore[1]):
                 migliore = (n, pr)
         costo = ('n/d' if COSTO_TENT is None or not migliore or migliore[1] == 0
-                 else '$%.0f (%d mic)' % (COSTO_TENT / migliore[1], migliore[0]))
+                 else '$%.0f (%d mic)' % (COSTO_TENT / migliore[1] + (ATTIVAZIONE or 0),
+                                          migliore[0]))
         scad = '%d gg' % p['giorni_max'] if p['giorni_max'] else 'nessuna'
         print('   %-24s %-10s' % (p['nome'][:24], scad) + ''.join(celle) + '%14s' % costo)
     print('\nNon verificate: ' + (', '.join(p['nome'] for p in props.values()
