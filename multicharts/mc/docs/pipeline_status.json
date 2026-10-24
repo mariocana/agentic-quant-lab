@@ -16,7 +16,7 @@
      "**MultiCharts su VPS**: 1 licenza = 1 computer alla volta, e due istanze manderebbero ordini doppi.",
      "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover MNQZ6 → MNQH7.",
      "**Ricerca in parallelo: effetti intraday condizionati al gamma dei dealer** (`mc/docs/ricerca_gamma_0dte.md`). Letteratura 2024-25 su dati 0DTE: gamma positivo → reversione, negativo → momentum. Spiega sia la morte di LastHalfHour dopo il 2022 sia lo zero delle mean reversion non condizionate. **GEX giornaliero pubblico** su SqueezeMetrics, 2011-2026.",
-     "**FX Fix (EUR)**: chiusa al Gate 2, causa A. Il lordo ha il segno del paper ma ne vale un quarto (t lordo ~1), sotto i costi del contratto intero."
+     "**Rebalancing (fondi 60/40)**: Stage 0 fatto, prima candidata col filtro stretto (Harvey-Mazzoleni-Melone, dati fino a marzo 2023). Prossimo: Stage 1 su @ES con @TY come dato. FX Fix chiusa al Gate 2, causa A."
     ]
    },
    {
@@ -102,6 +102,29 @@
   }
  ],
  "strategies": [
+  {
+   "name": "Rebalancing (fondi 60/40)",
+   "family": "flusso forzato da ribilanciamento · contrarian giornaliero",
+   "instrument": "@ES 5m → MES, con @TY come solo dato",
+   "path": "mc/strategies/Rebalancing",
+   "stages": {
+    "0": "pass",
+    "1": "active"
+   },
+   "note": "**Stage 0. Prima candidata col filtro stretto (campione oltre il 2021).** Harvey-Mazzoleni-Melone (NBER 2025, versione gen 2026), 1997 → marzo 2023: i fondi 60/40 devono vendere azioni quando sono sovrappesati, a soglia o a fine mese, e il flusso è prevedibile dai rendimenti passati. Sulla sola gamba azionaria **t 3,11 (soglia) e 3,52 (calendario × ultima settimana)**, −16/−17 bp sul giorno dopo per una deviazione standard. Adattata a Lucid: ingresso alla riapertura delle 17:00 CT, uscita alle 15:40 CT. **Il rischio è l'opposto del profilo prop**: tutta la giornata senza stop.",
+   "metrics": {
+    "paper, gamba azionaria": "soglia t 3,11 · calendario t 3,52 · strategia ES−TY Sharpe 1,11 (0,90 senza crisi)",
+    "potenza (grezza)": "IS t ~2,9 intatto / ~1,5 dimezzato · OOS t ~1,8 / ~0,9",
+    "aspettativa": "passa il Gate 2 (IS in gran parte del paper), il rischio vero è l'OOS"
+   },
+   "log": [
+    {
+     "date": "2026-10-24",
+     "text": "**Aperta col filtro nuovo.** Dieci filoni scartati prima di trovarla (trend following giornaliero, crypto su Binance, aste Treasury senza ZN, apertura europea già morta, EIA informativo). Regole prese dall'Appendice B senza modifiche: 26 portafogli a soglia δ = 0-2,5%, uno a calendario, peso = ½(−Threshold/1,5%) + ½ CalMod, direzione = segno. `@TY` serve solo al segnale: su Lucid si trada MES. Scritto anche un ricalcolo Python indipendente del segnale dal log, per lo Stage 1."
+    }
+   ],
+   "next": "Stage 1 su @ES + @TY 5 min, grafico dal 2018, trade gen-apr 2024: orari, direzione e ricalcolo Python identico."
+  },
   {
    "name": "FX Fix (EUR)",
    "family": "stagionalita intraday da flusso obbligato · valute",

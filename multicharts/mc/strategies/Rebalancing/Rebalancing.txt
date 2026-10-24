@@ -1,0 +1,142 @@
+{ =====================================================================
+  Rebalancing  -  davanti al ribilanciamento dei fondi pensione
+  ---------------------------------------------------------------------
+  Fonte: Harvey, Mazzoleni, Melone, "The Unintended Consequences of
+  Rebalancing", NBER w33554, versione 14/01/2026. Spec: SPEC.md.
+
+  IPOTESI: i fondi 60/40 devono vendere azioni quando sono sovrappesati
+  (e comprarle quando sono sottopesati), a soglia o a fine mese. Il
+  flusso e' obbligato e prevedibile dai rendimenti passati.
+
+  SEGNALE (Appendice B e sezione 4 del paper, senza modifiche):
+    - 26 portafogli 60/40 simulati, ribilanciati a soglia delta = 0..2,5%
+      Threshold = media delle loro deviazioni dal 60%
+    - 1 portafoglio ribilanciato l'ultimo giorno lavorativo del mese
+      Calendar = sua deviazione dal 60%
+    - peso = 1/2 (-Threshold / 1,5%) + 1/2 CalMod
+      CalMod = segno(-Calendar) negli ultimi 5 giorni lavorativi del mese,
+               segno(Calendar a T-4) il primo giorno lavorativo, 0 altrimenti
+    - direzione = segno del peso, sempre Num_Contracts
+
+  PREZZI: data1 e data2 alle 15:00 CT (il paper: con le 15:30 ET i
+  risultati non cambiano).
+
+  ORARI: ingresso alla riapertura delle 17:00 CT, uscita alle 15:40 CT
+  del giorno dopo. Per Lucid e' un'unica giornata (18:00 -> 16:45 ET).
+
+  CHART: data1 @ES 5 min (live: MES), data2 @TY 5 min, Globex 24h,
+         timezone Exchange (CT). Il grafico parte dal 01/01/2018 (lead-in
+         per far derivare i portafogli). Compilare come SIGNAL.
+         Log su un file con nome DIVERSO dalla copia del codice.
+  ===================================================================== }
+
+Inputs:
+    SigTime( 1500 ),           { ora dei prezzi del segnale, CT }
+    ExitTime( 1540 ),          { 5 minuti prima della chiusura d'ufficio Lucid }
+    Num_Contracts( 1 ),
+    TradeStartEL( 0 ),
+    TradeEndEL( 0 ),
+    ShowLog( 0 ),
+    LogPath( "C:\mc_out\rebal_log.txt" );
+
+Arrays:
+    wT[25]( 0.6 );             { portafogli a soglia, delta = indice x 0,1% }
+
+Vars:
+    yy( 0 ), mm( 0 ), dd( 0 ), mlen( 0 ), k( 0 ), rest( 0 ),
+    esC( 0 ), tyC( 0 ), rs( 0 ), rb( 0 ), base( 0 ), sumT( 0 ),
+    wC( 0.6 ), thr( 0 ), cal( 0 ), calT4( 0 ), calMod( 0 ), peso( 0 ),
+    week4( false ), primo( false ), dateOK( false ),
+    pendDir( 0 ), entDate( 0 ),
+    intrabarpersist prevEs( 0 ),
+    intrabarpersist prevTy( 0 ),
+    intrabarpersist prevSig( 0 ),
+    intrabarpersist sigDate( 0 );
+
+{ ===== 1. SEGNALE, una volta al giorno sulla barra delle 15:00 ===== }
+if Time = SigTime and Date <> sigDate then begin
+    sigDate = Date;
+    esC = Close;
+    tyC = Close of data2;
+
+    yy = IntPortion( Date / 10000 );
+    mm = Mod( IntPortion( Date / 100 ), 100 );
+    dd = Mod( Date, 100 );
+
+    { primo giorno lavorativo del mese: il mese e' cambiato dall'ultimo segnale }
+    primo = prevSig > 0 and Mod( IntPortion( prevSig / 100 ), 100 ) <> mm;
+
+    if prevEs > 0 and prevTy > 0 then begin
+        rs = esC / prevEs - 1;
+        rb = tyC / prevTy - 1;
+
+        { soglia: se ieri la deviazione era >= delta, alla chiusura di ieri e' tornato al 60% }
+        sumT = 0;
+        for k = 0 to 25 begin
+            base = wT[k];
+            if AbsValue( base - 0.6 ) >= k * 0.001 then base = 0.6;
+            wT[k] = base * ( 1 + rs ) / ( base * ( 1 + rs ) + ( 1 - base ) * ( 1 + rb ) );
+            sumT = sumT + ( wT[k] - 0.6 );
+        end;
+        thr = sumT / 26;
+
+        { calendario: ribilanciato alla chiusura dell'ultimo giorno lavorativo del mese scorso }
+        base = wC;
+        if primo then base = 0.6;
+        wC = base * ( 1 + rs ) / ( base * ( 1 + rs ) + ( 1 - base ) * ( 1 + rb ) );
+        cal = wC - 0.6;
+    end;
+    prevEs = esC; prevTy = tyC; prevSig = Date;
+
+    { giorni lavorativi del mese DOPO oggi (le festivita' non si vedono) }
+    mlen = 31;
+    if mm = 4 or mm = 6 or mm = 9 or mm = 11 then mlen = 30;
+    if mm = 2 then begin
+        mlen = 28;
+        if Mod( yy, 4 ) = 0 then mlen = 29;
+    end;
+    rest = 0;
+    for k = dd + 1 to mlen begin
+        if DayOfWeek( yy * 10000 + mm * 100 + k ) >= 1
+           and DayOfWeek( yy * 10000 + mm * 100 + k ) <= 5 then rest = rest + 1;
+    end;
+    week4 = rest <= 4;
+    if rest = 4 then calT4 = cal;           { T-4: il primo degli ultimi cinque }
+
+    if week4 then calMod = -Sign( cal )
+    else if primo then calMod = Sign( calT4 )
+    else calMod = 0;
+
+    peso = 0.5 * ( -thr / 0.015 ) + 0.5 * calMod;
+    pendDir = Sign( peso );
+
+    if ShowLog = 1 then
+        Print( File(LogPath), "RB ", Date:8:0, " ES ", esC:6:2, " TY ", tyC:4:6,
+               " thr ", thr:2:6, " cal ", cal:2:6, " rest ", rest:2:0,
+               " calMod ", calMod:2:0, " peso ", peso:2:4, " dir ", pendDir:2:0 );
+end;
+
+dateOK = ( TradeStartEL = 0 or Date >= TradeStartEL )
+     and ( TradeEndEL   = 0 or Date <= TradeEndEL );
+
+{ ===== 2. USCITA alle 15:40 ===== }
+if MarketPosition <> 0 and Time >= ExitTime and Time < 1700 then begin
+    if MarketPosition = 1  then Sell       ( "RB-L-x" ) next bar at market;
+    if MarketPosition = -1 then BuyToCover ( "RB-S-x" ) next bar at market;
+end;
+
+{ rete di sicurezza: uscita delle 15:40 saltata (chiusura anticipata), si
+  esce alla prima barra della sessione successiva }
+if MarketPosition <> 0 and Time >= 1700 and Date <> entDate then begin
+    if MarketPosition = 1  then Sell       ( "RB-safe-L" ) next bar at market;
+    if MarketPosition = -1 then BuyToCover ( "RB-safe-S" ) next bar at market;
+end;
+
+{ ===== 3. INGRESSO alla riapertura delle 17:00 ===== }
+if pendDir <> 0 and MarketPosition = 0 and dateOK
+   and Time >= 1700 and Time < 1800 then begin
+    if pendDir = 1  then Buy       ( "RB-L" ) Num_Contracts contracts next bar at market;
+    if pendDir = -1 then SellShort ( "RB-S" ) Num_Contracts contracts next bar at market;
+    entDate = Date;
+    pendDir = 0;
+end;
