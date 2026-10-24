@@ -1,0 +1,65 @@
+{ Mario_DaxFirstHour — codice di Andrea Unger, Trading System Supremacy
+  (13. Codici/DAXFirstHour/EasyLanguage/Dax FirstHour MC-TS.txt), trascritto senza modifiche.
+  ARCHIVIO, non testata: FDAX/FDXM sono Eurex, non tradabili sulle prop futures (Lucid).
+  DAX 5 min, ora dell'exchange (Francoforte), default di Unger. }
+
+// EasyLanguage (TradeStation) / PowerLanguage (MultiCharts) code
+// basic code to play around with :-)
+
+// DAX, 5min time frame, default settings, exchange time
+
+input: 
+	RangeMultiplier(0.95),
+	BegTime(0900),
+	EndTime(0955),
+	CloseTime(2155),
+	SkipDay(Friday),
+	MyContracts(1);
+
+variables:
+	minSetup(0), maxSetup(0),
+	slLong(0), slShort(0),
+	daily_factor(false);
+
+
+If Date <> Date[1] then begin
+	maxSetup = 0;
+	minSetup = 0;
+
+	daily_factor = absvalue(opend(1)-closed(1))<0.75*(highd(1)-lowd(1));
+end;
+
+If daily_factor and Time >= BegTime and Time <= EndTime and Dayofweek(date) <> SkipDay and EntriesToday(date) = 0 then begin
+
+	If maxSetup = 0 then begin
+		// do once @ BegTime
+		maxSetup = HighD(0) + RangeMultiplier * (HighD(0) - LowD(0));
+		slLong = HighD(0);
+	end;
+
+	Buy("LEx") MyContracts contracts Next Bar at maxSetup stop;
+
+
+	If minSetup = 0 then begin
+		// do once @ BegTime
+		minSetup = LowD(0) - RangeMultiplier * (HighD(0) - LowD(0));
+		slShort = LowD(0);
+	end;
+
+	SellShort("SEx") MyContracts contracts Next Bar at minSetup stop;
+
+end;
+
+Sell("LXx") from entry("LEx") Next Bar at slLong stop;
+BuyToCover("SXx") from entry("SEx") Next Bar at slShort stop;
+
+If Time >= CloseTime then begin
+	Sell("TimeLXx") from entry("LEx") Next Bar market;
+	BuyToCover("TimeSXx") from entry("SEx") Next Bar at market;
+end;
+
+Setstopcontract;
+SetStopLoss(1000);
+SetExitOnClose;	
+
+

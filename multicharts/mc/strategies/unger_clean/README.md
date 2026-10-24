@@ -21,7 +21,7 @@ Regole per ogni codice:
 | 4 | **Counter Trend** (`DevelopRev`, GBPUSD 30 min) | video 5x01 (codice) e 5x02 (parametri) | **cimitero, causa A** (rifatto il 24/10/2026 con il chart di GC in ora di New York, template 18-17 e `MyStartTime 300`): GC A t 0,31, GC B t −1,15 (negativo anche lordo). ES e YM senza edge (migliore YM B t 1,01) |
 | 5 | **Gap** (`GoldGapper`) | video 7x01 e 7x02 + `GapsFunctions.pla` | **cimitero, causa A** (24/10/2026): IS 2020–2024 A t 0,48 (94 trade), B t −0,59 (50 trade, negativo anche lordo). Troppo pochi trade comunque per la prop |
 | 6 | **BIAS** (`DevelopBIAS`, `DevelopBIASEURUSDFineTune`) | video 6x01 e 6x03 + screenshot dei settaggi | **trascritta e archiviata senza run** (23/10/2026): EURUSD 60 min, su Lucid solo 6E intero con stop di 160 pip = $2.000 = MLL; bias orario non portabile |
-| 7 | Dax FirstHour, Night FIB | `0. Risorse/MC-TS` (già puliti) | solo da portare nella pipeline |
+| 7 | Dax FirstHour, Night FIB | `0. Risorse/MC-TS` (già puliti) | **archivio, non testate** (24/10/2026): trascritte in `DaxFirstHour/` e `NightFIB/`; DAX (Eurex) e FTSE MIB (IDEM) non sono tradabili sulle prop. Daily Factor non è una strategia: è la funzione `abs(C − O) / (H − L)` del giorno, usata come filtro in Dax FirstHour |
 
 Nota: i file `9x02` e `9x03` del modulo 9 sono **lo stesso video** (stesso md5): manca la
 parte 3 originale.
