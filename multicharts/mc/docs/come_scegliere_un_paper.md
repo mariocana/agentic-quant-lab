@@ -25,7 +25,7 @@ un'ora, senza scrivere codice, prima di decidere se vale un run.
 | 6 | **Quanti anni ha?** | oltre 3-4 anni dalla pubblicazione, aspettarsi **meta' dell'edge** |
 | 7 | **Il t del paper e' ≥ 3?** | lo standard per il multiple testing (Harvey-Liu-Zhu, Hou-Xue-Zhang), ed e' la stessa soglia che usiamo noi |
 
-**Come si usa:** i punti 1, 3 e 5 sono **eliminatori** — se uno manca, il paper non entra.
+**Come si usa:** i punti 1, 3 e 5 sono **eliminatori** (dal 24/10 anche **8 e 9**, vedi in fondo) — se uno manca, il paper non entra.
 Gli altri danno il **prior**: decidono quanto aspettarsi, e quindi la soglia da
 pre-registrare.
 
@@ -119,3 +119,30 @@ un'intera giornata di lavoro: la risposta era gia' pubblicata.
 E il motivo probabile della moria e' uno solo: **dal 2022 le opzioni 0DTE hanno cambiato il
 posizionamento gamma dei dealer**, e gli effetti intraday sui futures su indice dipendono da li'.
 
+
+---
+
+## La domanda 8 diventa eliminatoria (24/10/2026)
+
+**Regola:** un paper il cui campione finisce prima del 2021 **non entra**, a meno che un lavoro
+recente — degli stessi autori o di altri — mostri che l'effetto e' vivo dopo il 2021. Senza
+deroghe. Eliminatorie ora sono **1, 3, 5, 8 e 9**.
+
+**Il caso che l'ha decisa: FX Fix.** Krohn-Mueller-Whelan (*JF* 2024), campione 1999-2018. Su
+EUR nel 2020-2024 la direzione c'e' ancora, ma ne resta **un quarto**: t lordo ~1 su entrambe le
+finestre, sotto i costi del contratto intero. Il paper era passato con la domanda 8 segnata come
+rischio, non come blocco.
+
+**Perche' non bastava saperlo:** il caso FX Fix esclude la spiegazione "e' colpa delle 0DTE".
+Le valute non dipendono dal gamma dei dealer azionari, eppure il decadimento e' lo stesso. Il
+fattore comune e' piu' semplice: **effetto pubblicato, campione vecchio**.
+
+| candidata | campione del paper | quanto ne restava nel nostro IS |
+|---|---|---|
+| LastHalfHour (Baltussen et al.) | fino al 2020 | t −0,22 dopo maggio 2020 |
+| overnight drift (Boyarchenko et al.) | fino al 2020 | dichiarato morto dagli autori |
+| FX Fix (Krohn-Mueller-Whelan) | fino al 2018 | 23-28% del lordo |
+
+**Come si applica in pratica:** il primo controllo su un paper e' la data di fine del campione.
+Se e' prima del 2021, si cerca "citato da" su Google Scholar e un follow-up degli autori; se non
+c'e' evidenza post-2021, ci si ferma li', prima di leggere il resto.

@@ -491,8 +491,11 @@ quota grande delle anomalie non si replica. Per ogni candidata, compila questa s
 5. **Intraday con flat entro la sessione**, e quanti segnali al giorno? — ELIMINATORIO
 6. **Anni dalla pubblicazione** (oltre 3-4: aspettarsi meta' dell'edge)
 7. **t del paper >= 3**?
+8. **Il campione arriva oltre il 2021**, o un lavoro recente mostra che l'effetto e' vivo dopo
+   il 2021? — ELIMINATORIO
+9. **I dati che il segnale richiede sono accessibili** (niente posizioni proprietarie)? — ELIMINATORIO
 
-Se 1, 3 o 5 mancano, la candidata NON entra, per quanto sembri promettente. Riporta la scheda
+Se 1, 3, 5, 8 o 9 mancano, la candidata NON entra, per quanto sembri promettente. Riporta la scheda
 compilata per ogni candidata, con la fonte di ogni risposta. Dettagli in
 `mc/docs/come_scegliere_un_paper.md`.
 
