@@ -1,0 +1,43 @@
+{ Mario_WeeklyBump — WeeklyBump di Andrea Unger, Trading System Supremacy
+  (12. Materiale extra/12x02.2 - WeeklyBump.rtf, codice TradeSense per Trade Navigator),
+  riscritto in PowerLanguage il 24/10/2026.
+  ARCHIVIO, non testata: tiene la posizione per tutta la settimana, contro "flat prima
+  della chiusura" delle prop.
+
+  Unger: barre SETTIMANALI, paniere di 67 futures (MyFuturesGroup67), 2003-2010,
+  commissioni e slippage $50. Strategia multi-mercato: stesse regole su ogni strumento.
+
+  Regole TradeSense -> PowerLanguage:
+    LEWB2: Consecutive(abs(O - C) < wf * Range) > cong  (settimana di indecisione:
+           corpo sotto meta' del range) and close > low + perc * range
+           -> buy next bar at high stop  (breakout del massimo della settimana)
+    SEWB2: idem, close < high - perc * range -> sellshort next bar at low stop
+    Stop  : entry -/+ ATR(ran) / portionSL   (ran > 0; con ran = 0 usa il range della barra)
+    Target: entry +/- ATR(ran) * TP
+    EOWLX / EOWSX: uscita alla chiusura della settimana d'ingresso.
+  Default: wf 0,5, cong 0, perc 0,5, ran 2, portionSL 3, TP 2,5.
+  Stop e target attivi anche sulla barra d'ingresso: in MultiCharts servono
+  SetStopLoss / SetProfitTarget (in $ a contratto). L'uscita "market on close" della
+  settimana d'ingresso: sulla chiusura della barra la posizione e' gia' aperta, quindi
+  "this bar at close". }
+
+Input: wf(0.5), cong(0), perc(0.5), ran(2), portionSL(3), TP(2.5);
+
+var: cnt(0), dist(0);
+
+if absvalue(open - close) < wf * range then cnt = cnt + 1 else cnt = 0;
+
+if ran > 0 then dist = AvgTrueRange(ran) else dist = range;
+
+{ uscita a fine settimana per la posizione aperta in questa barra }
+if marketposition = 1 then sell ("EOWLX") this bar at close;
+if marketposition = -1 then buytocover ("EOWSX") this bar at close;
+
+if cnt > cong then begin
+	if close > low + perc * range then buy ("LEWB2") next bar at high stop;
+	if close < high - perc * range then sellshort ("SEWB2") next bar at low stop;
+end;
+
+setstopcontract;
+if portionSL > 0 then setstoploss(dist / portionSL * BigPointValue);
+if TP > 0 then setprofittarget(dist * TP * BigPointValue);

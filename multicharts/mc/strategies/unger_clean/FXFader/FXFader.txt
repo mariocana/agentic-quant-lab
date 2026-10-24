@@ -1,0 +1,38 @@
+{ Mario_FXFader — FXFader di Andrea Unger, Trading System Supremacy
+  (12. Materiale extra/12x02.1 - FXFader.rtf, codice TradeSense per Trade Navigator),
+  riscritto in PowerLanguage il 24/10/2026.
+  ARCHIVIO, non testata: su 6B lo stop di 100 tick vale $625 a contratto (causa B) ed e'
+  la stessa idea di ESCounter, gia' in cimitero per causa A.
+
+  Unger: British Pound future (6B), 60 min (data1) + giornaliero (data2), 2008-2013,
+  commissioni e slippage $30.
+
+  Regole TradeSense -> PowerLanguage:
+    LongFade : BarOfDay > 2 and BarOfDay < 22 and close incrocia al rialzo il minimo
+               di ieri and range di ieri < range dell'altro ieri -> buy next bar at market
+    ShortFade: idem con il massimo di ieri, incrocio al ribasso -> sellshort
+    Stop 100 tick, target 0 (spento), attivi anche sulla barra d'ingresso.
+    Nessuna uscita a tempo: stop o inversione.
+  "Low Of Daily" e "Range Of daily" in Trade Navigator, su una barra intraday, sono quelli
+  dell'ultima barra giornaliera chiusa (ieri): un close non puo' incrociare al rialzo il
+  minimo della giornata in corso. In MultiCharts low of data2 e' gia' l'ultima giornata
+  chiusa. BarOfDay = numero della barra nella sessione, contato da 1. }
+
+Input: StopTicks(100), TargetTicks(0);
+
+var: bod(0), tick(0), rngY(0), rngYY(0);
+
+if CurrentSession(0) <> CurrentSession(0)[1] then bod = 1 else bod = bod + 1;
+
+tick  = MinMove / PriceScale;
+rngY  = high of data2 - low of data2;
+rngYY = high[1] of data2 - low[1] of data2;
+
+if bod > 2 and bod < 22 and rngY < rngYY then begin
+	if close crosses above low of data2 then buy ("LongFade") next bar at market;
+	if close crosses below high of data2 then sellshort ("ShortFade") next bar at market;
+end;
+
+setstopcontract;
+if StopTicks > 0 then setstoploss(StopTicks * tick * BigPointValue);
+if TargetTicks > 0 then setprofittarget(TargetTicks * tick * BigPointValue);
