@@ -29,16 +29,21 @@
     3) Uscite: stop myloss $ per contratto, target myprofit $;
        MyExit 0 = flat a fine sessione, MyExit 1 = flat alla barra sEnd.
 
-  ORARI: 20:05 New York = 19:05 Chicago; 19:00 NY = 18:00 CT;
-         16:00 NY = 15:00 CT. Su chart in CT: sBeg 1905, sEnd 1800 (A)
-         oppure 1500 (B).
+  ORARI: per TradeStation l'exchange di @GC e' il COMEX di NEW YORK:
+         con Time Zone "Exchange" il chart e' in ora di New York, come
+         quello di Unger (verificato il 24/10/2026: prima barra dopo la
+         pausa = 18:05). Quindi si usano i suoi orari: sBeg 2005,
+         sEnd 1900 (variante A) oppure 1600 (variante B).
 
-  CHART: @GC 5 min, session template 17:00-16:00 CT senza pause,
-         timezone Exchange (CT), Bar Magnifier 1 min ON.
+  CHART: @GC 5 min, timezone Exchange (= New York), session template
+         domenica-venerdi' 18:00-17:00 in ora dell'exchange, senza pause
+         (NON il "CME Globex 17-16 no break" di ES: su GC vale 17-16 di
+         New York, taglia l'ultima ora e non ha la barra delle 18:00).
+         Bar Magnifier 1 min ON.
   COSTI: 12.5$ per Contract ($2,50 + tick $10), slippage 0.
   ===================================================================== }
 
-Input: sBeg(1905), sEnd(1800);
+Input: sBeg(2005), sEnd(1900);
 Input: myloss(2000), myprofit(0);
 input: MyptnLY(41), MyPtnSY(41), MyPtnLN(42), MyPtnSN(42);   { non usati (come in Unger) }
 input: Myexit(1);

@@ -17,19 +17,20 @@ $100.000 a ~$147.000 a gradini, cioè **pochi trade** (costi non visibili).
 | | |
 |---|---|
 | Famiglia | mean reversion / chiusura del gap, long e short |
-| Strumento · TF | **@GC** (sviluppo) → **MGC** (÷10) · **5 min** · Globex 17:00–16:00 CT senza pause, chart CT |
-| Giornata | personalizzata, da **19:05 CT** (= 20:05 NY) a **18:00 CT** (= 19:00 NY) del giorno dopo |
-| Gap | apertura della barra delle 19:05 sopra il massimo / sotto il minimo della giornata precedente |
+| Strumento · TF | **@GC** (sviluppo) → **MGC** (÷10) · **5 min** · chart in **ora di New York** (Exchange di @GC), sessione 18:00–17:00 ET senza pause |
+| Giornata | personalizzata, da **20:05** a **19:00** (ora di New York) del giorno dopo |
+| Gap | apertura della barra delle 20:05 sopra il massimo / sotto il minimo della giornata precedente |
 | Short | sell stop al **massimo** di ieri, se il gap è su |
 | Long | buy stop al **minimo** di ieri, se il gap è giù |
-| Ingressi | al massimo uno per data di calendario (`TradesToday`), dentro la finestra 19:05 → 18:00 |
+| Ingressi | al massimo uno per data di calendario (`TradesToday`), dentro la finestra 20:05 → 19:00 |
 | Stop / target | **$2.000 a contratto GC** (20 punti) / nessuno |
 | Uscita | alla barra `sEnd` (`MyExit 1`) |
 | Filtri di pattern | **commentati** nel codice di Unger: non usati |
 
 **Fuso orario.** `MyGapFinder(1805, 1700)` del 7x01 è esattamente la giornata Globex 18:00–17:00
-**di New York**, quindi il grafico di Unger è in ora di New York: le sue 20:05 / 19:00 / 16:00
-sono 19:05 / 18:00 / 15:00 CT.
+**di New York**. Per TradeStation l'exchange di @GC è il COMEX di New York, quindi con
+`Time Zone: Exchange` anche il nostro chart è in ora di New York (verificato il 24/10/2026: la
+prima barra dopo la pausa è quella delle 18:05). Si usano gli orari di Unger così come sono.
 
 **Le funzioni.** `_DayDefinition`, `Time00` e `TradesToday` si importano dal `GapsFunctions.pla`
 del corso (febbraio 2016, quello dei video). Il `_DayDefinition.txt` di maggio 2016 ha una
@@ -43,8 +44,8 @@ video; tutto dopo febbraio 2016 è fuori campione per l'autore.
 
 | variante | `sBeg` | `sEnd` | `MyExit` | ruolo |
 |---|---|---|---|---|
-| **A** | 1905 | **1800** | 1 | l'ultimo valore sul grafico di Unger (19:00 NY): la posizione attraversa la chiusura delle 16:00 e la pausa |
-| **B** | 1905 | **1500** | 1 | l'altro valore di Unger e il default del codice (16:00 NY): **flat prima della chiusura**, caso base per la prop |
+| **A** | 2005 | **1900** | 1 | l'ultimo valore sul grafico di Unger: la posizione attraversa la chiusura delle 17:00 e la pausa |
+| **B** | 2005 | **1600** | 1 | l'altro valore di Unger e il default del suo codice: **flat prima della chiusura** (17:00), caso base per la prop |
 
 Unger alterna i due valori dopo aver ottimizzato `sEnd`; nel video la scelta finale non è
 esplicita. Si testano tutti e due, e **il caso base per la prop è B**.
