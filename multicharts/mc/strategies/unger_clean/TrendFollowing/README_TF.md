@@ -73,3 +73,15 @@ non il "CME Globex 17-16 no break". Conseguenze:
   del giorno prima, e i pattern di "ieri" leggono il giorno di calendario.
 Da rifare A e B su @EC con il template 17-16. Il run B è stato fatto con il vecchio
 `Mario_UngerTF_B` (log `TFB`), con la stessa logica di `Versione 1`.
+
+**Run B su @GC (24/10/2026) — meccanica giusta.** 19 trade in 130 giorni, report
+`TF_S1_GC_B_x1.xlsx`, log `TF_S1_GC_B_log.txt` (tolte due righe di un primo giro con
+`StopPts 0.56` al posto di `StopPct`).
+- Ingressi fra le 03:30 e le 04:44 di New York, uno al giorno; dopo uno stop nessun rientro,
+  perché la finestra è già chiusa.
+- Stop allo **0,56% del prezzo d'entrata** (es. 4.413,80 → $2.471,73, uscita 24,8 punti sotto) e
+  target all'1,9%: mai toccato, le vincenti escono a fine sessione.
+- Uscita di fine sessione alle **17:00** NY (template 18-17 giusto); il 19/06 alle 12:59, chiusura
+  anticipata per Juneteenth.
+- **Commissione impostata a 8.65$** (quella di @EC) invece di 12.5$: non cambia la meccanica, ma
+  nello Stage 2 su GC va 12.5$.
