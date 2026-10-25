@@ -30,9 +30,9 @@ e il trader risponde di errori e malfunzionamenti del proprio software.
 | Tipo di drawdown | **EOD trailing** sul massimo saldo di *chiusura* |
 | Initial Trail Balance | $52.100 → superato, l'MLL **si blocca** |
 | Locked MLL | $50.100 |
-| Consistency | 50% (con cushion: si può passare in 2 giorni) |
+| Consistency | **40%** standard, 50% con add-on: giorno migliore ≤ quota del profitto, altrimenti si continua (verificato sul sito il 25/10/2026; `prop_sim` la modella dal 25/10) |
 | Size massima | 4 mini / 40 micro |
-| Daily loss limit | **nessuno** (opzionale al checkout) |
+| Daily loss limit | opzionale al checkout: **$1.200 On** (eval $69 con coupon) oppure Off (+$35 di listino); è soft, chiude la giornata e non il conto |
 | Commissioni | NQ **$1.75/lato**, MNQ **$0.50/lato**, GC $2.30, MGC $0.80 |
 
 **Il trailing si ferma prima del target**: l'MLL insegue il saldo solo fino a $52.100, poi
@@ -110,7 +110,7 @@ migliore ma un MLL di $1.200 che le nostre strategie NQ non reggono nemmeno a 1 
   mezzo micro. **Bocciata dalla seconda condizione.** Le due vanno verificate entrambe;
 - ignora l'**EOD trailing**: nel tratto iniziale (fino a $2.100 di profitto) il pavimento si
   alza, quindi il margine reale è più stretto di MLL;
-- ignora la **consistency 50%** e l'**ordine dei trade** (li copre il Monte Carlo);
+- ignora la **consistency** e l'**ordine dei trade** (li copre il Monte Carlo);
 - P e D vanno misurati sulla stessa finestra e con gli stessi costi.
 
 > **Ritrattazione (01/10/2026).** Avevo derivato da qui una soglia «MC-robusta» di 3,86 sul

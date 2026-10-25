@@ -42,14 +42,14 @@ COMM_FULL    = 15.00   # $/round-turn gia' dentro il P&L del report (NQ: 7,50 pe
 GUARDIA_GG   = 60      # senza scadenza, un tentativo ancora aperto dopo 60 giorni conta come non passato
 
 # regole del conto in uso: le imposta usa_prop()
-CONTO = TARGET = MLL = LOCK = COMM_MICRO = DLL = 0.0
+CONTO = TARGET = MLL = LOCK = COMM_MICRO = DLL = CONSISTENCY = 0.0
 COSTO_TENT = ATTIVAZIONE = None
 PROP = {}
 
 
 def leggi_prop():
     """Tutte le prop di prop_firms.ini, come {sezione: dict}."""
-    cp = configparser.ConfigParser(inline_comment_prefixes=('#',))
+    cp = configparser.ConfigParser(inline_comment_prefixes=('#',), interpolation=None)
     if not cp.read(PROP_FILE, encoding='utf8'):
         raise SystemExit('manca %s' % PROP_FILE)
     def num(v):
@@ -60,6 +60,7 @@ def leggi_prop():
         out[s] = dict(sezione=s, nome=c['nome'], conto=num(c['conto']), target=num(c['target']),
                       mll=num(c['mll']), trailing=c['trailing'].strip().lower(),
                       lock_sopra_conto=num(c['lock_sopra_conto']), dll=num(c['dll']) or 0.0,
+                      consistency=num(c['consistency']) or 0.0,
                       giorni_max=int(num(c['giorni_max']) or 0),
                       costo_tentativo=num(c['costo_tentativo']), attivazione=num(c['attivazione']),
                       comm_micro_rt=num(c['comm_micro_rt']), max_micro=num(c['max_micro']),
@@ -69,7 +70,7 @@ def leggi_prop():
 
 def usa_prop(p):
     """Imposta le regole del conto su cui girano tentativo() e il resto."""
-    global CONTO, TARGET, MLL, LOCK, COMM_MICRO, DLL, COSTO_TENT, ATTIVAZIONE, PROP
+    global CONTO, TARGET, MLL, LOCK, COMM_MICRO, DLL, CONSISTENCY, COSTO_TENT, ATTIVAZIONE, PROP
     if p['trailing'] != 'eod':
         raise SystemExit('%s: trailing %r non supportato, solo eod' % (p['nome'], p['trailing']))
     PROP = p
@@ -79,6 +80,7 @@ def usa_prop(p):
     COSTO_TENT = p['costo_tentativo']
     ATTIVAZIONE = p['attivazione']
     DLL = p['dll']
+    CONSISTENCY = p['consistency']
 
 
 def wilson(k, n, z=1.96):
@@ -159,6 +161,9 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
     profitto e' sotto +buffer, poi n_micro. La size si decide all'ingresso di ogni trade.
     Con ratchet=False si torna piccoli se il profitto riscende sotto il buffer.
 
+    Consistency (> 0): al target si passa solo se la giornata migliore vale al massimo
+    quella quota del profitto; se no si continua (LucidFlex 40%).
+
     Daily loss limit (DLL > 0): se la perdita della giornata, aperti inclusi, arriva al
     DLL, la posizione si chiude li' e la giornata finisce; il conto resta vivo (Apex).
     Si assume l'uscita esattamente sulla soglia: dal vivo e' a mercato, un po' sopra o sotto.
@@ -167,8 +172,10 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
     """
     bal, picco_eod, limite = CONTO, CONTO, CONTO - MLL
     grande = gradini is None
+    giorno_max = 0.0                           # miglior giornata chiusa, per la consistency
     g = 0
     for g, trades in enumerate(seq_giorni, 1):
+        inizio = bal
         stop_dll = bal - DLL if DLL else None
         for t, giu in trades:
             n = n_micro
@@ -187,7 +194,11 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
             if bal <= limite:
                 return 'fail', g
             if bal >= CONTO + TARGET:
-                return 'pass', g
+                # consistency: il giorno migliore (oggi compreso) <= quota del profitto,
+                # altrimenti si continua a tradare (Lucid: "keep trading until...")
+                if not CONSISTENCY or max(giorno_max, bal - inizio) <= CONSISTENCY * (bal - CONTO):
+                    return 'pass', g
+        giorno_max = max(giorno_max, bal - inizio)
         picco_eod = max(picco_eod, bal)        # il trailing si aggiorna a fine giornata
         limite = min(picco_eod - MLL, LOCK)
         if giorni_max and g >= giorni_max:
@@ -213,7 +224,8 @@ def sim_gradini(giorni, n_micro, iniziali, buffer, n_sim, giorni_max, seed, ratc
 
     Stesse sequenze per tutte le varianti (numeri casuali comuni): la differenza fra
     le righe e' l'effetto dei gradini, non del campionamento.
-    Ritorna [(micro_iniziali, pass, n), ...], la prima riga e' la size piena.
+    Ritorna [(micro_iniziali, pass, n, giorni mediani al pass), ...], la prima riga e' la
+    size piena.
     """
     pool = [t for _, t in giorni]
     rng = random.Random(seed)
@@ -222,8 +234,8 @@ def sim_gradini(giorni, n_micro, iniziali, buffer, n_sim, giorni_max, seed, ratc
     out = []
     for m in [n_micro] + iniziali:
         grad = None if m == n_micro else (m, buffer, ratchet)
-        k = sum(1 for s in seqs if tentativo(s, n_micro, giorni_max, grad)[0] == 'pass')
-        out.append((m, k, n_sim))
+        gg = [g for e, g in (tentativo(s, n_micro, giorni_max, grad) for s in seqs) if e == 'pass']
+        out.append((m, len(gg), n_sim, sorted(gg)[len(gg) // 2] if gg else 0))
     return out
 
 
@@ -377,10 +389,11 @@ def main():
     tot = sum(len(t) for _, t in giorni)
     print('Conto $%s | target +$%s | MLL $%s trailing EOD (lock $%s) | tentativo %s'
           % (f'{CONTO:,.0f}', f'{TARGET:,.0f}', f'{MLL:,.0f}', f'{LOCK:,.0f}', _dollari(COSTO_TENT)))
-    print('Scadenza: %s | DLL %s | regole verificate: %s'
+    print('Scadenza: %s | DLL %s | consistency %s | regole verificate: %s'
           % ('%d giorni' % PROP['giorni_max'] if PROP['giorni_max']
              else 'nessuna (tentativo aperto dopo %d giorni = non passato)' % giorni_max,
              '$%s (chiude la giornata, non il conto)' % f'{DLL:,.0f}' if DLL else 'nessuno',
+             '%.0f%%' % (100 * CONSISTENCY) if CONSISTENCY else 'nessuna',
              PROP['verificato']))
     print('Dati: %s -> %s | %d giorni | %d trade | costo micro $%.2f/round-turn'
           % (d1, d2, len(giorni), tot, comm_micro))
@@ -477,16 +490,16 @@ def main():
         print('   con %d micro non c\'e\' una size piu\' piccola da provare' % migliore)
     else:
         righe = sim_gradini(giorni, migliore, iniziali, buffer, n_sim, giorni_max, 20261024, ratchet)
-        _m0, k0, n0 = righe[0]
+        _m0, k0, n0, gg0 = righe[0]
         lo0, hi0 = wilson(k0, n0)
-        print('   %-14s %7s %11s %9s' % ('partenza', 'pass%', 'IC 95%', 'vs pieni'))
-        print('   %-14s %7.1f %5.1f-%-5.1f %9s' % ('%d pieni' % migliore, 100.0 * k0 / n0,
-                                                  100 * lo0, 100 * hi0, 'base'))
+        print('   %-14s %7s %11s %9s %11s' % ('partenza', 'pass%', 'IC 95%', 'vs pieni', 'gg mediani'))
+        print('   %-14s %7.1f %5.1f-%-5.1f %9s %11d' % ('%d pieni' % migliore, 100.0 * k0 / n0,
+                                                       100 * lo0, 100 * hi0, 'base', gg0))
         meglio = peggio = False
-        for m, k, n in righe[1:]:
+        for m, k, n, gg in righe[1:]:
             lo, hi = wilson(k, n)
-            print('   %-14s %7.1f %5.1f-%-5.1f %+8.1f pp' % ('%d -> %d' % (m, migliore), 100.0 * k / n,
-                                                         100 * lo, 100 * hi, 100.0 * (k - k0) / n))
+            print('   %-14s %7.1f %5.1f-%-5.1f %+8.1f pp %11d' % ('%d -> %d' % (m, migliore), 100.0 * k / n,
+                                                              100 * lo, 100 * hi, 100.0 * (k - k0) / n, gg))
             meglio = meglio or lo > hi0
             peggio = peggio or hi < lo0
         if meglio:
