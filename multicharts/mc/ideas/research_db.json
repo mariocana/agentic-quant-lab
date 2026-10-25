@@ -90,6 +90,48 @@
     }
    ]
   },
+  "alphaarchitect.com/market-return-around-the-clock": {
+   "url": "https://alphaarchitect.com/market-return-around-the-clock/",
+   "title": "Market Return Around the Clock: A Puzzle",
+   "kind": "site",
+   "verdict": "scartato",
+   "reason": "Fetch 403; il paper recensito e' scartato per il filtro 8, nessun motivo per riaprirla",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    },
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "scartato",
+     "reason": "Fetch 403; il paper recensito e' scartato per il filtro 8, nessun motivo per riaprirla"
+    }
+   ]
+  },
+  "alphaarchitect.com?p=57408": {
+   "url": "https://alphaarchitect.com/?p=57408",
+   "title": "Market Return Around the Clock: A Puzzle",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "amanda.ece.utah.edu/2026/10/17/s-p-500-futures-indicators-reports-and-risk-control-i1710a7": {
    "url": "https://amanda.ece.utah.edu/2026/10/17/s-p-500-futures-indicators-reports-and-risk-control-i1710a7/",
    "title": "S & P 500 Futures: Indicators, Reports and Risk Control",
@@ -852,6 +894,30 @@
     }
    ]
   },
+  "avaneendra.substack.com/p/the-stock-market-paid-37-a-year-in": {
+   "url": "https://avaneendra.substack.com/p/the-stock-market-paid-37-a-year-in",
+   "title": "The Stock Market Paid 3.7% a Year in One Sleeping Hour. Then the Hour Went Silent.",
+   "kind": "site",
+   "verdict": "scartato",
+   "reason": "Riassunto del paper con Sharpe lordo/netto e strategia condizionata; nessun backtest proprio",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    },
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "scartato",
+     "reason": "Riassunto del paper con Sharpe lordo/netto e strategia condizionata; nessun backtest proprio"
+    }
+   ]
+  },
   "bankofcanada.ca/wp-content/uploads/2021/10/swp2021-48.pdf": {
    "url": "https://www.bankofcanada.ca/wp-content/uploads/2021/10/swp2021-48.pdf",
    "title": "Foreign Exchange Fixings and Returns Around the Clock",
@@ -891,6 +957,24 @@
      "run": "seed:candidate_lucidflex_50k_v5.md",
      "verdict": "scartato",
      "reason": "Studio su manipolazione prima e dopo la riforma, nessuna regola tradabile"
+    }
+   ]
+  },
+  "benefitscanada.com?p=91484": {
+   "url": "https://www.benefitscanada.com/?p=91484",
+   "title": "www.benefitscanada.com",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
     }
    ]
   },
@@ -1008,6 +1092,60 @@
     }
    ]
   },
+  "business.dptribune.com/dptribune/news/read/42195698/european_markets_head_for_flat_open_as_russia": {
+   "url": "https://business.dptribune.com/dptribune/news/read/42195698/european_markets_head_for_flat_open_as_russia",
+   "title": "European markets head for flat open as Russia-Ukraine fears subside; earnings in focus",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "business.dptribune.com/dptribune/news/read/42202594/european_markets_set_for_cautious_open_as_russia": {
+   "url": "https://business.dptribune.com/dptribune/news/read/42202594/european_markets_set_for_cautious_open_as_russia",
+   "title": "European markets set for cautious open as Russia-Ukraine crisis develops",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "business.dptribune.com/dptribune/news/read/42207920/european_markets_set_to_fall_sharply_at_the_open_as_russia": {
+   "url": "https://business.dptribune.com/dptribune/news/read/42207920/european_markets_set_to_fall_sharply_at_the_open_as_russia",
+   "title": "European markets set to fall sharply at the open as Russia-Ukraine tensions rise",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "c.mql5.com/forextsd/forum/173/intraday_momentum_-_the_first_half-hour_return_predicts_the_last_half-hour_return.pdf": {
    "url": "https://c.mql5.com/forextsd/forum/173/intraday_momentum_-_the_first_half-hour_return_predicts_the_last_half-hour_return.pdf",
    "title": "Intraday Momentum: The First Half-Hour Return Predicts ...",
@@ -1021,6 +1159,24 @@
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "causalclaims.trfetzer.com/paper/dp14462.html": {
+   "url": "https://causalclaims.trfetzer.com/paper/DP14462.html",
+   "title": "The Overnight Drift",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
     }
@@ -1047,6 +1203,24 @@
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "scartato",
      "reason": "Prima mezz'ora predice l'ultima in 12 mercati su 16: famiglia LastHalfHour, già in pipeline"
+    }
+   ]
+  },
+  "cepr.org/publications/dp14462": {
+   "url": "https://cepr.org/publications/dp14462",
+   "title": "English Français Deutsch Italiano 中文",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
     }
    ]
   },
@@ -1089,6 +1263,126 @@
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "scartato",
      "reason": "Famiglia ON_Reversal, già morta nei nostri dati (IS t -2,24)"
+    }
+   ]
+  },
+  "clearedge.trading/post/es-futures-trading-hours-automation-strategies": {
+   "url": "https://www.clearedge.trading/post/es-futures-trading-hours-automation-strategies",
+   "title": "ES Futures Trading Hours: Best Sessions For Automation Strategies",
+   "kind": "vendor",
+   "verdict": "scartato",
+   "reason": "Affermazioni sulla London open senza dati; nessuna regola",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    },
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "scartato",
+     "reason": "Affermazioni sulla London open senza dati; nessuna regola"
+    }
+   ]
+  },
+  "cmegroup.com/education/frequently-asked-questions-micro-e-mini-equity-index-futures.html": {
+   "url": "https://www.cmegroup.com/education/frequently-asked-questions-micro-e-mini-equity-index-futures.html",
+   "title": "Frequently Asked Questions: Micro E-mini Equity Index Futures",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "cmegroup.com/markets/equities/sp/micro-e-mini-sandp-500.contractspecs.html": {
+   "url": "https://cmegroup.com/markets/equities/sp/micro-e-mini-sandp-500.contractSpecs.html",
+   "title": "Micro E-mini S&P 500 Index",
+   "kind": "site",
+   "verdict": "scartato",
+   "reason": "Specifica, non strategia: MES $5/pt, tick 0,25 = $1,25, orari 18:00-17:00 ET (da risultati di ricerca)",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    },
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "scartato",
+     "reason": "Specifica, non strategia: MES $5/pt, tick 0,25 = $1,25, orari 18:00-17:00 ET (da risultati di ricerca)"
+    }
+   ]
+  },
+  "cmegroup.com/markets/equities/sp/micro-e-mini-sandp-500.contractspecs.options.html": {
+   "url": "https://cmegroup.com/markets/equities/sp/micro-e-mini-sandp-500.contractSpecs.options.html",
+   "title": "Micro E-mini S&P 500 Index",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "cmegroup.com/notices/ser/2019/04/ser-8360.pdf": {
+   "url": "https://www.cmegroup.com/notices/ser/2019/04/SER-8360.pdf",
+   "title": "SER 8360",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "cmegroup.com/trading/equity-index/us-index/micro-e-mini-sandp-500_contract_specifications.html": {
+   "url": "https://cmegroup.com/trading/equity-index/us-index/micro-e-mini-sandp-500_contract_specifications.html",
+   "title": "Micro E-mini S&P 500 Index",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
     }
    ]
   },
@@ -1188,6 +1482,24 @@
     }
    ]
   },
+  "crosstrade.io/learn/prop-firm-ai-trading/lucid-trading": {
+   "url": "https://crosstrade.io/learn/prop-firm-ai-trading/lucid-trading",
+   "title": "Lucid Trading and AI Workflows for NinjaTrader",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "crosstrade.io/learn/technical-indicators/vwap": {
    "url": "https://crosstrade.io/learn/technical-indicators/vwap",
    "title": "VWAP",
@@ -1224,6 +1536,24 @@
     }
    ]
   },
+  "crosstrade.io/prop-firms/lucid-trading": {
+   "url": "https://crosstrade.io/prop-firms/lucid-trading",
+   "title": "Built for Lucid Trading",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "damnpropfirms.com/glossary/m2k-futures": {
    "url": "https://damnpropfirms.com/glossary/m2k-futures/",
    "title": "M2K (Micro E-mini Russell 2000 Futures)",
@@ -1237,6 +1567,42 @@
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "damnpropfirms.com/prop-firms/lucid-trading-rules-payouts": {
+   "url": "https://damnpropfirms.com/prop-firms/lucid-trading-rules-payouts/",
+   "title": "Last Updated · July 2026",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "damnpropfirms.com/trading-guides/lucid-trading-payouts-explained": {
+   "url": "https://damnpropfirms.com/trading-guides/lucid-trading-payouts-explained/",
+   "title": "Last Updated · July 2026",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
     }
@@ -1428,6 +1794,24 @@
     }
    ]
   },
+  "dii.uchile.cl?p=99939": {
+   "url": "https://www.dii.uchile.cl/?p=99939",
+   "title": "www.dii.uchile.cl",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "doi:10.1007/s11579-020-00278-7": {
    "url": "https://link.springer.com/article/10.1007/s11579-020-00278-7",
    "title": "Equilibrium effects of intraday order-splitting benchmarks",
@@ -1503,6 +1887,24 @@
      "run": "seed:candidate_lucidflex_50k_v5.md",
      "verdict": "scartato",
      "reason": "Trading informato; direzione della sorpresa non nota prima; 7 annunci; 2008-2014"
+    }
+   ]
+  },
+  "econpapers.repec.org/repec:fip:fednls:103479": {
+   "url": "https://econpapers.repec.org/RePEc:fip:fednls:103479",
+   "title": "econpapers.repec.org",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
     }
    ]
   },
@@ -1632,6 +2034,24 @@
     }
    ]
   },
+  "fa-mag.com/news/do-you-know-what-your-stocks-are-doing-at-night-68638.html?page=2": {
+   "url": "https://www.fa-mag.com/news/do-you-know-what-your-stocks-are-doing-at-night-68638.html?page=2",
+   "title": "do you know what your stocks are doing at night 68638",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "faculty.haas.berkeley.edu/hender/liq_provision_ret_predict_jbf.pdf": {
    "url": "https://faculty.haas.berkeley.edu/hender/liq_provision_ret_predict_JBF.pdf",
    "title": "Liquidity provision and stock return predictability",
@@ -1689,6 +2109,60 @@
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "scartato",
      "reason": "Reversal su orizzonte di giorni: viola il flat EOD (da estratto)"
+    }
+   ]
+  },
+  "fedinprint.org/item/fednls/103479": {
+   "url": "https://www.fedinprint.org/item/fednls/103479",
+   "title": "The Disappearing Overnight Drift",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "fedinprint.org/item/fednls/92064": {
+   "url": "https://fedinprint.org/item/fednls/92064",
+   "title": "fedinprint.org",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "feedbagel.com/post/the-disappearing-overnight-drift": {
+   "url": "https://feedbagel.com/post/the-disappearing-overnight-drift",
+   "title": "The Disappearing Overnight Drift",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
     }
    ]
   },
@@ -1992,6 +2466,84 @@
     }
    ]
   },
+  "ideas.repec.org/a/cup/jfinqa/v58y2023i3p939-967_1.html": {
+   "url": "https://ideas.repec.org/a/cup/jfinqa/v58y2023i3p939-967_1.html",
+   "title": "IDEAS home Printed from https://ideas.repec.org/a/cup/jfinqa/v58y2023i3p939-967_1.html",
+   "kind": "paper",
+   "verdict": "scartato",
+   "reason": "Campione 2004-2018 senza follow-up post-2021; stessa finestra dell'apertura europea gia' morta (filtro 8)",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    },
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "scartato",
+     "reason": "Campione 2004-2018 senza follow-up post-2021; stessa finestra dell'apertura europea gia' morta (filtro 8)"
+    }
+   ]
+  },
+  "ideas.repec.org/f/c/pbo573.html": {
+   "url": "https://ideas.repec.org/f/c/pbo573.html",
+   "title": "Nina Boyarchenko",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "ideas.repec.org/p/fip/fednls/103479.html": {
+   "url": "https://ideas.repec.org/p/fip/fednls/103479.html",
+   "title": "The Disappearing Overnight Drift",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "ideas.repec.org/p/fip/fednls/92064.html": {
+   "url": "https://ideas.repec.org/p/fip/fednls/92064.html",
+   "title": "IDEAS home Printed from https://ideas.repec.org/p/fip/fednls/92064.html",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "ideas.repec.org/r/eee/jbfina/v25y2001i8p1543-1551.html": {
    "url": "https://ideas.repec.org/r/eee/jbfina/v25y2001i8p1543-1551.html",
    "title": "My bibliography",
@@ -2005,6 +2557,24 @@
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "ideas.repec.org/s/fip/fednls.html": {
+   "url": "https://ideas.repec.org/s/fip/fednls.html",
+   "title": "Liberty Street Economics, Federal Reserve Bank of New York",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
     }
@@ -2118,6 +2688,24 @@
     }
    ]
   },
+  "jp.tradingview.com/script/j0wtr2xf": {
+   "url": "https://jp.tradingview.com/script/J0WtR2XF",
+   "title": "OPEN-SOURCE SCRIPT",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "kr.tradingview.com/script/k0f6ai3t-micro-pullback-entry-system": {
    "url": "https://kr.tradingview.com/script/K0f6aI3t-Micro-Pullback-Entry-System",
    "title": "OPEN-SOURCE SCRIPT",
@@ -2172,6 +2760,138 @@
     }
    ]
   },
+  "libertystreeteconomics.newyorkfed.org/2026/07/the-disappearing-overnight-drift": {
+   "url": "https://libertystreeteconomics.newyorkfed.org/2026/07/the-disappearing-overnight-drift/",
+   "title": "The Disappearing Overnight Drift - Liberty Street Economics",
+   "kind": "paper",
+   "verdict": "scartato",
+   "reason": "Gli autori: finestra 2-3 ET close to zero 2021-2025 anche su NQ e YM; condizionata much narrower. Filtro 8 eliminatorio",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    },
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "scartato",
+     "reason": "Gli autori: finestra 2-3 ET close to zero 2021-2025 anche su NQ e YM; condizionata much narrower. Filtro 8 eliminatorio"
+    }
+   ]
+  },
+  "libertystreeteconomics.newyorkfed.org/tag/overnight-drift": {
+   "url": "https://libertystreeteconomics.newyorkfed.org/tag/overnight-drift",
+   "title": "Liberty Street Economics",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "libertystreeteconomics.newyorkfed.org/tag/paul-whelan": {
+   "url": "https://libertystreeteconomics.newyorkfed.org/tag/paul-whelan/",
+   "title": "The Overnight Drift in U.S. Equity Returns",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "libertystreeteconomics.newyorkfed.org/tag/sp-500": {
+   "url": "https://libertystreeteconomics.newyorkfed.org/tag/sp-500/",
+   "title": "The Overnight Drift in U.S. Equity Returns",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "libertystreeteconomics.newyorkfed.org/tag/us-equity-returns": {
+   "url": "https://libertystreeteconomics.newyorkfed.org/tag/us-equity-returns/",
+   "title": "Liberty Street Economics",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "libertystreeteconomics.newyorkfed.org?p=40": {
+   "url": "https://libertystreeteconomics.newyorkfed.org/?p=40",
+   "title": "Liberty Street Economics",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "libertystreeteconomics.newyorkfed.org?p=43261": {
+   "url": "https://libertystreeteconomics.newyorkfed.org/?p=43261",
+   "title": "Liberty Street Economics",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "luxalgo.com/blog/moc-orders-end-of-day-trading-tactics": {
    "url": "https://www.luxalgo.com/blog/moc-orders-end-of-day-trading-tactics/",
    "title": "MOC Orders: End-of-Day Trading Tactics",
@@ -2203,6 +2923,24 @@
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "microstrader.com/futures-trading-hours": {
+   "url": "https://microstrader.com/futures-trading-hours/",
+   "title": "Futures Trading Hours: The Complete ES and MES Clock",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
     }
@@ -2349,18 +3087,48 @@
   "newyorkfed.org/medialibrary/media/research/staff_reports/sr917.pdf": {
    "url": "https://www.newyorkfed.org/medialibrary/media/research/staff_reports/sr917.pdf",
    "title": "Long ES fra le 14:00 e le 15:00 (inventory)",
-   "kind": "",
+   "kind": "paper",
    "verdict": "scartato",
-   "reason": "Gli autori stessi: Sharpe 1,1 prima dei costi, −0,5 dopo lo spread",
+   "reason": "Finestra 02-03 ET (non 14-15 come nel db): netto negativo dopo spread (Sharpe -0,54) e morta dopo il 2021 per gli autori stessi; PDF non estraibile via fetch",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-25",
    "history": [
     {
      "date": "2026-10-20",
      "run": "seed:candidate_lucidflex_50k_v4.md",
      "verdict": "scartato",
      "reason": "Gli autori stessi: Sharpe 1,1 prima dei costi, −0,5 dopo lo spread"
+    },
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "scartato",
+     "reason": "Finestra 02-03 ET (non 14-15 come nel db): netto negativo dopo spread (Sharpe -0,54) e morta dopo il 2021 per gli autori stessi; PDF non estraibile via fetch"
+    }
+   ]
+  },
+  "nexusfi.com/a/exchanges/market-hours": {
+   "url": "https://nexusfi.com/a/exchanges/market-hours",
+   "title": "Market Hours: Trading Sessions Across Futures, Equities, and Global Exchanges - NexusFi Academy",
+   "kind": "site",
+   "verdict": "scartato",
+   "reason": "Divulgativa sugli orari, numeri sul movimento notturno senza fonte",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    },
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "scartato",
+     "reason": "Divulgativa sugli orari, numeri sul movimento notturno senza fonte"
     }
    ]
   },
@@ -2419,6 +3187,42 @@
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "ninjatrader-devel.ninjatrader.com/futures/blogs/what-are-micro-e-mini-s-p-500-futures-mes": {
+   "url": "https://ninjatrader-devel.ninjatrader.com/Futures/Blogs/What-are-Micro-E-mini-S-P-500-Futures-MES",
+   "title": "What are Micro E-mini S&P 500 Futures (MES)?",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "ninjatrader.com/futures/blogs/what-are-micro-e-mini-s-p-500-futures-mes": {
+   "url": "https://ninjatrader.com/Futures/Blogs/What-are-Micro-E-mini-S-P-500-Futures-MES",
+   "title": "What are Micro E-mini S&P 500 Futures (MES)?",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
     }
@@ -2550,6 +3354,42 @@
     }
    ]
   },
+  "pipback.com/firms/lucid-trading/rules": {
+   "url": "https://pipback.com/firms/lucid-trading/rules",
+   "title": "LucidPro Funded Accounts",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "plausiblyexog.substack.com/p/plausibly-exogenous-2450-overnight": {
+   "url": "https://plausiblyexog.substack.com/p/plausibly-exogenous-2450-overnight",
+   "title": "Plausibly Exogenous [2450] - Overnight Drift (07/20/2026)",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "pmc.ncbi.nlm.nih.gov/articles/pmc9107071": {
    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9107071",
    "title": "A Multi-market Comparison of the Intraday Lead–Lag Relations Among Stock Index-Based Spot, Futures and Options - PMC",
@@ -2581,6 +3421,78 @@
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "proptradingvibes.com/blog/lucid-trading-allowed-trading-times": {
+   "url": "https://proptradingvibes.com/blog/lucid-trading-allowed-trading-times",
+   "title": "LUCID TRADING ARTICLE · RULES",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "propvator.com/blog?p=5350": {
+   "url": "https://propvator.com/blog/?p=5350",
+   "title": "Prop Firm Blog – Propvator",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "propvator.com/blog?p=5837": {
+   "url": "https://propvator.com/blog/?p=5837",
+   "title": "Prop Firm Blog – Propvator",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "quantcrawler.com/learn/futures-trading-hours": {
+   "url": "https://quantcrawler.com/learn/futures-trading-hours",
+   "title": "Futures Trading Hours: NQ, ES & Asia Sessions",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
     }
@@ -2820,6 +3732,24 @@
     }
    ]
   },
+  "research.cbs.dk/da/publications/the-overnight-drift-in-us-equity-returns": {
+   "url": "https://research.cbs.dk/da/publications/the-overnight-drift-in-us-equity-returns/",
+   "title": "Spring til hovednavigation Spring til søgning Spring til hovedindhold",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "research.cbs.dk/en/publications/foreign-exchange-fixings-and-returns-around-the-clock": {
    "url": "https://research.cbs.dk/en/publications/foreign-exchange-fixings-and-returns-around-the-clock/",
    "title": "Foreign Exchange Fixings and Returns Around the Clock - CBS Research Portal",
@@ -2833,6 +3763,24 @@
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "research.cbs.dk/en/publications/the-overnight-drift-4": {
+   "url": "https://research.cbs.dk/en/publications/the-overnight-drift-4/",
+   "title": "The Overnight Drift - CBS Research Portal",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
     }
@@ -3049,6 +3997,24 @@
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v7@2026-10-20T23:33",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "satotrades.com/guides/futures-trading-hours": {
+   "url": "https://satotrades.com/guides/futures-trading-hours",
+   "title": "Futures Trading Hours 2026 (ES, NQ, CL, GC — Full Session Guide)",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
     }
@@ -3402,6 +4368,60 @@
     }
    ]
   },
+  "spxtospy.com/articles/after-hours-which-instrument-to-watch.html": {
+   "url": "https://spxtospy.com/articles/after-hours-which-instrument-to-watch.html",
+   "title": "After-Hours Trading: Which Instrument to Watch When Markets Close",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "spxtospy.com/articles/es-futures-trading-hours.html": {
+   "url": "https://spxtospy.com/articles/es-futures-trading-hours.html",
+   "title": "ES Futures Trading Hours: The Nearly 24-Hour S&P 500 Market",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "spxytrader.com/content/intro/es-futures-trading-hours-guide": {
+   "url": "https://spxytrader.com/content/intro/es-futures-trading-hours-guide",
+   "title": "ES Futures Trading Hours: Complete Guide to Globex Sessions",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
   "ssrn:2440866": {
    "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2440866",
    "title": "Intraday momentum ultima mezz'ora (Gao, Han, Li, Zhou)",
@@ -3618,6 +4638,30 @@
     }
    ]
   },
+  "ssrn:7035838": {
+   "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7035838",
+   "title": "<span>The Disappearing Overnight Drift </span> by Nina Boyarchenko, Lars Christian Larsen, Paul Whelan :: SSRN",
+   "kind": "paper",
+   "verdict": "scartato",
+   "reason": "Stesso contenuto del post Liberty Street 2026; giudicato dall'estratto, non aperto",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    },
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "scartato",
+     "reason": "Stesso contenuto del post Liberty Street 2026; giudicato dall'estratto, non aperto"
+    }
+   ]
+  },
   "ssrn:7290621": {
    "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=7290621",
    "title": "Noise Area (Zarattini-Aziz-Barbon), replica fuori campione",
@@ -3651,6 +4695,48 @@
      "run": "seed:candidate_lucidflex_50k_v5.md",
      "verdict": "scartato",
      "reason": "Mercato B3, non CME; event study senza regola"
+    }
+   ]
+  },
+  "support.lucidtrading.com/en/articles/11404729-allowed-trading-times": {
+   "url": "https://support.lucidtrading.com/en/articles/11404729-allowed-trading-times",
+   "title": "11404729 allowed trading times",
+   "kind": "site",
+   "verdict": "aperto",
+   "reason": "Flat entro 16:45 ET, ripartenza 18:00 ET: la sessione notturna Globex e' ammessa; manca la definizione di giornata per consistenza e MLL",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    },
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "aperto",
+     "reason": "Flat entro 16:45 ET, ripartenza 18:00 ET: la sessione notturna Globex e' ammessa; manca la definizione di giornata per consistenza e MLL"
+    }
+   ]
+  },
+  "theideafarm.com/portfolio-management/the-disappearing-overnight-drift": {
+   "url": "https://theideafarm.com/portfolio-management/the-disappearing-overnight-drift/",
+   "title": "The Disappearing Overnight Drift",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+     "verdict": "da_leggere",
+     "reason": ""
     }
    ]
   },
@@ -4784,7 +5870,7 @@
    "reason": "",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-25",
    "history": [
     {
      "date": "2026-10-22",
@@ -4843,6 +5929,24 @@
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "tradestation.com?p=53952": {
+   "url": "https://tradestation.com/?p=53952",
+   "title": "Call toll-free 800.328.1267",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
     }
@@ -4975,6 +6079,24 @@
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
+     "verdict": "da_leggere",
+     "reason": ""
+    }
+   ]
+  },
+  "tradezero.com/en-us/support/questions/what-are-the-contract-specifications-for-the-micro-e-mini-s-and-p-500-mes-tradezero-america": {
+   "url": "https://tradezero.com/en-us/support/questions/what-are-the-contract-specifications-for-the-micro-e-mini-s-and-p-500-mes-tradezero-america",
+   "title": "What are the contract specifications for the Micro E-mini S&P 500 (MES)?",
+   "kind": "",
+   "verdict": "da_leggere",
+   "reason": "",
+   "candidate": null,
+   "first_seen": "2026-10-25",
+   "last_seen": "2026-10-25",
+   "history": [
+    {
+     "date": "2026-10-25",
+     "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
     }
@@ -5671,6 +6793,54 @@
    "date": "2026-10-22",
    "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
    "results": null
+  },
+  {
+   "query": "Boyarchenko Larsen Whelan overnight drift disappeared 2026 update",
+   "date": "2026-10-25",
+   "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+   "results": null
+  },
+  {
+   "query": "Lucid Trading LucidFlex rules close positions end of day time 4:45 PM ET overnight",
+   "date": "2026-10-25",
+   "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+   "results": null
+  },
+  {
+   "query": "\"overnight drift\" E-mini 2:00 3:00 a.m. Sharpe ratio transaction costs bid-ask spread Review of Financial Studies 2023 strategy",
+   "date": "2026-10-25",
+   "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+   "results": null
+  },
+  {
+   "query": "\"Disappearing Overnight Drift\" conditional order imbalance 2021-2025 Nasdaq Dow figure results",
+   "date": "2026-10-25",
+   "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+   "results": null
+  },
+  {
+   "query": "E-mini S&P European open 3 a.m. ET return 2023 2024 2025 still positive overnight session seasonality backtest",
+   "date": "2026-10-25",
+   "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+   "results": null
+  },
+  {
+   "query": "CME Micro E-mini S&P 500 MES contract specifications tick 0.25 $1.25 multiplier $5 trading hours",
+   "date": "2026-10-25",
+   "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+   "results": null
+  },
+  {
+   "query": "Bondarenko Muravyev \"Market Return Around the Clock\" European open out-of-sample after 2020",
+   "date": "2026-10-25",
+   "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+   "results": null
+  },
+  {
+   "query": "ES futures hourly returns by hour of day 2022-2025 overnight European open hour analysis",
+   "date": "2026-10-25",
+   "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+   "results": null
   }
  ],
  "runs": [
@@ -5721,6 +6891,21 @@
    "cache_write": 106065,
    "searches": 20,
    "cost_usd_est": 1.16
+  },
+  {
+   "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
+   "file": "candidate_lucidflex_50k_v9.md",
+   "backend": "claude-code",
+   "model": "claude-opus-5-5",
+   "focus": "Approfondisci la pista aperta dell'overnight drift: leggi Boyarchenko-Larsen-Whelan (The Overnight Drift, NY Fed) per fuso, finestra esatta, ampiezza in punti e costi; poi verifica se la finestra cade dentro la stessa sessione CME (flat EOD LucidFlex).",
+   "queries": 8,
+   "hits": 81,
+   "reviewed": 10,
+   "searches": 8,
+   "fetches": 5,
+   "turns": 14,
+   "cost_usd_est": 0.0,
+   "api_equivalent_usd": 1.28
   }
  ]
 }
