@@ -90,6 +90,18 @@ rispettata.
 **E non si vuole comunque**: due istanze che automatizzano lo stesso account mandano **ordini
 doppi**. MultiCharts sul VPS e basta; dal Mac si controlla dalla dashboard Lucid.
 
+**Requisiti del VPS** (verificati il 25/10/2026):
+
+| | |
+|---|---|
+| sistema | Windows Server 2022 o 2025 (MultiCharts gira solo su Windows, vuole .NET 4.8) |
+| RAM | **almeno 8 GB**: e' il minimo ufficiale di MultiCharts 64 ([tech specs](https://multicharts.com/tech-specs/)). I piani da 4 GB non bastano |
+| dove | **Chicago**, vicino ai server Rithmic e al CME |
+| Lucid | nessun divieto: i sistemi automatici sono permessi (*Other Trading Activities*), VPS e IP non sono citati |
+
+Scelta: **QuantVPS Lite+**, $79,99/mese, 4 core, 8 GB, Chicago, Windows Server 2025, senza
+vincoli e con 14 giorni di rimborso. Lo Starter+ da $39,99 ha 4 GB: sotto il minimo.
+
 ## 9. Due date da non perdere
 
 | data | cosa |
