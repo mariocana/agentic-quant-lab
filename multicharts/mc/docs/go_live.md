@@ -99,8 +99,10 @@ doppi**. MultiCharts sul VPS e basta; dal Mac si controlla dalla dashboard Lucid
 | dove | **Chicago**, vicino ai server Rithmic e al CME |
 | Lucid | nessun divieto: i sistemi automatici sono permessi (*Other Trading Activities*), VPS e IP non sono citati |
 
-Scelta: **QuantVPS Lite+**, $79,99/mese, 4 core, 8 GB, Chicago, Windows Server 2025, senza
-vincoli e con 14 giorni di rimborso. Lo Starter+ da $39,99 ha 4 GB: sotto il minimo.
+Scelta: **AlgoVPS Swing**, $45/mese, 4 core Ryzen 9950X, **10 GB**, 100 GB NVMe, Windows
+Server 2022/2025, datacenter di Chicago (427 S La Salle, consigliato per CME), disdetta quando
+si vuole ([prezzi](https://algovps.com/pricing)). Alternativa: QuantVPS Lite+ a $79,99 con
+8 GB e 14 giorni di rimborso. Lo Starter+ di QuantVPS da $39,99 ha 4 GB: sotto il minimo.
 
 ## 9. Due date da non perdere
 
