@@ -4,17 +4,23 @@
    "url": "https://www.academia.edu/7986665/E_mini_S_and_P_500_Futures_Order_Placement_and_Trading_Costs",
    "title": "(PDF) E-mini S&P 500 Futures Order Placement and Trading Costs",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] microstruttura dei costi, nessuna regola di segnale",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] microstruttura dei costi, nessuna regola di segnale"
     }
    ]
   },
@@ -22,17 +28,23 @@
    "url": "https://academicweb.nd.edu/~zda/IntraOption.pdf",
    "title": "Intraday Option Return Predictability",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] opzioni, dati che non abbiamo",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] opzioni, dati che non abbiamo"
     }
    ]
   },
@@ -40,17 +52,23 @@
    "url": "https://www.aeaweb.org/conference/2020/preliminary/paper/2dedYfDH",
    "title": "Foreign Exchange Fixings and Returns Around the Clock Ingomar Krohn∗",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] FX Fix già testata e morta (t -1,1/-0,41)",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] FX Fix già testata e morta (t -1,1/-0,41)"
     }
    ]
   },
@@ -58,17 +76,23 @@
    "url": "https://ageconsearch.umn.edu/record/19011/files/cp04pa01.pdf",
    "title": "The Profitability of Technical Trading Rules in US Futures ...",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] regole giornaliere, campione vecchio (filtri 5, 8)",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] regole giornaliere, campione vecchio (filtri 5, 8)"
     }
    ]
   },
@@ -76,17 +100,23 @@
    "url": "https://ageconsearch.umn.edu/record/37487/files/AgMAS04_04.pdf",
    "title": "The Profitability of Technical Analysis",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] survey del 2004, nessuna regola intraday",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] survey del 2004, nessuna regola intraday"
     }
    ]
   },
@@ -118,17 +148,23 @@
    "url": "https://alphaarchitect.com/?p=57408",
    "title": "Market Return Around the Clock: A Puzzle",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato della pagina Alpha Architect già scartata (filtro 8)",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato della pagina Alpha Architect già scartata (filtro 8)"
     }
    ]
   },
@@ -136,17 +172,23 @@
    "url": "https://amanda.ece.utah.edu/2026/10/17/s-p-500-futures-indicators-reports-and-risk-control-i1710a7/",
    "title": "S & P 500 Futures: Indicators, Reports and Risk Control",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] contenuto generico su dominio universitario anomalo, probabile spam",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] contenuto generico su dominio universitario anomalo, probabile spam"
     }
    ]
   },
@@ -154,17 +196,23 @@
    "url": "https://ar.tradingview.com/chart/M2KU2022/k0b6Xgoy-M2K-Micro-E-mini-Future-Russell-2000",
    "title": "M2K Micro E-mini Future Russell 2000",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] idea discrezionale del 2022",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] idea discrezionale del 2022"
     }
    ]
   },
@@ -172,17 +220,23 @@
    "url": "https://ar.tradingview.com/script/5N3VYOCF-Previous-Day-Sweep",
    "title": "Previous Day Sweep",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] script di reversal senza test; query prior-day sweep già fatta",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] script di reversal senza test; query prior-day sweep già fatta"
     }
    ]
   },
@@ -190,17 +244,23 @@
    "url": "http://arno.uvt.nl/show.cgi?fid=144554",
    "title": "INTRADAY PRICE REVERSALS AND MOMENTUM: EVIDENCE FROM THE NYSE",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] azioni NYSE, tesi (filtro 1)",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] azioni NYSE, tesi (filtro 1)"
     }
    ]
   },
@@ -208,17 +268,23 @@
    "url": "https://arxiv.org/pdf/cond-mat/0312658",
    "title": "Causal Slaving of the U.S. Treasury Bond Yield Antibubble by the Stock Market Antibubble of August 2000",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] macro 2000, nessuna regola intraday",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] macro 2000, nessuna regola intraday"
     }
    ]
   },
@@ -226,17 +292,23 @@
    "url": "https://arxiv.org/pdf/cond-mat/0406696",
    "title": "Short-term market reaction after extreme price changes of liquid stocks",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] azioni singole, campione vecchio",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] azioni singole, campione vecchio"
     }
    ]
   },
@@ -244,11 +316,11 @@
    "url": "https://arxiv.org/pdf/1005.3535",
    "title": "Intraday Patterns in the Cross-section of Stock Returns",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] cross-section azionario",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
@@ -261,6 +333,12 @@
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] cross-section azionario"
     }
    ]
   },
@@ -268,17 +346,23 @@
    "url": "https://arxiv.org/pdf/1102.2138",
    "title": "The US stock market leads the Federal funds rate and Treasury bond yields",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] macro, non intraday",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] macro, non intraday"
     }
    ]
   },
@@ -286,17 +370,23 @@
    "url": "https://arxiv.org/pdf/1212.0479",
    "title": "Modeling non-stationarities in high-frequency financial time series",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] modellistica senza regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] modellistica senza regola"
     }
    ]
   },
@@ -304,17 +394,23 @@
    "url": "https://arxiv.org/pdf/1504.06235",
    "title": "Lead-Lag Relationship using a Stop-and-Reverse-MinMax Process",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] metodo statistico, lead-lag fra indici correlati",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] metodo statistico, lead-lag fra indici correlati"
     }
    ]
   },
@@ -322,17 +418,23 @@
    "url": "https://arxiv.org/pdf/1601.04210",
    "title": "Speculative Futures Trading under Mean Reversion",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] teoria di stopping ottimo, mean reversion",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] teoria di stopping ottimo, mean reversion"
     }
    ]
   },
@@ -340,17 +442,23 @@
    "url": "https://arxiv.org/pdf/1605.07945",
    "title": "Trading VIX Futures under Mean Reversion with Regime Switching",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] VX non CME, teoria",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] VX non CME, teoria"
     }
    ]
   },
@@ -358,17 +466,23 @@
    "url": "https://arxiv.org/pdf/1611.03110",
    "title": "Asynchronous ADRs: Overnight vs Intraday Returns and Trading Strategies",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] ADR azionari, overnight",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] ADR azionari, overnight"
     }
    ]
   },
@@ -376,17 +490,23 @@
    "url": "https://arxiv.org/pdf/1612.01232",
    "title": "Wavelet-based methods for high-frequency lead-lag analysis",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] metodo, nessuna regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] metodo, nessuna regola"
     }
    ]
   },
@@ -394,17 +514,23 @@
    "url": "https://arxiv.org/pdf/1712.07649",
    "title": "Trading Strategies with Position Limits",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] teoria",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] teoria"
     }
    ]
   },
@@ -442,17 +568,23 @@
    "url": "https://arxiv.org/pdf/2004.01624",
    "title": "How to build a cross-impact model from first principles: Theoretical requirements and empirical results",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] modello di impatto, nessuna regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] modello di impatto, nessuna regola"
     }
    ]
   },
@@ -460,17 +592,23 @@
    "url": "https://arxiv.org/pdf/2011.04367",
    "title": "Comparing the market microstructure between two South African exchanges",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] mercati sudafricani",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] mercati sudafricani"
     }
    ]
   },
@@ -478,17 +616,23 @@
    "url": "https://arxiv.org/html/2105.13401",
    "title": "1Introduction",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "aperto",
+   "reason": "da aprire: titolo non estratto, contenuto ignoto",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v7@2026-10-20T23:33",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "aperto",
+     "reason": "da aprire: titolo non estratto, contenuto ignoto"
     }
    ]
   },
@@ -496,17 +640,23 @@
    "url": "https://arxiv.org/pdf/2206.08117",
    "title": "Trading constraints in continuous-time Kyle models",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] teoria",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v7@2026-10-20T23:33",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] teoria"
     }
    ]
   },
@@ -514,17 +664,23 @@
    "url": "https://arxiv.org/pdf/2206.13138",
    "title": "High-Frequency Causality in the VIX Index and its derivatives: Empirical   Evidence",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] VIX/derivati, nessuna regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] VIX/derivati, nessuna regola"
     }
    ]
   },
@@ -532,17 +688,23 @@
    "url": "https://arxiv.org/pdf/2302.10175",
    "title": "Spatio-Temporal Momentum: Jointly Learning Time-Series and Cross-Sectional Strategies",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] ML, frequenza giornaliera",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] ML, frequenza giornaliera"
     }
    ]
   },
@@ -550,17 +712,23 @@
    "url": "https://arxiv.org/pdf/2401.10722",
    "title": "Stylized Facts and Market Microstructure: An In-Depth Exploration of German Bond Futures Market",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] Eurex, non disponibile",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] Eurex, non disponibile"
     }
    ]
   },
@@ -568,17 +736,23 @@
    "url": "https://arxiv.org/pdf/2501.03171",
    "title": "High-frequency lead-lag relationships in the Chinese stock index futures market: tick-by-tick dynamics of calendar spreads",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] futures cinesi, tick data",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] futures cinesi, tick data"
     }
    ]
   },
@@ -604,17 +778,23 @@
    "url": "https://arxiv.org/pdf/2504.10282",
    "title": "Optimal Execution in Intraday Energy Markets under Hawkes Processes with Transient Impact",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] esecuzione su energia europea, teoria",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] esecuzione su energia europea, teoria"
     }
    ]
   },
@@ -622,11 +802,11 @@
    "url": "https://arxiv.org/pdf/2507.04481",
    "title": "Does Overnight News Explain Overnight Returns?",
    "kind": "paper",
-   "verdict": "aperto",
-   "reason": "Rimanda a Boyarchenko-Larsen-Whelan (2023) e all'inventario degli intermediari; è il paper da leggere per la pista overnight",
+   "verdict": "scartato",
+   "reason": "pista overnight drift chiusa in v9: morta dopo il 2021 secondo gli autori (Liberty Street 07/2026)",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
@@ -639,6 +819,12 @@
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "aperto",
      "reason": "Rimanda a Boyarchenko-Larsen-Whelan (2023) e all'inventario degli intermediari; è il paper da leggere per la pista overnight"
+    },
+    {
+     "date": "2026-10-26",
+     "run": "manuale:26-10",
+     "verdict": "scartato",
+     "reason": "pista overnight drift chiusa in v9: morta dopo il 2021 secondo gli autori (Liberty Street 07/2026)"
     }
    ]
   },
@@ -670,17 +856,23 @@
    "url": "https://arxiv.org/pdf/2602.10711",
    "title": "Cross-Sectional Asset Retrieval via Future-Aligned Soft Contrastive Learning",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] ML cross-section",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] ML cross-section"
     }
    ]
   },
@@ -688,17 +880,23 @@
    "url": "https://arxiv.org/pdf/2604.13458",
    "title": "Interpretable Systematic Risk around the Clock",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Portafoglio fattoriale ribilanciato annualmente, nessuna regola intraday su futures",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Portafoglio fattoriale ribilanciato annualmente, nessuna regola intraday su futures"
     }
    ]
   },
@@ -736,17 +934,23 @@
    "url": "https://arxiv.org/pdf/2605.11423",
    "title": "A Validated Volatility-Volume-Gap Classifier for Regime Identification in MNQ Intraday Data",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] classificatore VVG già scartato nel db",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] classificatore VVG già scartato nel db"
     }
    ]
   },
@@ -754,17 +958,23 @@
    "url": "https://arxiv.org/pdf/2608.21888",
    "title": "Short-horizon mean reversion in cryptocurrency markets:",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] crypto, mean reversion; già usato in ricerca_18-10",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] crypto, mean reversion; già usato in ricerca_18-10"
     }
    ]
   },
@@ -772,17 +982,23 @@
    "url": "https://arxiv.org/pdf/2609.05905",
    "title": "From Narrative to Auditable Forecasts: A Structured Scaffold for Agentic Forecasting",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] previsioni con LLM, non codificabile",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] previsioni con LLM, non codificabile"
     }
    ]
   },
@@ -886,17 +1102,23 @@
    "url": "https://automatedtradingstrategies.substack.com/p/breaking-q2-forward-test-launch",
    "title": "Automated Trading Strategies",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] annuncio della stessa serie paywalled, risultati già visti nella pagina Q2 results",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] annuncio della stessa serie paywalled, risultati già visti nella pagina Q2 results"
     }
    ]
   },
@@ -904,17 +1126,23 @@
    "url": "https://automatedtradingstrategies.substack.com/p/q2-2025-forward-test-results",
    "title": "Automated Trading Strategies",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Paywall; conti simulati in parte discrezionali, nessuna regola, costo o stop",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Paywall; conti simulati in parte discrezionali, nessuna regola, costo o stop"
     }
    ]
   },
@@ -1012,17 +1240,23 @@
    "url": "https://www.bis.org/events/221213_bis_bdi_ecb_exchange_rates/mueller.pdf",
    "title": "www.bis.org",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] FX Fix già testata e morta",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] FX Fix già testata e morta"
     }
    ]
   },
@@ -1078,11 +1312,11 @@
    "url": "https://broad.msu.edu/news/sweet-dreams-broad-research-reveals-best-times-for-overnight-market-returns/",
    "title": "Sweet dreams: Broad research reveals best times for overnight market returns - MSU Broad College of Business",
    "kind": "site",
-   "verdict": "aperto",
-   "reason": "Comunicato (livello 2): 100% del rendimento medio E-mini in una finestra di 4 ore, 2006-2018; fuso incoerente, paper non letto, edge e costi [manca]",
+   "verdict": "scartato",
+   "reason": "pista overnight drift chiusa in v9: morta dopo il 2021 secondo gli autori (Liberty Street 07/2026)",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
@@ -1095,6 +1329,12 @@
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "aperto",
      "reason": "Comunicato (livello 2): 100% del rendimento medio E-mini in una finestra di 4 ore, 2006-2018; fuso incoerente, paper non letto, edge e costi [manca]"
+    },
+    {
+     "date": "2026-10-26",
+     "run": "manuale:26-10",
+     "verdict": "scartato",
+     "reason": "pista overnight drift chiusa in v9: morta dopo il 2021 secondo gli autori (Liberty Street 07/2026)"
     }
    ]
   },
@@ -1222,17 +1462,23 @@
    "url": "https://c.mql5.com/forextsd/forum/173/intraday_momentum_-_the_first_half-hour_return_predicts_the_last_half-hour_return.pdf",
    "title": "Intraday Momentum: The First Half-Hour Return Predicts ...",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] Gao et al., famiglia LastHalfHour morta",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] Gao et al., famiglia LastHalfHour morta"
     }
    ]
   },
@@ -1288,17 +1534,23 @@
    "url": "https://cepr.org/publications/dp14462",
    "title": "English Français Deutsch Italiano 中文",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "aperto",
+   "reason": "da aprire: titolo non informativo, contenuto ignoto",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "aperto",
+     "reason": "da aprire: titolo non informativo, contenuto ignoto"
     }
    ]
   },
@@ -1306,17 +1558,23 @@
    "url": "https://www.cftc.gov/sites/default/files/Stoploss_final_ada.pdf",
    "title": "1975 {t ~ I I Stop Orders in Select Futures Markets by",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] studio descrittivo, nessuna regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] studio descrittivo, nessuna regola"
     }
    ]
   },
@@ -1372,17 +1630,23 @@
    "url": "https://www.cmegroup.com/education/frequently-asked-questions-micro-e-mini-equity-index-futures.html",
    "title": "Frequently Asked Questions: Micro E-mini Equity Index Futures",
    "kind": "reference",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] specifica di contratto, non strategia",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] specifica di contratto, non strategia"
     }
    ]
   },
@@ -1414,17 +1678,23 @@
    "url": "https://cmegroup.com/markets/equities/sp/micro-e-mini-sandp-500.contractSpecs.options.html",
    "title": "Micro E-mini S&P 500 Index",
    "kind": "reference",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] specifica, non strategia",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] specifica, non strategia"
     }
    ]
   },
@@ -1432,17 +1702,23 @@
    "url": "https://www.cmegroup.com/notices/ser/2019/04/SER-8360.pdf",
    "title": "SER 8360",
    "kind": "reference",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] avviso regolamentare 2019, non strategia",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] avviso regolamentare 2019, non strategia"
     }
    ]
   },
@@ -1450,17 +1726,23 @@
    "url": "https://cmegroup.com/trading/equity-index/us-index/micro-e-mini-sandp-500_contract_specifications.html",
    "title": "Micro E-mini S&P 500 Index",
    "kind": "reference",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] specifica, non strategia",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] specifica, non strategia"
     }
    ]
   },
@@ -1468,17 +1750,23 @@
    "url": "https://cn.tradingview.com/script/K0f6aI3t-Micro-Pullback-Entry-System",
    "title": "OPEN-SOURCE SCRIPT",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Indicatore senza backtest, per azioni in gap",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Indicatore senza backtest, per azioni in gap"
     }
    ]
   },
@@ -1810,17 +2098,23 @@
    "url": "https://de.tradingview.com/chart/NQ1%21/4reovOWt-Intro-to-my-python-tradingview-strategy",
    "title": "4reovOWt Intro to my python tradingview strategy",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Nessuna regola né risultato pubblicato",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Nessuna regola né risultato pubblicato"
     }
    ]
   },
@@ -1828,17 +2122,23 @@
    "url": "https://de.tradingview.com/script/3M56QPhj-Liquidity-Sweep-Reversal-Grimoire",
    "title": "OPEN-SOURCE SCRIPT",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] script mean reversion senza test",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] script mean reversion senza test"
     }
    ]
   },
@@ -1846,17 +2146,23 @@
    "url": "https://de.tradingview.com/script/oJunuDml-NQ-Hourly-Retracements-12y-Stats-with-Levels",
    "title": "OPEN-SOURCE SCRIPT",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Statistiche di tocco senza regola, stop o backtest",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Statistiche di tocco senza regola, stop o backtest"
     }
    ]
   },
@@ -1960,17 +2266,23 @@
    "url": "https://www.dii.uchile.cl/?p=99939",
    "title": "www.dii.uchile.cl",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] pagina di dipartimento senza indizio di strategia",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] pagina di dipartimento senza indizio di strategia"
     }
    ]
   },
@@ -1978,17 +2290,23 @@
    "url": "https://link.springer.com/article/10.1007/s11579-020-00278-7",
    "title": "Equilibrium effects of intraday order-splitting benchmarks",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato di arXiv 1803.08336 già scartato",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v7@2026-10-20T23:33",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato di arXiv 1803.08336 già scartato"
     }
    ]
   },
@@ -2020,17 +2338,23 @@
    "url": "https://pubsonline.informs.org/doi/10.1287/opre.13.2.258",
    "title": "Clustering of Stock Prices",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] 1965, azioni",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] 1965, azioni"
     }
    ]
   },
@@ -2056,17 +2380,23 @@
    "url": "https://econpapers.repec.org/RePEc:fip:fednls:103479",
    "title": "econpapers.repec.org",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato; overnight drift morto dopo il 2021 (filtro 8)",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato; overnight drift morto dopo il 2021 (filtro 8)"
     }
    ]
   },
@@ -2140,17 +2470,23 @@
    "url": "https://www.efmaefm.org/0efmameetings/efma%20annual%20meetings/2009-Milan/papers/719.pdf",
    "title": "Round Numbers and Security Returns* Edward Johnson Visiting Scholar",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] azioni, 2009, filtro 8",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] azioni, 2009, filtro 8"
     }
    ]
   },
@@ -2158,17 +2494,23 @@
    "url": "https://en.saif.sjtu.edu.cn/junpan/PreAnn_20210728.pdf",
    "title": "Premium for Heightened Uncertainty: Explaining Pre-Announcement Market Returns",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] già scartato nel db: overnight, premio al rischio",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] già scartato nel db: overnight, premio al rischio"
     }
    ]
   },
@@ -2200,17 +2542,23 @@
    "url": "https://eprints.soton.ac.uk/452387/1/PhD_thesis.pdf",
    "title": "Essays on Intraday Stock Return Predictability - ePrints Soton",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] azioni, tesi",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] azioni, tesi"
     }
    ]
   },
@@ -2242,17 +2590,23 @@
    "url": "https://faculty.haas.berkeley.edu/hender/liq_provision_ret_predict_JBF.pdf",
    "title": "Liquidity provision and stock return predictability",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] azioni singole, dati di flusso",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] azioni singole, dati di flusso"
     }
    ]
   },
@@ -2308,17 +2662,23 @@
    "url": "https://www.fedinprint.org/item/fednls/103479",
    "title": "The Disappearing Overnight Drift",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato, overnight, filtro 8",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato, overnight, filtro 8"
     }
    ]
   },
@@ -2326,17 +2686,23 @@
    "url": "https://fedinprint.org/item/fednls/92064",
    "title": "fedinprint.org",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] serie Liberty Street sull'overnight drift, overnight e pre-2021",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] serie Liberty Street sull'overnight drift, overnight e pre-2021"
     }
    ]
   },
@@ -2590,17 +2956,23 @@
    "url": "https://github.com/CommunityPokeOrg/index-futures-stat-arb/issues/1",
    "title": "Define data pipeline and backtesting test plan for ES/NQ stat arb · Issue #1 · CommunityPokeOrg/index-futures-stat-arb · GitHub",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] issue di repository già scartato",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] issue di repository già scartato"
     }
    ]
   },
@@ -2608,17 +2980,23 @@
    "url": "https://github.com/fistu4088/mnq-backtest-toolkit",
    "title": "GitHub - fistu4088/mnq-backtest-toolkit: Honest walk-forward validation framework for Micro Nasdaq (MNQ) futures day-trading strategies in plain Python · GitHub",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Stesso autore del dev.to scartato; dati Yahoo di 2 anni, nessun risultato per strategia",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Stesso autore del dev.to scartato; dati Yahoo di 2 anni, nessun risultato per strategia"
     }
    ]
   },
@@ -2626,17 +3004,23 @@
    "url": "https://github.com/ikeawesom/xauusd-backtest",
    "title": "GitHub - ikeawesom/xauusd-backtest: XAUUSD Python-based back testing framework for testing a sweep trading strategy · GitHub",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] oro spot, strategia sweep; famiglia MGC già chiusa",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] oro spot, strategia sweep; famiglia MGC già chiusa"
     }
    ]
   },
@@ -2668,17 +3052,23 @@
    "url": "https://github.com/yukedizou-maker/ym-intraday-quant-strategy-free-awesome",
    "title": "GitHub - yukedizou-maker/ym-intraday-quant-strategy-free-awesome: YM intraday futures strategy",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "406 trade in 15 anni ≈0,11/giorno, nessuno stop, nessun OOS, motore non pubblicato",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "406 trade in 15 anni ≈0,11/giorno, nessuno stop, nessun OOS, motore non pubblicato"
     }
    ]
   },
@@ -2728,17 +3118,23 @@
    "url": "https://ideas.repec.org/f/c/pbo573.html",
    "title": "Nina Boyarchenko",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] pagina autore, overnight drift già chiuso",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] pagina autore, overnight drift già chiuso"
     }
    ]
   },
@@ -2746,17 +3142,23 @@
    "url": "https://ideas.repec.org/p/fip/fednls/103479.html",
    "title": "The Disappearing Overnight Drift",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato, filtro 8",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato, filtro 8"
     }
    ]
   },
@@ -2764,17 +3166,23 @@
    "url": "https://ideas.repec.org/p/fip/fednls/92064.html",
    "title": "IDEAS home Printed from https://ideas.repec.org/p/fip/fednls/92064.html",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] serie overnight drift, overnight",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] serie overnight drift, overnight"
     }
    ]
   },
@@ -2782,17 +3190,23 @@
    "url": "https://ideas.repec.org/r/eee/jbfina/v25y2001i8p1543-1551.html",
    "title": "My bibliography",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] pagina di citazioni di un paper del 2001",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] pagina di citazioni di un paper del 2001"
     }
    ]
   },
@@ -2800,17 +3214,23 @@
    "url": "https://ideas.repec.org/s/fip/fednls.html",
    "title": "Liberty Street Economics, Federal Reserve Bank of New York",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] indice di serie, non fonte",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] indice di serie, non fonte"
     }
    ]
   },
@@ -2818,17 +3238,23 @@
    "url": "https://ies.keio.ac.jp/upload/20190716macro_Martineau_abstract-1.pdf",
    "title": "Price Pressure and Eﬃciency on FOMC Announcements",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] 8 eventi l'anno, sotto la frequenza minima",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] 8 eventi l'anno, sotto la frequenza minima"
     }
    ]
   },
@@ -2836,17 +3262,23 @@
    "url": "https://in.tradingview.com/scripts/search/%E5%BE%AE%E8%BD%AF%E8%82%A1%E6%81%AF%E6%94%AF%E4%BB%98%E7%8E%872025%E6%9C%80%E6%96%B0%E6%95%B0%E6%8D%AE/page-4",
    "title": "NQ Hourly Retracements - 12y Stats with LevelsHour Stats with Levels - TradingView Indicator Description",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Duplicato dello script NQ Hourly Retracements, senza regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Duplicato dello script NQ Hourly Retracements, senza regola"
     }
    ]
   },
@@ -2854,17 +3286,23 @@
    "url": "https://ink.library.smu.edu.sg/context/lkcsb_research/article/7402/viewcontent/____Intraday_information_from_S_P_500_Index_Futures_Options.pdf",
    "title": "Singapore Management University Singapore Management University",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] richiede dati di opzioni",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] richiede dati di opzioni"
     }
    ]
   },
@@ -2920,17 +3358,23 @@
    "url": "https://it.tradingview.com/chart/M2KU2022/k0b6Xgoy-M2K-Micro-E-mini-Future-Russell-2000",
    "title": "M2K Micro E-mini Future Russell 2000",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato, idea discrezionale",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato, idea discrezionale"
     }
    ]
   },
@@ -2938,17 +3382,23 @@
    "url": "https://jp.tradingview.com/script/J0WtR2XF",
    "title": "OPEN-SOURCE SCRIPT",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Indicatore visivo, nessuna regola né test",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Indicatore visivo, nessuna regola né test"
     }
    ]
   },
@@ -2956,17 +3406,23 @@
    "url": "https://kr.tradingview.com/script/K0f6aI3t-Micro-Pullback-Entry-System",
    "title": "OPEN-SOURCE SCRIPT",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Duplicato della versione cn, indicatore senza test",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Duplicato della versione cn, indicatore senza test"
     }
    ]
   },
@@ -3040,17 +3496,23 @@
    "url": "https://libertystreeteconomics.newyorkfed.org/tag/overnight-drift",
    "title": "Liberty Street Economics",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] overnight drift, morto per gli autori",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] overnight drift, morto per gli autori"
     }
    ]
   },
@@ -3058,17 +3520,23 @@
    "url": "https://libertystreeteconomics.newyorkfed.org/tag/paul-whelan/",
    "title": "The Overnight Drift in U.S. Equity Returns",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] overnight, filtro 8",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] overnight, filtro 8"
     }
    ]
   },
@@ -3076,17 +3544,23 @@
    "url": "https://libertystreeteconomics.newyorkfed.org/tag/sp-500/",
    "title": "The Overnight Drift in U.S. Equity Returns",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] overnight, filtro 8",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] overnight, filtro 8"
     }
    ]
   },
@@ -3094,17 +3568,23 @@
    "url": "https://libertystreeteconomics.newyorkfed.org/tag/us-equity-returns/",
    "title": "Liberty Street Economics",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] overnight, filtro 8",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] overnight, filtro 8"
     }
    ]
   },
@@ -3112,17 +3592,23 @@
    "url": "https://libertystreeteconomics.newyorkfed.org/?p=40",
    "title": "Liberty Street Economics",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] pagina generica del blog",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] pagina generica del blog"
     }
    ]
   },
@@ -3130,17 +3616,23 @@
    "url": "https://libertystreeteconomics.newyorkfed.org/?p=43261",
    "title": "Liberty Street Economics",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] probabile post overnight drift, già chiuso",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] probabile post overnight drift, già chiuso"
     }
    ]
   },
@@ -3220,17 +3712,23 @@
    "url": "https://my.tradingview.com/script/K0f6aI3t-Micro-Pullback-Entry-System",
    "title": "OPEN-SOURCE SCRIPT",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Duplicato, indicatore senza test",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Duplicato, indicatore senza test"
     }
    ]
   },
@@ -3262,17 +3760,23 @@
    "url": "https://www.nber.org/system/files/working_papers/w23327/w23327.pdf",
    "title": "NBER WORKING PAPER SERIES DID THE REFORM FIX THE LONDON FIX PROBLEM?",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] FX fix e manipolazione, già chiusa",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] FX fix e manipolazione, già chiusa"
     }
    ]
   },
@@ -3280,17 +3784,23 @@
    "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3154254/",
    "title": "The US Stock Market Leads the Federal Funds Rate and Treasury Bond Yields",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] macro, non intraday",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] macro, non intraday"
     }
    ]
   },
@@ -3298,17 +3808,23 @@
    "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5094667/",
    "title": "Intraday Seasonalities and Nonstationarity of Trading Volume in Financial Markets: Individual and Cross-Sectional Features",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] volumi, nessuna regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] volumi, nessuna regola"
     }
    ]
   },
@@ -3412,17 +3928,23 @@
    "url": "https://nexusfi.com/a/strategies/opening-range-breakout",
    "title": "Opening Range Breakout: Trading the First Move of the Session - NexusFi Academy",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] ORB, famiglia morta",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] ORB, famiglia morta"
     }
    ]
   },
@@ -3526,17 +4048,23 @@
    "url": "https://nsd.pku.edu.cn/docs/20230206095723035155.pdf",
    "title": "Option Pricing with Overnight and Intraday Volatility",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] pricing di opzioni",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] pricing di opzioni"
     }
    ]
   },
@@ -3592,17 +4120,23 @@
    "url": "https://pages.nes.ru/aobizhaeva/ABKO-intradayinv.pdf",
    "title": "Intraday Trading Invariance in the E-mini S&P 500 Futures Market",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] microstruttura teorica, nessuna regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] microstruttura teorica, nessuna regola"
     }
    ]
   },
@@ -3610,17 +4144,23 @@
    "url": "https://pages.stern.nyu.edu/~jh4/SternMicroMtg/Old/SternMicroMtg2015/Papers/Preannouncement_042015Strasser.pdf",
    "title": "Price Drift before U.S. Macroeconomic News:",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] famiglia drift pre-annuncio già scartata, campione fino al 2014",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] famiglia drift pre-annuncio già scartata, campione fino al 2014"
     }
    ]
   },
@@ -3724,17 +4264,23 @@
    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9107071",
    "title": "A Multi-market Comparison of the Intraday Lead–Lag Relations Among Stock Index-Based Spot, Futures and Options - PMC",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] lead-lag descrittivo, nessuna regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] lead-lag descrittivo, nessuna regola"
     }
    ]
   },
@@ -3880,17 +4426,23 @@
    "url": "https://www.quantifiedstrategies.com/micro-e-mini-russell-trading-strategy/",
    "title": "Micro E-mini Russell Trading Strategy - Backtest And Futures Example - QuantifiedStrategies.com",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Bloccata da verifica anti-bot; [titolo] il sito pubblica di solito regole EOD/multi-day",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Bloccata da verifica anti-bot; [titolo] il sito pubblica di solito regole EOD/multi-day"
     }
    ]
   },
@@ -3898,17 +4450,23 @@
    "url": "https://www.quantifiedstrategies.com/micro-e-mini-sp-500-index-trading-strategy/",
    "title": "Micro E-mini S&P 500 Trading Strategy",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Bloccata da verifica anti-bot; [titolo] il sito pubblica di solito regole EOD/multi-day",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Bloccata da verifica anti-bot; [titolo] il sito pubblica di solito regole EOD/multi-day"
     }
    ]
   },
@@ -3916,17 +4474,23 @@
    "url": "https://www.quantifiedstrategies.com/opening-range-breakout-strategy/",
    "title": "Opening Range Breakout Strategy (ORB): Backtest - QuantifiedStrategies.com",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] famiglia ORB già morta tre volte nei nostri test",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] famiglia ORB già morta tre volte nei nostri test"
     }
    ]
   },
@@ -3934,17 +4498,23 @@
    "url": "https://www.quantitativo.com/p/intraday-momentum-for-es-and-nq",
    "title": "Intraday Momentum for ES and NQ - by Quantitativo",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Replica Noise Area (famiglia scartata), WR 36-39%, nessun OOS né dettaglio post-2021, sovrapposta a DriftPullback",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Replica Noise Area (famiglia scartata), WR 36-39%, nessun OOS né dettaglio post-2021, sovrapposta a DriftPullback"
     }
    ]
   },
@@ -4120,17 +4690,23 @@
    "url": "https://research.cbs.dk/da/publications/the-overnight-drift-in-us-equity-returns/",
    "title": "Spring til hovednavigation Spring til søgning Spring til hovedindhold",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] overnight, filtro 8",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] overnight, filtro 8"
     }
    ]
   },
@@ -4138,17 +4714,23 @@
    "url": "https://research.cbs.dk/en/publications/foreign-exchange-fixings-and-returns-around-the-clock/",
    "title": "Foreign Exchange Fixings and Returns Around the Clock - CBS Research Portal",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] FX Fix già testata e morta",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] FX Fix già testata e morta"
     }
    ]
   },
@@ -4156,17 +4738,23 @@
    "url": "https://research.cbs.dk/en/publications/the-overnight-drift-4/",
    "title": "The Overnight Drift - CBS Research Portal",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] overnight, filtro 8",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] overnight, filtro 8"
     }
    ]
   },
@@ -4174,17 +4762,23 @@
    "url": "https://www.researchgate.net/publication/222520781_Intraday_price_reversals_in_the_US_stock_index_futures_market_A_15-year_study",
    "title": "Intraday price reversals in the US stock index futures market: A 15-year study",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] già scartato nel db, campione fino al 2002",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] già scartato nel db, campione fino al 2002"
     }
    ]
   },
@@ -4192,17 +4786,23 @@
    "url": "https://www.researchgate.net/publication/242770982_Intraday_Trading_Volume_Patterns_Of_Equity_Markets_A_Study_Of_US_And_European_Stock_Markets",
    "title": "(PDF) Intraday Trading Volume Patterns Of Equity Markets: A Study Of US And European Stock Markets",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] volumi, nessuna regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] volumi, nessuna regola"
     }
    ]
   },
@@ -4210,17 +4810,23 @@
    "url": "https://www.researchgate.net/publication/314514151_Intraday_Trading_Invariance_in_the_E-Mini_SP_500_Futures_Market",
    "title": "Intraday Trading Invariance in the E-Mini S&P 500 Futures Market",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato, nessuna regola",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato, nessuna regola"
     }
    ]
   },
@@ -4228,17 +4834,23 @@
    "url": "https://www.researchgate.net/publication/328209193_Intraday_information_from_SP_500_Index_futures_options",
    "title": "Intraday information from S&P 500 Index futures options",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato, opzioni",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato, opzioni"
     }
    ]
   },
@@ -4270,17 +4882,23 @@
    "url": "https://www.researchgate.net/publication/348655910_Intraday_time_series_momentum_Global_evidence_and_links_to_market_characteristics",
    "title": "Intraday time series momentum: Global evidence and links to market characteristics",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] versione centaur già scartata, famiglia LastHalfHour",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] versione centaur già scartata, famiglia LastHalfHour"
     }
    ]
   },
@@ -4336,17 +4954,23 @@
    "url": "https://www.researchgate.net/publication/386959248_Equilibrium_Effects_of_Intraday_Order-Splitting_Benchmarks",
    "title": "Equilibrium Effects of Intraday Order-Splitting Benchmarks",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato, teoria",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v7@2026-10-20T23:33",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato, teoria"
     }
    ]
   },
@@ -4372,17 +4996,23 @@
    "url": "https://www.researchwithrutgers.com/en/publications/equilibrium-effects-of-intraday-order-splitting-benchmarks/",
    "title": "Equilibrium effects of intraday order-splitting benchmarks - Rutgers, The State University of New Jersey",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato, teoria",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v7@2026-10-20T23:33",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato, teoria"
     }
    ]
   },
@@ -4462,17 +5092,23 @@
    "url": "https://www.sciencedirect.com/science/article/abs/pii/S0264999321000134",
    "title": "Intraday return predictability in China’s crude oil futures market: New evidence from a unique trading mechanism - ScienceDirect",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] futures cinesi",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] futures cinesi"
     }
    ]
   },
@@ -4498,17 +5134,23 @@
    "url": "https://www.sciencedirect.com/science/article/abs/pii/S0304405X18301351",
    "title": "Market intraday momentum - ScienceDirect",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] già scartato, famiglia LastHalfHour",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] già scartato, famiglia LastHalfHour"
     }
    ]
   },
@@ -4516,17 +5158,23 @@
    "url": "https://www.sciencedirect.com/science/article/abs/pii/S0304405X18303118",
    "title": "Information and trading targets in a dynamic market equilibrium - ScienceDirect",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] teoria di equilibrio",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v7@2026-10-20T23:33",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] teoria di equilibrio"
     }
    ]
   },
@@ -4570,17 +5218,23 @@
    "url": "https://www.sciencedirect.com/science/article/abs/pii/S0378437119318539",
    "title": "Market liquidity and macro announcement around intraday jumps: Evidence from Chinese stock index futures markets - ScienceDirect",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] futures cinesi",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] futures cinesi"
     }
    ]
   },
@@ -4588,17 +5242,23 @@
    "url": "https://www.sciencedirect.com/science/article/abs/pii/S105905601200072X",
    "title": "The predictability of opening returns for the returns of the trading day: Evidence from Taiwan futures market - ScienceDirect",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] Taiwan, campione pre-2012",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] Taiwan, campione pre-2012"
     }
    ]
   },
@@ -4606,17 +5266,23 @@
    "url": "https://www.sciencedirect.com/science/article/abs/pii/S1544612319304337",
    "title": "Does intraday time-series momentum exist in Chinese stock index futures market? - ScienceDirect",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] futures cinesi, famiglia LastHalfHour",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] futures cinesi, famiglia LastHalfHour"
     }
    ]
   },
@@ -4624,17 +5290,23 @@
    "url": "https://www.sciencedirect.com/science/article/pii/S0165176526004520",
    "title": "Liquidity withdrawal before scheduled macroeconomic announcements - ScienceDirect",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "aperto",
+   "reason": "403 al fetch; unica fonte recente sulla finestra 08:30 CT, da aprire con altro accesso",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "aperto",
+     "reason": "403 al fetch; unica fonte recente sulla finestra 08:30 CT, da aprire con altro accesso"
     }
    ]
   },
@@ -4660,17 +5332,23 @@
    "url": "https://scispace.com/pdf/intraday-price-reversals-for-index-futures-in-the-us-and-137ieyy6y7.pdf",
    "title": "Intraday price reversals for index futures in the US and Hong Kong",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] famiglia Grant-Wolf-Yu, mean reversion vecchia",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] famiglia Grant-Wolf-Yu, mean reversion vecchia"
     }
    ]
   },
@@ -4750,17 +5428,23 @@
    "url": "https://sites.insead.edu/facultyresearch/research/file.cfm?fid=66802",
    "title": "Foreign Exchange Fixings and Returns Around the Clock Ingomar Krohn∗",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] duplicato FX Fix",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] duplicato FX Fix"
     }
    ]
   },
@@ -4978,17 +5662,23 @@
    "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4718961",
    "title": "Can Daily Closing Prices Predict Future Movements? The Role of Limit Order Clustering by Xiao Zhang :: SSRN",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "403; [titolo] orizzonte da chiusura a giorni successivi, azioni: fallisce i filtri 1 e 5",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "403; [titolo] orizzonte da chiusura a giorni successivi, azioni: fallisce i filtri 1 e 5"
     }
    ]
   },
@@ -5062,17 +5752,23 @@
    "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6087107",
    "title": "A Regime-Conditioned Statistical Mean Reversion Framework for Intraday FX Markets by Amaanullah Bhatti :: SSRN",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] FX spot e mean reversion autonoma",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] FX spot e mean reversion autonoma"
     }
    ]
   },
@@ -6454,17 +7150,23 @@
    "url": "https://tradestation.com/?p=53952",
    "title": "Call toll-free 800.328.1267",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] pagina di broker senza titolo informativo",
    "candidate": null,
    "first_seen": "2026-10-25",
-   "last_seen": "2026-10-25",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-25",
      "run": "candidate_lucidflex_50k_v9@2026-10-25T15:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] pagina di broker senza titolo informativo"
     }
    ]
   },
@@ -6802,17 +7504,23 @@
    "url": "https://tradingstats.net/mean-reversion-trading-strategy/",
    "title": "Mean Reversion Trading Strategy: 565 Weeks of NQ Data",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] mean reversion autonoma, esclusa per famiglia",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] mean reversion autonoma, esclusa per famiglia"
     }
    ]
   },
@@ -6844,17 +7552,23 @@
    "url": "https://www.tradingview.com/chart/YM1!/FxdQNRZw-Full-Breakdown-of-My-Trading-Strategy-Dow-Futures-Daytrading/",
    "title": "Full Breakdown of My Trading Strategy Dow Futures Daytrading for CBOT_MINI:YM1! by FOMC_God — TradingView",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Discrezionale per ammissione dell'autore, nessuna statistica",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Discrezionale per ammissione dell'autore, nessuna statistica"
     }
    ]
   },
@@ -6862,17 +7576,23 @@
    "url": "https://www.tradingview.com/symbols/CBOT_MINI-MYM1!/ideas/?sort=recent&video=yes",
    "title": "Micro E-mini Dow Jones Industrial Average Index Futures Trade Ideas — CBOT_MINI:MYM1! — TradingView",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] feed di idee discrezionali",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] feed di idee discrezionali"
     }
    ]
   },
@@ -6880,17 +7600,23 @@
    "url": "https://www.tradingview.com/symbols/CBOT_MINI-YM1!/ideas/",
    "title": "E-mini Dow Jones Industrial Average Index Futures Trade Ideas — CBOT_MINI:YM1! — TradingView",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] feed di idee discrezionali",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] feed di idee discrezionali"
     }
    ]
   },
@@ -6898,17 +7624,23 @@
    "url": "https://www.tradingview.com/symbols/CME_MINI-M2K1!/",
    "title": "Micro E-mini Russell 2000 Index Futures Price Chart — CME_MINI:M2K1! — TradingView",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] pagina di quotazione",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] pagina di quotazione"
     }
    ]
   },
@@ -6964,17 +7696,23 @@
    "url": "https://vn.tradingview.com/script/K0f6aI3t-Micro-Pullback-Entry-System",
    "title": "OPEN-SOURCE SCRIPT",
    "kind": "practitioner",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "Duplicato, indicatore senza test",
    "candidate": null,
    "first_seen": "2026-10-20",
-   "last_seen": "2026-10-20",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-20",
      "run": "candidate_lucidflex_50k_v6@2026-10-20T23:30",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "Duplicato, indicatore senza test"
     }
    ]
   },
@@ -7144,17 +7882,23 @@
    "url": "http://wp.lancs.ac.uk/fofi2020/files/2020/04/FoFI-2020-092-Zeming-Li.pdf",
    "title": "Intraday Time Series Momentum: International Evidence $",
    "kind": "academic",
-   "verdict": "da_leggere",
-   "reason": "",
+   "verdict": "scartato",
+   "reason": "[titolo] famiglia LastHalfHour, campione pre-2020 (filtro 8)",
    "candidate": null,
    "first_seen": "2026-10-22",
-   "last_seen": "2026-10-22",
+   "last_seen": "2026-10-26",
    "history": [
     {
      "date": "2026-10-22",
      "run": "candidate_lucidflex_50k_v8@2026-10-22T16:20",
      "verdict": "da_leggere",
      "reason": ""
+    },
+    {
+     "date": "2026-10-26",
+     "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+     "verdict": "scartato",
+     "reason": "[titolo] famiglia LastHalfHour, campione pre-2020 (filtro 8)"
     }
    ]
   }
@@ -7536,6 +8280,21 @@
    "turns": 14,
    "cost_usd_est": 0.0,
    "api_equivalent_usd": 1.28
+  },
+  {
+   "run": "candidate_lucidflex_50k_v10@2026-10-26T18:05",
+   "file": "candidate_lucidflex_50k_v10.md",
+   "backend": "claude-code",
+   "model": "claude-opus-5-5",
+   "focus": "TRIAGE, NON RICERCA. Lavora solo sulle fonti DA LEGGERE del database: non fare ricerche\nweb nuove. Per ciascuna decidi un verdetto e mettila in sources_reviewed:\n- dal titolo, dall'URL e da cio' che sai, scarta subito quelle chiaramente fuori dai filtri\n  del prompt (campione solo pre-2021 senza follow-up, azioni singole, opzioni, dati di book,\n  overnight, crypto spot, teoria senza regola) e scrivi nel motivo \"[titolo]\";\n- apri con WebFetch solo quelle che potrebbero passare, in ordine di promessa, fino al budget;\n- quelle che restano promettenti ma non hai aperto: verdetto \"aperto\", motivo \"da aprire\".\nProponi una candidata solo se una fonte aperta la regge davvero.",
+   "queries": 0,
+   "hits": 14,
+   "reviewed": 122,
+   "searches": 0,
+   "fetches": 14,
+   "turns": 15,
+   "cost_usd_est": 0.0,
+   "api_equivalent_usd": 1.24
   }
  ]
 }
