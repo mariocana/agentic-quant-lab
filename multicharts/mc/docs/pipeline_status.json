@@ -4,44 +4,38 @@
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
-  "updated": "2026-10-23",
+  "updated": "2026-10-26",
   "groups": [
    {
-    "title": "Lunedi 26/10: DriftPullback va live su LucidFlex 50k",
-    "note": "checklist completa in mc/docs/go_live.md",
+    "title": "DriftPullback e' live su LucidFlex 50k dal 26/10",
+    "note": "configurazione reale e diario in mc/docs/go_live.md",
     "items": [
-     "**Comprare la eval con connessione RITHMIC**, non CQG: MultiCharts e solo fra le piattaforme Rithmic.",
-     "R|Trader Pro: login e **File → Allow Plugins**, senza MC non si collega. Poi Rithmic come data source e come broker in MC.",
-     "Grafico identico al backtest, **2 contratti**, grafico **NQZ6 Rithmic**, mapping **NQZ6 → MNQZ6**; auto trading **asincrono**, conferma ordini tolta.",
-     "**MultiCharts su VPS**: 1 licenza = 1 computer alla volta, e due istanze manderebbero ordini doppi.",
-     "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover: grafico NQH7 **e** mapping NQH7 → MNQH7.",
-     "**Ricerca in parallelo: effetti intraday condizionati al gamma dei dealer** (`mc/docs/ricerca_gamma_0dte.md`). Letteratura 2024-25 su dati 0DTE: gamma positivo → reversione, negativo → momentum. Spiega sia la morte di LastHalfHour dopo il 2022 sia lo zero delle mean reversion non condizionate. **GEX giornaliero pubblico** su SqueezeMetrics, 2011-2026.",
-     "**Rebalancing (fondi 60/40)**: chiusa al Gate 2 (t 0,58). Il timing del paper c'è (t 1,80 sul null) ma la gamba azionaria da sola, short il 74% delle volte, eredita il rialzo dell'S&P; dopo la pubblicazione t 0,52. FX Fix chiusa al Gate 2, causa A.",
-     "**ORB su ES**: chiusa al Gate 2 (long t −0,19, anche lordo ~0,5). Il rischio per trade su ES sta a ~$84 per MES su cinque anni: utile per la prossima candidata ancorata al range d'apertura."
+     "**Ogni sera, la prima settimana: ogni trade reale contro il backtest dello stesso giorno** (stessi ingressi, orari, uscite). Se divergono ci si ferma. Vale da Stage 9.",
+     "Configurazione: segnale `Drift_LIVE` (= `DriftPullback_v21.txt`, `BaseCts 2`), grafico **NQZ6 Rithmic**, mapping **NQZ6 → MNQZ6**, auto trading **AA**, ordini Native. Il P&L del grafico e' 10 volte quello del conto.",
+     "**Non toccare DriftPullback.** Un filtro o una variante adesso sarebbe una v2, validabile solo sul live.",
+     "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover: grafico NQH7 **e** mapping NQH7 → MNQH7."
     ]
    },
    {
-    "title": "Aperti al 23/10",
-    "note": "ricostruiti dai commit dopo il 18/10",
+    "title": "Aperti al 26/10",
+    "note": "la seconda gamba: eccesso positivo >= 3 errori standard e bassa correlazione con DriftPullback, non deve reggere il conto da sola (seconda_gamba.md)",
     "items": [
-     "**Last Half-Hour, Stage 2: IS 2020-2024 su @NQ** — è la seconda gamba candidata per DriftPullback ed è ferma dal 19/10.",
-     "**Counter Trend (Unger) su GC, Stage 1 secondo giro**: @GC 30 min, template 17:00–16:00 senza pause, run A / A10 / B.",
-     "**Pista overnight drift (ricercatore v8)**: leggere Boyarchenko-Larsen-Whelan, poi il falsificatore su MES 2020–2024 (≥ 2,6 punti netti per mezz'ora europea), un'ora di lavoro.",
+     "**Trend Following (Unger), Stage 1** — l'unica strategia aperta in pipeline. Replica su 6E, porting su GC, ES, NQ con stop in %. Target 3,3× lo stop: fuori profilo per costruzione, va letta con la soglia della seconda gamba.",
+     "**Prompt del ricercatore da rivedere** (`mc/docs/prompt_ricerca_strategie.md`): nove ricerche, zero candidate vive dal 20/10. Proposta: spostare le fonti verso le strategie dei praticanti (Strategy of the Month, Strategy Feedbacks del corso), da cui viene DriftPullback; togliere le contraddizioni interne (la sezione «dove cercare» propone ancora mean reversion e gap fade); mettere la soglia della seconda gamba. In discussione con l'agente.",
      "**Storico @ES / @NQ di quantlake da riesportare con il template 17:00–16:00**: il controllo di `Mario_PtnBaseSA` ha trovato 27 sessioni su 93 diverse dal chart, tutte per dati mancanti nell'export (chiusure del venerdì alle 15:15, estremi fra 15:15 e 16:00)."
     ]
    },
    {
-    "title": "Domenica di ricerca. Lunedi, se non c'e' altro, si parte con DriftPullback sola.",
-    "note": "una viva su nove; la ricerca di oggi dice che il profilo prop non e' una proprieta' dei segnali",
+    "title": "Chiusi dal 17/10, per non riaprirli",
+    "note": "una viva su diciotto",
     "items": [
-     "**Stage 2 di Last Half-Hour: IS 2020-2024 su @NQ**, stessi settaggi dello Stage 1, `TradeStartEL 1200101`, `TradeEndEL 1241231`. Soglia **t >= 2**, attesi 3,64 a edge intatto e 1,82 dimezzato.",
-     "~~DriftPersistence su 5 strumenti~~ **fatto: NQ e YM identici (50,15% e 50,18%), la premessa e sbagliata**. L'edge di DriftPullback sta nella congiunzione drift+pullback+trigger+uscita, non nella persistenza. GC anti-persistente a −6,34 errori standard ma con expectancy zero.",
-     "**La seconda gamba NON deve essere mean reverting.** Il paper da cui nasce DriftPullback (Zarattini-Pagani, *Fast Alpha*) dice che il segnale di reversione a breve **non e profittevole da solo dopo i costi** — e noi l'abbiamo verificato due volte. Funziona come **overlay di timing** su una direzione di trend, che e esattamente cio che DriftPullback fa. Serve lo **stesso schema con un segnale di direzione diverso**.",
-     "**Il run che vale di piu' e costa un'ora: DriftPullback portata su @YM.** Stop riscalato per ATR a **129 punti** (stessa frazione del range: 0,381), TP long 65, TP short 81, tutto il resto invariato. R per micro passa da $160 a **$64,57**.",
-     "**Se passa il Gate 2, misurare SUBITO la correlazione giornaliera con la versione NQ.** Stessa logica e stesse ore su indici 0,8-0,95 correlati: sopra 0,6 non e' una seconda gamba, e' la stessa scommessa in doppio.",
-     "**Finding della ricerca**: il profilo WR 54-72% con R:R 0,5-1 **non esiste come proprieta' di un segnale** — la letteratura sul momentum intraday replicato da WR 36-39% con payoff 2,09. Quel profilo lo impone il **bracket**, non l'ingresso.",
-     "**Conseguenza**: smettere di cercare strategie con quel profilo, cercare **segnali con un eccesso sul caso misurabile** di qualunque forma, e poi imporre la forma.",
-     "In coda: reversal pomeridiano (correlazione da misurare) ed **evento macro delle 8:30 CT**, gia' sul board e mai sviluppato — strutturale e nell'ora libera, ma 2-3 volte a settimana."
+     "**Last Half-Hour**: Gate 2 fallito il 23/10, t 0,52. Dopo la pubblicazione l'edge e' sparito (avg −$5,85 su 1.165 trade).",
+     "**Counter Trend (Unger) su GC**: Gate 2 fallito il 18/10.",
+     "**Overnight drift**: chiusa dal ricercatore v9 il 25/10. Gli autori stessi la danno morta dopo il 2021; netta faceva gia' Sharpe −0,54.",
+     "**DriftPullback su YM**: t 0,2 (`DPB_S2_IS_PORT-YM`). L'edge non si trasferisce.",
+     "**Rebalancing (fondi 60/40)**: Gate 2, t 0,58. **FX Fix**: Gate 2, causa A. **ORB su ES**: Gate 2, long t −0,19.",
+     "**Gamma dei dealer**: chiusa come fonte di strategie (il segnale vero e' intraday e proprietario), resta come spiegazione: dal 2023 i dealer sono quasi sempre lunghi gamma e la mean reversion non condizionata fa zero.",
+     "**Principi che restano**: il profilo WR alto / R:R basso lo impone il bracket, non il segnale; si misura l'eccesso sul caso; la seconda gamba non deve essere mean reverting a orizzonte corto (*Fast Alpha*, verificato due volte)."
     ]
    }
   ]
