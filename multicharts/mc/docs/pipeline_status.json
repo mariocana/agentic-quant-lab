@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-24",
+ "updated": "2026-10-26",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -12,9 +12,9 @@
     "items": [
      "**Comprare la eval con connessione RITHMIC**, non CQG: MultiCharts e solo fra le piattaforme Rithmic.",
      "R|Trader Pro: login e **File → Allow Plugins**, senza MC non si collega. Poi Rithmic come data source e come broker in MC.",
-     "Grafico identico al backtest, **2 contratti**, symbol mapping **@NQ → MNQZ6**; auto trading **asincrono**, conferma ordini tolta.",
+     "Grafico identico al backtest, **2 contratti**, grafico **NQZ6 Rithmic**, mapping **NQZ6 → MNQZ6**; auto trading **asincrono**, conferma ordini tolta.",
      "**MultiCharts su VPS**: 1 licenza = 1 computer alla volta, e due istanze manderebbero ordini doppi.",
-     "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover MNQZ6 → MNQH7.",
+     "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover: grafico NQH7 **e** mapping NQH7 → MNQH7.",
      "**Ricerca in parallelo: effetti intraday condizionati al gamma dei dealer** (`mc/docs/ricerca_gamma_0dte.md`). Letteratura 2024-25 su dati 0DTE: gamma positivo → reversione, negativo → momentum. Spiega sia la morte di LastHalfHour dopo il 2022 sia lo zero delle mean reversion non condizionate. **GEX giornaliero pubblico** su SqueezeMetrics, 2011-2026.",
      "**Rebalancing (fondi 60/40)**: chiusa al Gate 2 (t 0,58). Il timing del paper c'è (t 1,80 sul null) ma la gamba azionaria da sola, short il 74% delle volte, eredita il rialzo dell'S&P; dopo la pubblicazione t 0,52. FX Fix chiusa al Gate 2, causa A.",
      "**ORB su ES**: chiusa al Gate 2 (long t −0,19, anche lordo ~0,5). Il rischio per trade su ES sta a ~$84 per MES su cinque anni: utile per la prossima candidata ancorata al range d'apertura."
@@ -681,6 +681,10 @@
     "per regime di gamma (23/10)": "avg per terzile di GEX: basso $73 / $91, medio $50 / $53, alto $39 / $52 (IS / OOS) — monotono ma NON significativo (0,77 e 0,40 es), positivo in tutti i terzili. Pass rate col solo GEX alto: **33-40% per tentativo, 80-87% entro quattro**"
    },
    "log": [
+    {
+     "date": "2026-10-26",
+     "text": "**Live su LucidFlex 50k.** Segnale `Drift_LIVE` (= `DriftPullback_v21.txt`, `BaseCts 2`), grafico **NQZ6 con dati Rithmic** (TradeStation resta per i test), mapping **NQZ6 → MNQZ6**, auto trading **AA**, ordini Native. Il primo long delle 9:45 CT, a target sul grafico, era solo il ricalcolo del passaggio SA → AA: conto flat. Checklist aggiornata in `mc/docs/go_live.md`."
+    },
     {
      "date": "2026-10-23",
      "text": "**Ripartizione per regime di gamma: calibra l'aspettativa, non cambia la strategia.** Con il GEX della sera prima per terzili, l'avg per trade cala col gamma — IS $73 / $50 / $39, OOS $91 / $53 / $52 — e il win rate pure, **in tutti e due i campioni**, nella direzione del meccanismo. **Ma non e significativo** (0,77 e 0,40 errori standard), ed e **positivo in tutti i terzili**. **Il numero utile per lunedi**: dal 2025 il GEX e alto il 63% dei giorni, e simulando solo quei giorni il pass rate e **40,2% per tentativo e 87,2% entro quattro sull'OOS, 33,0% e 79,8% sull'IS**, contro il 42%/89% medio. Nessuna modifica: l'OOS e gia stato usato e la differenza non e significativa. Una size piu alta col gamma basso sarebbe una v2 da pre-registrare e validare sul live."

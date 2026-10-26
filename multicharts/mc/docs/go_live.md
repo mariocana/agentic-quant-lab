@@ -39,40 +39,67 @@ Trader Pro*, *Show Data Connection Alert*. Attivare la sorgente.
 ## 4. MultiCharts: Rithmic come broker
 
 File → Broker Profiles → Manage → **New** → Rithmic. Stessi campi, *Lookup* per vedere gli
-exchange, rinominarlo «Lucid», **Connect**. Deve comparire l'account con **saldo 50.000**.
+exchange, **Connect**. Deve comparire l'account con **saldo 50.000**. Sul VPS il profilo si
+chiama «Rithmic».
 
-## 5. Il grafico: identico al backtest
+## 5. Il grafico: dati Rithmic, contratto di dicembre
 
-- **@NQ 5 min** con **data2 a 15 min**, Globex 24h, timezone **Exchange (CT)**;
-- **la stessa serie del backtest** (non back-adjusted: `driftPct` usa una percentuale del
-  prezzo, e lo abbiamo verificato il 29/09);
-- **storico caricato a sufficienza** perche' MA a 20 barre da 15 minuti e VWAP di sessione siano
-  gia' caldi all'apertura: almeno qualche giorno;
-- input **uguali al backtest** (`DriftMode 0`, `DriftThreshPct 0.10`, `MALen 20`, `DriftLen 4`,
-  `PullbackWindow 6`, SL/TP 80/40/80/50, `StopSlipTicks 2`, `MaxTradesPerDay 4`,
-  `MaxLossesPerDay 2`, `SizeMode 1`), con **2 contratti** — il piano veloce dello Stage 7.
+TradeStation serve solo per i test: il live prende i dati da Rithmic (Lesson 10, 33:02:
+*«You can use as data source now Rithmic as well»*). Un punto di rottura in meno.
 
-## 6. Symbol mapping: @NQ sul grafico, **MNQZ6** al broker
+- **NQZ6 5 min** con **data2 NQZ6 15 min** (Insert → Series, stesso simbolo), sorgente
+  **Rithmic**, Globex 24h, timezone **Exchange (CT)**;
+- **NQ, non MNQ**: il VWAP di sessione e' pesato sui volumi, e il backtest usa quelli di NQ;
+- **non l'`@NQ` di Rithmic**: e' un *Custom Futures* costruito da MultiCharts
+  (`!NQ_101C0^HMUZ`), con regole di rollover non verificate contro il backtest. NQZ6 ha i prezzi
+  del contratto attivo, che fino al rollover coincidono con l'`@NQ` TradeStation del backtest
+  (non back-adjusted, verificato il 29/09);
+- **storico**: la MA a 20 barre da 15 minuti chiede 5 ore, il VWAP parte alle 8:30 CT. Le barre
+  dalla notte bastano; meglio averne qualche giorno;
+- segnale **`Drift_LIVE`** = il codice di **`DriftPullback_v21.txt`** (il vecchio
+  `DriftPullback.txt` non si usa). Input uguali al backtest: `DriftMode 0`,
+  `DriftThreshPct 0.10`, `MALen 20`, `DriftLen 4`, `PullbackWindow 6`, `ExitMode 0`, SL/TP
+  80/40/80/50, `StopSlipTicks 2`, `MaxTradesPerDay 4`, `MaxLossesPerDay 2`, `ShowLog 0`,
+  `SizeMode 1`, **`BaseCts 2`** (il default e' 1) — il piano veloce dello Stage 7.
 
-File → Broker Profile → **Symbol Mapping** → il profilo Lucid → Add: **@NQ → MNQZ6** (dicembre
-2026). Il segnale si calcola sulla serie continua, l'ordine va sul micro (Lesson 10, 06:40). I
-punti sono gli stessi, quindi stop e target non cambiano.
+## 6. Symbol mapping: **NQZ6 → MNQZ6**
 
-> **Rollover**: MNQZ6 scade a meta' dicembre. **Intorno all'11 dicembre** il mapping va
-> spostato su **MNQH7**. Se ce ne si dimentica, la strategia smette di eseguire.
+File → Broker Profiles → **Symbol Mapping** → il profilo Rithmic → **Add** → **NQZ6**
+(sorgente Rithmic) → tre puntini «…» → **MNQZ6** (Micro, CME; se il lookup non lo trova,
+`MNQZ26`) → OK → Apply. Il segnale si calcola su NQ, l'ordine va sul micro (Lesson 10, 06:40):
+i punti sono gli stessi, stop e target non cambiano.
+
+> ⚠️ **Al broker mai NQZ6.** 2 NQ valgono $40 al punto: lo stop da 80 punti e' una perdita di
+> $3.200, oltre l'MLL.
+
+Il grafico conta i 2 contratti come NQ: **il P&L sul grafico e' 10 volte quello del conto**.
+Fa fede la dashboard Lucid.
+
+> **Rollover, intorno all'11 dicembre**: si cambiano **due cose**, a mercato chiuso: il grafico
+> (data1 e data2) in **NQH7** e il mapping in **NQH7 → MNQH7**. Poi si riattiva la strategia.
+> Se ce ne si dimentica, la strategia smette di eseguire.
 
 ## 7. Le impostazioni di Auto Trading (proprieta' della strategia)
+
+Ci si arriva dalla **freccina** accanto al pulsante SA/AA sul grafico → **Strategy Properties**
+→ scheda **Auto Trading** (oppure tasto destro → Format Signals → Properties).
 
 | | valore | perche' |
 |---|---|---|
 | real-time data | **dal grafico** | il caso comune, e lo stesso dato che genera il segnale |
 | modo | **asincrono (AA)** | il corso lo consiglia: la posizione la gestisce la strategia |
+| ordini stop / limit | **Native** | lo stop resta sui server Rithmic anche se il VPS si blocca. Il corso suggerisce *Emulate locally* (Lesson 10, 35:28), ma cosi' lo stop vive solo su MultiCharts |
 | *Require order confirmation* | **tolta** | altrimenti ogni ordine aspetta un clic |
 | *Assign initial market position* | **mostra sempre la finestra** | la rete di sicurezza: si conferma che grafico e broker sono flat |
-| broker plugin | **Rithmic / Lucid** + l'account | va riselezionato ogni volta che si imposta la strategia |
+| broker plugin | **Rithmic** + l'account (ingranaggio, *Lookup*) | va riselezionato ogni volta che si imposta la strategia |
 
 Poi **Automate Order Execution**: chiede conferma, si verifica *flat* su entrambi i lati,
-*Apply*, il pulsante diventa **verde**.
+*Apply*, il pulsante diventa **verde** con **AA**.
+
+Per cambiare queste impostazioni: **solo a strategia flat**. Si spegne l'automazione, si
+modifica, si riaccende. Alla riaccensione MultiCharts ricalcola lo storico e puo' disegnare
+trade che il conto non ha fatto: si controlla nell'**Order and Position Tracker** (View) e sulla
+dashboard Lucid.
 
 ## 8. Dove gira: **VPS**, e la licenza
 
@@ -89,6 +116,12 @@ rispettata.
 
 **E non si vuole comunque**: due istanze che automatizzano lo stesso account mandano **ordini
 doppi**. MultiCharts sul VPS e basta; dal Mac si controlla dalla dashboard Lucid.
+
+**Test sul VPS, fuori orario.** Un workspace **LIVE** (solo il grafico di `Drift_LIVE`) e uno
+**TEST** con i dati TradeStation. Gli studi sono condivisi fra i workspace: ricompilare un
+segnale ricalcola **ogni** grafico che lo usa, quindi `Drift_LIVE` non si tocca e i test usano
+copie con un altro nome. Niente lavoro pesante fra le **14:30 e le 22:00** italiane (dal 2/11:
+13:30-22:00, quando gli USA tornano all'ora solare). Windows Update in manuale.
 
 **Requisiti del VPS** (verificati il 25/10/2026):
 
@@ -110,7 +143,7 @@ si vuole ([prezzi](https://algovps.com/pricing)). Alternativa: QuantVPS Lite+ a 
 |---|---|
 | **27/11** | Black Friday: decisione sulla licenza MultiCharts |
 | **29/11** | **fine del mese gratuito**. Se scade a eval aperta, **l'automazione si ferma** |
-| **~11/12** | rollover MNQZ6 → MNQH7 |
+| **~11/12** | rollover: grafico NQZ6 → NQH7 **e** mapping → NQH7 → MNQH7 |
 
 Il piano veloce ha una mediana di **22 giorni**: partendo il 26/10 si chiude probabilmente
 prima del 29/11, ma la finestra di 60 giorni arriva a gennaio.
@@ -124,3 +157,9 @@ perche' prima di continuare.
 
 E le soglie dello Stage 9 restano: drawdown al **75esimo percentile → si riduce**, al **95esimo
 → si ferma**.
+
+## 11. Diario del live
+
+| data | cosa |
+|---|---|
+| 26/10/2026 | **Live.** R\|Trader Pro: due errori al login (*Permission to connect to the Infrastructure*, *License server could not be contacted*), risolti da Mario. Partito in SA, passato ad AA verso le 9:45 CT. Il long delle 9:45 chiuso a target sul grafico era **solo il ricalcolo** del passaggio SA → AA: conto flat |
