@@ -2,7 +2,7 @@
  "updated": "2026-10-26",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
- "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency 50% · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
+ "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
   "updated": "2026-10-26",
   "groups": [
@@ -21,7 +21,7 @@
     "note": "la seconda gamba: eccesso positivo >= 3 errori standard e bassa correlazione con DriftPullback, non deve reggere il conto da sola (seconda_gamba.md)",
     "items": [
      "**Trend Following (Unger), Stage 1** — l'unica strategia aperta in pipeline. Replica su 6E, porting su GC, ES, NQ con stop in %. Target 3,3× lo stop: fuori profilo per costruzione, va letta con la soglia della seconda gamba.",
-     "**Prompt del ricercatore da rivedere** (`mc/docs/prompt_ricerca_strategie.md`): nove ricerche, zero candidate vive dal 20/10. Proposta: spostare le fonti verso le strategie dei praticanti (Strategy of the Month, Strategy Feedbacks del corso), da cui viene DriftPullback; togliere le contraddizioni interne (la sezione «dove cercare» propone ancora mean reversion e gap fade); mettere la soglia della seconda gamba. In discussione con l'agente.",
+     "**Prompt del ricercatore rivisto il 26/10** (`mc/docs/prompt_ricerca_strategie.md`): obiettivo la seconda gamba (t >= 3 sull'IS, correlazione sul P&L giornaliero, >= 0,4 trade al giorno), metro l'eccesso sul caso, praticanti alla pari dei paper con filtro P1-P6, vincitori di gara con t >= 3 e OOS = forward dalla data del PDF. `gate0.py` allineato. Triage fatto: 105 fonti ignorate per dominio, 122 giudicate nella v10, **nessuna candidata**; 5 aperte, fra cui un articolo 2026 sul ritiro di liquidita' prima dei dati macro delle 08:30 CT (403, da aprire con altro accesso). **Prossimo: una ricerca vera col prompt nuovo, un solo focus per run.**",
      "**Storico @ES / @NQ di quantlake da riesportare con il template 17:00–16:00**: il controllo di `Mario_PtnBaseSA` ha trovato 27 sessioni su 93 diverse dal chart, tutte per dati mancanti nell'export (chiusure del venerdì alle 15:15, estremi fra 15:15 e 16:00)."
     ]
    },
