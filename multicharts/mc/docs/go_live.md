@@ -93,8 +93,28 @@ Ci si arriva dalla **freccina** accanto al pulsante SA/AA sul grafico → **Stra
 | *Assign initial market position* | **mostra sempre la finestra** | la rete di sicurezza: si conferma che grafico e broker sono flat |
 | broker plugin | **Rithmic** + l'account (ingranaggio, *Lookup*) | va riselezionato ogni volta che si imposta la strategia |
 
+**L'ingranaggio accanto al broker plugin** apre le proprieta' della connessione (System
+LucidTrading, Gateway Chicago Area). In fondo, *Default Order Settings*: **Exchange CME** e
+**Account LFE050-…** (con *Lookup*). Il 26/10 l'account era vuoto e Rithmic ha rifiutato tutti
+gli ordini: *«Invalid order parameters: Account field is empty»*.
+
+**Prima di accendere AA, ogni volta, tre controlli:**
+
+| | dove |
+|---|---|
+| account compilato, exchange CME | Strategy Properties → Auto Trading → ingranaggio |
+| **data2 a 15 minuti** | il pannello sotto il grafico |
+| `BaseCts 2`, `SizeMode 1` | Format Signals → Inputs |
+
 Poi **Automate Order Execution**: chiede conferma, si verifica *flat* su entrambi i lati,
 *Apply*, il pulsante diventa **verde** con **AA**.
+
+**Durante la sessione le credenziali Lucid non si usano altrove** (R\|Trader Pro, altre
+piattaforme, un altro MultiCharts): Rithmic ammette un login per credenziale e butta fuori
+l'altro. Il conto si guarda dalla dashboard Lucid nel browser, che non passa da Rithmic.
+
+Dopo il primo segnale: scheda **Orders** dell'Order and Position Tracker, con **Account
+compilato** e stato **Filled**. Se e' *Rejected*, la ragione e' nella scheda **Logs**.
 
 Per cambiare queste impostazioni: **solo a strategia flat**. Si spegne l'automazione, si
 modifica, si riaccende. Alla riaccensione MultiCharts ricalcola lo storico e puo' disegnare
@@ -163,3 +183,5 @@ E le soglie dello Stage 9 restano: drawdown al **75esimo percentile → si riduc
 | data | cosa |
 |---|---|
 | 26/10/2026 | **Live.** R\|Trader Pro: due errori al login (*Permission to connect to the Infrastructure*, *License server could not be contacted*), risolti da Mario. Partito in SA, passato ad AA verso le 9:45 CT. Il long delle 9:45 chiuso a target sul grafico era **solo il ricalcolo** del passaggio SA → AA: conto flat |
+| 26/10/2026, sera | **Nessun trade sul conto.** Il grafico ha generato tre long (10:10, 10:30, 12:25 CT, che a 1 contratto davano +40, −80,5, −80,5 punti), tutti **rifiutati**: *«Account field is empty»*. Due logout forzati alle 9:47 CT (le stesse credenziali usate altrove), ricollegato da solo |
+| 27/10/2026 | Trovata anche **data2 a 5 minuti** invece di 15. Corretti prima dell'apertura: data2 a 15 minuti, account LFE050-… ed exchange CME nelle proprieta' della connessione. Aggiunti i tre controlli prima di accendere AA (sezione 7) |
