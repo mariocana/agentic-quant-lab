@@ -88,7 +88,7 @@ Ci si arriva dalla **freccina** accanto al pulsante SA/AA sul grafico → **Stra
 |---|---|---|
 | real-time data | **dal grafico** | il caso comune, e lo stesso dato che genera il segnale |
 | modo | **asincrono (AA)** | il corso lo consiglia: la posizione la gestisce la strategia |
-| ordini stop / limit | **Emulate locally** (come dice il corso, Lesson 10, 35:28) | con *Native* il 27/10 ogni `L.SL` e' partito come **ordine a mercato** alla barra dopo l'entrata: 4 trade su 4 chiusi dopo 5 minuti (vedi diario). Con l'emulazione lo stop vive solo su MultiCharts: se il VPS si blocca non c'e' stop al broker |
+| ordini stop / limit | Price Orders Emulation: **Stop Orders = Emulate locally using Bid/Ask and send a Market order**; Stop Limit e Limit = *Use native* (il TP resta al broker). Serve il prezzo in tempo reale di MNQZ6 da Rithmic (come dice il corso, Lesson 10, 35:28) | con *Native* il 27/10 ogni `L.SL` e' partito come **ordine a mercato** alla barra dopo l'entrata: 4 trade su 4 chiusi dopo 5 minuti (vedi diario). Con l'emulazione lo stop vive solo su MultiCharts: se il VPS si blocca non c'e' stop al broker |
 | *Require order confirmation* | **tolta** | altrimenti ogni ordine aspetta un clic |
 | *Assign initial market position* | **mostra sempre la finestra** | la rete di sicurezza: si conferma che grafico e broker sono flat |
 | broker plugin | **Rithmic** + l'account (ingranaggio, *Lookup*) | va riselezionato ogni volta che si imposta la strategia |
