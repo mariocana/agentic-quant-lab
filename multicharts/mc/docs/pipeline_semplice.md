@@ -173,13 +173,14 @@ non 0,5: k = 2 → 0,56 · k = 3 → 0,85 · k = 4 → 1,03 · k = 6 → 1,27.
 | 3 | VaultBreak `MaxTrades1` | 2,88 | | OOS visto da solo (t 0,23), mai nel book. **A verbale**: logica gia' morta su NQ |
 | 4 | ORB NQ senza cutoff | 2,74 | | **a verbale**: gia' misurato nel book il 29/10 prima della regola (+0,4 pp iid) |
 | 5 | VWAP Pullback filtrata (MNQ) | 0,69 | $444 | scelta fra 2 versioni: soglia 0,56, passa. OOS mai toccato |
+| 6 | **Trend Following (Unger) B su NQ** (MNQ) | 1,73 | $264 | B pre-registrata per strumento; il migliore di 4 strumenti, soglia k = 4 → 1,03: passa. Cinque anni su cinque positivi. IS girato senza commissione, corretto a −$15/trade. OOS mai toccato |
 
 **Escluse:**
 - **VaultBreak su ES**: la stessa logica e' fallita fuori campione su NQ nello stesso periodo (t −0,03), ES/NQ correlati 0,8-0,95. Rigirarla sarebbe una variante dopo un gate fallito.
 - **Counter Trend YM B**: migliore di 6 run, t 1,01 contro 1,27 atteso dal caso.
-- First5 (serve un IS nuovo con lo stop), Last Half-Hour e Rebalancing (trade peggiore oltre $500), Trend Following 6E (niente micro su Lucid), tutte le altre (t ≤ 0,5).
+- First5 (serve un IS nuovo con lo stop), Last Half-Hour e Rebalancing (trade peggiore oltre $500), Trend Following 6E (niente micro su Lucid), Trend Following B su ES (t 0,52 sotto la soglia k = 4 di 1,03) e su GC (t −0,16), tutte le altre (t ≤ 0,5).
 
-**Fuori da questa coda, con la pipeline normale:** Trend Following (Unger) su GC/ES/NQ, in fase 2; VWAP ADX, in fase 0 presso l'agente (fuori campione pulito solo dal 3/7/2026).
+**Fuori da questa coda, con la pipeline normale:** VWAP ADX, in fase 0 presso l'agente (fuori campione pulito solo dal 3/7/2026).
 
 ## Registro
 

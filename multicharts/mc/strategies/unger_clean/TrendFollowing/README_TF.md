@@ -157,11 +157,13 @@ Nei file di MC i nomi erano invertiti su GC e NQ (`Mario_UngerTF` = B); qui sono
 
 Verdetto, con la B che decide strumento per strumento:
 - **via A** (t ≥ 2, WR ≥ 55%, R:R 0,5–1): nessuno, come previsto dal profilo.
-- **via B** (t > 0,5, peggiore ≤ $500 per micro): **NQ B passa** (t 1,73, cinque anni su
-  cinque positivi); **ES B passa al filo** (t 0,52, 2024 −$17.645: compatibile col caso);
+- **via B** (t > 0,5, peggiore ≤ $500 per micro): **NQ B passa** (t 1,73 contro la soglia k = 4 di 1,03, cinque
+  anni su cinque positivi); **ES B no**: t 0,52 supera lo 0,5 ma non la soglia per il migliore fra k = 4
+  strumenti (1,03, regola del 29/10 in `pipeline_semplice.md`), e il 2024 fa −$17.645;
   **GC B no** (t −0,16): GC in cimitero, causa A.
 - Il WR della B su questi strumenti (40%) non è quello di Unger su 6E (52%): la B tiene il
   target al 1,9% e vince a fine sessione meno spesso.
 - Kill generale non scattato (A e B positive su NQ ed ES).
 
-Prossimo: il gate marginale (`pipeline_semplice.md`, fase 3b), un OOS 2025-2026 per candidata.
+Prossimo: NQ B entra nella coda del gate marginale (`pipeline_semplice.md`, fase 3b, candidata 6):
+un solo OOS 2025-2026, `TF_S5_OOS_NQ_B_2025-2026`, 1 contratto, 7.5$ **controllati nel report**.
