@@ -27,10 +27,10 @@ una strategia già sul grafico.
 
 | run | chart | size | file in `reports/` | |
 |---|---|---|---|---|
-| A | @EC | 1 | `TF_S1_EC_A_x1.xlsx` + log (`ShowLog 1`) | ✅ 24/10 (con `Mario_UngerTF_A`, stessa logica) |
-| A10 | @EC | 10 | `TF_S1_EC_A_x10.xlsx` | |
-| B (`Versione 1`) | @EC | 1 | `TF_S1_EC_B_x1.xlsx` + log | |
-| B (`Versione 1`) | @GC (input di GC) | 1 | `TF_S1_GC_B_x1.xlsx` + log | |
+| A | @EC | 1 | `TF_S1_EC_A_x1.xlsx` + log (`ShowLog 1`) | ✅ 29/10 |
+| A10 | @EC | 10 | `TF_S1_EC_A_x10.xlsx` | ✅ 29/10 |
+| B (`Versione 1`) | @EC | 1 | `TF_S1_EC_B_x1.xlsx` + log | ✅ 29/10 |
+| B (`Versione 1`) | @GC (input di GC) | 1 | `TF_S1_GC_B_x1.xlsx` + log | ✅ 24/10 |
 
 ### Controlli (Gate 1)
 1. **Finestra**: in A gli ingressi cadono fra le 03:15 e le 12:30 CT (GC: un'ora dopo, NY), in
@@ -46,7 +46,9 @@ una strategia già sul grafico.
 
 ## Stage 2 — IS 2020‑01‑01 → 2024‑12‑31, 1 contratto, senza log
 A e B su @EC, @GC, @ES, @NQ: 8 run, file `TF_S2_<EC|GC|ES|NQ>_<A|B>_IS.xlsx`.
-Mandami lo Stage 1 prima.
+`ShowLog 0`, input della tabella sopra, template e costi dello strumento (@GC **12.5$**, non
+8.65$). Il grafico deve partire almeno da metà dicembre 2019: i pattern guardano fino a 5
+sessioni indietro.
 
 ## Note dello Stage 1
 **Run A su @EC (24/10/2026)**: 38 trade in 114 giorni, report `TF_S1_EC_A_x1.xlsx`, log
@@ -100,3 +102,15 @@ input a 0, template 17-16 ricreato. 33 trade in 135 giorni, report `TF_S1_EC_B_x
 - Uscite: 31 a fine sessione alle **15:59 CT**, tutti i giorni; 2 inversioni nella finestra
   (20/07 e 23/09: il prezzo rompe prima un lato e poi l'altro), come da codice.
 - Numeri (WR 66,7%, t 2,34 su 33 trade) solo informativi: lo Stage 1 non giudica l'edge.
+
+**Run A e A10 su @EC (29/10/2026) — meccanica giusta. Gate 1 passato.** Template 17-16,
+`Versione 0`, input a 0. 55 trade in 134 giorni (sostituiscono il run A del 24/10, fatto con il
+template a giorno di calendario).
+- Ingressi fra le 03:30 e le 12:14 CT, dentro la finestra 03:00–12:30.
+- 53 uscite per inversione, 1 stop (29–30/07: 1,1453 → 1,1563, 110 pip = $1.375), 1 aperta.
+- **A10 = 10 × A** su 54 trade su 55; l'unica differenza è il trade ancora aperto, valutato a un
+  prezzo diverso perché i due run sono stati lanciati in momenti diversi.
+- Inversioni a raffica nei giorni laterali (25/06, 07/07, 28/08), come nel giro del 24/10.
+
+## Stage 1 — esito
+**Gate 1 passato** (29/10/2026) su @EC (A, A10, B) e @GC (B). Prossimo: Stage 2.

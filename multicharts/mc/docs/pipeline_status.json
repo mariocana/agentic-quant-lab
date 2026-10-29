@@ -896,13 +896,18 @@
    "path": "mc/strategies/unger_clean/TrendFollowing",
    "stages": {
     "0": "pass",
-    "1": "run"
+    "1": "pass",
+    "2": "run"
    },
    "note": "Dal corso di Unger (*Trading System Supremacy*, modulo 4): due versioni finali su **EURUSD 15 min**, `DevelopFineTune` (A, multi-day, stop 110 / target 350 pip) e `DevelopID` (B, intraday, 75 / 250 pip; Unger: 539 trade, WR 52,9%, avg $114). Replica su **6E** per misurare l'edge fuori campione (causa B per costruzione: stop $938–1.375 a contratto, niente micro) e porting su **GC, ES, NQ** con stop in % (0,83% / 0,56%). Rischio dichiarato: target 3,3× lo stop, quindi WR e R:R fuori profilo per costruzione. 8 run nell'IS: il massimo atteso del t per caso è ~1,4.",
    "log": [
     {
      "date": "2026-10-24",
      "text": "Codice e parametri finali letti dai video 4x03 e 4x04; spec e codici per i futures (`Mario_UngerTF_A`, `Mario_UngerTF_B`). FXFader, WeeklyBump e IntraToOverNight riscritti e archiviati; Stop Progressivi tenuto come modulo d'uscita."
+    },
+    {
+     "date": "2026-10-29",
+     "text": "**Gate 1 passato** in tre giri: il primo con il chart di @EC su un template a giorno di calendario (uscita di fine sessione alle 23:59), il secondo con gli input di GC rimasti sul grafico di @EC. Su @EC A/A10/B e @GC B: finestre, livelli, stop (110 / 75 pip, 0,56% su GC), uscite a fine sessione alle 16:00 CT / 17:00 NY, scala ×10. Prossimo: IS 2020–2024, 8 run."
     }
    ]
   }
