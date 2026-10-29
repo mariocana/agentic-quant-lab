@@ -168,7 +168,29 @@ Tutti e quattro. Se ne manca uno: cimitero, senza rigirare con altri micro o alt
 | 2 | VaultBreak `MaxTrades1` | `VB_S5_OOS_MaxTrades1_2025-2026` | OOS visto da solo (t 0,23), **mai nel book** |
 | 3 | ORB NQ senza cutoff | `ORB_S5_OOS_nocutoff_2025-2026` | **già misurato nel book il 29/10 prima di questa regola** (+0,4 pp iid con `book_sim`): si gira per il verbale, il risultato non è indipendente |
 | — | VaultBreak base | `VB_S5_OOS_2025-2026` | **già misurata** (prova dello script): −1,2 pp iid, −5,6 contiguo, avg < 0 → non entra |
-| poi | morte in fase 2 con **t IS > 0,5** e senza OOS: da elencare dai report prima di girarne una (First5, Gold, VWAP Pullback, ORB ES, Rebalancing, FX Fix da verificare) | da girare, una volta | OOS mai toccato |
+| 4 | Gold Asian Range, variante A | `GAR_S5_OOS_A_2025-2026` (MGC) | IS t 1,89, trade peggiore $498 per micro: **mai OOS** |
+| 5 | VaultBreak su ES (`VB_ES_S4`) | `VB_ES_S5_OOS_2025-2026` (MES) | IS t 1,66, peggiore $133 per micro; bocciata col P/D (ritirato). Stessa logica già morta fuori campione su NQ: prior basso |
+| 6 | Counter Trend (Unger) su YM, variante B | `CT_S5_OOS_YM_B_2025-2026` (MYM) | IS t 1,01, peggiore $152 per micro; il migliore di 6 run, quindi selezionato |
+| 7 | VWAP Pullback filtrata | `VWAP_S5_OOS_filtrata_2025-2026` (MNQ) | IS t 0,69, peggiore $444 per micro; R:R 0,40 |
+| — | Trend Following (Unger), B | — | **in fase 2**: su GC, ES, NQ il verdetto IS si legge con via A **e** via B. 6E escluso: t 1,98 ma trade peggiore $955 sul contratto intero, e su Lucid non c'è il micro |
+
+### Escluse dalla via B (verificato dai report il 29/10)
+
+Trade peggiore per micro = trade peggiore sul contratto intero ÷ 10, dalla List of Trades dell'IS.
+
+| strategia | t IS | trade peggiore per micro | perché fuori |
+|---|---|---|---|
+| NQ First5 (base / filtrata) | 1,00 / 1,63 | $1.085 / $1.045 | rischio: girata senza stop; con `StopPts` sarebbe un IS nuovo, non un ripescaggio |
+| Last Half-Hour | 0,52 | $603 | rischio, e dopo la pubblicazione t −0,22 |
+| Rebalancing | 0,58 | $1.361 | rischio (niente stop), dopo la pubblicazione t 0,52 |
+| Counter Trend ES B | 0,50 | $211 | t non > 0,5 |
+| GoldGapper A | 0,48 | — | t, e 94 trade |
+| ORB ES, FX Fix, ON Reversal, ESCounter, BTC First30, DPB su YM, Counter Trend GC | da −3,8 a 0,31 | — | t ≤ 0,5 in tutte le varianti |
+
+**Due avvertenze.** (1) Lo Stage 1 di ogni strategia ha girato ~100 giorni del 2026, che
+stanno dentro l'OOS 2025-2026: è un controllo di meccanica, ma quei giorni sono stati visti.
+(2) Per GAR, Counter Trend e VWAP la variante in tabella è la migliore dell'IS: la scelta è
+fatta qui, prima dell'OOS, e non si cambia dopo.
 
 ## Registro
 
