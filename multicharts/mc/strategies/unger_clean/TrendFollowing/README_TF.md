@@ -114,3 +114,22 @@ template a giorno di calendario).
 
 ## Stage 1 — esito
 **Gate 1 passato** (29/10/2026) su @EC (A, A10, B) e @GC (B). Prossimo: Stage 2.
+
+## Stage 2 — risultati
+**@EC (29/10/2026) — non passa, causa A.** Report `TF_S2_EC_A_IS_x10.xlsx` e
+`TF_S2_EC_B_IS_x10.xlsx`: 2020-01-06 → 2024-12-31, template 17-16, 8.65$, ma **a 10 contratti**
+(Strategy Properties rimasta dal run A10). Il t non dipende dalla size; i numeri sotto sono per
+contratto.
+
+| run | n | avg/contratto | t | WR | R:R | 2020 | 2021 | 2022 | 2023 | 2024 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| A | 663 | −$28 | −0,84 | 33,2% | 1,83 | +9.568 | −3.831 | −6.508 | −5.824 | −11.998 |
+| B | 378 | +$51 | 1,98 | 52,4% | 1,19 | +2.592 | +3.184 | +9.121 | +7.572 | −3.102 |
+
+- **A**: le 624 inversioni fanno zero netto (−$889 in tutto); il risultato è 6 target (+$26.146)
+  contro 32 stop (−$44.554). Ingressi su tutta la finestra 03:00–12:30, un terzo fra le 03 e le 04.
+- **B**: tutto l'utile viene dalle 311 uscite a fine sessione (+$50.063, $161 l'una); 20 stop
+  (−$19.096) e 47 inversioni (−$11.601) se ne mangiano più di metà. Il WR (52,4%) replica quello
+  di Unger (52,9%), ma l'avg è sotto la soglia di $85 e il t sotto 2, e con 8 run il massimo
+  atteso per caso è ~1,4: 1,98 non basta. Il 2024 è negativo.
+- Per la regola di kill (gate su B, strumento per strumento) **6E è chiuso**. Restano @GC, @ES, @NQ.
