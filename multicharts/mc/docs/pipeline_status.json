@@ -4,7 +4,7 @@
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
-  "updated": "2026-10-26",
+  "updated": "2026-10-29",
   "groups": [
    {
     "title": "DriftPullback e' live su LucidFlex 50k dal 26/10",
@@ -20,7 +20,7 @@
     "title": "Aperti al 26/10",
     "note": "la seconda gamba: eccesso positivo >= 3 errori standard e bassa correlazione con DriftPullback, non deve reggere il conto da sola (seconda_gamba.md)",
     "items": [
-     "**Trend Following (Unger), Stage 1** — l'unica strategia aperta in pipeline. Replica su 6E, porting su GC, ES, NQ con stop in %. Target 3,3× lo stop: fuori profilo per costruzione, va letta con la soglia della seconda gamba.",
+     "**Gate marginale (fase 3b)** — coda in `pipeline_semplice.md`: Gold Asian Range A (serve l'OOS da MC), poi ORB cutoff11, VaultBreak MaxTrades1, ORB senza cutoff (OOS gia' nel repo), VWAP Pullback filtrata (serve l'OOS). Trend Following (Unger) chiusa il 29/10: materiale di Unger finito.",
      "**Prompt del ricercatore rivisto il 26/10** (`mc/docs/prompt_ricerca_strategie.md`): obiettivo la seconda gamba (t >= 3 sull'IS, correlazione sul P&L giornaliero, >= 0,4 trade al giorno), metro l'eccesso sul caso, praticanti alla pari dei paper con filtro P1-P6, vincitori di gara con t >= 3 e OOS = forward dalla data del PDF. `gate0.py` allineato. Triage fatto: 105 fonti ignorate per dominio, 122 giudicate nella v10, **nessuna candidata**; 5 aperte, fra cui un articolo 2026 sul ritiro di liquidita' prima dei dati macro delle 08:30 CT (403, da aprire con altro accesso). **Prossimo: una ricerca vera col prompt nuovo, un solo focus per run.**",
      "**Storico @ES / @NQ di quantlake da riesportare con il template 17:00–16:00**: il controllo di `Mario_PtnBaseSA` ha trovato 27 sessioni su 93 diverse dal chart, tutte per dati mancanti nell'export (chiusure del venerdì alle 15:15, estremi fra 15:15 e 16:00)."
     ]
