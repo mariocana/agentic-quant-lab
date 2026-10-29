@@ -42,6 +42,13 @@ trend.
 - **DD OOS $20.195 per NQ = ~$2.020 per micro, l'intero MLL di Lucid.** Fuori dal profilo
   WR 54–72% e R:R 0,5–1 per costruzione: con R:R 3 il WR atteso è intorno al 35%.
 
+## Live 006: il corso la usa con R:R 1,5 (29/10/2026)
+
+Nel book «Balanced» della Live 006 Overnight Bias gira a **1 MNQ con `TakeProfitRR 1.5`**. L'1,5
+è scelto fra 5 uscite su gen 2023 → ago 2025, e la nota della slide 14 dice che con il 3 originale
+il book faceva lo stesso (EV $5.803 contro $5.590). **Qui resta 3**, il default del codice: cambiarlo
+sarebbe una variante scelta a posteriori. Analisi in `mc/docs/live006_funded.md`.
+
 ## Contaminazione
 
 1. **Il nostro IS 2020–24 e il nostro OOS 2025–26 stanno entrambi nell'OOS dichiarato

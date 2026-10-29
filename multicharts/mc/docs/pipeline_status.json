@@ -985,6 +985,10 @@
  "log": [
   {
    "date": "2026-10-29",
+   "text": "**Live 006 trascritta e analizzata** (`mc/docs/live006_funded.md`): la fase funded su Apex 50K EOD, metro **EV dei payout per conto** (max $13.000). DriftPullback a 2 MNQ ha EV $2.626, seconda delle quattro del Bridge, ma non entra nelle configurazioni finali: il book scelto è Overnight Bias 1 (R:R 1,5) + VWAP ADX 3 + VaultBreak 1 MNQ, EV $5.590. Il «2× la migliore da sola» confronta con VWAP ADX a 7 MNQ; contro la sua size migliore (4 MNQ, $3,9k) il guadagno è ~+43%. Uscite e size scelte fra 5 × 20 combinazioni. Per noi: il gate marginale resta sul pass rate dell'eval; il simulatore dei payout con le regole funded di Lucid si scrive prima del primo pass."
+  },
+  {
+   "date": "2026-10-29",
    "text": "**Le tre strategie del corso «prop firm native» confrontate con le nostre: solo DriftPullback coincide.** Il live (`DriftPullback_v21.txt`) è il codice del corso più le nostre aggiunte spente. **VaultBreak v8** e **VWAP Pullback + ADX v4** (il trittico delle Live 4/5) sono altre versioni rispetto a quelle che abbiamo ucciso: ripartono dallo Stage 0 (`SPEC_v8.md`, `SPEC_ADX.md`) nello stesso codice, con input nuovi spenti di default. Aggiunta **Overnight Bias ORB** (cartella «high RR», `mc/strategies/OvernightBiasORB`). Tutte e tre contaminate: via B con soglia k, verdetto OOS asimmetrico."
   },
   {
