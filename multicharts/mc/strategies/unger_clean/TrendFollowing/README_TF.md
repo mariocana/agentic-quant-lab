@@ -138,3 +138,30 @@ contratto.
 - Come da SPEC, 6E serviva a sapere se l'edge esiste fuori campione: **sì per B**. 6E non si
   trada (causa B); la domanda passa a @GC, @ES, @NQ: se l'edge non si trasferisce, la strategia
   va in cimitero con causa B, non A.
+
+**@GC, @ES, @NQ (29/10/2026).** 1 contratto, IS completo, meccanica controllata dalla List of
+Trades: finestre d'ingresso giuste (GC A 04–13 NY, B 03–05 NY; ES/NQ A 03–12 CT, B 02–03 CT),
+uscite di fine sessione alle 17:00 NY su GC e alle 15:59 CT su ES/NQ (12:00 nei giorni corti).
+Nei file di MC i nomi erano invertiti su GC e NQ (`Mario_UngerTF` = B); qui sono rinominati.
+**@NQ girato senza commissione** (`7.50$ per Contract [Fixed 0$ per Contract]`: il P&L è punti ×
+20 esatti): i numeri sotto sono corretti a mano con −$15 a trade, file `_comm0`.
+
+| run | n | avg | t | WR | peggiore/micro | DD/micro | anni negativi |
+|---|---|---|---|---|---|---|---|
+| GC A | 755 | +$79 | 0,95 | 32,1% | $264 | $7.338 | 2021, 2024 |
+| GC B | 318 | −$12 | −0,16 | 41,8% | $178 | $3.402 | 2021, 2023, 2024 |
+| ES A | 716 | +$33 | 0,39 | 31,7% | $276 | $5.788 | 2023, 2024 |
+| ES B | 333 | +$42 | 0,52 | 40,5% | $184 | $2.572 | 2021, 2024 |
+| NQ A | 767 | +$175 | 1,31 | 29,3% | $402 | $5.761 | nessuno |
+| **NQ B** | 243 | **+$285** | **1,73** | 39,9% | $264 | $2.386 | **nessuno** |
+
+Verdetto, con la B che decide strumento per strumento:
+- **via A** (t ≥ 2, WR ≥ 55%, R:R 0,5–1): nessuno, come previsto dal profilo.
+- **via B** (t > 0,5, peggiore ≤ $500 per micro): **NQ B passa** (t 1,73, cinque anni su
+  cinque positivi); **ES B passa al filo** (t 0,52, 2024 −$17.645: compatibile col caso);
+  **GC B no** (t −0,16): GC in cimitero, causa A.
+- Il WR della B su questi strumenti (40%) non è quello di Unger su 6E (52%): la B tiene il
+  target al 1,9% e vince a fine sessione meno spesso.
+- Kill generale non scattato (A e B positive su NQ ed ES).
+
+Prossimo: il gate marginale (`pipeline_semplice.md`, fase 3b), un OOS 2025-2026 per candidata.
