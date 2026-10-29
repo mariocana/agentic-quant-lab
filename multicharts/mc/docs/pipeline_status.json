@@ -11,7 +11,7 @@
     "note": "configurazione reale e diario in mc/docs/go_live.md",
     "items": [
      "**Ogni sera, la prima settimana: ogni trade reale contro il backtest dello stesso giorno** (stessi ingressi, orari, uscite). Se divergono ci si ferma. Vale da Stage 9.",
-     "Configurazione: segnale `Drift_LIVE` (= `DriftPullback_v21.txt`, `BaseCts 2`), grafico **NQZ6 Rithmic**, mapping **NQZ6 → MNQZ6**, auto trading **AA**, ordini Native. Il P&L del grafico e' 10 volte quello del conto.",
+     "Configurazione: segnale `Drift_LIVE` (= `DriftPullback_v21.txt`, `BaseCts 2`), grafico **NQZ6 Rithmic**, mapping **NQZ6 → MNQZ6**, auto trading **AA**, stop **emulati** (Emulate locally, dal 28/10), limit Native. Il P&L del grafico e' 10 volte quello del conto.",
      "**Non toccare DriftPullback.** Un filtro o una variante adesso sarebbe una v2, validabile solo sul live.",
      "**Date**: 27/11 decisione licenza (Black Friday), **29/11 fine mese gratuito — se scade a eval aperta l'automazione si ferma**, ~11/12 rollover: grafico NQH7 **e** mapping NQH7 → MNQH7."
     ]
@@ -21,6 +21,7 @@
     "note": "la seconda gamba: eccesso positivo >= 3 errori standard e bassa correlazione con DriftPullback, non deve reggere il conto da sola (seconda_gamba.md)",
     "items": [
      "**Gate marginale (fase 3b)** — coda in `pipeline_semplice.md`: Gold Asian Range A (serve l'OOS da MC), poi ORB cutoff11, VaultBreak MaxTrades1, ORB senza cutoff (OOS gia' nel repo), VWAP Pullback filtrata (serve l'OOS). Trend Following (Unger) chiusa il 29/10: materiale di Unger finito.",
+     "**Tre del corso allo Stage 0 → fase 1 (100 giorni)**: VaultBreak v8 (@NQ 30m Globex), VWAP Pullback + ADX v4 (@NQ 1m Globex), Overnight Bias ORB (@NQ 15m Globex, `Mario_OvernightBiasORB`). Spec e profili negli header dei codici.",
      "**Prompt del ricercatore rivisto il 26/10** (`mc/docs/prompt_ricerca_strategie.md`): obiettivo la seconda gamba (t >= 3 sull'IS, correlazione sul P&L giornaliero, >= 0,4 trade al giorno), metro l'eccesso sul caso, praticanti alla pari dei paper con filtro P1-P6, vincitori di gara con t >= 3 e OOS = forward dalla data del PDF. `gate0.py` allineato. Triage fatto: 105 fonti ignorate per dominio, 122 giudicate nella v10, **nessuna candidata**; 5 aperte, fra cui un articolo 2026 sul ritiro di liquidita' prima dei dati macro delle 08:30 CT (403, da aprire con altro accesso). **Prossimo: una ricerca vera col prompt nuovo, un solo focus per run.**",
      "**Storico @ES / @NQ di quantlake da riesportare con il template 17:00–16:00**: il controllo di `Mario_PtnBaseSA` ha trovato 27 sessioni su 93 diverse dal chart, tutte per dati mancanti nell'export (chiusure del venerdì alle 15:15, estremi fra 15:15 e 16:00)."
     ]
@@ -923,6 +924,57 @@
      "text": "**Gate marginale: NQ B non entra. Cimitero, definitivo.** OOS 2025-2026: 123 trade, avg $60 a contratto, t 0,18 (IS t 1,73); 2025 −$23.830, 2026 +$31.240. Nel book con DPB 2 micro il pass rate scende di 3,8 pp (iid) e 7,5 pp (contiguo). Strategia chiusa su tutti e quattro gli strumenti."
     }
    ]
+  },
+  {
+   "name": "VaultBreak v8 (corso)",
+   "family": "volatility breakout · noise boundary + VWAP, solo long",
+   "instrument": "@NQ 30m Globex → MNQ",
+   "path": "mc/strategies/VaultBreak",
+   "stages": {
+    "0": "pass"
+   },
+   "note": "**La versione del trittico delle Live 4/5, mai testata da noi.** Stesso scheletro della nostra VaultBreak (morta OOS, t −0,03), altri parametri e altro chart: 30 min Globex, NoiseMult 0,3, range a 15 sessioni, uscita VWAP a 7 barre, stop/target 75/40 pt. Stesso codice `VaultBreak.txt` con gli input della v8 (+ `CarryGuard`). Spec `SPEC_v8.md`. Contaminata: parametri dell'autore, OOS 2025-26 da considerare visto, terza versione su NQ → via B con t IS > 0,85 (k = 3); verdetto OOS asimmetrico, forward pulito dal 13/10/2026.",
+   "log": [
+    {
+     "date": "2026-10-29",
+     "text": "**Stage 0.** Spec `SPEC_v8.md`. Prossimo: fase 1 (100 giorni) su @NQ 30 min Globex con il profilo v8."
+    }
+   ],
+   "next": "Fase 1: 100 giorni, @NQ 30 min sessione Globex, input del profilo v8 (header di `VaultBreak.txt`)."
+  },
+  {
+   "name": "VWAP Pullback + ADX (v4 corso)",
+   "family": "pullback sul VWAP nella direzione dell'opening range, con gate ADX",
+   "instrument": "@NQ 1m Globex → MNQ",
+   "path": "mc/strategies/VWAP_Pullback",
+   "stages": {
+    "0": "pass"
+   },
+   "note": "**La v4 «C.S.» del trittico delle Live 4/5**: gate ADX(14) ≥ 20 e in calo, solo long, 1 trade al giorno, flat 15:55 CT. Nucleo identico alla nostra v1 (morta in fase 2, t 0,87); il gate è aggiunto a `VWAP_Pullback.txt` con 5 input spenti di default. Spec `SPEC_ADX.md`. Contaminata: il gate è nato dopo una performance recente scarsa ed è stato pubblicato il 3/7/2026 (Live 002, 31:26); quarta versione → via B con t IS > 1,03 (k = 4); verdetto OOS asimmetrico.",
+   "log": [
+    {
+     "date": "2026-10-29",
+     "text": "**Stage 0.** Spec `SPEC_ADX.md`, gate ADX aggiunto al codice. Prossimo: fase 1 (100 giorni) con il profilo v4."
+    }
+   ],
+   "next": "Fase 1: 100 giorni, @NQ 1 min Globex, profilo v4 (header di `VWAP_Pullback.txt`), `ShowLog 1` per controllare il gate e la distanza dello stop."
+  },
+  {
+   "name": "Overnight Bias ORB (corso)",
+   "family": "breakout del range di apertura nel verso del bias overnight · high R:R",
+   "instrument": "@NQ 15m Globex → MNQ",
+   "path": "mc/strategies/OvernightBiasORB",
+   "stages": {
+    "0": "pass"
+   },
+   "note": "**Unica strategia «high RR» del corso.** Bias dall'open nel range overnight (≥ 67% solo long, ≤ 33% solo short), breakout dell'OR 08:30–08:45 CT con ADX(16) ≥ 20, stop 0,3 × ATR giornaliero, target 3 × stop. Autore: IS 2006–19 PF 1,35; OOS 2020–08/2026 PF 1,66, DD $20.195 per NQ (= l'intero MLL per micro). WR e R:R fuori profilo per costruzione → solo via B (t IS > 0,5). Il nostro IS sta nell'OOS dell'autore, ma pubblicato dopo averlo visto: forward pulito dal 1/9/2026.",
+   "log": [
+    {
+     "date": "2026-10-29",
+     "text": "**Stage 0.** Codice `OvernightBiasORB.txt` (logica dell'autore, orari in CT) e spec. Prossimo: fase 1."
+    }
+   ],
+   "next": "Fase 1: 100 giorni, @NQ 15 min Globex, lead-in di 2 mesi, salvato in MC come `Mario_OvernightBiasORB`."
   }
  ],
  "blockers": [
@@ -931,6 +983,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-29",
+   "text": "**Le tre strategie del corso «prop firm native» confrontate con le nostre: solo DriftPullback coincide.** Il live (`DriftPullback_v21.txt`) è il codice del corso più le nostre aggiunte spente. **VaultBreak v8** e **VWAP Pullback + ADX v4** (il trittico delle Live 4/5) sono altre versioni rispetto a quelle che abbiamo ucciso: ripartono dallo Stage 0 (`SPEC_v8.md`, `SPEC_ADX.md`) nello stesso codice, con input nuovi spenti di default. Aggiunta **Overnight Bias ORB** (cartella «high RR», `mc/strategies/OvernightBiasORB`). Tutte e tre contaminate: via B con soglia k, verdetto OOS asimmetrico."
+  },
   {
    "date": "2026-10-29",
    "text": "**Pre-registrato il gate marginale (fase 3b)** in `pipeline_semplice.md`: dopo l'IS (t > 0,5) una strategia a edge debole va fuori campione una volta e entra nel book se alza il pass rate iid di almeno 2 pp, non peggiora il contiguo, tiene la giornata peggiore sopra il DLL e ha avg OOS > 0. Strumento `mc/docs/gate_marginale.py`. Ordine: ORB cutoff11, VaultBreak MaxTrades1, ORB senza cutoff (gia' visto, solo verbale), poi le morte in fase 2 con t IS > 0,5."

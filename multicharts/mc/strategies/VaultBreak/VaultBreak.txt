@@ -24,6 +24,15 @@
          Orari in ORA DEL CHART (CT): il template originale li ha in ET
          (0945/1500/1550) -> qui 0845/1400/1450.
          IOG off. Max bars back >= 100.
+
+  PROFILO v8 DEL CORSO (SPEC_v8.md): stesso codice, altri input e altro
+         chart. @NQ **30 min, sessione Globex**, timezone Exchange.
+         NoiseMult 0.3 · DailyATRLen 15 · EarliestEntry 1000 ·
+         LatestEntry 1400 · FlattenTime 1430 · VWAPExitBars 7 ·
+         StopLossPts 75 · TakeProfitPts 40 · CarryGuard 1.
+         Su Globex il reset Date <> Date[1] cade a mezzanotte CT: l'"open"
+         e' quello della mezzanotte e il range e' del giorno intero. E' la
+         scelta dell'autore, non un errore.
   ===================================================================== }
 
 Inputs:
@@ -37,6 +46,8 @@ Inputs:
     StopLossPts(100),          { 100 pt NQ = $2.000 per contratto }
     TakeProfitPts(50),         { 50 pt NQ = $1.000 per contratto }
     Num_Contracts(1),
+    CarryGuard(0),             { 1 = chiude a mercato una posizione rimasta aperta
+                                 a cambio data (sedute corte festive), come la v8 }
     { --- finestra di trading (NON e' logica di trading: serve a separare il
           lead-in dal periodo valutato). Formato data EasyLanguage = YYYMMDD
           con YYY = anno - 1900:  1200101 = 1 gen 2020 · 1241231 = 31 dic 2024
@@ -67,6 +78,9 @@ Arrays:
 
 { ===== NUOVA SESSIONE: aggiorna il rolling ATR, azzera lo stato ===== }
 if Date <> Date[1] then begin
+
+    if CarryGuard = 1 and MarketPosition = 1 then
+        Sell ("VB-Carry") next bar at market;
 
     if SessCount >= 1 then begin
         Value1 = SessHigh - SessLow;

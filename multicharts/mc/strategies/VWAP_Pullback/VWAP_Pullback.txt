@@ -30,6 +30,10 @@
   micro dal simulatore prop, qui 1 contratto); flag 0/1 ottimizzabili;
   EOD flat attivo di default.
 
+  PROFILO v4 DEL CORSO ("C.S.", SPEC_ADX.md): UseADXElev 1 · UseADXDecay 1 ·
+         TradeShorts 0 · VwapEndTime 1700 · EntryEndTime 1700 ·
+         EODFlatTime 1555. Il resto come i default.
+
   CHART: @NQ 1 min, sessione **Globex 24h** (17:00-16:00 CT), timezone
          Exchange, volume da trade data. Orari in ORA DEL CHART (CT).
          IOG off. Max bars back >= 42 (con StopSwingLen 20).
@@ -58,6 +62,13 @@ Inputs:
     TradeLongs(1),
     TradeShorts(1),
     UseEODFlat(1),
+    { --- gate ADX della v4 del corso (SPEC_ADX.md), valutato sulla barra del
+          segnale. 0 = spento: con i default il codice e' la v1 --- }
+    UseADXElev(0),             { 1 = serve ADX >= ADXElev_Thr }
+    ADXElev_Thr(20),
+    UseADXDecay(0),            { 1 = serve ADX <= ADX di ADXDecay_LB barre fa }
+    ADXDecay_LB(1),
+    ADX_Len(14),
     Num_Contracts(1),
     ShowLog(0);
 
@@ -79,12 +90,19 @@ Variables:
     longStop(0), longTgt(0), shortStop(0), shortTgt(0),
     validLong(false), validShort(false),
     activeStop(0), activeTgt(0),
-    tradesToday(0), isPivot(false), i1(0), buffer(0);
+    tradesToday(0), isPivot(false), i1(0), buffer(0),
+    ADXv(0), adxOK(true);
 
 buffer = BufferPts;
 typPrice = (High + Low + Close) / 3;
 barVol = Volume;
 if barVol <= 0 then barVol = Ticks;
+
+{ ===== GATE ADX (v4): ritarda l'ingresso, non lo annulla. I latch restano
+  armati: se il reclaim e' ancora vero quando l'ADX torna in regola, entra ===== }
+ADXv  = ADX(ADX_Len);
+adxOK = (UseADXElev = 0 or ADXv >= ADXElev_Thr)
+    and (UseADXDecay = 0 or ADXv <= ADXv[ADXDecay_LB]);
 
 { ===== FINESTRE DI SESSIONE ===== }
 inORB      = Time > ORStartTime    and Time <= OREndTime;
@@ -224,7 +242,7 @@ validShort = (StopMode = 2 or hasStopSH) and hasTgtSL
 { ===== ENTRY ===== }
 if MarketPosition = 0 and tradesToday < MaxTradesPerDay then begin
 
-    if TradeLongs = 1 and longSignal and validLong then begin
+    if TradeLongs = 1 and longSignal and validLong and adxOK then begin
         Buy ("VWAP-L") Num_Contracts contracts next bar at market;
         activeStop = longStop; activeTgt = longTgt;
         tradesToday = tradesToday + 1;
@@ -237,7 +255,7 @@ if MarketPosition = 0 and tradesToday < MaxTradesPerDay then begin
                   " RR=", (activeTgt - Close) / MaxList(0.01, Close - activeStop):5:2);
     end;
 
-    if TradeShorts = 1 and shortSignal and validShort then begin
+    if TradeShorts = 1 and shortSignal and validShort and adxOK then begin
         SellShort ("VWAP-S") Num_Contracts contracts next bar at market;
         activeStop = shortStop; activeTgt = shortTgt;
         tradesToday = tradesToday + 1;

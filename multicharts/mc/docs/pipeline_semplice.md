@@ -178,9 +178,14 @@ non 0,5: k = 2 → 0,56 · k = 3 → 0,85 · k = 4 → 1,03 · k = 6 → 1,27.
 **Escluse:**
 - **VaultBreak su ES**: la stessa logica e' fallita fuori campione su NQ nello stesso periodo (t −0,03), ES/NQ correlati 0,8-0,95. Rigirarla sarebbe una variante dopo un gate fallito.
 - **Counter Trend YM B**: migliore di 6 run, t 1,01 contro 1,27 atteso dal caso.
-- First5 (serve un IS nuovo con lo stop), Last Half-Hour e Rebalancing (trade peggiore oltre $500), Trend Following 6E (niente micro su Lucid), Trend Following B su ES (t 0,52 sotto la soglia k = 4 di 1,03) e su GC (t −0,16), tutte le altre (t ≤ 0,5).
+- First5 (serve un IS nuovo con lo stop), Last Half-Hour e Rebalancing (trade peggiore oltre $500), Trend Following 6E (causa B: l'edge fuori campione c'era, B t 1,98, ma lo stop vale $938 a contratto e su Lucid non ci sono micro), Trend Following B su ES (t 0,52 sotto la soglia k = 4 di 1,03) e su GC (t −0,16), tutte le altre (t ≤ 0,5).
 
-**Fuori da questa coda, con la pipeline normale:** VWAP ADX, in fase 0 presso l'agente (fuori campione pulito solo dal 3/7/2026).
+**Fuori da questa coda, con la pipeline normale** (Stage 0 il 29/10, prima di qualsiasi run): le
+versioni del corso che non avevamo mai testato. **VaultBreak v8** (`VaultBreak/SPEC_v8.md`, via B
+t IS > 0,85, k = 3), **VWAP Pullback + ADX v4** (`VWAP_Pullback/SPEC_ADX.md`, via B t IS > 1,03,
+k = 4, fuori campione pulito dal 3/7/2026), **Overnight Bias ORB** (`OvernightBiasORB/SPEC.md`,
+solo via B, t IS > 0,5). Se passano la fase 2 entrano in coda dopo la candidata 6, con verdetto
+OOS asimmetrico: fallire conta pieno, passare vale solo come prova dal vivo.
 
 ## Registro
 
