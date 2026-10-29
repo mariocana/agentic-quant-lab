@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-26",
+ "updated": "2026-10-29",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -913,6 +913,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-10-29",
+   "text": "**Book DPB + VaultBreak (il trittico del corso, Live 4/5): VaultBreak abbassa il pass rate fuori campione.** OOS 2025-26 su LucidFlex: DPB 2 micro 42,2% iid / 59,1% contiguo; +1 micro VB 40,8% / 53,5%; +2 micro 39,6% / 49,7%. VB da sola 22,8%, uguale al pass rate a **edge zero** (23,9%). Sull'IS aiutava (+4 punti), ma e' il periodo ottimizzato. Il pass rate a edge zero sulle regole Lucid e' 22–27%, non 40%: DPB vale circa +18 punti sopra la fortuna. Report `mc/docs/book_DPB_VB.md`, script `mc/docs/book_sim.py`."
+  },
   {
    "date": "2026-10-24",
    "text": "**GoldGapper (Unger) in cimitero, causa A**: terzo codice del corso Unger morto fuori campione (dopo ESCounter e Counter Trend). B perde anche prima dei costi; e con 50–94 trade in cinque anni non avrebbe comunque passato il Gate 2. Lezione: **il rischio \"pochi trade\" dichiarato in Stage 0 si può stimare dal log dello Stage 1** (9 gap in 95 sessioni) prima di lanciare l'IS."
