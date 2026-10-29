@@ -924,6 +924,10 @@
  "log": [
   {
    "date": "2026-10-29",
+   "text": "**Pre-registrato il gate marginale (fase 3b)** in `pipeline_semplice.md`: dopo l'IS (t > 0,5) una strategia a edge debole va fuori campione una volta e entra nel book se alza il pass rate iid di almeno 2 pp, non peggiora il contiguo, tiene la giornata peggiore sopra il DLL e ha avg OOS > 0. Strumento `mc/docs/gate_marginale.py`. Ordine: ORB cutoff11, VaultBreak MaxTrades1, ORB senza cutoff (gia' visto, solo verbale), poi le morte in fase 2 con t IS > 0,5."
+  },
+  {
+   "date": "2026-10-29",
    "text": "**Book DPB + VaultBreak (il trittico del corso, Live 4/5): VaultBreak abbassa il pass rate fuori campione.** OOS 2025-26 su LucidFlex: DPB 2 micro 42,2% iid / 59,1% contiguo; +1 micro VB 40,8% / 53,5%; +2 micro 39,6% / 49,7%. VB da sola 22,8%, uguale al pass rate a **edge zero** (23,9%). Sull'IS aiutava (+4 punti), ma e' il periodo ottimizzato. Il pass rate a edge zero sulle regole Lucid e' 22–27%, non 40%: DPB vale circa +18 punti sopra la fortuna. Report `mc/docs/book_DPB_VB.md`, script `mc/docs/book_sim.py`."
   },
   {

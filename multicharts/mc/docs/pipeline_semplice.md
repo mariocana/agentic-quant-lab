@@ -113,3 +113,65 @@ altre cose:
    $60-110 per micro, R/ATR da **M2K 0,37-0,68** e **MNQ 0,14-0,26, il peggiore**. Su MNQ lo
    stop sta dentro il rumore. Se un terzo candidato nasce su M2K o MYM, e un vantaggio
    strutturale, non una diversificazione di facciata.
+
+---
+
+# Pre-registrazione — gate marginale (fase 3b), 29/10/2026
+
+**Scritta prima di girare qualsiasi candidata.** Nasce da una domanda di Mario: *«una strategia
+non ha bisogno di un edge forte per funzionare in un contesto prop» (Live 002, 51:07), quindi
+stiamo uccidendo strategie che in prop servirebbero?* Risposta misurata (`book_DPB_VB.md`):
+in parte sì. Edge zero passa il ~24% su Lucid, DPB il 42%: un edge debole vale. Ma una
+strategia a edge zero **abbassa** il pass rate del book (VaultBreak: −1,2 pp iid, −5,6 pp
+contiguo). Quindi non si tolgono le morti: si cambia la domanda della fase 3 per chi ha un
+edge debole.
+
+## Due vie dopo la fase 2
+
+| | via A — standalone (invariata) | **via B — marginale (nuova)** |
+|---|---|---|
+| fase 2, IS | t ≥ 2 · WR ≥ 55% · R:R 0,5-1 | **t > 0,5** · meccanica corretta · trade peggiore ≤ $500 per micro |
+| fase 3, OOS una volta | t ≥ 1,3 | **i quattro criteri sotto** |
+| se fallisce | cimitero | cimitero, definitivo |
+
+Una strategia che passa la via A passa anche dal gate marginale prima di entrare nel book: la
+domanda finale è sempre *alza il pass rate del book?*
+
+## I criteri (fase 3b)
+
+Strumento: `mc/docs/gate_marginale.py`. Regole `lucidflex_50k` di `prop_firms.ini`. Book di
+riferimento: **quello live** (oggi DPB `DPB_S5_OOS_2025-2026` a 2 micro). Candidata a
+**1 micro**, nessuna ricerca della size. 20.000 simulazioni, seed 20261029, numeri casuali comuni.
+
+1. **Δ pass rate iid ≥ +2,0 pp** rispetto al book da solo. Soglia fissata sopra il rumore
+   visto finora (ORB NQ +0,4 pp, VaultBreak −1,2 pp).
+2. **Δ pass rate contiguo ≥ 0**: non deve peggiorare sulle finestre cronologiche vere.
+3. **Giornata peggiore del book con la candidata ≥ −DLL ($1.200).**
+4. **Avg trade OOS della candidata > 0.** Una moneta non entra nemmeno se il rumore la aiuta.
+
+Tutti e quattro. Se ne manca uno: cimitero, senza rigirare con altri micro o altri parametri.
+
+## Regole contro la ricerca a tentativi
+
+- **Una candidata, un run.** Il risultato si scrive nella tabella sotto, anche se è negativo.
+- **L'ordine è fissato qui.** Se una candidata entra, il book di riferimento per le
+  successive diventa il nuovo book.
+- **Tetto di 3 strategie nel book** (decisione del 15/10).
+- Il book che esce dal gate **non è validato**: è un'ipotesi da confermare dal vivo. Si
+  aggiunge una strategia alla volta, con almeno 2 settimane di live fra un'aggiunta e l'altra.
+
+## Candidate, in quest'ordine
+
+| # | candidata | report OOS | stato dei dati |
+|---|---|---|---|
+| 1 | ORB NQ `cutoff11` | `ORB_S5_OOS_cutoff11_2025-2026` | OOS visto da solo (t 0,63), **mai nel book** |
+| 2 | VaultBreak `MaxTrades1` | `VB_S5_OOS_MaxTrades1_2025-2026` | OOS visto da solo (t 0,23), **mai nel book** |
+| 3 | ORB NQ senza cutoff | `ORB_S5_OOS_nocutoff_2025-2026` | **già misurato nel book il 29/10 prima di questa regola** (+0,4 pp iid con `book_sim`): si gira per il verbale, il risultato non è indipendente |
+| — | VaultBreak base | `VB_S5_OOS_2025-2026` | **già misurata** (prova dello script): −1,2 pp iid, −5,6 contiguo, avg < 0 → non entra |
+| poi | morte in fase 2 con **t IS > 0,5** e senza OOS: da elencare dai report prima di girarne una (First5, Gold, VWAP Pullback, ORB ES, Rebalancing, FX Fix da verificare) | da girare, una volta | OOS mai toccato |
+
+## Registro
+
+| data | candidata | Δ iid | Δ contiguo | peggior giorno | avg OOS | verdetto |
+|---|---|---|---|---|---|---|
+| 29/10 | VaultBreak base (prova dello script) | −1,2 | −5,6 | −$1.098 | −$0,19 | non entra |
