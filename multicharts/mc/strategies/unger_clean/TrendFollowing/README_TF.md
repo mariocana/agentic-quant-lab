@@ -167,3 +167,30 @@ Verdetto, con la B che decide strumento per strumento:
 
 Prossimo: NQ B entra nella coda del gate marginale (`pipeline_semplice.md`, fase 3b, **prima della coda**):
 un solo OOS 2025-2026, `TF_S5_OOS_NQ_B_2025-2026`, 1 contratto, 7.5$ **controllati nel report**.
+
+## Gate marginale (fase 3b) — NQ B, 29/10/2026: **non entra. Cimitero, definitivo.**
+Report `TF_S5_OOS_NQ_B_2025-2026.xlsx`: 1 contratto, 7.5$ applicati (`Fixed 7.5$`, primo trade
+128,75 pt × 20 + 15 = $2.590 esatti). Il run parte dal 20/12/2024: il trade di quel giorno
+(−$2.590) è fuori dall'OOS ed è tolto nel verdetto; con o senza il verdetto non cambia.
+
+| | n | avg | t | 2025 | 2026 |
+|---|---|---|---|---|---|
+| IS 2020–2024 | 243 | +$285 | 1,73 | | |
+| OOS dal 2025-01-02 | 123 | +$60 | 0,18 | −$23.830 | +$31.240 |
+
+Gli stop salgono dal 37% dei trade (IS) al 48% (59 su 123): −$171.130 contro +$141.930 delle
+uscite a fine sessione e +$43.550 di 5 target.
+
+`gate_marginale.py`, book DPB `DPB_S5_OOS_2025-2026` a 2 micro, TF a 1 micro, seed 20261029:
+
+| | iid | contiguo |
+|---|---|---|
+| book | 41,6% | 58,4% |
+| book + TF NQ B | 37,8% | 50,9% |
+| Δ | **−3,8 pp** | **−7,5 pp** |
+
+Criteri: 1 ❌ (Δ iid < +2), 2 ❌ (Δ contiguo < 0), 3 ✅ (giornata peggiore −$998), 4 ✅ (avg
+$6,02 per micro > 0). **Abbassa il pass rate**: come VaultBreak, una strategia quasi a edge zero
+aggiunge varianza al book. Per le regole del gate non si rigira con altri micro o parametri.
+
+**Trend Following chiusa**: A e B su 6E, GC, ES, NQ, nessuna variante viva.

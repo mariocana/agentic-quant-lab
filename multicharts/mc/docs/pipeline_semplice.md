@@ -187,3 +187,4 @@ non 0,5: k = 2 → 0,56 · k = 3 → 0,85 · k = 4 → 1,03 · k = 6 → 1,27.
 | data | candidata | Δ iid | Δ contiguo | peggior giorno | avg OOS | verdetto |
 |---|---|---|---|---|---|---|
 | 29/10 | VaultBreak base (prova dello script) | −1,2 | −5,6 | −$1.098 | −$0,19 | non entra |
+| 29/10 | Trend Following (Unger) B su NQ, candidata 1 | −3,8 | −7,5 | −$998 | +$6,02 | **non entra**: cimitero |

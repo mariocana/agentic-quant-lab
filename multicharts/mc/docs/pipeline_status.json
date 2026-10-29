@@ -897,7 +897,8 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "pass"
+    "2": "pass",
+    "5": "fail"
    },
    "note": "Dal corso di Unger (*Trading System Supremacy*, modulo 4): due versioni finali su **EURUSD 15 min**, `DevelopFineTune` (A, multi-day, stop 110 / target 350 pip) e `DevelopID` (B, intraday, 75 / 250 pip; Unger: 539 trade, WR 52,9%, avg $114). Replica su **6E** per misurare l'edge fuori campione (causa B per costruzione: stop $938–1.375 a contratto, niente micro) e porting su **GC, ES, NQ** con stop in % (0,83% / 0,56%). Rischio dichiarato: target 3,3× lo stop, quindi WR e R:R fuori profilo per costruzione. 8 run nell'IS: il massimo atteso del t per caso è ~1,4.",
    "log": [
@@ -916,6 +917,10 @@
     {
      "date": "2026-10-29",
      "text": "**IS su GC, ES, NQ.** Via A: nessuno. **Via B: passa solo NQ B** (243 trade, avg $285, t 1,73 contro 1,03 atteso dal caso per il migliore di 4 strumenti, cinque anni positivi; NQ girato senza commissione, corretto a −$15/trade). ES B t 0,52 e GC B t −0,16 no. NQ A t 1,31. Prossimo: gate marginale, prima della coda, OOS 2025-2026 su NQ B."
+    },
+    {
+     "date": "2026-10-29",
+     "text": "**Gate marginale: NQ B non entra. Cimitero, definitivo.** OOS 2025-2026: 123 trade, avg $60 a contratto, t 0,18 (IS t 1,73); 2025 −$23.830, 2026 +$31.240. Nel book con DPB 2 micro il pass rate scende di 3,8 pp (iid) e 7,5 pp (contiguo). Strategia chiusa su tutti e quattro gli strumenti."
     }
    ]
   }
