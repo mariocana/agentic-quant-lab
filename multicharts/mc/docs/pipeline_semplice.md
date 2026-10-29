@@ -160,7 +160,7 @@ Tutti e quattro. Se ne manca uno: cimitero, senza rigirare con altri micro o alt
 - Il book che esce dal gate **non è validato**: è un'ipotesi da confermare dal vivo. Si
   aggiunge una strategia alla volta, con almeno 2 settimane di live fra un'aggiunta e l'altra.
 
-## Candidate, in quest'ordine (rivisto il 29/10, prima di qualsiasi run)
+## Candidate, in quest'ordine (rivisto il 29/10, prima di qualsiasi run; Trend Following NQ B messa prima su richiesta di Mario, sempre prima di qualsiasi run)
 
 **Regola aggiunta per le varianti scelte a posteriori:** se una variante e' la migliore fra
 k provate, il suo t IS deve superare il **t atteso del massimo di k strategie a edge zero**,
@@ -168,12 +168,12 @@ non 0,5: k = 2 → 0,56 · k = 3 → 0,85 · k = 4 → 1,03 · k = 6 → 1,27.
 
 | # | candidata | t IS | trade peggiore / micro | nota |
 |---|---|---|---|---|
-| 1 | **Gold Asian Range A** (MGC) | 1,89 | $498 | variante base pre-registrata, strumento diverso da NQ. OOS mai toccato |
-| 2 | ORB NQ `cutoff11` | 2,80 | | OOS visto da solo (t 0,63), mai nel book |
-| 3 | VaultBreak `MaxTrades1` | 2,88 | | OOS visto da solo (t 0,23), mai nel book. **A verbale**: logica gia' morta su NQ |
-| 4 | ORB NQ senza cutoff | 2,74 | | **a verbale**: gia' misurato nel book il 29/10 prima della regola (+0,4 pp iid) |
-| 5 | VWAP Pullback filtrata (MNQ) | 0,69 | $444 | scelta fra 2 versioni: soglia 0,56, passa. OOS mai toccato |
-| 6 | **Trend Following (Unger) B su NQ** (MNQ) | 1,73 | $264 | B pre-registrata per strumento; il migliore di 4 strumenti, soglia k = 4 → 1,03: passa. Cinque anni su cinque positivi. IS girato senza commissione, corretto a −$15/trade. OOS mai toccato |
+| 1 | **Trend Following (Unger) B su NQ** (MNQ) | 1,73 | $264 | B pre-registrata per strumento; il migliore di 4 strumenti, soglia k = 4 → 1,03: passa. Cinque anni su cinque positivi. IS girato senza commissione, corretto a −$15/trade. OOS mai toccato |
+| 2 | **Gold Asian Range A** (MGC) | 1,89 | $498 | variante base pre-registrata, strumento diverso da NQ. OOS mai toccato |
+| 3 | ORB NQ `cutoff11` | 2,80 | | OOS visto da solo (t 0,63), mai nel book |
+| 4 | VaultBreak `MaxTrades1` | 2,88 | | OOS visto da solo (t 0,23), mai nel book. **A verbale**: logica gia' morta su NQ |
+| 5 | ORB NQ senza cutoff | 2,74 | | **a verbale**: gia' misurato nel book il 29/10 prima della regola (+0,4 pp iid) |
+| 6 | VWAP Pullback filtrata (MNQ) | 0,69 | $444 | scelta fra 2 versioni: soglia 0,56, passa. OOS mai toccato |
 
 **Escluse:**
 - **VaultBreak su ES**: la stessa logica e' fallita fuori campione su NQ nello stesso periodo (t −0,03), ES/NQ correlati 0,8-0,95. Rigirarla sarebbe una variante dopo un gate fallito.

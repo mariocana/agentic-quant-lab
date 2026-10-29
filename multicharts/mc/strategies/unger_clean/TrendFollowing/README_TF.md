@@ -165,5 +165,5 @@ Verdetto, con la B che decide strumento per strumento:
   target al 1,9% e vince a fine sessione meno spesso.
 - Kill generale non scattato (A e B positive su NQ ed ES).
 
-Prossimo: NQ B entra nella coda del gate marginale (`pipeline_semplice.md`, fase 3b, candidata 6):
+Prossimo: NQ B entra nella coda del gate marginale (`pipeline_semplice.md`, fase 3b, **prima della coda**):
 un solo OOS 2025-2026, `TF_S5_OOS_NQ_B_2025-2026`, 1 contratto, 7.5$ **controllati nel report**.
