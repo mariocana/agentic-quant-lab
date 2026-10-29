@@ -91,3 +91,12 @@ sessione ora sono alle 15:59 CT (31 su 32): il template 17-16 è a posto. Ma sul
 rimasti gli input di GC: `MyStartTrade 300` / `MyEndTrade 500` (ingressi 03:30–05:00 CT, un'ora
 dopo la finestra di Unger) e `StopPct 0.56` / `ProfitPct 1.9` (stop ~$810 invece dei $937,50
 fissi). Report non conservato. Da rifare con tutti gli input a 0 tranne `Versione 1`.
+
+**Run B su @EC, terzo giro (29/10/2026) — meccanica giusta.** `Mario_UngerTF`, `Versione 1`,
+input a 0, template 17-16 ricreato. 33 trade in 135 giorni, report `TF_S1_EC_B_x1.xlsx`, log
+`TF_S1_EC_B_log.txt`.
+- Ingressi fra le 02:29 e le 03:59 CT, dentro la finestra 02:00–04:00.
+- Stop $937,50 e target $3.125 a contratto (i valori di Unger): non scattano mai in 135 giorni.
+- Uscite: 31 a fine sessione alle **15:59 CT**, tutti i giorni; 2 inversioni nella finestra
+  (20/07 e 23/09: il prezzo rompe prima un lato e poi l'altro), come da codice.
+- Numeri (WR 66,7%, t 2,34 su 33 trade) solo informativi: lo Stage 1 non giudica l'edge.
