@@ -46,7 +46,7 @@ Sull'IS VaultBreak aiuta (+4 punti), ma è il periodo su cui è stata ottimizzat
 
 ## Lo script del corso sugli stessi file (29/10/2026)
 
-`PropFirm_MonteCarlo_Apex50K_1708_MultiStrats.py` (Live 5) **senza modifiche al codice**. Fuori da Colab l'upload è sostituito dal passaggio diretto dei file. Cambiati solo gli input della cella 2: pesi DPB 0,2 / VB 0,2 NQ, `OOS_START_DATE None` (i file sono già OOS), commissione e slippage 0 (i report hanno già $15 andata e ritorno). **Regole Apex 50K** (21 giorni), non Lucid. Output: [`book_DPB_VB_colab_corso.txt`](book_DPB_VB_colab_corso.txt) e [`book_DPB_solo_colab_corso.txt`](book_DPB_solo_colab_corso.txt). Il run di DPB da sola si ferma alla cella 8c con `NameError: strat_order`, un bug dello script con un file solo; le celle 1–8b sono complete.
+`PropFirm_MonteCarlo_Apex50K_1708_MultiStrats.py` (Live 5) **senza modifiche al codice**, lanciato con [`colab_corso/run_colab.sh`](colab_corso/run_colab.sh). Fuori da Colab l'upload è sostituito dal passaggio diretto dei file. Cambiati solo gli input della cella 2: pesi DPB 0,2 / VB 0,2 NQ, `OOS_START_DATE None` (i file sono già OOS), commissione e slippage 0 (i report hanno già $15 andata e ritorno). **Regole Apex 50K** (21 giorni), non Lucid. Output: [`book_DPB_VB_colab_corso.txt`](book_DPB_VB_colab_corso.txt) e [`book_DPB_solo_colab_corso.txt`](book_DPB_solo_colab_corso.txt). Il run di DPB da sola si ferma alla cella 8c con `NameError: strat_order`, un bug dello script con un file solo; le celle 1–8b sono complete.
 
 Stage B dello script, ogni mix alla sua size migliore:
 

@@ -44,3 +44,6 @@ education/**/DATA/
 
 # slide estratte dai video del corso (si rigenerano con mc/docs/estrai_slide.sh)
 education/protocollo/_slide/
+
+# lanciatore del Monte Carlo del corso: openpyxl installato localmente
+mc/docs/colab_corso/libs/
