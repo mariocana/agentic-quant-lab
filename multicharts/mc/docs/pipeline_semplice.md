@@ -160,37 +160,26 @@ Tutti e quattro. Se ne manca uno: cimitero, senza rigirare con altri micro o alt
 - Il book che esce dal gate **non è validato**: è un'ipotesi da confermare dal vivo. Si
   aggiunge una strategia alla volta, con almeno 2 settimane di live fra un'aggiunta e l'altra.
 
-## Candidate, in quest'ordine
+## Candidate, in quest'ordine (rivisto il 29/10, prima di qualsiasi run)
 
-| # | candidata | report OOS | stato dei dati |
-|---|---|---|---|
-| 1 | ORB NQ `cutoff11` | `ORB_S5_OOS_cutoff11_2025-2026` | OOS visto da solo (t 0,63), **mai nel book** |
-| 2 | VaultBreak `MaxTrades1` | `VB_S5_OOS_MaxTrades1_2025-2026` | OOS visto da solo (t 0,23), **mai nel book** |
-| 3 | ORB NQ senza cutoff | `ORB_S5_OOS_nocutoff_2025-2026` | **già misurato nel book il 29/10 prima di questa regola** (+0,4 pp iid con `book_sim`): si gira per il verbale, il risultato non è indipendente |
-| — | VaultBreak base | `VB_S5_OOS_2025-2026` | **già misurata** (prova dello script): −1,2 pp iid, −5,6 contiguo, avg < 0 → non entra |
-| 4 | Gold Asian Range, variante A | `GAR_S5_OOS_A_2025-2026` (MGC) | IS t 1,89, trade peggiore $498 per micro: **mai OOS** |
-| 5 | VaultBreak su ES (`VB_ES_S4`) | `VB_ES_S5_OOS_2025-2026` (MES) | IS t 1,66, peggiore $133 per micro; bocciata col P/D (ritirato). Stessa logica già morta fuori campione su NQ: prior basso |
-| 6 | Counter Trend (Unger) su YM, variante B | `CT_S5_OOS_YM_B_2025-2026` (MYM) | IS t 1,01, peggiore $152 per micro; il migliore di 6 run, quindi selezionato |
-| 7 | VWAP Pullback filtrata | `VWAP_S5_OOS_filtrata_2025-2026` (MNQ) | IS t 0,69, peggiore $444 per micro; R:R 0,40 |
-| — | Trend Following (Unger), B | — | **in fase 2**: su GC, ES, NQ il verdetto IS si legge con via A **e** via B. 6E escluso: t 1,98 ma trade peggiore $955 sul contratto intero, e su Lucid non c'è il micro |
+**Regola aggiunta per le varianti scelte a posteriori:** se una variante e' la migliore fra
+k provate, il suo t IS deve superare il **t atteso del massimo di k strategie a edge zero**,
+non 0,5: k = 2 → 0,56 · k = 3 → 0,85 · k = 4 → 1,03 · k = 6 → 1,27.
 
-### Escluse dalla via B (verificato dai report il 29/10)
+| # | candidata | t IS | trade peggiore / micro | nota |
+|---|---|---|---|---|
+| 1 | **Gold Asian Range A** (MGC) | 1,89 | $498 | variante base pre-registrata, strumento diverso da NQ. OOS mai toccato |
+| 2 | ORB NQ `cutoff11` | 2,80 | | OOS visto da solo (t 0,63), mai nel book |
+| 3 | VaultBreak `MaxTrades1` | 2,88 | | OOS visto da solo (t 0,23), mai nel book. **A verbale**: logica gia' morta su NQ |
+| 4 | ORB NQ senza cutoff | 2,74 | | **a verbale**: gia' misurato nel book il 29/10 prima della regola (+0,4 pp iid) |
+| 5 | VWAP Pullback filtrata (MNQ) | 0,69 | $444 | scelta fra 2 versioni: soglia 0,56, passa. OOS mai toccato |
 
-Trade peggiore per micro = trade peggiore sul contratto intero ÷ 10, dalla List of Trades dell'IS.
+**Escluse:**
+- **VaultBreak su ES**: la stessa logica e' fallita fuori campione su NQ nello stesso periodo (t −0,03), ES/NQ correlati 0,8-0,95. Rigirarla sarebbe una variante dopo un gate fallito.
+- **Counter Trend YM B**: migliore di 6 run, t 1,01 contro 1,27 atteso dal caso.
+- First5 (serve un IS nuovo con lo stop), Last Half-Hour e Rebalancing (trade peggiore oltre $500), Trend Following 6E (niente micro su Lucid), tutte le altre (t ≤ 0,5).
 
-| strategia | t IS | trade peggiore per micro | perché fuori |
-|---|---|---|---|
-| NQ First5 (base / filtrata) | 1,00 / 1,63 | $1.085 / $1.045 | rischio: girata senza stop; con `StopPts` sarebbe un IS nuovo, non un ripescaggio |
-| Last Half-Hour | 0,52 | $603 | rischio, e dopo la pubblicazione t −0,22 |
-| Rebalancing | 0,58 | $1.361 | rischio (niente stop), dopo la pubblicazione t 0,52 |
-| Counter Trend ES B | 0,50 | $211 | t non > 0,5 |
-| GoldGapper A | 0,48 | — | t, e 94 trade |
-| ORB ES, FX Fix, ON Reversal, ESCounter, BTC First30, DPB su YM, Counter Trend GC | da −3,8 a 0,31 | — | t ≤ 0,5 in tutte le varianti |
-
-**Due avvertenze.** (1) Lo Stage 1 di ogni strategia ha girato ~100 giorni del 2026, che
-stanno dentro l'OOS 2025-2026: è un controllo di meccanica, ma quei giorni sono stati visti.
-(2) Per GAR, Counter Trend e VWAP la variante in tabella è la migliore dell'IS: la scelta è
-fatta qui, prima dell'OOS, e non si cambia dopo.
+**Fuori da questa coda, con la pipeline normale:** Trend Following (Unger) su GC/ES/NQ, in fase 2; VWAP ADX, in fase 0 presso l'agente (fuori campione pulito solo dal 3/7/2026).
 
 ## Registro
 
