@@ -37,3 +37,22 @@ Altri input pre‑registrati (Stage 4): `StopFrac` 0.5/0.75 · long only · fine
 Il motivo per cui regge fill realistici è che **non c'è gap fra livello e ordine**: gli
 stop vengono piazzati nell'istante in cui il range chiude. È la differenza con i breakout
 "del giorno prima", dove il prezzo può attraversare il livello prima che l'ordine esista.
+
+## Fase 3b — gate marginale (29/10/2026): OOS della variante A, una volta sola
+
+Candidata 2 della coda in `mc/docs/pipeline_semplice.md`. **Stesso chart e stessi input
+dell'IS** (`GAR_S2_IS_A_tp0.xlsx`), cambia solo il periodo:
+
+- `Mario_GoldAsianRange` su @GC 15 min, template **24/7**, time zone **Exchange** (come l'IS),
+  Bar Magnifier 1 min, commissione **12.5$ per Contract**, slippage 0, **1 contratto**.
+- Input: `RangeStart 2000`, `RangeEnd 0`, `ExitTime 1000`, `StopFrac 1.0`, **`TP_RR 0`**,
+  `TradeLongs 1`, `TradeShorts 1`, `MinRangePts 0`, `MaxRangePts 0`, `Num_Contracts 1`,
+  `ShowLog 0`.
+- Chart dal **20/12/2024** a oggi (i trade prima del 2025-01-01 si tolgono nel verdetto).
+- File: `GAR_S5_OOS_A_2025-2026.xlsx`.
+
+**A verbale sul fuso.** Per TradeStation l'exchange di @GC è il COMEX di **New York** (scoperto
+il 24/10 su Counter Trend). Il codice e la spec assumono che "Exchange" sia CT; se il chart era
+in ora di New York, l'IS ha misurato range 19:45–00:00 e uscita alle 10:00 **di New York**, un'ora
+prima della spec. L'OOS replica il chart dell'IS, qualunque fosse: si testa la regola misurata,
+non quella scritta.
