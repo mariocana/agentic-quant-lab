@@ -116,7 +116,7 @@ template a giorno di calendario).
 **Gate 1 passato** (29/10/2026) su @EC (A, A10, B) e @GC (B). Prossimo: Stage 2.
 
 ## Stage 2 — risultati
-**@EC (29/10/2026) — non passa, causa A.** Report `TF_S2_EC_A_IS_x10.xlsx` e
+**@EC (29/10/2026) — A senza edge; B con edge al limite, causa B per costruzione.** Report `TF_S2_EC_A_IS_x10.xlsx` e
 `TF_S2_EC_B_IS_x10.xlsx`: 2020-01-06 → 2024-12-31, template 17-16, 8.65$, ma **a 10 contratti**
 (Strategy Properties rimasta dal run A10). Il t non dipende dalla size; i numeri sotto sono per
 contratto.
@@ -130,6 +130,11 @@ contratto.
   contro 32 stop (−$44.554). Ingressi su tutta la finestra 03:00–12:30, un terzo fra le 03 e le 04.
 - **B**: tutto l'utile viene dalle 311 uscite a fine sessione (+$50.063, $161 l'una); 20 stop
   (−$19.096) e 47 inversioni (−$11.601) se ne mangiano più di metà. Il WR (52,4%) replica quello
-  di Unger (52,9%), ma l'avg è sotto la soglia di $85 e il t sotto 2, e con 8 run il massimo
-  atteso per caso è ~1,4: 1,98 non basta. Il 2024 è negativo.
-- Per la regola di kill (gate su B, strumento per strumento) **6E è chiuso**. Restano @GC, @ES, @NQ.
+  di Unger (52,9%). t 1,98 contro la soglia di 2 è varianza (p ≈ 0,05 a due code), e sopra il
+  massimo atteso per caso su 8 run (~1,4): **l'edge di Unger fuori campione c'è, al limite**.
+  L'avg ($51 contro $85) e il WR/R:R mancano, ma il WR e l'R:R erano fuori profilo per
+  costruzione (SPEC) e 6E era già causa B per costruzione (stop $938, niente micro). Unico
+  segnale contrario: il 2024 negativo.
+- Come da SPEC, 6E serviva a sapere se l'edge esiste fuori campione: **sì per B**. 6E non si
+  trada (causa B); la domanda passa a @GC, @ES, @NQ: se l'edge non si trasferisce, la strategia
+  va in cimitero con causa B, non A.

@@ -911,7 +911,7 @@
     },
     {
      "date": "2026-10-29",
-     "text": "**IS su @EC: non passa, causa A.** A: 663 trade, t −0,84 (le inversioni fanno zero, gli stop battono i target). B: 378 trade, WR 52,4% (Unger 52,9%), avg $51 a contratto (soglia $85), t 1,98 con un massimo atteso per caso di ~1,4 su 8 run; 2024 negativo. 6E chiuso, restano GC, ES, NQ."
+     "text": "**IS su @EC.** A: 663 trade, t −0,84, nessun edge (le inversioni fanno zero, gli stop battono i target). B: 378 trade, WR 52,4% (Unger 52,9%), avg $51 a contratto, **t 1,98**: a ridosso della soglia di 2 e sopra il massimo atteso per caso su 8 run (~1,4), quindi **l'edge di Unger fuori campione c'è, al limite**; 2024 negativo. 6E resta causa B per costruzione (stop $938, niente micro). Prossimo: GC, ES, NQ."
     }
    ]
   }
