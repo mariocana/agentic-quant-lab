@@ -43,3 +43,21 @@ Sull'IS VaultBreak aiuta (+4 punti), ma è il periodo su cui è stata ottimizzat
 - **Ordine intraday approssimato:** DPB prima, VB dopo nello stesso giorno. Il drawdown dentro la giornata, con due posizioni aperte insieme, può essere peggiore di quello simulato.
 - **VB nella configurazione base** (`MaxTradesPerDay 3`). La variante `MaxTrades1` ha fallito anche lei l'OOS (avg $25 ± 110).
 - Il report del corso (Live 4/5) usa 7 micro per strategia su Apex. Qui si confronta alla size che regge l'MLL Lucid.
+
+## Lo script del corso sugli stessi file (29/10/2026)
+
+`PropFirm_MonteCarlo_Apex50K_1708_MultiStrats.py` (Live 5) **senza modifiche al codice**. Fuori da Colab l'upload è sostituito dal passaggio diretto dei file. Cambiati solo gli input della cella 2: pesi DPB 0,2 / VB 0,2 NQ, `OOS_START_DATE None` (i file sono già OOS), commissione e slippage 0 (i report hanno già $15 andata e ritorno). **Regole Apex 50K** (21 giorni), non Lucid. Output: [`book_DPB_VB_colab_corso.txt`](book_DPB_VB_colab_corso.txt) e [`book_DPB_solo_colab_corso.txt`](book_DPB_solo_colab_corso.txt). Il run di DPB da sola si ferma alla cella 8c con `NameError: strat_order`, un bug dello script con un file solo; le celle 1–8b sono complete.
+
+Stage B dello script, ogni mix alla sua size migliore:
+
+| mix | Sharpe/giorno | size | NQ totali | pass |
+|---|---|---|---|---|
+| solo DPB | 0,083 | 2,0 | 2,00 | **37,4%** |
+| solo VB | **−0,001** | 2,0 | 2,00 | **35,6%** |
+| equal weight 1/1 | 0,070 | 0,6 | 1,20 | 36,0% |
+
+Lo script dichiara i tre mix **statisticamente pari** e sceglie l'equal weight per la sua regola («an optimized mix inside the noise is fitted noise»).
+
+**Il punto:** con size libera fino a 2 NQ (20 micro), una strategia a edge zero passa quasi quanto DPB (35,6% contro 37,4%). A quella size il pass rate lo decide la varianza, non l'edge: il conto tocca target o MLL in pochi giorni (1,7 in media a 2 NQ). Il criterio «pass rate alla size ottima» **non separa VaultBreak da DPB**, ed è per questo che nel corso il trittico regge.
+
+Alla size live (2 MNQ = 0,2 NQ), DPB da sola su Apex passa il **20%**: il 44% dei tentativi scade ai 21 giorni. Su LucidFlex la scadenza non c'è.

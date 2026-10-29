@@ -1,0 +1,138 @@
+Matplotlib is building the font cache; this may take a moment.
+
+✅ 1 file(s) uploaded:
+
+  📄 DPB_S5_OOS_2025-2026.xlsx (2,958,283 bytes)
+     Excel workbook with sheets: ['Strategy Analysis', 'Strategy Analysis Graphs', 'List of Trades', 'Trade Analysis', 'Trade Analysis Graphs', 'Periodical Analysis', 'Periodical Analysis Graphs', 'Settings']
+     'List of Trades' sheet found - CELL 3 will read it directly (no manual prep needed).
+
+➡️  Now run CELL 2 (settings incl. STRATEGY_WEIGHTS), then CELL 3.
+✅ Inputs set.
+   Strategy weights: {'dpb': 0.2}  (default 1.0 for unmatched files)
+   Exposure cap: 2.5 NQ total (model validity), 6 NQ legal max
+
+──────────────────────────────────────────────────────────────────────
+Loading: DPB_S5_OOS_2025-2026.xlsx
+ℹ️  MultiCharts .xlsx detected - sheet 'List of Trades', header on row 3, 2878 raw rows.
+ℹ️  Kept 1439 entry rows (dropped 1439 exit/blank rows).
+Columns found: ['trade #', 'order #', 'type', 'signal', 'price', 'contracts', 'profit ($)', 'profit (%)', 'cum. profit ($)', 'cum. profit (%)', 'run-up ($)', 'run-up (%)', 'drawdown ($)', 'drawdown (%)', 'datetime']
+Rows loaded:   1439
+ℹ️  Auto-renamed columns: 'trade #' → trade_id, 'order #' → order_id, 'profit ($)' → profit_usd
+ℹ️  Derived 'direction' from the 'type' column.
+✅ DPB_S5_OOS_2025-2026: 1439 trades | 2025-01-02 → 2026-10-15 | win 64% | avg $11.46 | weight 0.2
+
+══════════════════════════════════════════════════════════════════════
+✅ 1 strategy loaded: DPB_S5_OOS_2025-2026 - 1439 trades
+⚠️  No OOS_START_DATE set - statistics below use the FULL uploaded sample.
+   If this file is a raw backtest, these are IN-SAMPLE numbers and the
+   pass probabilities downstream will be optimistic.
+══════════════════════════════════════════════════
+  TRADE STATISTICS (full sample)
+══════════════════════════════════════════════════
+  Trades         : 1439
+  Date range     : 2025-01-02 → 2026-10-15
+  Win Rate (net) : 64.5%
+  Avg Trade (net): $11.46
+  EV (R/trade)   : 0.0573 R
+  Avg Winner     : $177.70
+  Avg Loser      : $-290.43
+
+  Bootstrap 95% CI (per trade, all strategies pooled)
+  EV $: [$-0.78, $23.17]
+  EV R: [-0.0039, 0.1158]
+  P(EV_R ≤ 0): 0.033
+  P(EV_$ ≤ 0): 0.033
+✅ Excursions merged for 100% of simulation trades.
+   DPB_S5_OOS_2025-2026     MAE/1x contract: median $822 | P90 $1,618 | max $3,178
+══════════════════════════════════════════════════
+  DAILY DATASET (full sample)
+══════════════════════════════════════════════════
+  Date range        : 2025-01-02 → 2026-10-15
+  Total weekdays    : 466
+  Active trade days : 456
+  0-trade weekdays  : 10
+  % active          : 97.9%
+  Avg trades/weekday: 3.09
+  Total net P&L $16,496   |   max drawdown $7,300   (per backtest contract)
+Challenge : Apex 50K EOD
+Target    : $3,000
+Max DD    : $2,000 (EOD trailing, locks at +$100)
+Deadline  : 21 trading days
+Size      : 1 NQ E-mini   (= 10 micro-equivalents; display only)
+Backtest  : each strategy exported at 1 contract; weights applied at load
+Simulation engine loaded: simulate_apex, simulate_paths, print_results, verdict_tag
+✅ ENGINE = 'excursion' - Cells 7-10 will use it on re-run.
+   Trade bag: 466 weekdays, 1439 trades (1 strategies interleaved by timestamp).
+   Path bound (book weights, 1439 trades): P95 MAE $324/unit fills the $2,000 room at 6.2x from a fresh start.
+Using NUM_CONTRACTS = 1 (from CELL 2; note CELL 8 intentionally sets this to the sweep-optimal size for Cells 9-16)
+Sample : FULL sample (in-sample if raw backtest)  |  1439 trades over 466 weekdays
+Sizing : 1 NQ-equivalent contract(s)
+
+=======================================================
+  Apex 50K EOD
+=======================================================
+  Target: $3,000  |  Max DD: $2,000 (EOD trailing)
+  Deadline: 21 days  |  Sims: 20,000
+
+  >>> PASS RATE: 19.9%  [95% CI: 19.3% - 20.4%] <<<
+
+  OUTCOMES:
+    Passed     :  3,976  (19.9%)
+    Fail DD    :  7,151  (35.8%)
+    Fail Daily :      0  (0.0%)
+    Fail Time  :  8,873  (44.4%)
+
+  TIMING:
+    Avg days to pass : 14.3  (calendar weekdays)
+    Median           : 14.0
+    Avg TRADING days : 14.1
+
+  DRAWDOWN:
+    Avg Max DD  : $   1,605
+    P90 Max DD  : $   2,182
+    P95 Max DD  : $   2,248
+    Worst DD    : $   3,032
+
+  VERDICT: POOR
+
+════════════════════════════════════════════════════════════
+  MNQ SIZE SWEEP — Apex 50K EOD  (FULL sample)
+════════════════════════════════════════════════════════════
+     MNQ    Pass%            95% CI      AvgDD      P95DD  AvgDays
+  ──────────────────────────────────────────────────────────────────
+  (sizes capped at 2.5 NQ total: above that the EOD-only DD check understates intraday bust risk)
+      3x    0.0%   [ 0.0% -  0.0%]  $     577  $   1,063      nan
+      5x    0.7%   [ 0.6% -  0.8%]  $     954  $   1,779     18.5
+      7x    5.9%   [ 5.6% -  6.3%]  $   1,283  $   2,095     16.5
+     10x   20.2%   [19.6% - 20.7%]  $   1,604  $   2,249     14.5
+     11x   24.4%   [23.8% - 25.0%]  $   1,669  $   2,296     13.7
+     13x   31.2%   [30.6% - 31.9%]  $   1,754  $   2,373     12.3
+     15x   35.0%   [34.3% - 35.7%]  $   1,808  $   2,452     10.8
+     17x   36.4%   [35.7% - 37.1%]  $   1,835  $   2,510      9.4
+     20x   36.4%   [35.8% - 37.1%]  $   1,873  $   2,605      7.5
+
+  >>> BEST: size 2x at 36.4%, statistically tied with 1 other size(s) (1.7x-2x range) <<<
+      Within a tie, prefer the SMALLER size: same pass odds, less drawdown risk (P95 DD column).
+══════════════════════════════════════════════════════════════════════════
+  STAGED SIZING - small until +$1,000, then 2x (dynamic mode, ENGINE='excursion', 20,000 sims)
+══════════════════════════════════════════════════════════════════════════
+    Stage 1 size    Pass%            95% CI   vs flat
+  ──────────────────────────────────────────────────────
+         flat 2x    36.4%   [35.8% - 37.1%]  baseline
+        0.5x->2x    12.4%   [11.9% - 12.9%]     -24.0pp
+          1x->2x    30.5%   [29.8% - 31.1%]      -5.9pp
+        1.5x->2x    36.2%   [35.5% - 36.8%]      -0.2pp
+
+  >>> No significant difference: the best staged variant (36.2%) is statistically tied with flat sizing (36.4%). The buffer idea neither helps nor hurts the EVAL. <<<
+
+  Consistency check: the flat baseline should sit within CI of the
+  Cell 8 sweep row for the same size (different seed stream, same engine).
+Traceback (most recent call last):
+  File "/private/tmp/claude-501/-Users-mario-Documents-Repo-my-codes/4d7783ae-c880-4eb2-b86b-fbcf5fc03afb/scratchpad/corso_mc/run.py", line 11, in <module>
+    exec(compile(src, S, 'exec'), {'__name__': '__main__'})
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/mario/Documents/Repo/my-codes/education/protocollo/8. Livestreaming/PropFirm_MonteCarlo_Apex50K_1708_MultiStrats.py", line 1735, in <module>
+    _w0_ = df_pool.groupby("strategy")["weight"].first().reindex(strat_order)
+                                                                 ^^^^^^^^^^^
+NameError: name 'strat_order' is not defined
+exit 1
