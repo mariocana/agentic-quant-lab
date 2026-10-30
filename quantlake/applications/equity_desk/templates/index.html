@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Equity Desk</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0a0a0b; --panel:#111113; --elev:#16161a; --ink:#e4e4e7; --muted:#8b8b94; --dim:#52525b;
+  --line:#1f1f23; --line2:#2a2a30; --acc:#f59e0b; --acc-soft:rgba(245,158,11,.10);
+  --up:#22c55e; --down:#f87171;
+  --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font:14px/1.5 var(--sans)}
+header{display:flex; flex-wrap:wrap; align-items:center; gap:14px 24px; padding:18px 24px;
+       border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:5}
+.brand{font-family:var(--mono); font-weight:600; letter-spacing:.06em}
+.brand::before{content:"◆ "; color:var(--acc)}
+.brand small{display:block; font-weight:400; color:var(--muted); letter-spacing:0; font-family:var(--sans)}
+.kpi{font-family:var(--mono)} .kpi b{font-size:1.25rem; color:var(--acc)} .kpi span{color:var(--muted); font-size:.75rem; margin-left:6px}
+.spacer{flex:1}
+button,select,input{font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line2);
+                    border-radius:4px; padding:6px 10px}
+button{cursor:pointer} button:hover{border-color:var(--acc); color:var(--acc)}
+button.on{background:var(--acc); color:var(--bg); border-color:var(--acc)}
+button:disabled{opacity:.6; cursor:default}
+.fresh{font-family:var(--mono); font-size:.75rem; color:var(--muted)}
+main{max-width:1280px; margin:0 auto; padding:18px 24px 60px}
+.bar{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:16px}
+.bar label{font-size:.78rem; color:var(--muted); font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em}
+.seg{display:inline-flex; border:1px solid var(--line2); border-radius:4px; padding:2px}
+.seg button{border:none; padding:5px 12px}
+h2{font-size:1.05rem; margin:26px 0 2px}
+.sub{color:var(--muted); font-size:.82rem; margin:0 0 12px}
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:12px 14px}
+.card.fail{opacity:.55}
+.top{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.sym{font-family:var(--mono); font-weight:600; font-size:1.05rem}
+.name{color:var(--muted); font-size:.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:1px 0 8px}
+.tag{font-family:var(--mono); font-size:.66rem; padding:1px 6px; border-radius:3px; border:1px solid var(--line2); color:var(--muted)}
+.tag.beat{color:var(--up); border-color:rgba(34,197,94,.5)} .tag.miss{color:var(--down); border-color:rgba(248,113,113,.5)}
+.tag.acc{color:var(--acc); border-color:rgba(245,158,11,.5)}
+.score{margin-left:auto; font-family:var(--mono); font-weight:600; font-size:1.1rem; color:var(--acc)}
+.grid{display:grid; grid-template-columns:1fr 1fr; gap:6px 12px}
+.grid small{display:block; font-family:var(--mono); font-size:.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em}
+.grid b{font-family:var(--mono); font-weight:500}
+.pos{color:var(--up)} .neg{color:var(--down)}
+.foot{color:var(--dim); font-size:.72rem; margin-top:10px; font-family:var(--mono)}
+table{border-collapse:collapse; width:100%; font-size:.85rem}
+th,td{border-bottom:1px solid var(--line); padding:6px 8px; text-align:left; white-space:nowrap}
+th{font-family:var(--mono); font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+   background:var(--elev); position:sticky; top:0; cursor:pointer}
+td.n{font-family:var(--mono); text-align:right} th.n{text-align:right}
+tr.day td{background:var(--elev); font-family:var(--mono); color:var(--acc); font-size:.78rem}
+tr.today td{color:var(--ink)}
+.scroll{overflow-x:auto}
+.empty{color:var(--muted); padding:18px; border:1px dashed var(--line2); border-radius:5px}
+.note{color:var(--muted); font-size:.78rem; margin-top:28px; border-top:1px solid var(--line); padding-top:12px}
+.log{white-space:pre-wrap; font-family:var(--mono); font-size:.72rem; color:var(--muted); margin:0 0 12px}
+[hidden]{display:none!important}
+@media (max-width:640px){ header,main{padding-left:16px; padding-right:16px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">EQUITY DESK<small>Earnings · calendario · insider · 13F</small></div>
+  <div class="kpi"><b id="k-up">–</b><span>in arrivo (5 gg)</span></div>
+  <div class="kpi"><b id="k-rep">–</b><span>pubblicate (5 gg)</span></div>
+  <div class="spacer"></div>
+  <span class="fresh" id="fresh">carico i dati…</span>
+  <button id="refresh" title="Scarica calendario, prezzi e sorprese EPS (~20 s, 1-5 min la prima volta)">aggiorna</button>
+</header>
+<main>
+  <pre class="log" id="log" hidden></pre>
+  <div class="bar">
+    <div class="seg" id="tabs"><button data-tab="screener" class="on">Screener</button><button data-tab="calendar">Calendario</button><button data-tab="insiders">Insider</button><button data-tab="13f">13F</button></div>
+    <span id="screener-ctl" class="bar" style="margin:0">
+      <label>ordina</label>
+      <select id="sort">
+        <option value="score">punteggio</option><option value="date">data</option>
+        <option value="gap">gap</option><option value="surprise">sorpresa EPS</option><option value="cap">capitalizzazione</option>
+      </select>
+      <div class="seg" id="view"><button data-view="cards" class="on">schede</button><button data-view="list">lista</button></div>
+      <label><input type="checkbox" id="showall"> mostra anche chi non passa</label>
+    </span>
+    <span id="insiders-ctl" class="bar" style="margin:0" hidden>
+      <label>acquisti da</label>
+      <select id="minbuy"><option value="10000">$10K</option><option value="50000" selected>$50K</option>
+        <option value="100000">$100K</option><option value="1000000">$1M</option></select>
+      <label>ruolo</label>
+      <select id="rolef"><option value="">tutti</option><option value="officer">dirigenti</option>
+        <option value="director">consiglieri</option><option value="ten">soci 10%</option></select>
+      <div class="seg" id="iview"><button data-iview="cards" class="on">schede</button><button data-iview="list">lista</button></div>
+    </span>
+    <span id="calendar-ctl" class="bar" style="margin:0" hidden>
+      <input id="q" placeholder="cerca simbolo o nome" size="22">
+      <select id="mincap"><option value="0">tutte</option><option value="2e9" selected>cap ≥ 2 mld</option><option value="1e10">cap ≥ 10 mld</option></select>
+    </span>
+  </div>
+
+  <section id="screener">
+    <h2>Ultimi 5 giorni · BEAT + gap &gt; 2%</h2>
+    <p class="sub">EPS sopra la stima di almeno $0,01 e dell'1%, e la seduta di reazione apre più del 2% sopra la chiusura precedente.</p>
+    <div id="reported"></div>
+    <h2>Prossimi 5 giorni · setup rialzista</h2>
+    <p class="sub">Beat rate ≥ 75% negli ultimi 4 trimestri, oppure rendimento a 13 settimane &gt; +5% (entrambi = segnale più forte).
+      Circa 3 aziende su 4 battono le stime quasi ogni trimestre: questa lista è da scorrere per punteggio, non è selettiva.</p>
+    <div id="upcoming"></div>
+  </section>
+
+  <section id="insiders" hidden>
+    <p class="sub" id="ins-fresh"></p>
+    <h2>Acquisti di gruppo · almeno 2 insider negli ultimi 14 giorni</h2>
+    <p class="sub">Più persone della stessa azienda comprano sul mercato con soldi propri: è il segnale insider più studiato.</p>
+    <div id="clusters"></div>
+    <h2>Acquisti sul mercato · ultimi 30 giorni</h2>
+    <p class="sub">Form 4 codice P (acquisto in borsa). Esclusi stock option, premi e piani automatici.
+      "Fuori mercato?" = prezzo pagato oltre il 25% lontano dalla chiusura del giorno (collocamenti, conversioni, ADR): escluso dagli acquisti di gruppo.</p>
+    <div id="buys"></div>
+    <h2>Vendite rilevanti · sopra $1M</h2>
+    <p class="sub">Codice S. Le vendite hanno molte ragioni (tasse, diversificazione): 10b5-1 = vendita programmata in anticipo.</p>
+    <div id="sells"></div>
+  </section>
+
+  <section id="f13" hidden>
+    <p class="sub" id="f13-fresh"></p>
+    <h2>I più comprati nel trimestre</h2>
+    <p class="sub">Titoli comprati (nuova posizione o aumento) dal maggior numero di fondi, poi per peso aggiunto ai portafogli.
+      I 13F escono fino a 45 giorni dopo la fine del trimestre: sono posizioni di 1-4 mesi fa, idee e non segnali.</p>
+    <div id="bought"></div>
+    <h2>I più venduti nel trimestre</h2>
+    <p class="sub">Riduzioni e uscite complete.</p>
+    <div id="sold"></div>
+    <h2>Fondi seguiti</h2>
+    <p class="sub">Lista in <code>applications/symbols.py</code> (SUPERINVESTORS). "Fermo" = nessun 13F per il trimestre: non entra nelle classifiche.</p>
+    <div id="funds"></div>
+  </section>
+
+  <section id="calendar" hidden><div class="scroll"><table id="cal"></table></div></section>
+
+  <p class="note">Dati: Nasdaq.com (calendario, EPS, sorprese, prezzi giornalieri), aggiornati da
+    <code>applications/historical/earnings.py</code>. La stima dei ricavi non è disponibile gratis: al suo posto la capitalizzazione.
+    Titoli sotto i 2 mld di capitalizzazione esclusi dallo screener. BMO = prima dell'apertura, AMC = dopo la chiusura;
+    "dedotto" = orario non fornito, ricavato dalla seduta con il gap maggiore (può sbagliare).
+    Insider: Form 4 dalla SEC (EDGAR), con <code>applications/historical/insiders.py</code>.
+    13F: depositi 13F-HR dei fondi seguiti (SEC), ticker da OpenFIGI, con <code>applications/historical/superinvestors.py</code>.
+    Punteggi: pubblicate 50 × min(sorpresa/25%, 1) + 50 × min(gap/8%, 1); in arrivo 60 × beat rate + 40 × min(rend. 13 sett./20%, 1).</p>
+</main>
+<script>
+const BASE = {{ request.script_root|tojson }};  // mount prefix (/equity in the dashboard, empty when standalone)
+
+const $ = (s) => document.querySelector(s);
+const state = {tab: "screener", view: "cards", iview: "cards", sort: "score", showall: false, screener: [], calendar: [],
+  insiders: [], today: null};
+const fmt = (x, d = 2) => x == null ? "–" : x.toLocaleString("it-IT", {minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: true});
+const pct = (x, d = 1) => x == null ? "–" : (x > 0 ? "+" : "") + fmt(x * 100, d) + "%";
+const cls = (x) => x == null ? "" : (x > 0 ? "pos" : x < 0 ? "neg" : "");
+const cap = (x) => x == null ? "–" : x >= 1e12 ? fmt(x / 1e12, 2) + " T" : x >= 1e9 ? fmt(x / 1e9, 1) + " mld" : fmt(x / 1e6, 0) + " mln";
+const day = (iso) => iso ? new Date(iso + "T12:00:00").toLocaleDateString("it-IT", {weekday: "short", day: "2-digit", month: "2-digit"}) : "–";
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const timeTag = (t, inferred) => t && t !== "na"
+  ? `<span class="tag">${t.toUpperCase()}${inferred ? " dedotto" : ""}</span>` : `<span class="tag">orario n.d.</span>`;
+
+const SORTS = {
+  score: (r) => r.score ?? -1, date: (r) => r.report_date, gap: (r) => r.gap_pct ?? -9,
+  surprise: (r) => r.surprise_pct ?? -999, cap: (r) => r.market_cap ?? 0,
+};
+function sorted(rows) {
+  const k = SORTS[state.sort], asc = state.sort === "date";
+  return [...rows].sort((a, b) => (k(a) > k(b) ? 1 : k(a) < k(b) ? -1 : 0) * (asc ? 1 : -1));
+}
+
+function repCard(r) {
+  return `<div class="card ${r.passes ? "" : "fail"}">
+    <div class="top"><span class="sym">${esc(r.symbol)}</span>${timeTag(r.time_used || r.time, r.time_inferred)}
+      <span class="tag ${r.result === "BEAT" ? "beat" : r.result === "MISS" ? "miss" : ""}">${r.result ?? ""}</span>
+      <span class="score">${r.score ?? "–"}</span></div>
+    <div class="name">${esc(r.name)}</div>
+    <div class="grid">
+      <div><small>Gap</small><b class="${cls(r.gap_pct)}">${pct(r.gap_pct)}</b></div>
+      <div><small>Sorpresa EPS</small><b class="${cls(r.surprise_pct)}">${r.surprise_pct == null ? "–" : (r.surprise_pct > 0 ? "+" : "") + fmt(r.surprise_pct, 1) + "%"}</b></div>
+      <div><small>EPS / stima</small><b>${fmt(r.eps)} / ${fmt(r.eps_forecast)}</b></div>
+      <div><small>Dall'apertura</small><b class="${cls(r.since_open_pct)}">${pct(r.since_open_pct)}</b></div>
+      <div><small>Capitalizzazione</small><b>${cap(r.market_cap)}</b></div>
+      <div><small>Dal report</small><b class="${cls(r.since_report_pct)}">${pct(r.since_report_pct)}</b></div>
+    </div>
+    <div class="foot">pubblicata ${day(r.report_date)}${r.reaction_day ? " · reazione " + day(r.reaction_day) : " · reazione non ancora aperta"}</div>
+  </div>`;
+}
+function upCard(r) {
+  const tags = (r.quarters ? `<span class="tag ${r.beat_rate >= 0.75 ? "acc" : ""}">${r.beats}/${r.quarters} beat</span>` : "")
+    + (r.ret_13w != null && r.ret_13w > 0.05 ? `<span class="tag acc">${pct(r.ret_13w)} 13 sett.</span>` : "");
+  return `<div class="card ${r.passes ? "" : "fail"}">
+    <div class="top"><span class="sym">${esc(r.symbol)}</span>${timeTag(r.time)}<span class="tag">${day(r.report_date)}</span>
+      <span class="score">${r.score ?? "–"}</span></div>
+    <div class="name">${esc(r.name)}</div>
+    <div class="top" style="margin-bottom:8px">${tags}</div>
+    <div class="grid">
+      <div><small>Stima EPS</small><b>${fmt(r.eps_forecast)}</b></div>
+      <div><small>Capitalizzazione</small><b>${cap(r.market_cap)}</b></div>
+      <div><small>Beat rate</small><b>${r.beat_rate == null ? "–" : Math.round(r.beat_rate * 100) + "%"}</b></div>
+      <div><small>Rend. 13 settimane</small><b class="${cls(r.ret_13w)}">${pct(r.ret_13w)}</b></div>
+    </div>
+  </div>`;
+}
+function repRow(r) {
+  return `<tr><td><b>${esc(r.symbol)}</b></td><td>${(r.time_used || r.time || "").toUpperCase()}${r.time_inferred ? "*" : ""}</td>
+    <td>${day(r.report_date)}</td><td>${r.result ?? ""}</td><td class="n">${r.score ?? "–"}</td>
+    <td class="n ${cls(r.gap_pct)}">${pct(r.gap_pct)}</td><td class="n ${cls(r.surprise_pct)}">${fmt(r.surprise_pct, 1)}%</td>
+    <td class="n">${fmt(r.eps)} / ${fmt(r.eps_forecast)}</td><td class="n ${cls(r.since_open_pct)}">${pct(r.since_open_pct)}</td>
+    <td class="n">${cap(r.market_cap)}</td><td>${esc(r.name)}</td></tr>`;
+}
+function upRow(r) {
+  return `<tr><td><b>${esc(r.symbol)}</b></td><td>${(r.time || "").toUpperCase()}</td><td>${day(r.report_date)}</td>
+    <td class="n">${r.score ?? "–"}</td><td class="n">${r.quarters ? r.beats + "/" + r.quarters : "–"}</td>
+    <td class="n ${cls(r.ret_13w)}">${pct(r.ret_13w)}</td><td class="n">${fmt(r.eps_forecast)}</td>
+    <td class="n">${cap(r.market_cap)}</td><td>${esc(r.name)}</td></tr>`;
+}
+
+function renderScreener() {
+  const rows = state.screener;
+  const rep = sorted(rows.filter((r) => r.list === "reported" && (state.showall || r.passes)));
+  const up = sorted(rows.filter((r) => r.list === "upcoming" && (state.showall || r.passes)));
+  $("#k-up").textContent = rows.filter((r) => r.list === "upcoming").length;
+  $("#k-rep").textContent = rows.filter((r) => r.list === "reported").length;
+  const block = (list, card, row, head) => !list.length ? `<div class="empty">Nessun titolo.</div>`
+    : state.view === "cards" ? `<div class="cards">${list.map(card).join("")}</div>`
+    : `<div class="scroll"><table><tr>${head.map((h) => `<th class="${h[1] || ""}">${h[0]}</th>`).join("")}</tr>${list.map(row).join("")}</table></div>`;
+  $("#reported").innerHTML = block(rep, repCard, repRow,
+    [["Simbolo"], ["Ora"], ["Data"], ["Esito"], ["Punt.", "n"], ["Gap", "n"], ["Sorpresa", "n"], ["EPS / stima", "n"], ["Da apertura", "n"], ["Cap", "n"], ["Nome"]]);
+  $("#upcoming").innerHTML = block(up, upCard, upRow,
+    [["Simbolo"], ["Ora"], ["Data"], ["Punt.", "n"], ["Beat", "n"], ["13 sett.", "n"], ["Stima EPS", "n"], ["Cap", "n"], ["Nome"]]);
+}
+
+function renderCalendar() {
+  const q = $("#q").value.trim().toLowerCase(), min = Number($("#mincap").value);
+  const rows = state.calendar.filter((r) => (r.market_cap ?? 0) >= min
+    && (!q || r.symbol.toLowerCase().includes(q) || (r.name || "").toLowerCase().includes(q)));
+  let html = `<tr><th>Ora</th><th>Simbolo</th><th>Nome</th><th class="n">Stima EPS</th><th class="n">EPS</th>
+    <th class="n">Sorpresa</th><th>Esito</th><th class="n">Cap</th><th class="n">Stime</th></tr>`, last = null;
+  for (const r of rows) {
+    if (r.report_date !== last) {
+      last = r.report_date;
+      const n = rows.filter((x) => x.report_date === last).length;
+      html += `<tr class="day ${last === state.today ? "today" : ""}"><td colspan="9">${day(last)}${last === state.today ? " · oggi" : ""} · ${n}</td></tr>`;
+    }
+    const tag = r.result ? `<span class="tag ${r.result === "BEAT" ? "beat" : r.result === "MISS" ? "miss" : ""}">${r.result}</span>` : "";
+    html += `<tr><td>${r.time && r.time !== "na" ? r.time.toUpperCase() : "–"}</td><td><b>${esc(r.symbol)}</b></td><td>${esc(r.name)}</td>
+      <td class="n">${fmt(r.eps_forecast)}</td><td class="n">${fmt(r.eps)}</td>
+      <td class="n ${cls(r.surprise_pct)}">${r.surprise_pct == null ? "–" : fmt(r.surprise_pct, 1) + "%"}</td>
+      <td>${tag}</td><td class="n">${cap(r.market_cap)}</td><td class="n">${r.n_estimates ?? "–"}</td></tr>`;
+  }
+  $("#cal").innerHTML = rows.length ? html : `<tr><td class="empty">Nessun evento.</td></tr>`;
+}
+
+const usd = (x) => x == null ? "–" : "$" + (x >= 1e6 ? fmt(x / 1e6, 2) + "M" : x >= 1e3 ? fmt(x / 1e3, 0) + "K" : fmt(x, 0));
+const roleOk = (r) => { const f = $("#rolef").value;
+  return !f || (f === "officer" && r.is_officer) || (f === "director" && r.is_director) || (f === "ten" && r.is_ten_pct); };
+function buyCard(r) {
+  return `<div class="card">
+    <div class="top"><span class="sym">${esc(r.symbol)}</span><span class="tag acc">${esc(r.role)}</span>
+      ${r.direct ? "" : '<span class="tag">indiretto</span>'}
+      ${r.off_market ? `<span class="tag miss" title="prezzo pagato lontano dalla chiusura del giorno (${fmt(r.day_close)}): probabile collocamento privato o conversione">fuori mercato?</span>` : ""}
+      ${r.joint_filers > 1 ? `<span class="tag" title="stessa operazione dichiarata da soggetti collegati">${r.joint_filers} dichiaranti</span>` : ""}
+      <span class="score">${usd(r.value)}</span></div>
+    <div class="name">${esc(r.issuer_name)} · ${esc(r.owner_name)}</div>
+    <div class="grid">
+      <div><small>Azioni @ prezzo</small><b>${fmt(r.shares, 0)} @ ${fmt(r.price)}</b></div>
+      <div><small>Dal prezzo pagato</small><b class="${cls(r.since_price)}">${pct(r.since_price)}</b></div>
+      <div><small>Comprato</small><b>${day(r.trade_date)}</b></div>
+      <div><small>Depositato</small><b>${day(r.filed_date)} · +${r.delay_days ?? "–"} gg</b></div>
+    </div>
+    ${r.cluster_buyers >= 2 ? `<div class="foot">${r.cluster_buyers} insider comprano ${esc(r.symbol)} in 14 giorni</div>` : ""}
+  </div>`;
+}
+function renderInsiders() {
+  const min = Number($("#minbuy").value);
+  const buys = state.insiders.filter((r) => r.list === "buy" && r.value >= min && roleOk(r));
+  const sells = state.insiders.filter((r) => r.list === "sell" && roleOk(r));
+  const groups = {};
+  for (const r of state.insiders.filter((x) => x.list === "buy" && x.cluster_buyers >= 2)) (groups[r.symbol] ??= []).push(r);
+  const cl = Object.entries(groups).sort((a, b) => b[1][0].cluster_value - a[1][0].cluster_value);
+  $("#clusters").innerHTML = !cl.length ? `<div class="empty">Nessun acquisto di gruppo nella finestra.</div>` :
+    `<div class="cards">${cl.map(([sym, rs]) => `<div class="card">
+      <div class="top"><span class="sym">${esc(sym)}</span><span class="tag acc">${rs[0].cluster_buyers} insider</span>
+        <span class="score">${usd(rs[0].cluster_value)}</span></div>
+      <div class="name">${esc(rs[0].issuer_name)}</div>
+      ${Object.values(rs.reduce((acc, r) => {          // one line per person: total and average price
+          const k = r.owner_name; const a = acc[k] ??= {name: r.owner_name, role: r.role, value: 0, shares: 0, n: 0};
+          a.value += r.value; a.shares += r.shares; a.n += 1; return acc; }, {}))
+        .sort((x, y) => y.value - x.value)
+        .map((a) => `<div class="top" style="justify-content:space-between;font-size:.8rem"><span>${esc(a.name)} · ${esc(a.role)}${a.n > 1 ? ` (${a.n} giorni)` : ""}</span>
+        <b style="font-family:var(--mono);font-weight:500">${usd(a.value)} @ ${fmt(a.value / a.shares)}</b></div>`).join("")}
+      <div class="foot">dal prezzo pagato (primo): <span class="${cls(rs[0].since_price)}">${pct(rs[0].since_price)}</span></div>
+    </div>`).join("")}</div>`;
+  const head = (h) => `<tr>${h.map((x) => `<th class="${x[1] || ""}">${x[0]}</th>`).join("")}</tr>`;
+  $("#buys").innerHTML = !buys.length ? `<div class="empty">Nessun acquisto sopra la soglia.</div>`
+    : state.iview === "cards" ? `<div class="cards">${buys.map(buyCard).join("")}</div>`
+    : `<div class="scroll"><table>${head([["Simbolo"], ["Insider"], ["Ruolo"], ["Valore", "n"], ["Azioni", "n"], ["Prezzo", "n"],
+        ["Dal prezzo", "n"], ["Comprato"], ["Depositato"], ["Società"]])}${buys.map((r) => `<tr><td><b>${esc(r.symbol)}</b></td>
+        <td>${esc(r.owner_name)}</td><td>${esc(r.role)}</td><td class="n">${usd(r.value)}</td><td class="n">${fmt(r.shares, 0)}</td>
+        <td class="n">${fmt(r.price)}${r.off_market ? " ⚠" : ""}</td><td class="n ${cls(r.since_price)}">${pct(r.since_price)}</td><td>${day(r.trade_date)}</td>
+        <td>${day(r.filed_date)}</td><td>${esc(r.issuer_name)}</td></tr>`).join("")}</table></div>`;
+  $("#sells").innerHTML = !sells.length ? `<div class="empty">Nessuna vendita sopra $1M.</div>` :
+    `<div class="scroll"><table>${head([["Simbolo"], ["Insider"], ["Ruolo"], ["Valore", "n"], ["Azioni", "n"], ["Prezzo", "n"],
+      ["10b5-1"], ["Venduto"], ["Società"]])}${sells.map((r) => `<tr><td><b>${esc(r.symbol)}</b></td><td>${esc(r.owner_name)}</td>
+      <td>${esc(r.role)}</td><td class="n">${usd(r.value)}</td><td class="n">${fmt(r.shares, 0)}</td><td class="n">${fmt(r.price)}</td>
+      <td>${r.plan_10b5_1 ? '<span class="tag">piano</span>' : ""}</td><td>${day(r.trade_date)}</td><td>${esc(r.issuer_name)}</td></tr>`).join("")}</table></div>`;
+}
+
+const ACT = {NEW: "nuova", ADD: "aumenta", REDUCE: "riduce", SOLD: "esce"};
+const qlabel = (iso) => iso ? "T" + (Math.floor((Number(iso.slice(5, 7)) - 1) / 3) + 1) + " " + iso.slice(0, 4) : "–";
+function moveCard(r, side) {
+  const net = r.n_opposite === 0 ? "tutti d'accordo" : r.n > r.n_opposite ? `${r.n_opposite} sul lato opposto` : `misto (${r.n_opposite} opposti)`;
+  return `<div class="card">
+    <div class="top"><span class="sym">${esc(r.ticker || r.key)}</span>
+      <span class="tag ${side === "buy" ? "beat" : "miss"}">${r.n} fondi ${side === "buy" ? "comprano" : "vendono"}</span>
+      <span class="score" title="variazione di peso sommata sui portafogli">${side === "buy" ? "+" : "−"}${fmt(r.sum_w * 100, 1)}%</span></div>
+    <div class="name">${esc(r.issuer)} · ${net}</div>
+    ${r.top.map((m) => `<div class="top" style="justify-content:space-between;font-size:.8rem">
+      <span>${esc(m.manager)} · ${ACT[m.action]}${m.action === "ADD" || m.action === "REDUCE" ? " " + pct(m.shares_change, 0) : ""}</span>
+      <b style="font-family:var(--mono);font-weight:500" class="${cls(m.delta_w)}">${pct(m.delta_w, 2)}</b></div>`).join("")}
+    ${r.n > 3 ? `<div class="foot">+${r.n - 3} altri fondi</div>` : ""}
+  </div>`;
+}
+function render13f() {
+  const d = state.f13;
+  if (!d) return;
+  $("#f13-fresh").textContent = d.quarter
+    ? `Trimestre al ${day(d.quarter)} (${qlabel(d.quarter)}) · ${d.funds.filter((f) => f.in_quarter).length}/${d.funds.length} fondi hanno già depositato`
+    : "Nessun dato 13F: premi «aggiorna» su questa scheda (la prima volta qualche minuto).";
+  $("#bought").innerHTML = d.bought.length ? `<div class="cards">${d.bought.map((r) => moveCard(r, "buy")).join("")}</div>` : `<div class="empty">Nessun titolo comprato da almeno 2 fondi.</div>`;
+  $("#sold").innerHTML = d.sold.length ? `<div class="cards">${d.sold.map((r) => moveCard(r, "sell")).join("")}</div>` : `<div class="empty">Nessun titolo venduto da almeno 2 fondi.</div>`;
+  const book = (x) => x == null ? "–" : x >= 1e9 ? "$" + fmt(x / 1e9, 1) + " mld" : "$" + fmt(x / 1e6, 0) + " mln";
+  $("#funds").innerHTML = `<div class="scroll"><table><tr><th>Fondo</th><th>Ultimo 13F</th><th>Stato</th><th class="n">Posizioni</th><th class="n">Valore</th></tr>
+    ${d.funds.map((f) => `<tr><td>${esc(f.manager)}</td><td>${qlabel(f.latest_period)}</td>
+      <td>${f.in_quarter ? (f.has_previous ? '<span class="tag beat">nel trimestre</span>' : '<span class="tag">senza trimestre precedente</span>') : '<span class="tag miss">fermo</span>'}</td>
+      <td class="n">${f.positions ?? "–"}</td><td class="n">${book(f.book_value)}</td></tr>`).join("")}</table></div>`;
+}
+
+async function load() {
+  const [s, c, ins, f13] = await Promise.all([fetch(BASE + "/api/screener").then((r) => r.json()),
+    fetch(BASE + "/api/calendar").then((r) => r.json()), fetch(BASE + "/api/insiders").then((r) => r.json()),
+    fetch(BASE + "/api/13f").then((r) => r.json())]);
+  state.f13 = f13;
+  state.screener = s.rows; state.calendar = c.rows; state.today = c.today; state.insiders = ins.rows;
+  $("#ins-fresh").textContent = ins.last_filed ? "Form 4 SEC depositati fino al " + day(ins.last_filed)
+    : "Nessun dato insider: premi «aggiorna» su questa scheda (la prima volta ~20-30 minuti).";
+  $("#fresh").textContent = s.as_of ? "aggiornato " + new Date(s.as_of).toLocaleString("it-IT", {day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"}) : "mai aggiornato";
+  renderScreener(); renderCalendar(); renderInsiders(); render13f();
+}
+
+function seg(id, key, after) {
+  $(id).addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    $(id).querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+    state[key] = b.dataset[key]; after();
+  });
+}
+seg("#tabs", "tab", () => {
+  $("#screener").hidden = $("#screener-ctl").hidden = state.tab !== "screener";
+  $("#calendar").hidden = $("#calendar-ctl").hidden = state.tab !== "calendar";
+  $("#insiders").hidden = $("#insiders-ctl").hidden = state.tab !== "insiders";
+  $("#f13").hidden = state.tab !== "13f";
+  $("#refresh").title = state.tab === "insiders"
+    ? "Scarica i Form 4 SEC dei giorni mancanti (qualche minuto; la prima volta ~20-30 minuti)"
+    : state.tab === "13f" ? "Scarica i 13F nuovi dei fondi seguiti (secondi; la prima volta qualche minuto)"
+    : "Scarica calendario, prezzi e sorprese EPS (~20 s, 1-5 min la prima volta)";
+});
+seg("#iview", "iview", renderInsiders);
+$("#minbuy").addEventListener("change", renderInsiders);
+$("#rolef").addEventListener("change", renderInsiders);
+seg("#view", "view", renderScreener);
+$("#sort").addEventListener("change", (e) => { state.sort = e.target.value; renderScreener(); });
+$("#showall").addEventListener("change", (e) => { state.showall = e.target.checked; renderScreener(); });
+$("#q").addEventListener("input", renderCalendar);
+$("#mincap").addEventListener("change", renderCalendar);
+
+async function poll() {
+  const s = await fetch(BASE + "/api/refresh/status").then((r) => r.json());
+  if (s.state === "running") { setTimeout(poll, 5000); return; }
+  $("#refresh").disabled = false; $("#refresh").textContent = "aggiorna";
+  $("#log").hidden = !s.output; $("#log").textContent = s.output;
+  await load();
+}
+$("#refresh").addEventListener("click", async () => {
+  $("#refresh").disabled = true; $("#refresh").textContent = "aggiorno…";
+  await fetch(BASE + "/api/refresh?job=" + ({insiders: "insiders", "13f": "13f"}[state.tab] || "earnings"), {method: "POST"});
+  setTimeout(poll, 3000);
+});
+load();
+</script>
+</body>
+</html>
