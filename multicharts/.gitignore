@@ -24,7 +24,7 @@ mc/**/*.mov
 mc/**/*.zip
 mc/**/*.exe
 mc/*.zip
-education/protocollo/9.TheBridge/DATA/
+protocollo/9.TheBridge/DATA/
 
 # Video dei corsi (troppo grandi per GitHub)
 *.mp4
@@ -40,10 +40,11 @@ __pycache__/
 .idea/
 # archivi e dati pesanti
 *.zip
-education/**/DATA/
+**/DATA/
 
 # slide estratte dai video del corso (si rigenerano con mc/docs/estrai_slide.sh)
-education/protocollo/_slide/
+protocollo/_slide/
 
 # lanciatore del Monte Carlo del corso: openpyxl installato localmente
-mc/docs/colab_corso/libs/
+
+docs/colab_corso/libs/
