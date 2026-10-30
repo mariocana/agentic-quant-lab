@@ -1,0 +1,7 @@
+# Build context for cloud/Dockerfile: keep it to src/ + cloud/
+data/
+.venv/
+dashboard/node_modules/
+dashboard/dist/
+**/__pycache__/
+.env
