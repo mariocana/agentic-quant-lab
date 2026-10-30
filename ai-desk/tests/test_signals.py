@@ -1,0 +1,105 @@
+from datetime import datetime, timedelta, timezone
+
+from desk.data.hl_market import Candle
+from desk.loop import time_stop_intents
+from desk.schemas import AccountState, AssetContext, Position, TargetPosition
+from desk.signals.rebalance import intents_from_targets
+from desk.signals.reversal import Reversal
+
+
+def series(path):
+    return [Candle(t=i, o=p, h=p, l=p, c=p, v=1.0) for i, p in enumerate(path)]
+
+
+def test_reversal_is_deterministic_and_dollar_neutral():
+    s = Reversal(universe_size=10, lookback=3, vol_window=5, quintile=0.2)
+    candles = {}
+    for k in range(10):
+        # asset k trends by (k+1)% per bar; the last (open) bar must be ignored
+        path = [100 * (1 + (k + 1) / 100) ** i for i in range(s.bars)] + [1e9]
+        candles[f"A{k}"] = series(path)
+    ctx = {a: AssetContext(asset=a, mark_px=1, mid_px=1, funding_hourly=0, open_interest=0,
+                           day_volume_usd=1e8, sz_decimals=2, max_leverage=10) for a in candles}
+    t1 = s.targets(candles, ctx, 10_000.0)
+    t2 = s.targets(candles, ctx, 10_000.0)
+    assert [x.model_dump(exclude={"created_at"}) for x in t1] == [x.model_dump(exclude={"created_at"}) for x in t2]
+    longs = [t for t in t1 if t.notional_usd > 0]
+    shorts = [t for t in t1 if t.notional_usd < 0]
+    assert {t.asset for t in longs} == {"A0", "A1"} and {t.asset for t in shorts} == {"A8", "A9"}
+    assert abs(sum(t.notional_usd for t in t1)) < 1e-6
+    assert abs(sum(abs(t.notional_usd) for t in t1) - 10_000 * s.gross_target) < 1e-6
+
+
+def test_reversal_needs_enough_names():
+    s = Reversal(lookback=3, vol_window=5)
+    assert s.targets({}, {}, 10_000.0) == []
+
+
+def test_rebalance_diffs_and_closes_first():
+    now = datetime.now(timezone.utc)
+    acc = AccountState(equity_usd=10_000, margin_used_usd=0, positions=[
+        Position(asset="BTC", notional_usd=500, size=5, entry_px=100, mark_px=100, unrealized_pnl_usd=0, strategy_id="r"),
+        Position(asset="ETH", notional_usd=-300, size=-3, entry_px=100, mark_px=100, unrealized_pnl_usd=0, strategy_id="r"),
+        Position(asset="SOL", notional_usd=200, size=2, entry_px=100, mark_px=100, unrealized_pnl_usd=0, strategy_id="r"),
+    ])
+    targets = [TargetPosition(asset="BTC", notional_usd=505, strategy_id="r", horizon_hours=24, reason="dust"),
+               TargetPosition(asset="ETH", notional_usd=-100, strategy_id="r", horizon_hours=24, reason="trim"),
+               TargetPosition(asset="AVAX", notional_usd=250, strategy_id="r", horizon_hours=24, reason="new")]
+    out = intents_from_targets(targets, acc, "r", marks={"AVAX": 10.0, "ETH": 100.0})
+    by = {i.asset: i for i in out}
+    assert "BTC" not in by                                         # 5 usd delta is dust
+    assert by["SOL"].reduce_only and by["SOL"].side == "sell" and by["SOL"].order_type == "limit_ioc"
+    assert by["ETH"].reduce_only and by["ETH"].side == "buy" and by["ETH"].notional_usd == 200
+    assert not by["AVAX"].reduce_only and abs(by["AVAX"].stop_px - 9.2) < 1e-9 and by["AVAX"].order_type == "limit_alo"
+    assert [i.reduce_only for i in out] == [True, True, False]
+
+
+def test_time_stop(limits):
+    now = datetime.now(timezone.utc)
+    acc = AccountState(equity_usd=10_000, margin_used_usd=0, positions=[
+        Position(asset="OLD", notional_usd=100, size=1, entry_px=100, mark_px=100, unrealized_pnl_usd=0,
+                 opened_at=now - timedelta(hours=30), horizon_hours=24, strategy_id="r"),
+        Position(asset="NEW", notional_usd=-100, size=-1, entry_px=100, mark_px=100, unrealized_pnl_usd=0,
+                 opened_at=now - timedelta(hours=10), horizon_hours=24, strategy_id="r"),
+    ])
+    out = time_stop_intents(acc, limits, now=now)
+    assert len(out) == 1 and out[0].asset == "OLD" and out[0].reduce_only and out[0].side == "sell"
+
+
+def _aged(now, ages_and_horizons):
+    """An account whose positions are the given (asset, hours held, horizon)."""
+    return AccountState(equity_usd=10_000, margin_used_usd=0, positions=[
+        Position(asset=a, notional_usd=100, size=1, entry_px=100, mark_px=100, unrealized_pnl_usd=0,
+                 opened_at=now - timedelta(hours=held), horizon_hours=horizon, strategy_id="r")
+        for a, held, horizon in ages_and_horizons])
+
+
+def test_time_stop_fires_at_the_horizon_and_not_a_cycle_later(limits):
+    """Seven days of daily cycles and the stop never fired once. A 120h position was
+    looked at when it was exactly 120.0h old, the two-hour grace put its deadline at
+    122h, and the next look came 24h after that: the horizon was 120 hours and the
+    position lived 144."""
+    now = datetime.now(timezone.utc)
+    out = time_stop_intents(_aged(now, [("VVV", 120.0, 120)]), limits, now=now)
+    assert [i.asset for i in out] == ["VVV"]
+
+
+def test_time_stop_takes_the_check_nearest_the_deadline(limits):
+    """Between two cycles the desk cannot act, so it closes at whichever of them is
+    nearer the deadline — with a daily cycle, anything inside twelve hours."""
+    now = datetime.now(timezone.utc)
+    assert limits["time_stop_check_interval_hours"] == 24, "the rest of this test reads off that"
+    early = time_stop_intents(_aged(now, [("WAIT", 107.0, 120)]), limits, now=now)
+    assert early == [], "13h to go: the next cycle is closer to the deadline than this one"
+    late = time_stop_intents(_aged(now, [("GO", 109.0, 120)]), limits, now=now)
+    assert [i.asset for i in late] == ["GO"], "11h to go: this cycle is the nearest one"
+
+
+def test_the_time_stop_closes_the_whole_position_reduce_only(limits):
+    now = datetime.now(timezone.utc)
+    acc = _aged(now, [("SHORT", 130.0, 120)])
+    acc.positions[0].size = -1
+    acc.positions[0].notional_usd = -100
+    out = time_stop_intents(acc, limits, now=now)
+    assert out[0].side == "buy" and out[0].reduce_only and out[0].notional_usd == 100
+    assert out[0].order_type == "limit_ioc" and "time stop" in out[0].reason

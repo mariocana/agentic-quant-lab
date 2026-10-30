@@ -1,0 +1,43 @@
+# Risk limits. Read by desk/risk/engine.py and nowhere else.
+# Every number here is enforced in code. There is no prompt that can change them.
+
+# Per-asset cap as a fraction of equity, by asset class.
+max_notional_pct_equity:
+  crypto: 0.05
+  hip3: 0.02          # thin builder-deployed books, isolated margin
+
+# Sum of |notional| over all positions, as a multiple of equity.
+max_gross_leverage: 3.0
+
+# Net beta-adjusted exposure (sum of signed notional * beta) / equity.
+# Altcoins are BTC with extra steps; this stops "five longs" from being one big long.
+max_net_beta_pct_equity: 1.0
+betas:
+  default_crypto: 1.0
+  default_hip3: 0.0   # equities/commodities: no crypto beta assumed
+  BTC: 1.0
+  ETH: 1.1
+
+# Daily P&L (vs. day-start equity, UTC day).
+daily_loss_freeze_pct: 0.03    # no new risk-increasing orders
+daily_loss_flatten_pct: 0.05   # close everything, halt
+
+# Drawdown from peak equity. Halts the desk; needs `desk unlock`.
+max_drawdown_pct: 0.15
+
+# Liquidity vs. size.
+max_pct_of_book_depth_10bps: 0.10   # intent notional <= 10% of depth within 10 bps of mid
+max_pct_of_day_volume: 0.001        # intent notional <= 0.1% of 24h notional volume
+
+# Funding (hourly rate, absolute). Paying more than this per hour -> size reduced by half;
+# more than 2x this -> reject.
+max_abs_funding_hourly: 0.0001      # 0.01% / h  (~88% / yr)
+
+# Minimum ticket: below this the fee floor and rounding dominate. Rejected, not reduced.
+min_notional_usd: 15.0
+
+# Time stop. A position is closed at the cycle nearest its horizon, which needs to
+# know how far apart the cycles are: a deadline less than half this interval away
+# closes now rather than waiting for a check that lands a whole cycle late.
+# Keep it equal to the desk's schedule (one cycle a day -> 24).
+time_stop_check_interval_hours: 24
