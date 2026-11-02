@@ -549,7 +549,8 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "fail"
+    "2": "fail",
+    "5": "fail"
    },
    "note": "**Causa di morte: A — edge assente.** Prima morte per causa A della pipeline: ORB, VaultBreak e First5 erano tutte B. Qui **l'unità di rischio passa** (trade peggiore **$498** per MGC contro $500 di soglia): il muro di @NQ non c'è, manca l'edge. Su 1.280 trade e 5 anni l'IC 95% dell'avg trade **contiene lo zero** in entrambe le varianti (A: −$2…+$122, t=1,89 · B: −$24…+$67, t=0,92). Dimostrato senza altri run che **nemmeno a costi zero** si arriva alla soglia: serve un edge lordo di $165/trade, ce ne sono $85 (A) e $46 (B). Lo Stage 1 sembrava promettente perché il 2026 è un regime anomalo: il range più largo di 4 mesi del 2026 (85,20 pt) **supera il più largo di 5 anni precedenti** (49,50 pt), e lo stop È il range, quindi l'edge scala con la volatilità mentre i costi no.",
    "log": [
@@ -572,6 +573,10 @@
     {
      "date": "2026-10-13",
      "text": "**Gate 2 fallito da entrambe le varianti. Cimitero, causa A — edge assente.** 1.280 trade per variante su 2020‑2024, tre criteri su otto passati da ciascuna. Il criterio che uccide è l'avg trade: **$60 (A) e $21 (B) contro $140**. Dimostrazione che chiude la questione senza spendere run: servendo $140 netti e costando $25 l'andata‑ritorno su GC, serve un edge **lordo** di $165 per trade; ce ne sono **$85 (A)** e **$46 (B)**. **Nemmeno azzerando i costi** si arriva alla soglia — una variante sposta dove cade l'edge fra WR e R:R, non lo moltiplica per due o quattro. Verificato anche `long only`, l'unico asse pre‑registrato che poteva cambiare il quadro: va nella direzione **opposta** (su oro il lato buono è lo short) e `short only` su A dà $79 contro $140 fallendo comunque tre criteri. **L'edge non è distinguibile da zero**: IC 95% dell'avg trade −$2…+$122 per A (t=1,89) e −$24…+$67 per B (t=0,92); per portare B a t=2 servirebbero 6.085 trade, ventiquattro anni. **Prima morte per causa A**: l'unità di rischio **passa** (trade peggiore $498 per MGC contro $500). Il muro che ha ucciso le tre strategie @NQ non c'è; manca l'edge. **Correzione a quanto avevo scritto dopo lo Stage 1**: avevo concluso che il WR 34% della ricerca «non si riproduce» (57,7% misurato) e che quindi allo Stage 2 andassero entrambe le varianti e non solo la B come pre‑registrato. Su 5 anni il WR della variante A è **42,6%**, molto più vicino al 34% della ricerca. La pre‑registrazione era giusta e la mia revisione sbagliata: avevo scavalcato un giudizio pre‑registrato sulla base di 78 trade e quattro mesi. Nota dati: **@GC è back‑adjusted** (prezzo medio 2020 a 2.459 contro un oro reale fra $1.500 e $2.070). Non invalida lo Stage 2, perché l'aggiustamento additivo preserva differenze, range e P&L — ma rende inaffidabile **qualunque logica in percentuale di prezzo su @GC**, che è esattamente il blocco mai rimosso di DriftPullback."
+    },
+    {
+     "date": "2026-11-02",
+     "text": "**Gate marginale: non entra, cimitero definitivo.** OOS 2025-2026: 450 trade, avg $389, t 2,20 (IS $60, t 1,89), trainato dal rialzo dell'oro. Nel book con DPB +7,4 pp iid e +7,0 contiguo, ma il criterio 3 fallisce: giornata peggiore −$2.301 a 1 micro, perché lo stop = range asiatico arriva a $22.895 sul contratto intero (02/02/2026), più dell'MLL."
     }
    ],
    "next": "Chiusa. Cimitero, causa A."

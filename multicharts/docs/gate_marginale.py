@@ -11,8 +11,14 @@ l'effetto della candidata e non del campionamento. I giorni sono l'unione dei gi
 trading; dentro il giorno i trade del book vengono prima di quelli della candidata.
 
 Uso:
-    python3 mc/docs/gate_marginale.py --book DPB_S5_OOS.xlsx:2 --cand ORB_S5_OOS.xlsx:1
+    python3 docs/gate_marginale.py --book DPB_S5_OOS.xlsx:2 --cand ORB_S5_OOS.xlsx:1
     (--book si ripete per un book di piu strategie)
+
+Strumenti diversi da NQ: file:micro:costo_report:costo_micro, i costi andata e ritorno in $.
+costo_report e' quello gia' dentro il P&L del report full-size, costo_micro quello vero del
+micro. Es. GC a 12.5$/lato e MGC: --cand GAR_S5_OOS.xlsx:1:25:2.60
+
+--dal AAAA-MM-GG scarta i giorni prima dell'OOS (il chart parte qualche giorno prima).
 """
 import sys, os, random, math, statistics as st
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -23,9 +29,18 @@ SEED       = 20261029
 SOGLIA_IID = 2.0      # punti percentuali, pre-registrata il 29/10/2026
 
 
+DAL = None
+
+
 def carica(spec):
-    path, micro = spec.rsplit(':', 1)
-    return os.path.basename(path), dict(ps.per_giorno(path, ps.COMM_MICRO)[1]), float(micro)
+    path, micro, *costi = spec.split(':')
+    full, c_micro = (float(costi[0]), float(costi[1])) if costi else (ps.COMM_FULL, ps.COMM_MICRO)
+    nq_full, ps.COMM_FULL = ps.COMM_FULL, full    # per_giorno toglie COMM_FULL dal report
+    gg = ps.per_giorno(path, c_micro)[1]
+    ps.COMM_FULL = nq_full
+    if DAL:
+        gg = [(d, t) for d, t in gg if str(d) >= DAL]
+    return os.path.basename(path), dict(gg), float(micro)
 
 
 def giorni_book(parti, calendario):
@@ -46,6 +61,7 @@ def contiguo(seq, gmax):
 
 
 def main():
+    global DAL
     ps.usa_prop(ps.leggi_prop()[ps.PROP_DEFAULT])   # prima di caricare: fissa il costo per micro
     arg = sys.argv[1:]
     book, cand = [], None
@@ -55,6 +71,8 @@ def main():
             book.append(carica(arg.pop(0)))
         elif k == '--cand':
             cand = carica(arg.pop(0))
+        elif k == '--dal':
+            DAL = arg.pop(0)
     if not book or cand is None:
         raise SystemExit(__doc__)
     gmax = ps.PROP['giorni_max'] or ps.GUARDIA_GG

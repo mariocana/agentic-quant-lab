@@ -193,3 +193,4 @@ OOS asimmetrico: fallire conta pieno, passare vale solo come prova dal vivo.
 |---|---|---|---|---|---|---|
 | 29/10 | VaultBreak base (prova dello script) | −1,2 | −5,6 | −$1.098 | −$0,19 | non entra |
 | 29/10 | Trend Following (Unger) B su NQ, candidata 1 | −3,8 | −7,5 | −$998 | +$6,02 | **non entra**: cimitero |
+| 02/11 | Gold Asian Range A (MGC), candidata 2 | +7,4 | +7,0 | −$2.301 | +$38,95 | **non entra** (criterio 3): un trade da −$2.290 per micro, più dell'MLL. Cimitero |

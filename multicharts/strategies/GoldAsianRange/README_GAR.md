@@ -56,3 +56,32 @@ il 24/10 su Counter Trend). Il codice e la spec assumono che "Exchange" sia CT; 
 in ora di New York, l'IS ha misurato range 19:45–00:00 e uscita alle 10:00 **di New York**, un'ora
 prima della spec. L'OOS replica il chart dell'IS, qualunque fosse: si testa la regola misurata,
 non quella scritta.
+
+### Esito (02/11/2026): **non entra. Cimitero, definitivo.**
+
+Report `GAR_S5_OOS_A_2025-2026.xlsx` (chart dal 23/12/2024 al 30/10/2026; nel verdetto i trade
+del 2024 sono tolti). Meccanica uguale all'IS: stessi input, ultima barra alle 17:00 come
+nell'IS, ingressi fra 00:00 e 09:59, 338 uscite su 456 alle 10:15.
+
+| | n | avg | t | WR | trade peggiore | per anno |
+|---|---|---|---|---|---|---|
+| IS 2020–2024 | 1.280 | +$60 | 1,89 | 42,6% | −$4.975 | |
+| OOS dal 2025 | 450 | **+$389** | **2,20** | 50,7% | **−$22.895** | 2025 +$61.355 · 2026 +$114.385 |
+
+L'edge fuori campione c'è ed è più forte che nell'IS: il rialzo dell'oro 2025–2026 (da ~2.600 a
+oltre 5.000). Ma lo stop è l'ampiezza del range asiatico, che col prezzo e la volatilità del 2026
+è esploso: 10 trade perdono più di $5.000 sul contratto intero, il peggiore (02/02/2026, short
+4.729,6 → stop 4.958,3) **$22.895 = $2.290 per micro, più dell'intero MLL**.
+
+`gate_marginale.py --dal 2025-01-01`, book DPB a 2 micro, GAR a 1 MGC, costi GC $25 nel
+report e $2,60 per MGC:
+
+| | iid | contiguo |
+|---|---|---|
+| book | 41,3% | 57,0% |
+| book + GAR A | 48,7% | 64,1% |
+| Δ | **+7,4 pp** | **+7,0 pp** |
+
+Criteri 1, 2 e 4 ✅; **3 ❌: giornata peggiore −$2.301 contro −$1.200 (DLL)**. Per le regole del
+gate non si rigira: un tetto allo stop (`MaxRangePts`) sarebbe una variante nuova scelta dopo
+aver visto l'OOS.
