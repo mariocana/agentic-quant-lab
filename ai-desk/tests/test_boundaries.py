@@ -26,6 +26,24 @@ def test_risk_and_execution_never_import_llm_code():
             assert not bad, f"{f} imports {bad}"
 
 
+# The rest of the lab. The desk is the only package that holds money, so it must run
+# with nothing else installed, and nothing written by the factory reaches it except
+# through a merged strategy file.
+LAB_PACKAGES = {"alphaquant", "quantlake", "factory"}
+
+
+def test_the_desk_imports_nothing_from_the_lab():
+    """One repository instead of three made this a rule instead of a wall: separate
+    repos could not import each other by construction. The direction is lab -> desk,
+    never the other way, and no LLM SDK anywhere in the desk either."""
+    forbidden = LAB_PACKAGES | (LLM_MODULES - {"desk.research"})
+    files = list(ROOT.rglob("*.py")) + list((ROOT.parent / "scripts").rglob("*.py"))
+    assert files, "found no source to check"
+    for f in files:
+        bad = {m for m in imports_of(f) if any(m == x or m.startswith(x + ".") for x in forbidden)}
+        assert not bad, f"{f.relative_to(ROOT.parent)} imports {bad}: the desk must not depend on the lab"
+
+
 def test_research_never_imports_execution():
     for f in (ROOT / "research").rglob("*.py"):
         bad = {m for m in imports_of(f) if m.startswith("desk.execution")}
