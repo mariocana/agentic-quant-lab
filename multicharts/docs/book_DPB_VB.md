@@ -2,7 +2,7 @@
 
 **Verdetto: VaultBreak nel book abbassa il pass rate fuori campione.** DPB da sola: 42,2% (iid) e 59,1% (contiguo). Con 1 micro di VB: 40,8% e 53,5%. Con 2 micro: 39,6% e 49,7%.
 
-Script: [`book_sim.py`](book_sim.py). Regole: `prop_firms.ini`, sezione `lucidflex_50k` (MLL $2.000 trailing EOD, DLL $1.200, consistency 40%). Costo: $1 per micro andata e ritorno, misurato sulla dashboard il 27/10.
+Script: [`book_sim.py`](book_sim.py) (dal 02/11/2026 generale, per N strategie: `--strat DPB=… --strat VB=… --micro 2/1,2/2`). Regole: `prop_firms.ini`, sezione `lucidflex_50k` (MLL $2.000 trailing EOD, DLL $1.200, consistency 40%). Costo: $1 per micro andata e ritorno, misurato sulla dashboard il 27/10.
 
 Report usati:
 - **IS:** `DPB_S2_IS_mode0` + `VB_Stage2_IS-intero_costi-onesti`
