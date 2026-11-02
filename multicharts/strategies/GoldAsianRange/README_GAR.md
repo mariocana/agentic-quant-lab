@@ -122,3 +122,28 @@ fa esattamente quello di prima. Con `ShowLog 1` la riga `GAR RNG` stampa anche `
   per micro** (era $498), DD chiusi $14.870, cinque anni su cinque positivi.
 
 Prossimo: punto 2, il 2025–2026 nel gate marginale (OOS visto).
+
+### Punto 2, 2025–2026 con `MaxRangePct 1` (02/11/2026): **passa il gate marginale — OOS visto**
+
+`GAR_S5_OOS_A_pct1_2025-2026.xlsx` (chart dal 23/12/2024 al 02/11/2026), `ShowLog 1`.
+- **Meccanica ✅**: dal 2025, 347 trade; 346 presenti identici fra i 450 del run senza filtro,
+  più quello del 02/11/2026 (oltre la fine del run vecchio). Il filtro toglie 104 giorni
+  (44 perdenti, +$13.840 in tutto). Nel log ogni `armed=FALSE` ha `pct=` ≥ 1,00 e nessun giorno
+  armato supera 0,99.
+- 346 trade fino al 30/10: avg $467, t 2,51, WR 49%, trade peggiore **−$4.765 = $477 per micro**
+  (era $2.290), 2025 +$47.725, 2026 +$119.220.
+
+`gate_marginale.py --dal 2025-01-01`, book DPB a 2 micro, GAR a 1 MGC ($25 / $2,60), trade fino
+al 30/10 per confrontarlo col run senza filtro:
+
+| | iid | contiguo |
+|---|---|---|
+| book | 41,7% | 57,2% |
+| book + GAR pct1 | 50,7% | 72,9% |
+| Δ | **+9,0 pp** | **+15,6 pp** |
+
+Quattro criteri su quattro; giornata peggiore −$1.034. Con il trade del 02/11 incluso: +9,5 /
++15,6. **Non è un passaggio pulito**: la soglia è stata scelta dopo aver visto questo periodo.
+Il trade peggiore resta a ridosso dei $500 per micro.
+
+Prossimo: punto 3, forward in paper accanto a DPB per almeno 2 settimane.

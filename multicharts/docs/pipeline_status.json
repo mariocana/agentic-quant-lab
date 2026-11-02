@@ -581,6 +581,10 @@
     {
      "date": "2026-11-02",
      "text": "**Variante `MaxRangePct 1`** (salta i giorni con range > 1% del prezzo, scelta dopo aver visto l'OOS): IS 2020-2024 1.255 trade, sottoinsieme esatto dei 1.280 originali, t 2,24, trade peggiore $243 per micro. Passa la via B. Prossimo: 2025-2026 nel gate marginale, a verbale come OOS visto, poi forward."
+    },
+    {
+     "date": "2026-11-02",
+     "text": "**pct1 nel gate marginale (OOS visto): passa i quattro criteri**, +9,0 pp iid e +15,6 contiguo con DPB 2 micro, giornata peggiore −$1.034. 2025-2026: 346 trade, avg $467, t 2,51, trade peggiore $477 per micro. Non vale come OOS pulito: prossimo il forward in paper accanto a DPB, almeno 2 settimane."
     }
    ],
    "next": "Chiusa. Cimitero, causa A."
