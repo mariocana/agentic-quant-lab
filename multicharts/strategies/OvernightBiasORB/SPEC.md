@@ -88,3 +88,11 @@ selezionati per la pubblicazione, ci aspettiamo **t fra 1 e 2,5**.
 1 min, IOG off, Max bars back 250. Lead-in: il chart parte **2 mesi** prima della finestra
 valutata (servono 15 giorni di ATR e 20 di media dell'OR). Finestra con `TradeStartEL` /
 `TradeEndEL`: IS `1200101`–`1241231`.
+
+## Pre-registrazione
+- registrata: 98e1458   # blocco aggiunto il 02/11/2026 per /lab; i valori sono quelli scritti sopra il 29/10
+- via: B            # WR e R:R della via A esclusi per costruzione (R:R 3)
+- k-varianti: 1     # solo il default dell'autore, TakeProfitRR 3
+- attesa: t IS fra 1 e 2,5 (con i numeri dell'autore sarebbe >= 3, ma sono selezionati per la pubblicazione)
+- kill: fase 2 t <= 0,5 o trade peggiore > $500 per micro; fase 3 gate marginale; verdetto OOS asimmetrico, forward pulito dal 1/9/2026
+- costi: $7,50 per lato nel campo commissione (slippage incluso), slippage 0

@@ -76,3 +76,11 @@ t solo se toglie più perdite che guadagni.
 
 @NQ **1 min**, sessione **Globex 24h** (17:00–16:00 CT), timezone Exchange, volume da trade,
 Bar Magnifier off (1 min è già la risoluzione minima), IOG off, Max bars back ≥ 42.
+
+## Pre-registrazione
+- registrata: 811259f   # blocco aggiunto il 02/11/2026 per /lab; i valori sono quelli scritti sopra il 29/10
+- via: A|B          # via A; se non passa, via B
+- k-varianti: 4     # base, filtrata, StopMode 2, v4 con ADX
+- attesa: t IS fra 0,5 e 1,5; il gate toglie trade a una base che aveva t 0,87
+- kill: fase 2 via A t < 2 o WR < 55% o R:R fuori 0,5-1, e via B t <= 1,03 o trade peggiore > $500 per micro; fase 3 t < 1,3 (via A) o gate marginale (via B); verdetto OOS asimmetrico, forward pulito dal 3/7/2026
+- costi: $7,50 per lato nel campo commissione (slippage incluso), slippage 0
