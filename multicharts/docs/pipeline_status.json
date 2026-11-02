@@ -1008,7 +1008,8 @@
      "text": "**Stage 0.** Spec `SPEC_ADX.md`, gate ADX aggiunto al codice. Prossimo: fase 1 (100 giorni) con il profilo v4."
     }
    ],
-   "next": "Fase 1: 100 giorni, @NQ 1 min Globex, profilo v4 (header di `VWAP_Pullback.txt`), `ShowLog 1` per controllare il gate e la distanza dello stop."
+   "next": "Fase 1: 100 giorni, @NQ 1 min Globex, profilo v4 (header di `VWAP_Pullback.txt`), `ShowLog 1` per controllare il gate e la distanza dello stop.",
+   "spec": "strategies/VWAP_Pullback/SPEC_ADX.md"
   },
   {
    "name": "Overnight Bias ORB (corso)",
@@ -1025,7 +1026,8 @@
      "text": "**Stage 0.** Codice `OvernightBiasORB.txt` (logica dell'autore, orari in CT) e spec. Prossimo: fase 1."
     }
    ],
-   "next": "Fase 1: 100 giorni, @NQ 15 min Globex, lead-in di 2 mesi, salvato in MC come `Mario_OvernightBiasORB`."
+   "next": "Fase 1: 100 giorni, @NQ 15 min Globex, lead-in di 2 mesi, salvato in MC come `Mario_OvernightBiasORB`.",
+   "spec": "strategies/OvernightBiasORB/SPEC.md"
   }
  ],
  "blockers": [
