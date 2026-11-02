@@ -12,7 +12,16 @@ Regole controllate (docs/factory_trading.md, §3):
   - il report non e' piu' vecchio del commit della SPEC;
   - l'OOS si gira una volta sola; un OOS gia' visto rende il verdetto asimmetrico;
   - la via B usa la soglia t del massimo di k strategie a edge zero;
-  - una riga NO nei controlli preliminari rende il report invalido.
+  - una riga NO nei controlli preliminari rende il report invalido;
+  - Stage 1: controlli meccanici sulla List of Trades (uscite, orari, trade al giorno,
+    overnight, scaling x10), l'esito e' quello dei controlli.
+
+Il k conta le VARIANTI, non i file: i report IS della cartella si raggruppano togliendo i
+suffissi di rerun (meta1/meta2, costi-onesti, IS-intero, anni). La SPEC puo' dichiarare
+`via: A|B` (via A, altrimenti via B). Un blocco "## Pre-registrazione" aggiunto dopo, a una
+SPEC che non lo aveva, si dichiara con `registrata: <sha>`: lab.py verifica che dopo quel
+commit siano state solo AGGIUNTE righe nel blocco, e usa la data di <sha>.
+La data del report e' l'Export Time scritto da MultiCharts nel foglio Settings.
 
 Fasi: s1 (meccanica, 100 giorni), is (2020-2024), oos (2025->oggi), book (gate marginale).
 
@@ -24,6 +33,8 @@ Uso:
     python3 docs/lab.py prereg strategies/X/SPEC.md
     python3 docs/lab.py nuova "Nome" strategies/X/SPEC.md --famiglia "..." --strumento "..."
     python3 docs/lab.py collega "Nome gia' in pipeline_status" strategies/X/SPEC.md
+    python3 docs/lab.py giudica strategies/X/SPEC.md s1 strategies/X/reports/X_S1_100gg.xlsx \\
+        --x10 strategies/X/reports/X_S1_100gg_x10.xlsx --entrata 1030-1430 --max-giorno 3 --flat
     python3 docs/lab.py giudica strategies/X/SPEC.md is strategies/X/reports/X_IS.xlsx
     python3 docs/lab.py giudica strategies/X/SPEC.md book strategies/X/reports/X_OOS.xlsx \\
         --micro 1 --book strategies/DriftPullback/reports/DPB_S5_OOS_2025-2026.xlsx:2
@@ -55,6 +66,7 @@ PROSSIMO = {
     ('book', 'non passa'): 'Chiusa. Cimitero (gate marginale).',
 }
 VIA_B_MIN_T = 0.5
+FUSO_ORE = 14               # margine sull'Export Time, scritto nell'ora locale del PC che esporta
 VIA_B_PEGGIORE = 500.0      # trade peggiore per micro, in $
 
 
@@ -78,9 +90,12 @@ def leggi_spec(spec):
     if not os.path.isfile(spec):
         fail('SPEC non trovata: %s' % spec)
     testo = open(spec, encoding='utf8').read()
-    via = re.search(r'^\s*[-*]?\s*via:\s*([AB])\b', testo, re.M | re.I)
+    via = re.search(r'^\s*[-*]?\s*via:\s*(A\s*\|\s*B|[AB])\b', testo, re.M | re.I)
     k = re.search(r'^\s*[-*]?\s*k-varianti:\s*(\d+)', testo, re.M | re.I)
-    return {'via': via.group(1).upper() if via else 'A', 'k': int(k.group(1)) if k else 1,
+    reg = re.search(r'^\s*[-*]?\s*registrata:\s*([0-9a-f]{7,40})\b', testo, re.M | re.I)
+    v = re.sub(r'\s', '', via.group(1).upper()) if via else 'A'
+    return {'via': 'A|B' if v == 'A|B' else v, 'k': int(k.group(1)) if k else 1,
+            'registrata': reg.group(1) if reg else None,
             'blocco': bool(re.search(r'^##\s*Pre-registrazione', testo, re.M | re.I))}
 
 
@@ -95,6 +110,57 @@ def commit_spec(spec):
         fail('%s ha modifiche non committate: o si committano prima del run, o e\' una variante nuova' % rel(spec))
     sha, quando = out.split(' ', 1)
     return sha, quando
+
+
+def data_preregistrazione(spec, info, sha, quando):
+    """(data, nota) della pre-registrazione. Con `registrata: <sha>` vale la data di <sha>, ma solo
+    se dopo quel commit la SPEC ha avuto soltanto righe AGGIUNTE dentro il blocco Pre-registrazione."""
+    if not info['registrata']:
+        return quando, None
+    base = info['registrata']
+    code, out = git('log', '-1', '--format=%H %cI', base)
+    if code or not out:
+        fail('registrata: %s non e\' un commit di questo repo' % base)
+    base_sha, base_data = out.split(' ', 1)
+    code, nomi = git('log', '--follow', '--format=%H', '--', rel(spec))
+    if base_sha not in nomi.split():
+        fail('registrata: %s non ha toccato %s' % (base[:10], rel(spec)))
+    code, vecchio = git('show', '%s:%s' % (base_sha, path_al_commit(spec, base_sha)))
+    if code:
+        fail('registrata: non trovo %s al commit %s' % (rel(spec), base[:10]))
+    nuovo = open(spec, encoding='utf8').read()
+    import difflib
+    blocco, dentro, tolte, fuori = re.compile(r'^##\s*Pre-registrazione', re.I), False, [], []
+    righe_nuove = nuovo.split('\n')
+    in_blocco = []
+    for r in righe_nuove:
+        if r.startswith('## '):
+            dentro = bool(blocco.match(r))
+        in_blocco.append(dentro or bool(blocco.match(r)))
+    for op in difflib.SequenceMatcher(None, vecchio.split('\n'), righe_nuove, autojunk=False).get_opcodes():
+        tag, i1, i2, j1, j2 = op
+        if tag in ('replace', 'delete'):
+            tolte.append(i1 + 1)
+        if tag in ('replace', 'insert') and not all(in_blocco[j] or not righe_nuove[j].strip() for j in range(j1, j2)):
+            fuori.append(j1 + 1)
+    if tolte or fuori:
+        fail('registrata: dopo %s la SPEC non ha solo aggiunto il blocco Pre-registrazione '
+             '(righe cambiate o tolte: %s; aggiunte fuori dal blocco: %s). E\' una variante nuova'
+             % (base[:10], tolte[:5] or '-', fuori[:5] or '-'))
+    return base_data, ('blocco Pre-registrazione aggiunto dopo %s: via e k si leggono anche nella prosa '
+                       'della SPEC a quel commit' % base[:10])
+
+
+def path_al_commit(spec, sha):
+    """Il percorso della SPEC al commit sha (il repo e' stato riorganizzato: git --follow)."""
+    code, out = git('log', '--follow', '--name-only', '--format=@%H', '--', rel(spec))
+    cur = None
+    for riga in out.splitlines():
+        if riga.startswith('@'):
+            cur = riga[1:]
+        elif riga.strip() and cur == sha:
+            return riga.strip()
+    return rel(spec)
 
 
 def cartella_verdetti(spec):
@@ -134,10 +200,13 @@ def verdetti_cartella(spec):
 
 
 IS_REPORT = re.compile(r'(^|[_-])(S2|S4|Stage2|IS)([_-]|\.xlsx$)', re.I)
+# parti del nome che indicano un rerun della stessa variante, non una variante nuova
+RERUN = re.compile(r'(^|[_-])(S2|S4|Stage2|IS|IS-intero|intero|meta\d|costi-onesti|range-corto|'
+                   r'non-valido|\d{4}(-\d{4})?)(?=[_-]|$)', re.I)
 
 
 def report_is_passati(spec):
-    """Report IS gia' girati nella cartella (anche prima di /lab): contano nel k della famiglia."""
+    """Report IS gia' girati nella cartella (anche prima di /lab)."""
     d = os.path.join(os.path.dirname(os.path.abspath(spec)), 'reports')
     if not os.path.isdir(d):
         return []
@@ -145,10 +214,27 @@ def report_is_passati(spec):
                   and not re.search(r'oos|100gg|(^|_)S1_', f, re.I) and not re.search(r'_x\d+\.xlsx$', f, re.I))
 
 
+def variante_di(f):
+    """Il nome della variante di un report: il nome senza i suffissi di rerun."""
+    base = os.path.splitext(f)[0]
+    prima = None
+    while prima != base:
+        prima, base = base, RERUN.sub('', base)
+    return re.sub(r'[_-]+', '_', base).strip('_').lower() or f.lower()
+
+
+def varianti_is_passate(spec):
+    """{variante: [report]}: contano nel k della famiglia, una volta per variante."""
+    out = {}
+    for f in report_is_passati(spec):
+        out.setdefault(variante_di(f), []).append(f)
+    return out
+
+
 def k_effettivo(spec, info, v):
-    """Il piu' alto fra k dichiarato, IS giudicati da /lab e report IS gia' nella cartella."""
+    """Il piu' alto fra k dichiarato, IS giudicati da /lab e varianti IS gia' nella cartella."""
     giudicati = {s for (s, f) in v if f == 'is'} | {stem(spec)}
-    return max(info['k'], len(giudicati), len(report_is_passati(spec)))
+    return max(info['k'], len(giudicati), len(varianti_is_passate(spec)))
 
 
 def soglia_k(k):
@@ -175,7 +261,7 @@ def salva_status(d):
     d['updated'] = dt.date.today().isoformat()
     tmp = STATUS + '.tmp'
     with open(tmp, 'w', encoding='utf8') as f:
-        json.dump(d, f, ensure_ascii=False, indent=2)
+        json.dump(d, f, ensure_ascii=False, indent=1)
         f.write('\n')
     os.replace(tmp, STATUS)
 
@@ -193,20 +279,23 @@ def cmd_prereg(a):
     info = leggi_spec(a.spec)
     sha, quando = commit_spec(a.spec)
     v = verdetti_cartella(a.spec)
-    passati = report_is_passati(a.spec)
+    data_reg, nota_reg = data_preregistrazione(a.spec, info, sha, quando)
+    passati = varianti_is_passate(a.spec)
     k = k_effettivo(a.spec, info, v)
-    print(json.dumps({'spec': rel(a.spec), 'commit': sha[:10], 'data': quando, 'via': info['via'],
-                      'k_dichiarato': info['k'], 'k_effettivo': k, 'report_is_nella_cartella': len(passati),
+    print(json.dumps({'spec': rel(a.spec), 'commit': sha[:10], 'data': data_reg, 'via': info['via'],
+                      'k_dichiarato': info['k'], 'k_effettivo': k, 'varianti_is_nella_cartella': len(passati),
                       'soglia_t_via_B': round(max(VIA_B_MIN_T, soglia_k(k)), 2),
                       'blocco_pre_registrazione': info['blocco']}, ensure_ascii=False))
+    if nota_reg:
+        print('NOTA: ' + nota_reg)
     if not info['blocco']:
         print('ATTENZIONE: manca il blocco "## Pre-registrazione" (via, k-varianti, attesa, kill)')
     if info['k'] < k:
-        print('ATTENZIONE: k-varianti dichiarato %d, ma nella cartella ci sono gia\' %d report IS e %d '
+        print('ATTENZIONE: k-varianti dichiarato %d, ma nella cartella ci sono gia\' %d varianti IS e %d '
               'giudizi IS: per la via B vale k = %d' % (info['k'], len(passati),
                                                         len({s for (s, f) in v if f == 'is'}), k))
-        for f in passati:
-            print('  - ' + f)
+        for var, files in sorted(passati.items()):
+            print('  - %s: %s' % (var, ', '.join(files)))
 
 
 def cmd_nuova(a):
@@ -236,6 +325,27 @@ def cmd_collega(a):
     print('collegata: %s -> %s' % (a.nome, rel(a.spec)))
 
 
+def data_report(report):
+    """Quando il report e' stato prodotto: l'Export Time di MultiCharts (foglio Settings), se c'e'.
+    Altrimenti il primo commit del file, poi la data del file (che un cp senza -p rinnova)."""
+    import check_report as cr, zipfile
+    try:
+        z = zipfile.ZipFile(report)
+        n = cr._find(z, 'Settings')
+        for r in (cr._sheet(z, n) if n else []):
+            if len(r) >= 2 and r[0].strip() == 'Export Time':
+                # ora locale del PC che ha esportato (il VPS e' a Chicago): fuso ignoto, si usa
+                # come se fosse UTC e il confronto tiene un margine di FUSO_ORE
+                t = dt.datetime(1899, 12, 30) + dt.timedelta(days=float(r[1]))
+                return t.replace(tzinfo=dt.timezone.utc), 'Export Time di MultiCharts, fuso ignoto'
+    except (zipfile.BadZipFile, ValueError, KeyError):
+        pass
+    code, primo = git('log', '--diff-filter=A', '--follow', '--format=%cI', '--', rel(report))
+    if primo:
+        return dt.datetime.fromisoformat(primo.splitlines()[-1]), 'commit del report'
+    return dt.datetime.fromtimestamp(os.path.getmtime(report)).astimezone(), 'data del file'
+
+
 def gira_check_report(report, fase_cr, dd_is):
     import check_report as cr
     buf = io.StringIO()
@@ -250,6 +360,107 @@ def gira_check_report(report, fase_cr, dd_is):
     if fase_cr:
         esito = 'passa' if re.search(r'VERDETTO: PASSA', testo) else 'non passa'
     return testo, metr, prelim, esito
+
+
+# ------------------------------------------------------------------ Stage 1
+
+def trade_s1(report):
+    """I trade della List of Trades: ingresso, uscita, lato, nome dell'uscita, punti, P&L, contratti."""
+    import check_report as cr, zipfile
+    z = zipfile.ZipFile(report)
+    righe = cr._sheet(z, cr._find(z, 'List of Trades'))
+    h = next(i for i, r in enumerate(righe[:10]) if any(c.strip() == 'Profit ($)' for c in r))
+    col = {c.strip(): j for j, c in enumerate(righe[h])}
+    cella = lambda r, k: r[col[k]].strip() if col.get(k) is not None and col[k] < len(r) else ''
+    quando = lambda r: (dt.datetime(1899, 12, 30) + dt.timedelta(days=float(cella(r, 'Date')))
+                        + dt.timedelta(seconds=30)).replace(second=0, microsecond=0)
+    out, corpo = [], righe[h + 1:]
+    for i, r in enumerate(corpo):
+        if not cella(r, 'Trade #') or i + 1 >= len(corpo):
+            continue
+        x = corpo[i + 1]
+        lato = 1 if 'long' in cella(r, 'Type').lower() else -1
+        ep, xp = float(cella(r, 'Price')), float(cella(x, 'Price'))
+        out.append({'in': quando(r), 'out': quando(x), 'lato': lato, 'uscita': cella(x, 'Signal'),
+                    'punti': round((xp - ep) * lato, 2), 'pl': float(cella(r, 'Profit ($)')),
+                    'cts': cella(r, 'Contracts')})
+    return out
+
+
+def controlli_s1(report, x10, entrata, max_giorno, flat):
+    """Controlli meccanici dello Stage 1. Ritorna (testo, esito, metriche)."""
+    T = trade_s1(report)
+    if not T:
+        fail('s1: nessun trade nella List of Trades di %s' % rel(report))
+    righe, bug = ['', 'STAGE 1 — controlli meccanici sulla List of Trades (%d trade, %s -> %s)'
+                  % (len(T), T[0]['in'].date(), T[-1]['in'].date())], []
+
+    def riga(ok, testo):
+        righe.append('  %s %s' % ({True: 'OK  ', False: 'NO  ', None: '?   '}[ok], testo))
+        if ok is False:
+            bug.append(testo)
+
+    giorni = (T[-1]['in'].date() - T[0]['in'].date()).days
+    riga(None if giorni >= 90 else False, 'periodo: %d giorni di calendario fra il primo e l\'ultimo trade (checklist: ~100)' % giorni)
+    cts = sorted({t['cts'] for t in T})
+    riga(len(cts) == 1, 'contratti per trade: %s' % ', '.join(cts))
+
+    righe.append('  uscite, con i punti realizzati (confrontali con stop e target della SPEC):')
+    per = {}
+    for t in T:
+        per.setdefault(t['uscita'], []).append(t['punti'])
+    for nome, pts in sorted(per.items(), key=lambda kv: -len(kv[1])):
+        distinti = sorted(set(pts))
+        valori = ', '.join('%g' % p for p in distinti) if len(distinti) <= 6 else \
+            'da %g a %g (%d valori)' % (distinti[0], distinti[-1], len(distinti))
+        righe.append('       %-16s %4d trade   punti: %s' % (nome, len(pts), valori))
+    righe.append('    (uno stop o un target fisso deve avere un solo valore; con slippage negli stop '
+                 'il valore e\' lo stop piu\' lo slippage)')
+
+    orari = {}
+    for t in T:
+        orari[t['in'].strftime('%H:%M')] = orari.get(t['in'].strftime('%H:%M'), 0) + 1
+    righe.append('  orari d\'ingresso (come li scrive MC: chiusura della barra del fill): '
+                 + ' '.join('%s×%d' % kv for kv in sorted(orari.items())))
+    if entrata:
+        da, a_ = [int(x) for x in entrata.split('-')]
+        fuori = [t for t in T if not (da <= int(t['in'].strftime('%H%M')) <= a_)]
+        riga(not fuori, 'ingressi dentro %04d-%04d: %d fuori%s' % (
+            da, a_, len(fuori), (' (' + ', '.join(str(t['in']) for t in fuori[:5]) + ')') if fuori else ''))
+    else:
+        riga(None, 'finestra d\'ingresso non passata (--entrata HHMM-HHMM): controllala sugli orari sopra')
+
+    per_giorno = {}
+    for t in T:
+        per_giorno[t['in'].date()] = per_giorno.get(t['in'].date(), 0) + 1
+    mx = max(per_giorno.values())
+    if max_giorno:
+        riga(mx <= max_giorno, 'trade al giorno: massimo %d (SPEC: %d), %d giorni con trade' % (mx, max_giorno, len(per_giorno)))
+    else:
+        riga(None, 'trade al giorno: massimo %d, %d giorni con trade (--max-giorno per controllarlo)' % (mx, len(per_giorno)))
+
+    notte = [t for t in T if t['out'].date() != t['in'].date()]
+    if flat:
+        riga(not notte, 'flat la sera: %d trade a cavallo di due date%s' % (
+            len(notte), (' (' + ', '.join('%s -> %s %s' % (t['in'], t['out'], t['uscita']) for t in notte[:5]) + ')') if notte else ''))
+    elif notte:
+        riga(None, '%d trade a cavallo di due date (se la SPEC dice flat la sera, passa --flat)' % len(notte))
+
+    if x10:
+        X = trade_s1(x10)
+        uguali = len(X) == len(T) and all(a['in'] == b['in'] and a['out'] == b['out'] and a['uscita'] == b['uscita']
+                                         for a, b in zip(T, X))
+        n = sum(1 for a, b in zip(T, X) if abs(a['pl'] * 10 - b['pl']) > 0.01)
+        riga(uguali and not n, 'scaling x10 (%s): %d trade contro %d, stessi ingressi e uscite %s, P&L x10 '
+             'diverso su %d trade' % (rel(x10), len(X), len(T), 'si' if uguali else 'NO', n))
+    else:
+        riga(None, 'scaling x10 non controllato (--x10 report_x10.xlsx)')
+
+    righe += ['', '  ESITO DEI CONTROLLI: %s' % ('BUG — ' + '; '.join(bug) if bug else
+              'passa (le uscite in punti vanno confrontate a mano con la SPEC)'), '']
+    pl = [t['pl'] for t in T]
+    metr = {'n': len(T), 'peggiore': min(pl)}
+    return '\n'.join(righe), ('bug' if bug else 'passa'), metr
 
 
 def cmd_giudica(a):
@@ -269,13 +480,16 @@ def cmd_giudica(a):
                  'va scritta in una SPEC nuova' % (f, dati['spec_commit'], sha[:10]))
 
     # 2. il report non e' piu' vecchio della pre-registrazione
-    t_spec = dt.datetime.fromisoformat(quando)
-    code, primo = git('log', '--diff-filter=A', '--follow', '--format=%cI', '--', rel(report))
-    if primo:
-        t_rep, origine = dt.datetime.fromisoformat(primo.splitlines()[-1]), 'commit del report'
-    else:
-        t_rep, origine = dt.datetime.fromtimestamp(os.path.getmtime(report)).astimezone(), 'data del file'
-    if t_rep < t_spec:
+    quando_reg, nota_reg = data_preregistrazione(spec, info, sha, quando)
+    if nota_reg:
+        avvisi.append(nota_reg)
+    t_spec = dt.datetime.fromisoformat(quando_reg)
+    t_rep, origine = data_report(report)
+    margine = dt.timedelta(hours=FUSO_ORE if 'fuso ignoto' in origine else 0)
+    if t_spec - margine <= t_rep < t_spec + margine:
+        avvisi.append('report (%s) e pre-registrazione a meno di %d ore: con il fuso ignoto dell\'Export '
+                      'Time l\'ordine non e\' certo, controllalo' % (origine, FUSO_ORE))
+    elif t_rep < t_spec:
         fail('il report (%s %s) e\' piu\' vecchio del commit della SPEC (%s): il run e\' venuto prima '
              'della pre-registrazione' % (origine, t_rep.isoformat(timespec='minutes'), t_spec.isoformat(timespec='minutes')))
 
@@ -330,13 +544,23 @@ def cmd_giudica(a):
                 dd_is = float(is_v['dd'])
             else:
                 fail('oos: manca il DD dell\'IS (nessun verdetto IS con dd): passa --dd-is')
-        fase_cr = {'s1': None, 'is': 2 if info['via'] == 'A' else None, 'oos': 3}[fase]
+        fase_cr = {'s1': None, 'is': 2 if info['via'] in ('A', 'A|B') else None, 'oos': 3}[fase]
         testo, metr, prelim, esito = gira_check_report(report, fase_cr, dd_is)
-        if fase == 'is' and info['via'] == 'B':
+        if fase == 's1':
+            t1, esito, m1 = controlli_s1(report, a.x10, a.entrata, a.max_giorno, a.flat)
+            testo += t1
+            metr.update(m1)
+        if fase == 'is' and info['via'] == 'A|B' and esito == 'passa':
+            testo += '\nVia A|B: passa la via A, la via B non serve.\n'
+            dati['via'] = 'A'
+        elif fase == 'is' and info['via'] in ('B', 'A|B'):
+            if info['via'] == 'A|B':
+                testo += '\nVia A|B: la via A non passa, si giudica con la via B.\n'
+                dati['via'] = 'B'
             k = k_effettivo(spec, info, v)
             if k > info['k']:
-                avvisi.append('k-varianti dichiarato %d, usato k = %d (report IS gia\' nella cartella: %d)'
-                              % (info['k'], k, len(report_is_passati(spec))))
+                avvisi.append('k-varianti dichiarato %d, usato k = %d (varianti IS gia\' nella cartella: %d)'
+                              % (info['k'], k, len(varianti_is_passate(spec))))
             soglia = max(VIA_B_MIN_T, soglia_k(k))
             pegg_micro = -metr['peggiore'] / 10.0
             ok_t, ok_p = metr['t'] > soglia, pegg_micro <= VIA_B_PEGGIORE
@@ -366,7 +590,7 @@ def cmd_giudica(a):
     for p in dati['prelim']:
         if p[0] == '?':
             print('DA CONFERMARE CON MARIO: ' + p[1])
-    print('ESITO DELLO SCRIPT: %s' % (dati['esito_script'] or 'nessuno (s1: lo decide il judge, passa o bug)'))
+    print('ESITO DELLO SCRIPT: %s' % dati['esito_script'])
     print('Ora: lab.py verbale %s %s --nota "..."' % (rel(spec), fase))
 
 
@@ -380,13 +604,14 @@ def cmd_verbale(a):
     bloccato = any(p[0] == 'NO' for p in dati.get('prelim', []))
     esito = a.esito
     if esito is None:
-        if fase == 's1':
-            fail('s1: l\'esito lo decide il judge: --esito passa o --esito bug')
         if bloccato:
             fail('un preliminare e\' NO: --esito invalido')
         esito = script
     elif esito in ('passa', 'non passa') and fase != 's1' and esito != script:
         fail('l\'esito e\' quello dello script (%s), non si cambia. Alternative: invalido, sospeso' % script)
+    elif fase == 's1' and esito == 'passa' and script == 'bug':
+        fail('s1: i controlli dicono bug. Se un\'opzione era sbagliata (finestra, max al giorno, --flat), '
+             'rilancia giudica con quella giusta; altrimenti --esito bug')
     elif esito == 'passa' and bloccato:
         fail('un preliminare e\' NO: --esito invalido')
     elif esito == 'bug' and fase != 's1':
@@ -399,7 +624,7 @@ def cmd_verbale(a):
     fm = ['esito: %s' % esito, 'fase: %s' % fase, 'data: %s' % oggi, 'spec: %s' % dati['spec'],
           'spec_commit: %s' % dati['spec_commit'], 'report: %s' % dati['report'], 'via: %s' % dati['via'],
           'esito_script: %s' % (script or '-')]
-    if metr:
+    if metr and 't' in metr:
         fm += ['t: %.2f' % metr['t'], 'dd: %.0f' % metr['dd'], 'n: %d' % metr['n']]
     corpo = ['# %s — %s: %s' % (dati['spec'], NOME[fase], esito.upper()), '']
     if a.nota:
@@ -432,7 +657,7 @@ def cmd_verbale(a):
         if val:
             entry.setdefault('stages', {})[STAGE[fase]] = val
         entry['next'] = PROSSIMO.get((fase, esito), entry.get('next', ''))
-        if metr and esito in ('passa', 'non passa'):
+        if metr and 'wr' in metr and fase != 's1' and esito in ('passa', 'non passa'):
             entry.setdefault('metrics', {})[NOME[fase]] = '%d trade · t %.2f · WR %.1f%% · R:R %.2f' % (
                 metr['n'], metr['t'], metr['wr'], metr['rr'])
         nota = (a.nota or '').strip()
@@ -599,6 +824,10 @@ def main():
     s = sub.add_parser('giudica'); s.add_argument('spec'); s.add_argument('fase', choices=FASI)
     s.add_argument('report'); s.add_argument('--dd-is', type=float)
     s.add_argument('--book', action='append'); s.add_argument('--micro', default='1'); s.add_argument('--dal')
+    s.add_argument('--x10', help='s1: il report con 10 contratti, per lo scaling')
+    s.add_argument('--entrata', help='s1: finestra HHMM-HHMM degli orari d\'ingresso come li scrive MC')
+    s.add_argument('--max-giorno', type=int, help='s1: trade al giorno dichiarati nella SPEC')
+    s.add_argument('--flat', action='store_true', help='s1: la SPEC dice flat la sera')
     s.set_defaults(fn=cmd_giudica)
     s = sub.add_parser('verbale'); s.add_argument('spec'); s.add_argument('fase', choices=FASI)
     s.add_argument('--esito', choices=['passa', 'non passa', 'bug', 'invalido', 'sospeso'])

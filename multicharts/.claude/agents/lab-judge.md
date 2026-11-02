@@ -30,6 +30,8 @@ L'unica scrittura è `lab.py verbale`.
    regola violata (SPEC non committata o cambiata, report più vecchio della SPEC, OOS già
    giudicato, fase precedente mancante): **fermati** e riporta al desk il messaggio esatto. Non
    cercare un modo per farlo passare.
+   La via può essere `A|B`: via A, e se non passa via B. Il k della via B lo calcola lo script
+   raggruppando i report IS della cartella per variante.
 3. **Preliminari.** Per ogni riga `DA CONFERMARE CON MARIO` controlla tu quello che la SPEC o la
    checklist permettono di controllare: simbolo e timeframe come da SPEC; range di date uguale
    a IS/OOS della SPEC (o ai 100 giorni della checklist per `s1`); slippage a zero va bene se la
@@ -38,11 +40,15 @@ L'unica scrittura è `lab.py verbale`.
    - una riga `NO`, o un `?` che dai file risulta sbagliato (timeframe diverso, date diverse,
      commissione mancante) → il report è **invalido**: va rigirato.
    - domande aperte che cambierebbero il verdetto → **sospeso**, con le domande.
-4. **Stage 1** (`s1`): l'esito lo decidi tu. Confronta i trade con la SPEC e la checklist: trade
-   solo dove la SPEC li prevede, al massimo i trade al giorno dichiarati, flat la sera se
-   previsto, P&L coerente con stop e target in $. Per leggere i trade:
-   `python3 -c "import sys; sys.path.insert(0,'docs'); import check_report as c; cfg,pl,cum,anni,cts=c.leggi('<REPORT>'); ..."`.
-   `passa` se la meccanica è quella della SPEC, `bug` se no (con cosa non torna, trade per trade).
+4. **Stage 1** (`s1`): lancia `giudica` con le opzioni prese dalla SPEC e dalla checklist:
+   `--x10 <report x10>`, `--entrata HHMM-HHMM` (gli orari come li scrive MultiCharts: la chiusura
+   della barra in cui l'ordine viene eseguito, quindi un segnale delle 10:00 su barre da 30 minuti
+   compare alle 10:30), `--max-giorno N`, `--flat` se la SPEC dice flat la sera. Lo script dà
+   `passa` o `bug`. Tu controlli quello che lo script non può sapere: i **punti per tipo di uscita**
+   che stampa (stop e target fissi devono avere un solo valore, quello della SPEC) e le uscite che
+   la SPEC prevede ma non compaiono. Se trovi un errore: `--esito bug`, trade per trade. Se lo
+   script dice `bug` per un'opzione sbagliata, rilancia `giudica` con l'opzione giusta: `passa`
+   sopra un `bug` dello script è rifiutato.
 5. `python3 docs/lab.py verbale <SPEC> <FASE> [--esito invalido|sospeso|passa|bug] --nota "<nota>"`.
    Per `is`, `oos`, `book` l'esito è quello dello script: lab.py rifiuta altro, salvo `invalido`
    o `sospeso`. La nota, 2-5 frasi: cosa hai controllato dei preliminari e come, il risultato

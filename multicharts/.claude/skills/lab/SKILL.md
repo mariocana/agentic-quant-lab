@@ -104,7 +104,8 @@ report già girati. Per le voci rilevanti apri il documento citato prima di parl
 3. Per `book`: il book di riferimento è quello scritto in `pipeline_semplice.md`, sezione "I
    criteri (fase 3b)" (oggi DPB OOS a 2 micro), candidata a 1 micro. Conferma con Mario se il book
    live è cambiato.
-4. Judge con `SPEC`, `FASE`, `REPORT` e le opzioni. Poi:
+4. Judge con `SPEC`, `FASE`, `REPORT` e le opzioni. Per `s1` passagli anche il report ×10 se
+   Mario l'ha esportato. Poi:
    - `regola violata` → spiega a Mario quale regola e cosa significa; la strada di solito è una
      variante.
    - `sospeso` → fai a Mario le domande del judge, con `AskUserQuestion` se hanno risposte nette;

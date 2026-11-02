@@ -43,7 +43,7 @@ varianti pre-registrate. Poi, obbligatorio, questo blocco, che `docs/lab.py` leg
 
 ```markdown
 ## Pre-registrazione
-- via: A            # A = standalone (t ≥ 2 · WR ≥ 55% · R:R 0,5-1); B = marginale (t > soglia k, trade peggiore ≤ $500 per micro)
+- via: A            # A = standalone (t ≥ 2 · WR ≥ 55% · R:R 0,5-1); B = marginale (t > soglia k, trade peggiore ≤ $500 per micro); A|B = A, altrimenti B
 - k-varianti: 1     # quante varianti sono state o saranno provate per scegliere questa; la soglia di via B ne dipende
 - attesa: <il t e il WR che ti aspetti in IS, e perché>
 - kill: <cosa la uccide, in numeri>
@@ -63,7 +63,11 @@ sessione se la SPEC dice flat la sera, niente riferimenti a barre future, commis
 slippage come dice la SPEC. Poi `CARTELLA/CHECKLIST_Stage1.md` come quella di GoldAsianRange:
 chart (simbolo, timeframe, Bar Magnifier, commissione, point value, sessione), periodo di
 100 giorni, la tabella dei run con il nome del file xlsx da esportare, e cosa Mario deve
-guardare sul grafico. Committa codice e checklist insieme, con `-- <percorsi>`.
+guardare sul grafico. Nella checklist scrivi anche i valori per i controlli automatici del judge:
+finestra degli orari d'ingresso come li scrive MultiCharts (chiusura della barra del fill),
+trade massimi al giorno, flat la sera sì/no, stop e target in punti.
+
+Committa codice e checklist insieme, con `-- <percorsi>`.
 
 Non modificare la SPEC. Se scrivendo il codice scopri che la SPEC è ambigua o sbagliata, fermati
 e dillo al desk: una SPEC cambiata dopo il commit è una variante nuova.
