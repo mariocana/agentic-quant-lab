@@ -85,3 +85,29 @@ report e $2,60 per MGC:
 Criteri 1, 2 e 4 ✅; **3 ❌: giornata peggiore −$2.301 contro −$1.200 (DLL)**. Per le regole del
 gate non si rigira: un tetto allo stop (`MaxRangePts`) sarebbe una variante nuova scelta dopo
 aver visto l'OOS.
+
+## Variante `MaxRangePct 1` (02/11/2026) — scritta prima dei run, **OOS già visto**
+
+**Perché.** Nell'OOS lo stop (= range asiatico) ha superato i $500 per MGC 10 volte e una volta
+l'MLL ($2.290 il 02/02/2026). Il limite non è un'ottimizzazione libera: applica una regola che
+la pipeline ha già, trade peggiore ≤ $500 per micro. Con l'oro a ~5.000, l'1% del prezzo è
+50 punti = $500 per MGC. **Ma la soglia è stata scelta dopo aver visto l'OOS**: il 2025–2026
+con questa variante non è un fuori campione, e si scrive così nel registro.
+
+**Codice.** Nuovo input `MaxRangePct` (0 = spento): il giorno non si arma se il range supera
+`MaxRangePct`% del prezzo di chiusura della barra in cui si chiude il range. Con 0 il codice
+fa esattamente quello di prima. Con `ShowLog 1` la riga `GAR RNG` stampa anche `pct=`.
+
+**Attese, scritte prima.**
+- Il filtro **toglie** giorni e non ne cambia nessuno: ogni trade del run nuovo deve esistere
+  identico (data, direzione, prezzi, P&L) nel run senza filtro.
+- IS: dagli stop, ~1% dei range sopra l'1% → si perdono poche decine di trade su 1.280.
+- OOS: ~8% dei range sopra l'1% → spariscono i due trade peggiori (range 4,8% e 3,9%).
+
+**Gate.**
+1. IS 2020–2024 (`GAR_S4_IS_A_pct1.xlsx`): via B, **t > 0,5** e **trade peggiore ≤ $500 per
+   micro** (≤ $5.000 sul contratto intero). Se fallisce: cimitero, senza provare altre soglie.
+2. 2025–2026 (`GAR_S5_OOS_A_pct1_2025-2026.xlsx`): `gate_marginale.py` con i quattro criteri,
+   registrato come **OOS visto**. Passarlo non basta per entrare: serve il punto 3.
+3. **Forward da oggi**: almeno 2 settimane di paper accanto a DPB (Stage 9) prima di metterla
+   nel book live.

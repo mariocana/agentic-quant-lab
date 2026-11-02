@@ -44,6 +44,7 @@ Inputs:
     TradeShorts(1),
     MinRangePts(0),            { salta il giorno se il range e' piu' stretto (0 = off) }
     MaxRangePts(0),            { salta il giorno se il range e' piu' largo  (0 = off) }
+    MaxRangePct(0),            { salta il giorno se il range supera questa % del prezzo (0 = off) }
     Num_Contracts(1),
     ShowLog(0);
 
@@ -79,11 +80,12 @@ if inWindow = false and inWindow[1] and rng = 0 and rHi > 0 then begin
     sd  = StopFrac * rng;
     armed = rng > 0
         and (MinRangePts = 0 or rng >= MinRangePts)
-        and (MaxRangePts = 0 or rng <= MaxRangePts);
+        and (MaxRangePts = 0 or rng <= MaxRangePts)
+        and (MaxRangePct = 0 or rng <= Close * MaxRangePct / 100);
     if ShowLog = 1 then
         Print("GAR RNG ", Date:8:0, " armTime=", Time:5:0, " barre=", rBars:3:0,
               " range=", rng:8:2, " hi=", rHi:9:2,
-              " lo=", rLo:9:2, " armed=", armed:2:0);
+              " lo=", rLo:9:2, " pct=", 100 * rng / Close:5:2, " armed=", armed:2:0);
 end;
 
 { ===== ORDINI STOP AI BORDI (OCO: solo da flat) ===== }
