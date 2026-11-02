@@ -48,3 +48,6 @@ protocollo/_slide/
 # lanciatore del Monte Carlo del corso: openpyxl installato localmente
 
 docs/colab_corso/libs/
+
+# /lab: giudizi in attesa di verbale
+strategies/*/verdicts/*.pending.json
