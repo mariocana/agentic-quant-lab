@@ -78,3 +78,11 @@ morto fuori campione: un buon IS qui dice poco, la fase che decide è la 3.
 @NQ 30 min, **sessione Globex** (template CME 17:00–16:00 CT), timezone Exchange, Bar Magnifier
 1 min, IOG off, Max bars back ≥ 100. Lead-in: il chart parte almeno 1 mese prima della
 finestra valutata; la finestra si fissa con `TradeStartEL` / `TradeEndEL`.
+
+## Pre-registrazione
+- registrata: 811259fcf3   # blocco aggiunto il 02/11/2026 per /lab; i valori sono quelli scritti sopra il 29/10
+- via: A|B          # via A; se non passa, via B
+- k-varianti: 3     # base, MaxTrades1, v8 su NQ (ES e' un altro strumento); lab.py ne conta 4
+- attesa: t IS fra 1 e 2,5; il nostro VaultBreak base faceva 2,40 ed e' morto fuori campione
+- kill: fase 2 via A t < 2 o WR < 55% o R:R fuori 0,5-1, e via B t <= soglia k o trade peggiore > $500 per micro; fase 3 t < 1,3 (via A) o gate marginale (via B); verdetto OOS asimmetrico, forward pulito dal 13/10/2026
+- costi: $7,50 per lato nel campo commissione (slippage incluso), slippage 0
