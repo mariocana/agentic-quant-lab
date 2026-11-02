@@ -163,6 +163,8 @@ si vuole ([prezzi](https://algovps.com/pricing)). Alternativa: QuantVPS Lite+ a 
 |---|---|
 | **27/11** | Black Friday: decisione sulla licenza MultiCharts |
 | **29/11** | **fine del mese gratuito**. Se scade a eval aperta, **l'automazione si ferma** |
+| **09/11** | Gold Asian Range in AA (sezione 11), dopo le 2 settimane di DPB |
+| **21–22/11** | rollover dell'oro: grafico GCZ6 → GCG7 **e** mapping → GCG7 → MGCG7 |
 | **~11/12** | rollover: grafico NQZ6 → NQH7 **e** mapping → NQH7 → MNQH7 |
 
 Il piano veloce ha una mediana di **22 giorni**: partendo il 26/10 si chiude probabilmente
@@ -190,3 +192,76 @@ E le soglie dello Stage 9 restano: drawdown al **75esimo percentile → si riduc
 | 28/10/2026, sera | **Primo giorno allineato al grafico, con Emulate locally.** 3 trade (short TP, short SL, long SL; si ferma per `MaxLossesPerDay 2`). Conto: +48,25, −77,1, −81,9 punti = **−$443** lordi; il grafico in MNQ fa **−$444**. TP limit nativo eseguito dentro la barra (9:54:36), stop emulati scattati alle 11:54:26 e 13:08:58 dopo ore di trade aperto. Slippage: entrate 0,1–1,75 punti, stop ≤ 1,25 punti. Totale conto dal 27/10: −$306 lordi |
 | 29/10/2026 | **Dashboard Lucid:** 27/10 = **+$129 netti** contro +$137 lordi su Rithmic: commissioni circa **$1 per contratto MNQ andata e ritorno** (8 contratti). Balance $50.129, MLL salito a **$48.129** (trailing a fine giornata), daily loss limit $1.200, target $53.000. Il 28/10 non e' ancora caricato, la *Trading history* resta vuota |
 | 29/10/2026, sera | **Secondo giorno allineato.** 4 trade (long TP, long SL, short TP, short SL; si ferma a `MaxTradesPerDay 4` e `MaxLossesPerDay 2`). Conto: +40,25, −82,5, +49,9, −81,75 punti = **−$296,50** lordi (~−$304 netti); il grafico in MNQ fa **−$284**. Scarto −$12,50, tutto slippage d'entrata (fino a 1,4 punti). Stop emulati a mercato con 0,5–2,5 punti di slippage, TP limit nativi al prezzo esatto. Ordini «fratelli» cancellati con quantita' 1: e' l'uscita eseguita in due pezzi, posizione sempre flat dopo. **Totale conto dal 27/10: −$603 lordi**; balance stimato ~$49.380, **margine sull'MLL ($48.129) ~$1.250** |
+
+## 11. Gold Asian Range `MaxRangePct 1` sullo stesso conto (dal 02/11/2026)
+
+Entra nel book dopo il gate marginale del 02/11 (+9,0 pp iid, +15,6 contiguo con DPB a 2
+micro; dettagli e avvertenze in `strategies/GoldAsianRange/README_GAR.md`). **1 MGC.**
+
+**Quando.** La regola del gate chiede almeno 2 settimane di live fra un'aggiunta e l'altra: DPB
+è live dal 26/10, quindi **AA dal 09/11**. Fino ad allora il grafico gira in **SA** (segnali
+senza ordini) e serve per i controlli qui sotto.
+
+### Il grafico
+
+- **GCZ6 15 min**, sorgente **Rithmic**, session template **24/7** (come il backtest: non
+  COMEX, non 18-17), timezone **Exchange**. Un solo data series.
+- **GC, non MGC**, come per NQ: il segnale si calcola sul contratto del backtest.
+- **Storico**: bastano due giorni (il range si fa fra le 20:00 e le 00:00 del grafico).
+- Segnale **`MarioGoldAsianRange`** = `strategies/GoldAsianRange/GoldAsianRange.txt`. Input
+  uguali al backtest: `RangeStart 2000`, `RangeEnd 0`, `ExitTime 1000`, `StopFrac 1.0`,
+  `TP_RR 0`, `TradeLongs 1`, `TradeShorts 1`, `MinRangePts 0`, `MaxRangePts 0`,
+  **`MaxRangePct 1`**, **`Num_Contracts 1`**, `ShowLog 1` (si legge il log ogni sera).
+- Strategy Properties: 1 contratto, IOG spento.
+
+**Controllo del fuso, prima dell'AA.** Il backtest gira su `@GC` TradeStation in ora di New
+York; il fuso "Exchange" di GCZ6 su Rithmic va verificato, non presunto. Con `ShowLog 1` le
+righe `GAR RNG` del grafico Rithmic devono coincidere con quelle del backtest
+(`armTime= 15`, `barre= 17`, stessi hi e lo):
+
+| data | hi | lo | range |
+|---|---|---|---|
+| 30/10/2026 | 4030,80 | 4000,10 | 30,70 |
+| 02/11/2026 | 3924,00 | 3900,00 | 24,00 |
+
+Se gli orari sono spostati di un'ora (`armTime=2315` o range diversi), il fuso è Chicago: si
+mette il chart in **Eastern** invece di Exchange e si ricontrolla. Se l'ora torna ma i prezzi
+differiscono di qualche tick, è il dato: annotarlo e confrontare i trade.
+
+### Symbol mapping: **GCZ6 → MGCZ6**
+
+File → Broker Profiles → Symbol Mapping → profilo Rithmic → **Add** → **GCZ6** (sorgente
+Rithmic) → «…» → **MGCZ6** (Micro Gold, **COMEX**; se il lookup non lo trova, `MGCZ26`).
+
+> ⚠️ **Al broker mai GCZ6.** Un GC vale $100 al punto: lo stop medio del 2026 (~35 punti) è
+> $3.500, più dell'MLL.
+
+### Auto Trading
+
+Come DPB (sezione 7): **AA**, Stop Orders **Emulate locally**, Limit native, conferma ordini
+tolta, finestra della posizione iniziale sempre, broker **Rithmic** con account **LFE050-…**.
+Una differenza: nell'ingranaggio, **Exchange COMEX** (non CME). Gli ingressi sono ordini stop
+ai bordi del range: con l'emulazione vivono su MultiCharts e partono a mercato al tocco.
+
+**Accendere l'AA a grafico flat**: fra le **10:15 e le 19:45 di New York** (nessuna posizione
+e range non ancora in costruzione). Alla riaccensione MC ricalcola lo storico.
+
+### Cose che cambiano rispetto a DPB
+
+- **Opera di notte**: ordini armati alle 00:15 NY, ingressi fino alle 10:00, uscita alle 10:15.
+  Il VPS deve restare acceso e collegato tutta la notte; DPB opera solo di giorno.
+- **Stesso conto, stesso DLL ($1.200)**: la giornata peggiore del book nel gate è stata
+  −$1.034. Il margine sull'MLL al 29/10 era ~$1.250: un trade GAR pesa fino a ~$480.
+- **Un solo MultiCharts, una sola connessione Rithmic**: i due grafici nella stessa istanza.
+
+### Rollover dell'oro: **prima di fine novembre**
+
+GCZ6 ha il primo giorno di notifica a fine novembre (ultimo giorno lavorativo prima di
+dicembre: verificarlo sul calendario CME). Il volume passa a febbraio intorno al **23–24/11**.
+Nel weekend del **21–22/11**, a mercato chiuso: grafico **GCZ6 → GCG7** e mapping
+**GCG7 → MGCG7**. Controllare se Lucid chiude o blocca i contratti vicini alla notifica.
+
+### Ogni sera
+
+Come DPB: trade del conto (scheda Orders) contro il grafico, e le righe `GAR RNG`/`GAR ENT`
+del log contro il backtest dello stesso giorno. Se divergono, si spegne GAR e si capisce perché.
