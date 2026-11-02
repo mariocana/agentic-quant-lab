@@ -196,3 +196,14 @@ OOS asimmetrico: fallire conta pieno, passare vale solo come prova dal vivo.
 | 02/11 | Gold Asian Range A (MGC), candidata 2 | +7,4 | +7,0 | −$2.301 | +$38,95 | **non entra** (criterio 3): un trade da −$2.290 per micro, più dell'MLL. Cimitero |
 | 02/11 | Gold Asian Range A `MaxRangePct 1` (MGC), **OOS visto** | +9,0 | +15,6 | −$1.034 | +$46,69 | passa i 4 criteri, **non vale come OOS**: soglia scelta dopo aver visto il periodo. Entra solo dopo il forward (≥ 2 settimane di paper) |
 | 02/11 | VaultBreak v8 (corso) | +3,0 | +7,7 | −$1.104 | +$9,35 | **entra** |
+| 02/11 | ORB NQ `cutoff11`, candidata 3 | −0,7 | +3,0 | −$1.034 | +$10,80 | **non entra** in nessun book (vs DPB + GAR; vs DPB +0,5 / +6,1; vs DPB + VB8 −0,3 / +2,0) |
+| 02/11 | VaultBreak `MaxTrades1`, candidata 4 | −1,0 | −7,5 | −$1.034 | +$2,49 | **non entra** in nessun book (vs DPB −0,4 / −4,3; vs DPB + VB8 −0,8 / −7,8) |
+| 02/11 | ORB NQ senza cutoff, candidata 5 (a verbale) | −0,4 | +3,5 | −$1.034 | +$12,05 | **non entra** in nessun book (vs DPB +0,8 / +5,8; vs DPB + VB8 0,0 / +2,0) |
+
+**Ingressi in parallelo del 02/11 (da risolvere).** GAR pct1 e VaultBreak v8 sono entrate lo
+stesso giorno, ognuna misurata **contro DPB da sola**. Misurate l'una sopra l'altra (finestra
+2025-01-01 → 2026-10-15, `--al`): VB8 sopra DPB + GAR +2,0 / −5,3, GAR sopra DPB + VB8 +8,2 /
++2,8, e insieme la giornata peggiore è **−$1.488** (oltre il DLL): **le tre insieme non passano
+il criterio 3**. Pass rate: DPB 41,6 / 59,1 · DPB + VB8 45,0 / 66,9 · **DPB + GAR 51,0 / 74,4** ·
+DPB + GAR + VB8 53,0 / 69,2. Le candidate 3–5 sono state misurate contro tutti e tre i book e
+non entrano in nessuno. Il book di riferimento si decide dopo la candidata 6.
