@@ -17,7 +17,11 @@ Icon
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
-.claude
+
+# Claude Code: si versionano solo agenti e skill di /lab, il resto e' locale
+.claude/*
+!.claude/agents/
+!.claude/skills/
 ### Materiale corso MultiCharts: binari pesanti (video, zip, installer)
 mc/**/*.mp4
 mc/**/*.mov
