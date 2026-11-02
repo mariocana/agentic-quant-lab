@@ -111,3 +111,14 @@ fa esattamente quello di prima. Con `ShowLog 1` la riga `GAR RNG` stampa anche `
    registrato come **OOS visto**. Passarlo non basta per entrare: serve il punto 3.
 3. **Forward da oggi**: almeno 2 settimane di paper accanto a DPB (Stage 9) prima di metterla
    nel book live.
+
+### Punto 1, IS con `MaxRangePct 1` (02/11/2026): **passa la via B**
+
+`GAR_S4_IS_A_pct1.xlsx`: stessi input dell'IS originale più `MaxRangePct 1`, 12.5$, 1 contratto.
+- **Meccanica ✅**: 1.255 trade, tutti presenti identici (data, direzione, prezzi, uscita, P&L)
+  fra i 1.280 dell'IS senza filtro; nessun trade nuovo, nessuno cambiato. Il filtro ne toglie
+  25 (2020, 2021, 2022, 2024), 18 perdenti, −$9.805 in tutto, fra cui il peggiore (−$4.975).
+- **Gate via B ✅**: t **2,24** (era 1,89), avg $69, WR 42,9%, trade peggiore **−$2.425 = $243
+  per micro** (era $498), DD chiusi $14.870, cinque anni su cinque positivi.
+
+Prossimo: punto 2, il 2025–2026 nel gate marginale (OOS visto).

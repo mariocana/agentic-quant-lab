@@ -577,6 +577,10 @@
     {
      "date": "2026-11-02",
      "text": "**Gate marginale: non entra, cimitero definitivo.** OOS 2025-2026: 450 trade, avg $389, t 2,20 (IS $60, t 1,89), trainato dal rialzo dell'oro. Nel book con DPB +7,4 pp iid e +7,0 contiguo, ma il criterio 3 fallisce: giornata peggiore −$2.301 a 1 micro, perché lo stop = range asiatico arriva a $22.895 sul contratto intero (02/02/2026), più dell'MLL."
+    },
+    {
+     "date": "2026-11-02",
+     "text": "**Variante `MaxRangePct 1`** (salta i giorni con range > 1% del prezzo, scelta dopo aver visto l'OOS): IS 2020-2024 1.255 trade, sottoinsieme esatto dei 1.280 originali, t 2,24, trade peggiore $243 per micro. Passa la via B. Prossimo: 2025-2026 nel gate marginale, a verbale come OOS visto, poi forward."
     }
    ],
    "next": "Chiusa. Cimitero, causa A."
