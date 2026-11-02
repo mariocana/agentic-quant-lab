@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-29",
+ "updated": "2026-11-02",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -943,24 +943,34 @@
    "note": "**La versione del trittico delle Live 4/5, mai testata da noi.** Stesso scheletro della nostra VaultBreak (morta OOS, t −0,03), altri parametri e altro chart: 30 min Globex, NoiseMult 0,3, range a 15 sessioni, uscita VWAP a 7 barre, stop/target 75/40 pt. Stesso codice `VaultBreak.txt` con gli input della v8 (+ `CarryGuard`). Spec `SPEC_v8.md`. Contaminata: parametri dell'autore, OOS 2025-26 da considerare visto, terza versione su NQ → via B con t IS > 0,85 (k = 3); verdetto OOS asimmetrico, forward pulito dal 13/10/2026.",
    "log": [
     {
-     "date": "2026-11-02",
-     "text": "**Fase 2 superata per la via A**: IS 2020–2024, 1.125 trade, **t 2,78**, WR 65,3%, R:R 0,64 (soglie t ≥ 2 · WR ≥ 55% · R:R 0,5–1). Sopra l'attesa dichiarata (t 1–2,5). Ma l'edge cala ogni anno: avg $140 nel 2020, **$29 nel 2024 (t 0,45)**; seconda metà dell'IS t 1,33 contro 2,64 della prima. Trade peggiore $151,50 per micro. Il nostro VaultBreak base faceva t 2,40 in IS ed è morto fuori campione: la fase che decide è la 3, con verdetto asimmetrico (OOS 2025-26 contaminato)."
+     "date": "2026-10-29",
+     "text": "**Stage 0.** Spec `SPEC_v8.md`. Prossimo: fase 1 (100 giorni) su @NQ 30 min Globex con il profilo v8."
     },
     {
      "date": "2026-11-02",
      "text": "**Fase 1 superata.** 102 trade, 02/06 → 27/10/2026, @NQ 30 min Globex, profilo v8 (FlattenTime 1430). Stop −75 pt esatti (30), target +40 pt esatti (63), 9 uscite a tempo alle 15:00 (barra dopo le 14:30), ingressi solo fra 10:00 e 14:00 CT, max 3 al giorno, nessun overnight, report ×10 identico trade per trade. L'uscita VWAP a 7 barre non scatta mai e `VB-Carry` mai (nessuna seduta corta nel periodo). Primo run scartato: FlattenTime 1450 e grafico caricato da metà giugno. Report `VB8_S1_100gg(_x10).xlsx`."
     },
     {
-     "date": "2026-10-29",
-     "text": "**Stage 0.** Spec `SPEC_v8.md`. Prossimo: fase 1 (100 giorni) su @NQ 30 min Globex con il profilo v8."
+     "date": "2026-11-02",
+     "text": "**Fase 2 superata per la via A**: IS 2020–2024, 1.125 trade, **t 2,78**, WR 65,3%, R:R 0,64 (soglie t ≥ 2 · WR ≥ 55% · R:R 0,5–1). Sopra l'attesa dichiarata (t 1–2,5). Ma l'edge cala ogni anno: avg $140 nel 2020, **$29 nel 2024 (t 0,45)**; seconda metà dell'IS t 1,33 contro 2,64 della prima. Trade peggiore $151,50 per micro. Il nostro VaultBreak base faceva t 2,40 in IS ed è morto fuori campione: la fase che decide è la 3, con verdetto asimmetrico (OOS 2025-26 contaminato)."
+    },
+    {
+     "date": "2026-11-02",
+     "text": "**Stage 1, meccanica: passa.** **Meccanica come da SPEC_v8.** Preliminari: @NQ 30 min come da SPEC, slippage 0 con i $7,50 per lato nella commissione come dice la SPEC, sessione Globex confermata dall'ultima barra alle 16:00 del report IS con lo stesso grafico. Stop -75 pt e target +40 pt esatti, ingressi fra le barre delle 10:30 e delle 14:30 (segnali 10:00-14:00 CT), max 3 al giorno, nessun overnight, x10 identico. L'uscita VWAP a 7 barre e VB-Carry non scattano mai nei 100 giorni. Verdetto in `strategies/VaultBreak/verdicts/SPEC_v8_s1.md`."
+    },
+    {
+     "date": "2026-11-02",
+     "text": "**fase 2, IS: passa.** **Passa la via A**: t 2,78, WR 65,3%, R:R 0,64 su 1.125 trade, sopra l'attesa (t 1-2,5). Preliminari come da SPEC: @NQ 30 min Globex (ultima barra 16:00), 2020-01-02 -> 2024-12-31, $7,50 per lato con slippage 0. Edge in calo ogni anno: 2024 t 0,45, seconda meta' dell'IS t 1,33 contro 2,64. OOS 2025-26 contaminato (parametri dell'autore): verdetto asimmetrico, forward pulito dal 13/10/2026. Verdetto in `strategies/VaultBreak/verdicts/SPEC_v8_is.md`."
     }
    ],
-   "next": "Fase 3: OOS 2025-01-01 → oggi, **una volta sola**, stesso profilo, chart da dicembre 2024, `TradeStartEL 1250101` · `TradeEndEL 0`. Criterio via A: t ≥ 1,3. Verdetto asimmetrico.",
+   "next": "Fase 3: OOS 2025-01-01 → oggi, **una volta sola**, stesso grafico e input, range dati da dicembre 2024, `TradeStartEL 1250101` · `TradeEndEL 0`; esporta `VB8_S5_OOS_2025-2026.xlsx`, poi `/lab report`. Via A: t ≥ 1,3. Verdetto asimmetrico.",
    "metrics": {
     "IS 2020-2024": "1.125 trade · avg $76,76 ± 27,65 · **t 2,78** · WR 65,3% · R:R 0,64 · PF 1,204 · peggiore −$1.515 (−$151,50 per micro)",
     "per anno (avg, t)": "2020 $140 t 2,45 · 2021 $92 t 1,53 · 2022 $55 t 0,84 · 2023 $75 t 1,23 · **2024 $29 t 0,45**",
-    "split-sample": "prima metà $99,8 t 2,64 · seconda metà $53,8 t 1,33"
-   }
+    "split-sample": "prima metà $99,8 t 2,64 · seconda metà $53,8 t 1,33",
+    "fase 2, IS": "1125 trade · t 2.78 · WR 65.3% · R:R 0.64"
+   },
+   "spec": "strategies/VaultBreak/SPEC_v8.md"
   },
   {
    "name": "VWAP Pullback + ADX (v4 corso)",
