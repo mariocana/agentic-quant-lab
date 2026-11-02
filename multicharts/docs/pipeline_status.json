@@ -943,7 +943,8 @@
     "0": "pass",
     "1": "pass",
     "2": "pass",
-    "5": "pass"
+    "5": "pass",
+    "8": "pass"
    },
    "note": "**La versione del trittico delle Live 4/5, mai testata da noi.** Stesso scheletro della nostra VaultBreak (morta OOS, t −0,03), altri parametri e altro chart: 30 min Globex, NoiseMult 0,3, range a 15 sessioni, uscita VWAP a 7 barre, stop/target 75/40 pt. Stesso codice `VaultBreak.txt` con gli input della v8 (+ `CarryGuard`). Spec `SPEC_v8.md`. Contaminata: parametri dell'autore, OOS 2025-26 da considerare visto, terza versione su NQ → via B con t IS > 0,85 (k = 3); verdetto OOS asimmetrico, forward pulito dal 13/10/2026.",
    "log": [
@@ -970,16 +971,21 @@
     {
      "date": "2026-11-02",
      "text": "**fase 3, OOS: passa.** **Passa per lo script (t 2,07, WR 67,4%, R:R 0,59, 482 trade), ma tutto il risultato e' nel 2025.** 2025 H1 t 2,74 e H2 t 1,90; 2026 H1 t 0,40, 2026 H2 t -0,79; il 2026 intero fa -$2.050. Forward pulito dal 13/10/2026: 11 trade, -$5.165. Preliminari come da SPEC (30 min Globex, $7,50 per lato, slippage 0, 2025-01-03 -> oggi). OOS contaminato dai parametri dell'autore: verdetto asimmetrico, il passa vale solo come ingresso in prova dal vivo dopo il gate marginale. Verdetto in `strategies/VaultBreak/verdicts/SPEC_v8_oos.md`."
+    },
+    {
+     "date": "2026-11-02",
+     "text": "**fase 3b, gate marginale: passa.** **Entra per lo script: Δ iid +3,0 pp, Δ contiguo +7,7 pp, giornata peggiore -$1.104, avg $9,35 per micro.** Book DPB OOS a 2 micro, candidata a 1 micro, nessun --dal. Diagnostica fuori verdetto, solo 2026 (--dal 2026-01-01, dopo la correzione del bug di --dal): Δ iid -1,9 pp, Δ contiguo +1,4, avg -$0,84 per micro: l'aumento viene dal 2025. Verdetto asimmetrico: entra solo come prova dal vivo, e il live e' il vero OOS. Verdetto in `strategies/VaultBreak/verdicts/SPEC_v8_book.md`."
     }
    ],
-   "next": "Gate marginale contro il book live (DPB OOS a 2 micro, candidata a 1 micro): `/lab book`. Con il 2026 a zero l'esito atteso è negativo.",
+   "next": "**Decisione di Mario**: entra per le regole, ma l'aumento viene dal 2025 e il 2026 è a zero. Se entra: paper almeno una settimana a 1 micro accanto a DPB, poi live, due settimane prima di qualsiasi altra aggiunta.",
    "metrics": {
     "IS 2020-2024": "1.125 trade · avg $76,76 ± 27,65 · **t 2,78** · WR 65,3% · R:R 0,64 · PF 1,204 · peggiore −$1.515 (−$151,50 per micro)",
     "per anno (avg, t)": "2020 $140 t 2,45 · 2021 $92 t 1,53 · 2022 $55 t 0,84 · 2023 $75 t 1,23 · **2024 $29 t 0,45**",
     "split-sample": "prima metà $99,8 t 2,64 · seconda metà $53,8 t 1,33",
     "fase 2, IS": "1125 trade · t 2.78 · WR 65.3% · R:R 0.64",
     "fase 3, OOS": "482 trade · t 2.07 · WR 67.4% · R:R 0.59",
-    "OOS 2025-26 per semestre": "2025 H1 t 2,74 · 2025 H2 t 1,90 · **2026 H1 t 0,40 · 2026 H2 t −0,79** · forward dal 13/10/2026: 11 trade, −$5.165"
+    "OOS 2025-26 per semestre": "2025 H1 t 2,74 · 2025 H2 t 1,90 · **2026 H1 t 0,40 · 2026 H2 t −0,79** · forward dal 13/10/2026: 11 trade, −$5.165",
+    "gate marginale": "OOS intero: Δ iid **+3,0 pp**, Δ contiguo **+7,7 pp**, giornata peggiore −$1.104 · **solo 2026 (diagnostica): Δ iid −1,9 pp**, avg −$0,84 per micro"
    },
    "spec": "strategies/VaultBreak/SPEC_v8.md"
   },
@@ -1024,6 +1030,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-02",
+   "text": "**VaultBreak v8 passa il gate marginale** (Δ iid +3,0, contiguo +7,7) **ma solo grazie al 2025**: sul solo 2026 Δ iid −1,9 e avg −$0,84 per micro. Corretto un bug di `gate_marginale.py`: `--dal` dopo `--book`/`--cand` veniva ignorato, e `/lab book` lo passa per ultimo (il verdetto di Gold Asian Range non cambia: criterio 3 su un giorno del 2026)."
+  },
   {
    "date": "2026-11-02",
    "text": "**VaultBreak v8: OOS passa per lo script (t 2,07) ma è tutto 2025**: 2026 t −0,12, forward pulito dal 13/10 11 trade −$5.165. Verdetto asimmetrico. Prossimo: gate marginale."

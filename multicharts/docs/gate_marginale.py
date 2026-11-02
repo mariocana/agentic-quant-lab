@@ -64,15 +64,18 @@ def main():
     global DAL
     ps.usa_prop(ps.leggi_prop()[ps.PROP_DEFAULT])   # prima di caricare: fissa il costo per micro
     arg = sys.argv[1:]
-    book, cand = [], None
+    spec_book, spec_cand = [], None
     while arg:
         k = arg.pop(0)
         if k == '--book':
-            book.append(carica(arg.pop(0)))
+            spec_book.append(arg.pop(0))
         elif k == '--cand':
-            cand = carica(arg.pop(0))
+            spec_cand = arg.pop(0)
         elif k == '--dal':
             DAL = arg.pop(0)
+    # si carica dopo aver letto tutti gli argomenti: --dal vale in qualunque posizione
+    book = [carica(x) for x in spec_book]
+    cand = carica(spec_cand) if spec_cand else None
     if not book or cand is None:
         raise SystemExit(__doc__)
     gmax = ps.PROP['giorni_max'] or ps.GUARDIA_GG
