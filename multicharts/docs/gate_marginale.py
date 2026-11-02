@@ -18,7 +18,8 @@ Strumenti diversi da NQ: file:micro:costo_report:costo_micro, i costi andata e r
 costo_report e' quello gia' dentro il P&L del report full-size, costo_micro quello vero del
 micro. Es. GC a 12.5$/lato e MGC: --cand GAR_S5_OOS.xlsx:1:25:2.60
 
---dal AAAA-MM-GG scarta i giorni prima dell'OOS (il chart parte qualche giorno prima).
+--dal / --al AAAA-MM-GG tengono solo i giorni dentro la finestra (il chart parte qualche giorno
+prima dell'OOS; i report possono finire in date diverse).
 """
 import sys, os, random, math, statistics as st
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -29,7 +30,7 @@ SEED       = 20261029
 SOGLIA_IID = 2.0      # punti percentuali, pre-registrata il 29/10/2026
 
 
-DAL = None
+DAL = AL = None
 
 
 def carica(spec):
@@ -40,6 +41,8 @@ def carica(spec):
     ps.COMM_FULL = nq_full
     if DAL:
         gg = [(d, t) for d, t in gg if str(d) >= DAL]
+    if AL:
+        gg = [(d, t) for d, t in gg if str(d) <= AL]
     return os.path.basename(path), dict(gg), float(micro)
 
 
@@ -61,7 +64,7 @@ def contiguo(seq, gmax):
 
 
 def main():
-    global DAL
+    global DAL, AL
     ps.usa_prop(ps.leggi_prop()[ps.PROP_DEFAULT])   # prima di caricare: fissa il costo per micro
     arg = sys.argv[1:]
     spec_book, spec_cand = [], None
@@ -73,6 +76,8 @@ def main():
             spec_cand = arg.pop(0)
         elif k == '--dal':
             DAL = arg.pop(0)
+        elif k == '--al':
+            AL = arg.pop(0)
     # si carica dopo aver letto tutti gli argomenti: --dal vale in qualunque posizione
     book = [carica(x) for x in spec_book]
     cand = carica(spec_cand) if spec_cand else None
