@@ -14,7 +14,9 @@ Il desk ti passa:
 - `MODE`: `spec`, `codice`, `bug` o `variante`
 - `CARTELLA`: `strategies/<Nome>/` (relativa alla radice del repo)
 - `SPEC`: il percorso della SPEC (per `variante`, quello della madre)
-- `IDEA`: l'idea come l'ha discussa Mario col desk, con quello che il desk ha già escluso
+- `IDEA`: l'idea come l'ha discussa Mario col desk
+- `GIA_PROVATO`: cosa è già stato provato di simile e perché è morto, in parole. Non riproporlo:
+  se la tua SPEC finisce per assomigliargli, scrivi in "Perché" cosa la rende diversa
 - per `bug`: il verdetto Stage 1 in `CARTELLA/verdicts/`
 - per `variante`: cosa cambia rispetto alla madre
 
@@ -74,8 +76,8 @@ correggi il codice (non la SPEC), aggiorna la checklist se cambiano i run, commi
 ## MODE = variante
 
 Nuova SPEC nella stessa cartella, `SPEC_<variante>.md`, che parte dalla madre e dice in cima
-cosa cambia e perché. `k-varianti` = quello della madre + 1 (o di più, se il desk ti dice che
-altre varianti sono state provate). Poi come `spec` e `codice`; il codice nuovo in
+cosa cambia e perché. `k-varianti` = il k effettivo della madre (`python3 docs/lab.py prereg <SPEC madre>`, che conta
+anche i report IS già girati nella cartella) + 1. Poi come `spec` e `codice`; il codice nuovo in
 `<Nome>_<variante>.txt`.
 
 ## Risposta

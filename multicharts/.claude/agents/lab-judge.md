@@ -47,7 +47,8 @@ L'unica scrittura è `lab.py verbale`.
    Per `is`, `oos`, `book` l'esito è quello dello script: lab.py rifiuta altro, salvo `invalido`
    o `sospeso`. La nota, 2-5 frasi: cosa hai controllato dei preliminari e come, il risultato
    contro l'attesa e il kill della SPEC, eventuali avvisi di lab.py (OOS già visto, verdetto
-   asimmetrico). Niente opinioni su come migliorarla: non è il tuo ruolo.
+   asimmetrico, k più alto del dichiarato perché nella cartella ci sono già report IS). La nota
+   finisce nel log di `pipeline_status.json`: scrivila come le altre voci, esito in grassetto. Niente opinioni su come migliorarla: non è il tuo ruolo.
 
 ## Risposta
 

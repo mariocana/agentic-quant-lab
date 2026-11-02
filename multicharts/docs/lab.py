@@ -17,6 +17,9 @@ Regole controllate (docs/factory_trading.md, §3):
 Fasi: s1 (meccanica, 100 giorni), is (2020-2024), oos (2025->oggi), book (gate marginale).
 
 Uso:
+    python3 docs/lab.py cerca vwap pullback adx          # cosa e' gia' stato fatto su un'idea
+    python3 docs/lab.py annota strategies/X/SPEC.md "SPEC scritta" --next "Stage 1: ..."
+    python3 docs/lab.py annota - "idea scartata: ..."     # log generale
     python3 docs/lab.py stato
     python3 docs/lab.py prereg strategies/X/SPEC.md
     python3 docs/lab.py nuova "Nome" strategies/X/SPEC.md --famiglia "..." --strumento "..."
@@ -41,6 +44,16 @@ FASI = ['s1', 'is', 'oos', 'book']
 STAGE = {'s1': '1', 'is': '2', 'oos': '5', 'book': '8'}     # chiavi di pipeline_status.json
 PRIMA = {'is': 's1', 'oos': 'is', 'book': 'oos'}
 NOME = {'s1': 'Stage 1, meccanica', 'is': 'fase 2, IS', 'oos': 'fase 3, OOS', 'book': 'fase 3b, gate marginale'}
+PROSSIMO = {
+    ('s1', 'passa'): 'IS 2020-2024 in MultiCharts, poi /lab report',
+    ('s1', 'bug'): 'il coder corregge il codice, poi si rigira lo Stage 1',
+    ('is', 'passa'): 'OOS 2025->oggi in MultiCharts, una volta sola, poi /lab report',
+    ('is', 'non passa'): 'Chiusa. Cimitero (fase 2, IS).',
+    ('oos', 'passa'): 'gate marginale contro il book live: /lab book',
+    ('oos', 'non passa'): 'Chiusa. Cimitero definitivo (fase 3, OOS).',
+    ('book', 'passa'): 'entra nel book: paper almeno una settimana, poi eval col budget dichiarato',
+    ('book', 'non passa'): 'Chiusa. Cimitero (gate marginale).',
+}
 VIA_B_MIN_T = 0.5
 VIA_B_PEGGIORE = 500.0      # trade peggiore per micro, in $
 
@@ -120,6 +133,24 @@ def verdetti_cartella(spec):
     return out
 
 
+IS_REPORT = re.compile(r'(^|[_-])(S2|S4|Stage2|IS)([_-]|\.xlsx$)', re.I)
+
+
+def report_is_passati(spec):
+    """Report IS gia' girati nella cartella (anche prima di /lab): contano nel k della famiglia."""
+    d = os.path.join(os.path.dirname(os.path.abspath(spec)), 'reports')
+    if not os.path.isdir(d):
+        return []
+    return sorted(f for f in os.listdir(d) if f.lower().endswith('.xlsx') and IS_REPORT.search(f)
+                  and not re.search(r'oos|100gg|(^|_)S1_', f, re.I) and not re.search(r'_x\d+\.xlsx$', f, re.I))
+
+
+def k_effettivo(spec, info, v):
+    """Il piu' alto fra k dichiarato, IS giudicati da /lab e report IS gia' nella cartella."""
+    giudicati = {s for (s, f) in v if f == 'is'} | {stem(spec)}
+    return max(info['k'], len(giudicati), len(report_is_passati(spec)))
+
+
 def soglia_k(k):
     """t atteso del massimo di k strategie a edge zero: E[max di k normali standard]."""
     if k <= 1:
@@ -162,13 +193,20 @@ def cmd_prereg(a):
     info = leggi_spec(a.spec)
     sha, quando = commit_spec(a.spec)
     v = verdetti_cartella(a.spec)
-    k_contato = len({s for (s, f) in v if f == 'is'})
+    passati = report_is_passati(a.spec)
+    k = k_effettivo(a.spec, info, v)
     print(json.dumps({'spec': rel(a.spec), 'commit': sha[:10], 'data': quando, 'via': info['via'],
-                      'k_dichiarato': info['k'], 'k_contato': k_contato,
-                      'soglia_t_via_B': round(max(VIA_B_MIN_T, soglia_k(max(info['k'], k_contato))), 2),
+                      'k_dichiarato': info['k'], 'k_effettivo': k, 'report_is_nella_cartella': len(passati),
+                      'soglia_t_via_B': round(max(VIA_B_MIN_T, soglia_k(k)), 2),
                       'blocco_pre_registrazione': info['blocco']}, ensure_ascii=False))
     if not info['blocco']:
         print('ATTENZIONE: manca il blocco "## Pre-registrazione" (via, k-varianti, attesa, kill)')
+    if info['k'] < k:
+        print('ATTENZIONE: k-varianti dichiarato %d, ma nella cartella ci sono gia\' %d report IS e %d '
+              'giudizi IS: per la via B vale k = %d' % (info['k'], len(passati),
+                                                        len({s for (s, f) in v if f == 'is'}), k))
+        for f in passati:
+            print('  - ' + f)
 
 
 def cmd_nuova(a):
@@ -295,7 +333,10 @@ def cmd_giudica(a):
         fase_cr = {'s1': None, 'is': 2 if info['via'] == 'A' else None, 'oos': 3}[fase]
         testo, metr, prelim, esito = gira_check_report(report, fase_cr, dd_is)
         if fase == 'is' and info['via'] == 'B':
-            k = max(info['k'], len({s for (s, f) in v if f == 'is'} | {stem(spec)}))
+            k = k_effettivo(spec, info, v)
+            if k > info['k']:
+                avvisi.append('k-varianti dichiarato %d, usato k = %d (report IS gia\' nella cartella: %d)'
+                              % (info['k'], k, len(report_is_passati(spec))))
             soglia = max(VIA_B_MIN_T, soglia_k(k))
             pegg_micro = -metr['peggiore'] / 10.0
             ok_t, ok_p = metr['t'] > soglia, pegg_micro <= VIA_B_PEGGIORE
@@ -390,6 +431,7 @@ def cmd_verbale(a):
         val = {'passa': 'pass', 'non passa': 'fail'}.get(esito)
         if val:
             entry.setdefault('stages', {})[STAGE[fase]] = val
+        entry['next'] = PROSSIMO.get((fase, esito), entry.get('next', ''))
         if metr and esito in ('passa', 'non passa'):
             entry.setdefault('metrics', {})[NOME[fase]] = '%d trade · t %.2f · WR %.1f%% · R:R %.2f' % (
                 metr['n'], metr['t'], metr['wr'], metr['rr'])
@@ -424,6 +466,98 @@ def aggiungi_registro(nome, r, esito):
     open(REGISTRO, 'w', encoding='utf8').write('\n'.join(righe))
 
 
+def cmd_annota(a):
+    """Il diario: ogni passo del laboratorio finisce in pipeline_status.json, come fanno le sessioni."""
+    d = carica_status()
+    voce_log = {'date': dt.date.today().isoformat(), 'text': a.testo}
+    if a.spec == '-':
+        d.setdefault('log', []).insert(0, voce_log)      # il log generale e' dal piu' recente
+        dove = 'log generale'
+    else:
+        entry = voce(d, a.spec)
+        if entry is None:
+            fail('%s non e\' collegata a pipeline_status.json (lab.py nuova o collega)' % rel(a.spec))
+        entry.setdefault('log', []).append(voce_log)
+        if a.next is not None:
+            entry['next'] = a.next
+        if a.note is not None:
+            entry['note'] = a.note
+        dove = entry['name']
+    salva_status(d)
+    print('annotato in %s' % dove)
+
+
+def cmd_cerca(a):
+    """Tutto quello che e' gia' stato fatto su un'idea: strategie, documenti, studi, report."""
+    termini = [t.lower() for t in a.termini]
+    punti = lambda testo: sum(1 for t in termini if t in testo.lower())
+    minimo = a.min or (2 if len(termini) > 2 else 1)
+    corto = lambda x, n=220: re.sub(r'\s+', ' ', x)[:n]
+
+    d = carica_status()
+    trovate = []
+    for s in d['strategies']:
+        testo = ' '.join([s.get('name', ''), s.get('family', ''), s.get('instrument', ''), s.get('path', ''),
+                          s.get('note', ''), s.get('next', ''), json.dumps(s.get('metrics', {}), ensure_ascii=False)]
+                         + [l.get('text', '') for l in s.get('log', [])])
+        p = punti(testo)
+        if p >= minimo:
+            trovate.append((p, s))
+    print('== STRATEGIE in pipeline_status.json (%d)' % len(trovate))
+    for p, s in sorted(trovate, key=lambda x: -x[0]):
+        print('- %s  [%s · %s]  stages %s' % (s['name'], s.get('family', ''), s.get('instrument', ''),
+                                              json.dumps(s.get('stages', {}))))
+        print('    next: %s' % corto(s.get('next', ''), 160))
+        if s.get('note'):
+            print('    note: %s' % corto(s['note']))
+        for l in s.get('log', [])[-2:]:
+            print('    %s: %s' % (l.get('date', ''), corto(l.get('text', ''))))
+
+    generale = [l for l in d.get('log', []) if punti(l.get('text', '')) >= minimo]
+    print('\n== LOG GENERALE (%d)' % len(generale))
+    for l in generale[:a.max]:
+        print('- %s: %s' % (l.get('date', ''), corto(l.get('text', ''))))
+
+    print('\n== DOCUMENTI E STRATEGIE (.md, .txt)')
+    radici = [os.path.join(ROOT, 'docs'), os.path.join(ROOT, 'strategies')]
+    n_doc = 0
+    for radice in radici:
+        for cart, _, files in sorted(os.walk(radice)):
+            if os.sep + 'verdicts' in cart:
+                continue
+            for f in sorted(files):
+                if not f.endswith(('.md', '.txt')) or f in ('factory_trading.md',):
+                    continue
+                path = os.path.join(cart, f)
+                try:
+                    righe = open(path, encoding='utf8', errors='replace').read().split('\n')
+                except OSError:
+                    continue
+                colpi = [(i + 1, r) for i, r in enumerate(righe) if punti(r) >= minimo]
+                if punti(f + ' ' + rel(cart)) >= minimo and not colpi:
+                    colpi = [(1, righe[0] if righe else '')]
+                if colpi:
+                    n_doc += 1
+                    print('- %s  (%d righe)' % (rel(path), len(colpi)))
+                    for num, r in colpi[:3]:
+                        print('    %d: %s' % (num, corto(r, 180)))
+    if not n_doc:
+        print('(nessuno)')
+
+    print('\n== REPORT GIA\' GIRATI')
+    n_rep = 0
+    for cart, _, files in sorted(os.walk(os.path.join(ROOT, 'strategies'))):
+        if os.path.basename(cart) != 'reports':
+            continue
+        nomi = [f for f in sorted(files) if punti(f + ' ' + rel(cart)) >= minimo]
+        if nomi:
+            n_rep += len(nomi)
+            print('- %s: %s' % (rel(cart), ', '.join(nomi)))
+    if not n_rep:
+        print('(nessuno)')
+    print('\n(termini: %s · una voce compare se ne contiene almeno %d)' % (', '.join(termini), minimo))
+
+
 def cmd_stato(a):
     d = carica_status()
     out = []
@@ -453,6 +587,11 @@ def main():
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = p.add_subparsers(dest='cmd', required=True)
     s = sub.add_parser('stato'); s.add_argument('--json', action='store_true'); s.set_defaults(fn=cmd_stato)
+    s = sub.add_parser('cerca'); s.add_argument('termini', nargs='+')
+    s.add_argument('--min', type=int, help='quanti termini deve contenere una voce (default 1, 2 se piu\' di 2)')
+    s.add_argument('--max', type=int, default=8); s.set_defaults(fn=cmd_cerca)
+    s = sub.add_parser('annota'); s.add_argument('spec', help="la SPEC, o - per il log generale")
+    s.add_argument('testo'); s.add_argument('--next'); s.add_argument('--note'); s.set_defaults(fn=cmd_annota)
     s = sub.add_parser('prereg'); s.add_argument('spec'); s.set_defaults(fn=cmd_prereg)
     s = sub.add_parser('nuova'); s.add_argument('nome'); s.add_argument('spec')
     s.add_argument('--famiglia'); s.add_argument('--strumento'); s.set_defaults(fn=cmd_nuova)
