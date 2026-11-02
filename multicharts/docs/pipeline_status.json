@@ -936,16 +936,21 @@
    "instrument": "@NQ 30m Globex → MNQ",
    "path": "mc/strategies/VaultBreak",
    "stages": {
-    "0": "pass"
+    "0": "pass",
+    "1": "pass"
    },
    "note": "**La versione del trittico delle Live 4/5, mai testata da noi.** Stesso scheletro della nostra VaultBreak (morta OOS, t −0,03), altri parametri e altro chart: 30 min Globex, NoiseMult 0,3, range a 15 sessioni, uscita VWAP a 7 barre, stop/target 75/40 pt. Stesso codice `VaultBreak.txt` con gli input della v8 (+ `CarryGuard`). Spec `SPEC_v8.md`. Contaminata: parametri dell'autore, OOS 2025-26 da considerare visto, terza versione su NQ → via B con t IS > 0,85 (k = 3); verdetto OOS asimmetrico, forward pulito dal 13/10/2026.",
    "log": [
+    {
+     "date": "2026-11-02",
+     "text": "**Fase 1 superata.** 102 trade, 02/06 → 27/10/2026, @NQ 30 min Globex, profilo v8 (FlattenTime 1430). Stop −75 pt esatti (30), target +40 pt esatti (63), 9 uscite a tempo alle 15:00 (barra dopo le 14:30), ingressi solo fra 10:00 e 14:00 CT, max 3 al giorno, nessun overnight, report ×10 identico trade per trade. L'uscita VWAP a 7 barre non scatta mai e `VB-Carry` mai (nessuna seduta corta nel periodo). Primo run scartato: FlattenTime 1450 e grafico caricato da metà giugno. Report `VB8_S1_100gg(_x10).xlsx`."
+    },
     {
      "date": "2026-10-29",
      "text": "**Stage 0.** Spec `SPEC_v8.md`. Prossimo: fase 1 (100 giorni) su @NQ 30 min Globex con il profilo v8."
     }
    ],
-   "next": "Fase 1: 100 giorni, @NQ 30 min sessione Globex, input del profilo v8 (header di `VaultBreak.txt`)."
+   "next": "Fase 2: IS 2020–2024, @NQ 30 min Globex, stesso profilo, chart da dicembre 2019, `TradeStartEL 1200101` · `TradeEndEL 1241231`. Via A, altrimenti via B con t > 0,85 (k = 3)."
   },
   {
    "name": "VWAP Pullback + ADX (v4 corso)",
@@ -988,6 +993,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-02",
+   "text": "**VaultBreak v8: fase 1 superata** (102 trade, stop e target esatti, orari e scaling ×10 corretti). Prossimo: IS 2020–2024."
+  },
   {
    "date": "2026-10-29",
    "text": "**Live 006 trascritta e analizzata** (`mc/docs/live006_funded.md`): la fase funded su Apex 50K EOD, metro **EV dei payout per conto** (max $13.000). DriftPullback a 2 MNQ ha EV $2.626, seconda delle quattro del Bridge, ma non entra nelle configurazioni finali: il book scelto è Overnight Bias 1 (R:R 1,5) + VWAP ADX 3 + VaultBreak 1 MNQ, EV $5.590. Il «2× la migliore da sola» confronta con VWAP ADX a 7 MNQ; contro la sua size migliore (4 MNQ, $3,9k) il guadagno è ~+43%. Uscite e size scelte fra 5 × 20 combinazioni. Per noi: il gate marginale resta sul pass rate dell'eval; il simulatore dei payout con le regole funded di Lucid si scrive prima del primo pass."
