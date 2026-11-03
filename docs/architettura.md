@@ -13,16 +13,18 @@ flowchart TB
         direction TB
 
         subgraph FA["factory/ — gli agenti"]
-            RIC["ricercatore<br/>ipotesi + meccanismo"]
+            RIC["ricercatore<br/>ipotesi + meccanismo<br/>ogni numero con la sua pagina"]
+            PRE["critico, primo passaggio<br/>uccide l'ipotesi prima del codice"]
             SPEC["spec builder<br/>StrategySpec"]
             COD["coder<br/>strategy.py + gate AST"]
-            CRIT["critico<br/>dossier, nessun veto"]
+            CRIT["critico, secondo passaggio<br/>dossier, nessun veto"]
             REG[("registro delle prove<br/>append-only")]
         end
 
         subgraph AQ["alpha-quant/ — simulazione e verdetto"]
             SIM["engine livello 2<br/>fee, funding, slippage"]
             GATE["validation/gates.py<br/>lista trade to verdetto"]
+            HOLD[("holdout bloccato<br/>si apre solo a spec congelata")]
         end
 
         subgraph QL["quantlake/ — i dati"]
@@ -43,7 +45,10 @@ flowchart TB
     PR{{"pull request<br/>il cancello umano"}}
     SHADOW["shadow mode<br/>8-12 settimane<br/>il vero out-of-sample"]
 
-    RIC --> SPEC --> COD
+    RIC --> PRE --> SPEC --> COD
+    PRE -. "ogni idea uccisa si conta" .-> REG
+    REG -. "hash della spec congelata" .-> HOLD
+    HOLD -. "una volta sola" .-> SIM
     COD -.-> SIM
     CONN --> MED --> INST
     MED -.-> SIM
@@ -65,7 +70,7 @@ flowchart TB
     RAILWAY <--> HL
 
     classDef todo stroke-dasharray:5 5
-    class FA,SIM,SHADOW,REG todo
+    class FA,SIM,SHADOW,REG,HOLD todo
 ```
 
 ## Perché i confini cadono qui
@@ -108,6 +113,37 @@ da quella del desk, la divergenza fra simulato e reale sarebbe garantita e
 introvabile. Per lo stesso motivo il simulatore va calibrato contro `var/`, cioè
 contro fill, slippage e fee di cicli realmente eseguiti: se non riproduce il passato
 che abbiamo tradato, la sua opinione su una strategia mai tradata non vale niente.
+
+**Il caveau si chiude col codice, non col prompt.** Il loader di alpha-quant rifiuta le
+date di holdout finché la spec non è congelata, cioè registrata con il suo hash. Nessun
+agente può aprirlo prima, nemmeno se glielo chiedi: un divieto scritto in un prompt è una
+richiesta cortese, un divieto nel loader è un muro.
+
+**Il critico passa due volte.** La prima sull'ipotesi scritta, prima che esista una riga
+di codice: è il punto in cui scartare non costa niente e non consuma dati. La seconda sul
+risultato, per il dossier. Anche le idee uccise al primo passaggio entrano nel registro.
+
+**Ogni numero preso da un paper porta la pagina.** `SourceRef` ha `page` obbligatorio: se il
+ricercatore cita un effetto, si deve poter aprire il paper e trovarlo. È la difesa contro un
+modello che attribuisce a un autore cose che l'autore non ha scritto.
+
+## Convivenza con il `/lab` di multicharts
+
+Il repo `multicharts` ha la sua fabbrica (`/lab`, agenti `lab-coder` e `lab-judge`, regole in
+`docs/lab.py`, stato in `docs/pipeline_status.json`) per la catena prop in EasyLanguage.
+Le due catene non si toccano:
+
+1. **Nomi diversi.** Qui gli agenti si chiamano `factory-*` e la skill `/factory`, mai `lab-*`
+   o `/lab`.
+2. **Agenti e skill solo nel progetto.** Stanno in `agentic-quant-lab/.claude/`, mai in
+   `~/.claude/`: a livello utente comparirebbero anche nelle sessioni aperte in multicharts.
+3. **Stato separato.** Il registro delle prove vive qui. Niente di questo repo legge o scrive
+   `pipeline_status.json`, il registro delle varianti o `docs/lab.py`, e viceversa.
+4. **Nessun codice condiviso.** Le regole possono somigliarsi (pre-registrazione, OOS una
+   volta, soglia che sale con k), ma ognuno ha la sua implementazione: cambiare una non può
+   rompere l'altra.
+5. **Le tabelle ES/NQ di quantlake restano intatte.** multicharts ci confronta i suoi export:
+   niente vacuum, niente cambi di schema, niente riscritture su quelle tabelle.
 
 ## Il deploy
 
