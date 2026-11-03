@@ -199,6 +199,7 @@ OOS asimmetrico: fallire conta pieno, passare vale solo come prova dal vivo.
 | 02/11 | ORB NQ `cutoff11`, candidata 3 | −0,7 | +3,0 | −$1.034 | +$10,80 | **non entra** in nessun book (vs DPB + GAR; vs DPB +0,5 / +6,1; vs DPB + VB8 −0,3 / +2,0) |
 | 02/11 | VaultBreak `MaxTrades1`, candidata 4 | −1,0 | −7,5 | −$1.034 | +$2,49 | **non entra** in nessun book (vs DPB −0,4 / −4,3; vs DPB + VB8 −0,8 / −7,8) |
 | 02/11 | ORB NQ senza cutoff, candidata 5 (a verbale) | −0,4 | +3,5 | −$1.034 | +$12,05 | **non entra** in nessun book (vs DPB +0,8 / +5,8; vs DPB + VB8 0,0 / +2,0) |
+| 03/11 | VWAP Pullback filtrata (MNQ), candidata 6 | +1,5 | −5,0 | −$1.239 | +$10,17 | **non entra** in nessun book (vs DPB + GAR; vs DPB +2,4 / −0,5; vs DPB + VB8 +1,5 / −1,3). OOS t 1,19, trade peggiore $405 per micro |
 
 **Ingressi in parallelo del 02/11 (da risolvere).** GAR pct1 e VaultBreak v8 sono entrate lo
 stesso giorno, ognuna misurata **contro DPB da sola**. Misurate l'una sopra l'altra (finestra
@@ -206,4 +207,5 @@ stesso giorno, ognuna misurata **contro DPB da sola**. Misurate l'una sopra l'al
 +2,8, e insieme la giornata peggiore è **−$1.488** (oltre il DLL): **le tre insieme non passano
 il criterio 3**. Pass rate: DPB 41,6 / 59,1 · DPB + VB8 45,0 / 66,9 · **DPB + GAR 51,0 / 74,4** ·
 DPB + GAR + VB8 53,0 / 69,2. Le candidate 3–5 sono state misurate contro tutti e tre i book e
-non entrano in nessuno. Il book di riferimento si decide dopo la candidata 6.
+non entrano in nessuno, e neanche la 6 (03/11). **Coda finita**: il book di riferimento è da
+scegliere fra DPB + GAR e DPB + VB8.
