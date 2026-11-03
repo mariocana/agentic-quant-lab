@@ -37,3 +37,8 @@ sia valido (finestra 08:30–15:00) e che i pivot si formino (StopSwingLen non t
 ## Varianti pre‑registrate (Stage 4, non ora)
 `RetestMode` 1 vs 2 · `StopMode` 1 vs 2 · `MinRR 1` · TP fisso in R al posto del pivot ·
 gate ADX(14) > 20/25 sul 5 min (da ricostruire, non verificato) · long only.
+
+**03/11/2026 — OOS della versione base girato per errore** (`VWAP_S5_OOS_base_2025-2026_non-candidata.xlsx`):
+`MinStopPoints 0` / `MaxStopPoints 0` dopo la ricompilazione del file con gli input ADX. Non è
+la candidata 6 (la filtrata, 60/250) e non si giudica; resta a verbale perché il periodo della
+base ora è visto. Si rigira la filtrata.
