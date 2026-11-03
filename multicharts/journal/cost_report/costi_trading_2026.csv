@@ -30,3 +30,7 @@ data,ora,esercente,categoria,voce,importo_eur,importo_usd,nota
 2026-08-31,,Ordine piattaforma corsi,Formazione,The Institutional Protocol,95.79,,ordine 23910; l'ordine del 24/08 (96,77 €) è annullato e non contato
 2026-09-10,,Datafeed,Strumenti e dati,Datafeed mensile,34.97,,abbonamento mensile
 2026-10-12,,Datafeed,Strumenti e dati,Dati MBO ottobre 2026,36.37,,abbonamento mensile
+2026-10-16,12:01,Whop,Formazione,Corso S&P Trading Lab (Stefano Serafini),31.61,,"Revolut, payment.jekly.app"
+2026-10-25,14:31,Bonifico Revolut,Strumenti e dati,VPS Windows,28.00,,
+2026-10-26,,Lucid Trading,Prop firm,"Lucid, conto per il primo test live di DriftPullback",72.45,80.50,"carta MetaMask in mUSD; EUR stimato al cambio 0,90 dell addebito MultiCharts del 29/10"
+2026-10-29,03:25,Multicharts.com,Strumenti e dati,Licenza MultiCharts,89.10,99.00,da contabilizzare al 29/10
