@@ -51,7 +51,8 @@ Inputs:
     { --- finestra di trading (non e' logica): data EasyLanguage YYYMMDD,
           YYY = anno - 1900 (1200101 = 1 gen 2020). 0 = disattivato --- }
     TradeStartEL(0),
-    TradeEndEL(0);
+    TradeEndEL(0),
+    ShowLog(0);                { 1 = stampa bias del giorno e ogni ingresso (non e' logica) }
 
 Variables:
     intrabarpersist orHigh(0), intrabarpersist orLow(999999),
@@ -159,6 +160,11 @@ if orDone = false and Time > OREnd and orHigh > 0 then begin
     else orMedApprox = orMedApprox + (2 / (ORMedianDays + 1)) * ((orHigh - orLow) - orMedApprox);
     orCount = orCount + 1;
     if orCount < ORMedianDays then regimeOK = true;      { warmup }
+    if ShowLog = 1 then
+        Print("OBO DAY ", Date:8:0, " onHi=", onHigh:9:2, " onLo=", onLow:9:2,
+              " open=", sessOpenPx:9:2, " pos=", onPos:5:2, " bias=", onBias:2:0,
+              " orHi=", orHigh:9:2, " orLo=", orLow:9:2, " regime=", regimeOK:2:0,
+              " atr=", atrRef:8:2, " stopPts=", ATR_k * atrRef:7:2);
 end;
 
 stopPts   = ATR_k * atrRef;
@@ -183,6 +189,9 @@ if canWork then begin
             stopPx = Close - stopPts;
             tgtPx  = Close + stopPts * TakeProfitRR;
             Buy ("OBO-L") NumContracts contracts next bar at market;
+            if ShowLog = 1 then
+                Print("OBO ENT ", Date:8:0, " ", Time:5:0, " L close=", Close:9:2,
+                      " SL=", stopPx:9:2, " TP=", tgtPx:9:2, " adx=", ADX(ADXLen):5:1);
             Sell ("OBO-L-SL0") next bar at stopPx stop;
             Sell ("OBO-L-TP0") next bar at tgtPx limit;
             tradesToday = tradesToday + 1;
@@ -193,6 +202,9 @@ if canWork then begin
             stopPx = Close + stopPts;
             tgtPx  = Close - stopPts * TakeProfitRR;
             SellShort ("OBO-S") NumContracts contracts next bar at market;
+            if ShowLog = 1 then
+                Print("OBO ENT ", Date:8:0, " ", Time:5:0, " S close=", Close:9:2,
+                      " SL=", stopPx:9:2, " TP=", tgtPx:9:2, " adx=", ADX(ADXLen):5:1);
             BuyToCover ("OBO-S-SL0") next bar at stopPx stop;
             BuyToCover ("OBO-S-TP0") next bar at tgtPx limit;
             tradesToday = tradesToday + 1;
