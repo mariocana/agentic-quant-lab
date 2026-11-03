@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-02",
+ "updated": "2026-11-03",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -1017,16 +1017,21 @@
    "instrument": "@NQ 15m Globex → MNQ",
    "path": "mc/strategies/OvernightBiasORB",
    "stages": {
-    "0": "pass"
+    "0": "pass",
+    "1": "pass"
    },
    "note": "**Unica strategia «high RR» del corso.** Bias dall'open nel range overnight (≥ 67% solo long, ≤ 33% solo short), breakout dell'OR 08:30–08:45 CT con ADX(16) ≥ 20, stop 0,3 × ATR giornaliero, target 3 × stop. Autore: IS 2006–19 PF 1,35; OOS 2020–08/2026 PF 1,66, DD $20.195 per NQ (= l'intero MLL per micro). WR e R:R fuori profilo per costruzione → solo via B (t IS > 0,5). Il nostro IS sta nell'OOS dell'autore, ma pubblicato dopo averlo visto: forward pulito dal 1/9/2026.",
    "log": [
     {
      "date": "2026-10-29",
      "text": "**Stage 0.** Codice `OvernightBiasORB.txt` (logica dell'autore, orari in CT) e spec. Prossimo: fase 1."
+    },
+    {
+     "date": "2026-11-03",
+     "text": "**Stage 1, meccanica: passa.** **Meccanica come da SPEC.** Preliminari: @NQ 15 min come da SPEC; sessione Globex (il report ha una barra alle 03:30 CT, impossibile su RTH); slippage 0 con $7,50 per lato nella commissione come dice la SPEC. Ingressi fra le barre delle 9:15 e delle 11:30 (finestra 8:45-12:00 CT), max 2 al giorno contro 4, flat a tempo alla barra delle 14:45, nessun overnight, x10 identico. Stop fra -90 e -185 pt (0,3 x ATR) e target fra +294 e +348 pt (3 x stop); 20 trade su 33 escono a tempo. Trade peggiore $372 per micro. Verdetto in `strategies/OvernightBiasORB/verdicts/SPEC_s1.md`."
     }
    ],
-   "next": "Fase 1: 100 giorni, @NQ 15 min Globex, lead-in di 2 mesi, salvato in MC come `Mario_OvernightBiasORB`.",
+   "next": "Fase 2: IS 2020–2024, stesso grafico @NQ 15 min Globex e stessi input, range dati da **ottobre 2019**, `TradeStartEL 1200101` · `TradeEndEL 1241231`; esporta `OBO_S2_IS_2020-2024.xlsx`. Via B: t > 0,5 e trade peggiore ≤ $500 per micro.",
    "spec": "strategies/OvernightBiasORB/SPEC.md"
   }
  ],
