@@ -32,7 +32,9 @@
 
   PROFILO v4 DEL CORSO ("C.S.", SPEC_ADX.md): UseADXElev 1 · UseADXDecay 1 ·
          TradeShorts 0 · VwapEndTime 1700 · EntryEndTime 1700 ·
-         EODFlatTime 1555. Il resto come i default.
+         EODFlatTime 1555 · MinStopPoints 0 · MaxStopPoints 0. Il resto come
+         i default. Template 17:00-16:00 senza pause: quello predefinito di MC
+         chiude il venerdi' alle 15:15, e il flat delle 15:55 non scatta.
 
   CHART: @NQ 1 min, sessione **Globex 24h** (17:00-16:00 CT), timezone
          Exchange, volume da trade data. Orari in ORA DEL CHART (CT).
@@ -252,7 +254,8 @@ if MarketPosition = 0 and tradesToday < MaxTradesPerDay then begin
         if ShowLog = 1 then
             Print("VWAP LONG ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
                   " stop=", activeStop:8:2, " tgt=", activeTgt:8:2,
-                  " RR=", (activeTgt - Close) / MaxList(0.01, Close - activeStop):5:2);
+                  " RR=", (activeTgt - Close) / MaxList(0.01, Close - activeStop):5:2,
+                  " adx=", ADXv:6:2, " adxPrev=", ADXv[ADXDecay_LB]:6:2);
     end;
 
     if TradeShorts = 1 and shortSignal and validShort and adxOK then begin
@@ -265,7 +268,8 @@ if MarketPosition = 0 and tradesToday < MaxTradesPerDay then begin
         if ShowLog = 1 then
             Print("VWAP SHORT ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
                   " stop=", activeStop:8:2, " tgt=", activeTgt:8:2,
-                  " RR=", (Close - activeTgt) / MaxList(0.01, activeStop - Close):5:2);
+                  " RR=", (Close - activeTgt) / MaxList(0.01, activeStop - Close):5:2,
+                  " adx=", ADXv:6:2, " adxPrev=", ADXv[ADXDecay_LB]:6:2);
     end;
 end;
 

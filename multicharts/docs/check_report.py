@@ -189,7 +189,13 @@ def preliminari(cfg, cts):
                 % cfg.get('Slippage', '?')))
 
     bm = cfg.get('Bar Magnifier', '')
-    out.append((OK if 'enabled' in bm.lower() else NO, 'Bar Magnifier: %s' % (bm or 'ASSENTE')))
+    if 'enabled' in bm.lower():
+        out.append((OK, 'Bar Magnifier: %s' % bm))
+    elif cfg.get('Compression', '').startswith('1 Minute'):
+        # sotto la barra da 1 minuto non c'e' niente da ingrandire a 1 minuto
+        out.append((EH, 'Bar Magnifier: %s (grafico a 1 minuto: atteso)' % (bm or 'ASSENTE')))
+    else:
+        out.append((NO, 'Bar Magnifier: %s' % (bm or 'ASSENTE')))
 
     out.append((EH, 'Compression: %s   Symbol: %s   Point Value: %s'
                 % (cfg.get('Compression', '?'), cfg.get('Symbol Name', '?'),

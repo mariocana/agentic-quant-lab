@@ -1006,9 +1006,13 @@
     {
      "date": "2026-10-29",
      "text": "**Stage 0.** Spec `SPEC_ADX.md`, gate ADX aggiunto al codice. Prossimo: fase 1 (100 giorni) con il profilo v4."
+    },
+    {
+     "date": "2026-11-04",
+     "text": "**Stage 1, primo giro invalido, non verbalizzato.** Input `MinStopPoints 60` e `MaxStopPoints 250` rimasti sul grafico (la v4 non li ha) e template predefinito di MC con il venerdi' chiuso alle 15:15: due trade passano il weekend perche' il flat delle 15:55 non scatta. Il log non stampava l'ADX: aggiunto, solo stampa. Report non tenuto."
     }
    ],
-   "next": "Fase 1: 100 giorni, @NQ 1 min Globex, profilo v4 (header di `VWAP_Pullback.txt`), `ShowLog 1` per controllare il gate e la distanza dello stop.",
+   "next": "Fase 1 da rigirare: template 17:00-16:00 senza pause, MinStopPoints 0, MaxStopPoints 0, codice ricompilato, ShowLog 1; report VWAPADX_S1_100gg.xlsx e _x10, piu' il log.",
    "spec": "strategies/VWAP_Pullback/SPEC_ADX.md"
   },
   {
