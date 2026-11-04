@@ -1094,6 +1094,10 @@
  "log": [
   {
    "date": "2026-11-04",
+   "text": "**`book_sim.py` dipende dalla prop:** `--prop`, `--confronta`, costi per strumento (`comm_mgc_rt`) e campo `automazione` in `prop_firms.ini`, colonne giorni al pass e $/funded. Book 1/1/1: LucidFlex DLL 40% 58,7% e $118 per funded; noDLL 50% 62,9% ma $207; Apex 26,0% e $356, con automazione vietata. Il 26,0% coincide con il 25,8% dello script del corso. Solo regole dell'eval: il funded manca."
+  },
+  {
+   "date": "2026-11-04",
    "text": "**Script del corso di nuovo funzionante** (`docs/colab_corso/.venv`). Book DPB + Gold pct1 + Overnight Bias a 1 micro su regole Apex 50K: 25,8%, 59,6% dei tentativi scade ai 21 giorni; alla size scelta dallo script (9 micro) 44,5%. Stage B: mix uguale 42,1% contro le singole 33-38%. Output `docs/book_DPB_GAR_OBO_colab_corso.txt`."
   },
   {

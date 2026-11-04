@@ -64,6 +64,9 @@ def leggi_prop():
                       giorni_max=int(num(c['giorni_max']) or 0),
                       costo_tentativo=num(c['costo_tentativo']), attivazione=num(c['attivazione']),
                       comm_micro_rt=num(c['comm_micro_rt']), max_micro=num(c['max_micro']),
+                      comm={k[5:-3].upper(): num(v) for k, v in c.items()
+                            if k.startswith('comm_') and k.endswith('_rt') and k != 'comm_micro_rt'},
+                      automazione=c.get('automazione', 'none').strip().lower(),
                       fonte=c.get('fonte', ''), verificato=c.get('verificato', 'none'))
     return out
 
