@@ -1100,6 +1100,10 @@
  "log": [
   {
    "date": "2026-11-05",
+   "text": "**Idea scartata: Prop Model #2 RubberBand (divergenza delta/prezzo, ingresso oltre l'estremo, 1:1, LR 15).** Misurata su NQ RTH 2020-2024 con UpVol-DownVol come proxy del delta: a 5 minuti con filtro 3.972 trade, -$29, t -3,57, peggio del delta concorde (-$10) a ogni timeframe e negativa anche lorda. Delta forte: 73 trade in 5 anni, t 1,47, migliore di 12 varianti, compatibile col caso. Quattro idee dell'ingest chiuse."
+  },
+  {
+   "date": "2026-11-05",
    "text": "**Idea scartata: Prop Model #1 OrderTrack (hyperscalping su 40 Range, limit ai bordi della value della candela chiusa, OCO 1:1, DeepCharts).** Non testabile: bracket da ~6 punti e value per candela chiedono dati tick, noi abbiamo l'1 minuto (range mediano 10-13 punti nelle prime due ore RTH). Il documento non dà nessun numero. Pareggio ~56% di WR, ~60% con lo slippage sugli stop emulati visto su DPB live; il cap da $1.500 supera il DLL di Lucid."
   },
   {
