@@ -200,6 +200,7 @@ OOS asimmetrico: fallire conta pieno, passare vale solo come prova dal vivo.
 | 02/11 | VaultBreak `MaxTrades1`, candidata 4 | −1,0 | −7,5 | −$1.034 | +$2,49 | **non entra** in nessun book (vs DPB −0,4 / −4,3; vs DPB + VB8 −0,8 / −7,8) |
 | 02/11 | ORB NQ senza cutoff, candidata 5 (a verbale) | −0,4 | +3,5 | −$1.034 | +$12,05 | **non entra** in nessun book (vs DPB +0,8 / +5,8; vs DPB + VB8 0,0 / +2,0) |
 | 03/11 | VWAP Pullback filtrata (MNQ), candidata 6 | +1,5 | −5,0 | −$1.239 | +$10,17 | **non entra** in nessun book (vs DPB + GAR; vs DPB +2,4 / −0,5; vs DPB + VB8 +1,5 / −1,3). OOS t 1,19, trade peggiore $405 per micro |
+| 04/11 | Overnight Bias ORB (corso) | +2,9 | +6,5 | −$1.104 | +$49,06 | **entra** |
 
 **Ingressi in parallelo del 02/11 (da risolvere).** GAR pct1 e VaultBreak v8 sono entrate lo
 stesso giorno, ognuna misurata **contro DPB da sola**. Misurate l'una sopra l'altra (finestra

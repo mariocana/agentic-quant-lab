@@ -23,6 +23,8 @@ Uso:
     --micro a/b/c,...   combinazioni di micro, nell'ordine delle --strat
                         (default: tutte da 0 a 2, almeno una strategia accesa)
     --dal AAAA-MM-GG    inizio della finestra; ripetibile, una tabella per finestra
+    --al AAAA-MM-GG     fine, uguale per tutte: l'ultimo giorno comune ai report, altrimenti
+                        negli ultimi giorni il book ha solo le strategie con il report piu' lungo
     --sim N             simulazioni per combinazione (default 10000)
 """
 import sys, os, random, math, itertools, statistics as st
@@ -45,6 +47,8 @@ def argomenti():
             micro = [tuple(int(x) for x in c.split('/')) for c in arg.pop(0).split(',')]
         elif k == '--dal':
             dal.append(arg.pop(0))
+        elif k == '--al':
+            gm.AL = arg.pop(0)
         elif k == '--sim':
             n = int(arg.pop(0))
         else:

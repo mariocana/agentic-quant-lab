@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-03",
+ "updated": "2026-11-04",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -1019,7 +1019,9 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "pass"
+    "2": "pass",
+    "5": "pass",
+    "8": "pass"
    },
    "note": "**Unica strategia «high RR» del corso.** Bias dall'open nel range overnight (≥ 67% solo long, ≤ 33% solo short), breakout dell'OR 08:30–08:45 CT con ADX(16) ≥ 20, stop 0,3 × ATR giornaliero, target 3 × stop. Autore: IS 2006–19 PF 1,35; OOS 2020–08/2026 PF 1,66, DD $20.195 per NQ (= l'intero MLL per micro). WR e R:R fuori profilo per costruzione → solo via B (t IS > 0,5). Il nostro IS sta nell'OOS dell'autore, ma pubblicato dopo averlo visto: forward pulito dal 1/9/2026.",
    "log": [
@@ -1034,13 +1036,24 @@
     {
      "date": "2026-11-03",
      "text": "**fase 2, IS: passa.** **Passa la via B con margine: t 4,51** (soglia 0,5), 455 trade, avg $401 per NQ ($40 per micro), WR 53,8%, R:R 1,45, trade peggiore $328 per micro (tetto $500). Molto sopra l'attesa (t 1-2,5). Robusto: cinque anni su cinque con t fra 1,48 e 2,99, long t 3,14 e short t 3,23, senza i 10 trade migliori t 3,39. 12 uscite End of Day (SetExitOnClose nelle sedute corte). Preliminari come da SPEC: @NQ 15 min Globex, 2020-01-08 -> 2024-12-31, $7,50 per lato. Il 2020-2024 sta nell'OOS dichiarato dall'autore, pubblicato dopo averlo visto: verdetto OOS asimmetrico, forward pulito dal 1/9/2026. Verdetto in `strategies/OvernightBiasORB/verdicts/SPEC_is.md`."
+    },
+    {
+     "date": "2026-11-04",
+     "text": "**fase 3, OOS: passa.** **Misure registrate, il giudizio e' il gate marginale (via B).** 166 trade, avg $491 per NQ, t 2,19, WR 54,8%, R:R 1,27, DD $18.420. Disomogeneo: 2025 t 0,29, 2026 t 2,60; senza i 10 trade migliori t 0,26; trade peggiore $542,50 per micro, sopra i $500 della fase 2 (non e' un criterio di fase 3). Forward pulito dal 1/9/2026: 19 trade, +$14.290, t 1,00. Primo giudizio di lab.py errato (NON PASSA e report invalido): applicava alla via B i criteri della via A e leggeva i NO dei gate come preliminari. Corretto sulla regola del 29/10 in pipeline_semplice.md, dopo aver visto questo risultato. Verdetto in `strategies/OvernightBiasORB/verdicts/SPEC_oos.md`."
+    },
+    {
+     "date": "2026-11-04",
+     "text": "**fase 3b, gate marginale: passa.** **Entra per lo script: Δ iid +2,9 pp, Δ contiguo +6,5 pp, giornata peggiore -$1.104, avg $49,06 per micro.** Book DPB OOS a 2 micro, candidata a 1 micro. Controllo fuori verdetto, solo 2026: Δ iid +7,9, contiguo +17,1; il 2025 da solo vale poco (t 0,29). Risultato concentrato: senza i 10 trade migliori t 0,26. Verdetto asimmetrico: entra solo come prova dal vivo, forward pulito dal 1/9/2026. Il posto nel book si decide con le altre candidate. Verdetto in `strategies/OvernightBiasORB/verdicts/SPEC_book.md`."
     }
    ],
-   "next": "Fase 3: OOS 2025-01-01 → oggi, **una volta sola**, stesso grafico, range dati da **ottobre 2024**, `TradeStartEL 1250101` · `TradeEndEL 0`; esporta `OBO_S5_OOS_2025-2026.xlsx`. Via B: gate marginale. Verdetto asimmetrico.",
+   "next": "**Decisione di Mario**: passa il gate per le regole, solo come prova dal vivo. Il posto nel book si decide con Gold pct1 e VaultBreak v8, dopo VWAP + ADX.",
    "spec": "strategies/OvernightBiasORB/SPEC.md",
    "metrics": {
     "fase 2, IS": "455 trade · t 4.51 · WR 53.8% · R:R 1.45",
-    "IS per anno (t)": "2020 1,92 · 2021 1,52 · 2022 2,02 · 2023 1,48 · 2024 2,99 · long 3,14 · short 3,23 · senza i 10 migliori 3,39"
+    "IS per anno (t)": "2020 1,92 · 2021 1,52 · 2022 2,02 · 2023 1,48 · 2024 2,99 · long 3,14 · short 3,23 · senza i 10 migliori 3,39",
+    "fase 3, OOS": "166 trade · t 2.19 · WR 54.8% · R:R 1.27",
+    "OOS 2025-26": "166 trade · avg $491 · t 2,19 · WR 54,8% · R:R 1,27 · **2025 t 0,29 · 2026 t 2,60** · senza i 10 migliori t 0,26 · peggiore $542,50 per micro · forward dal 1/9/2026: 19 trade, +$14.290",
+    "gate marginale": "Δ iid **+2,9 pp**, Δ contiguo **+6,5 pp**, giornata peggiore −$1.104 · solo 2026: +7,9 / +17,1"
    }
   }
  ],
@@ -1050,6 +1063,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-04",
+   "text": "**Overnight Bias ORB passa il gate marginale** (Δ iid +2,9, contiguo +6,5): OOS t 2,19, ma 2025 t 0,29 e senza i 10 trade migliori t 0,26. Corretti due bug di `lab.py`: alla via B in OOS applicava i criteri della via A, e leggeva i NO dei gate come preliminari (una bocciatura diventava `invalido`, cioè rigirabile). Nessun verdetto passato toccato. `book_sim.py --al`: il report DPB finisce il 15/10, gli altri dopo."
+  },
   {
    "date": "2026-11-03",
    "text": "**Overnight Bias ORB: IS 2020–2024 passa la via B con t 4,51** (455 trade, $40 per micro, peggiore $328 per micro), cinque anni su cinque positivi, long e short. Prossimo: OOS una volta."

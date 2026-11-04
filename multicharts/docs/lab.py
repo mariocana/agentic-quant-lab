@@ -11,7 +11,8 @@ Regole controllate (docs/factory_trading.md, §3):
   - la SPEC e' committata, pulita, e non e' cambiata dopo un verdetto gia' dato;
   - il report non e' piu' vecchio del commit della SPEC;
   - l'OOS si gira una volta sola; un OOS gia' visto rende il verdetto asimmetrico;
-  - la via B usa la soglia t del massimo di k strategie a edge zero;
+  - la via B usa la soglia t del massimo di k strategie a edge zero; in OOS non ha soglie
+    proprie: il suo giudizio e' il gate marginale;
   - una riga NO nei controlli preliminari rende il report invalido;
   - Stage 1: controlli meccanici sulla List of Trades (uscite, orari, trade al giorno,
     overnight, scaling x10), l'esito e' quello dei controlli.
@@ -353,7 +354,9 @@ def gira_check_report(report, fase_cr, dd_is):
         m = cr.rapporto(report, fase_cr, dd_is)
     _, pl, _, _, _ = cr.leggi(report)
     testo = buf.getvalue()
-    prelim = re.findall(r'^\s{2}(NO|\?)\s+(.*)$', testo, re.M)
+    # solo la sezione dei preliminari: i NO dei gate sono esiti, non impostazioni sbagliate
+    sezione = testo.split('CONTROLLI PRELIMINARI', 1)[-1].split('MISURE', 1)[0]
+    prelim = re.findall(r'^\s{2}(NO|\?)\s+(.*)$', sezione, re.M)
     metr = {k: m[k] for k in ('n', 'avg', 't', 'wr', 'rr', 'pf', 'dd', 'net') if k in m}
     metr['peggiore'] = min(pl) if pl else 0.0
     esito = None
@@ -538,14 +541,25 @@ def cmd_giudica(a):
         dati['prelim'] = []
     else:
         dd_is = a.dd_is
-        if fase == 'oos' and dd_is is None:
+        # A|B: in OOS vale la via con cui la strategia ha passato l'IS
+        via_oos = info['via']
+        if via_oos == 'A|B':
+            via_oos = v.get((stem(spec), 'is'), {}).get('via', 'A')
+        if fase == 'oos' and via_oos == 'A' and dd_is is None:
             is_v = v.get((stem(spec), 'is'))
             if is_v and is_v.get('dd'):
                 dd_is = float(is_v['dd'])
             else:
                 fail('oos: manca il DD dell\'IS (nessun verdetto IS con dd): passa --dd-is')
-        fase_cr = {'s1': None, 'is': 2 if info['via'] in ('A', 'A|B') else None, 'oos': 3}[fase]
+        fase_cr = {'s1': None, 'is': 2 if info['via'] in ('A', 'A|B') else None,
+                   'oos': 3 if via_oos == 'A' else None}[fase]
         testo, metr, prelim, esito = gira_check_report(report, fase_cr, dd_is)
+        if fase == 'oos' and via_oos == 'B':
+            # pipeline_semplice.md: per la via B la fase 3 sono i quattro criteri del gate marginale
+            testo += ('\nVia B: l\'OOS non ha soglie proprie, qui si registrano le misure. Il giudizio '
+                      'e\' il gate marginale (book); se fallisce, cimitero definitivo.\n')
+            esito = 'passa'
+            dati['via'] = 'B'
         if fase == 's1':
             t1, esito, m1 = controlli_s1(report, a.x10, a.entrata, a.max_giorno, a.flat)
             testo += t1
