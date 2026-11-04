@@ -52,6 +52,10 @@ Inputs:
           YYY = anno - 1900 (1200101 = 1 gen 2020). 0 = disattivato --- }
     TradeStartEL(0),
     TradeEndEL(0),
+    { --- bridge verso MT5 (bridge/SPEC.md): "" = spento. Solo in tempo reale, non tocca la
+          logica ne' i backtest. Percorso del file nella cartella Common di MetaQuotes --- }
+    BridgeFile(""),
+    BridgeMicro(1),
     ShowLog(0);                { 1 = stampa bias del giorno e ogni ingresso (non e' logica) }
 
 Variables:
@@ -73,7 +77,8 @@ Variables:
     onPos(0), canWork(false),
     adxOK(true), barRngOK(true), avgRng(0),
     trVal(0), trSum(0), kk(0),
-    atrStopOK(false), dateOK(false);
+    atrStopOK(false), dateOK(false),
+    wasPos(0), bridgeOn(false), bridgeId("");
 
 Arrays:
     trBuf[200](0);
@@ -182,6 +187,12 @@ canWork = dateOK and orDone and regimeOK and adxOK and atrStopOK
           and Time > OREnd and Time <= LastEntry
           and MarketPosition = 0 and tradesToday < MaxTradesPerDay;
 
+{ ===== BRIDGE: una riga per evento, azione;id;strategia;strumento;lato;micro;stop;target;FINE ===== }
+bridgeOn = BridgeFile <> "" and GetAppInfo(aiRealTimeCalc) = 1;
+if bridgeOn and wasPos <> 0 and MarketPosition = 0 then
+    FileAppend(BridgeFile, "CHIUDI;" + bridgeId + ";OBO;NQ;0;0;0;0;FINE" + NewLine);
+wasPos = MarketPosition;
+
 { ===== ENTRY: prima chiusura oltre l'OR. Un breakout scartato non chiude il lato ===== }
 if canWork then begin
     if Close > orHigh then begin
@@ -195,6 +206,11 @@ if canWork then begin
             Sell ("OBO-L-SL0") next bar at stopPx stop;
             Sell ("OBO-L-TP0") next bar at tgtPx limit;
             tradesToday = tradesToday + 1;
+            if bridgeOn then begin
+                bridgeId = "OBO-" + NumToStr(Date, 0) + "-" + NumToStr(Time, 0);
+                FileAppend(BridgeFile, "APRI;" + bridgeId + ";OBO;NQ;1;" + NumToStr(BridgeMicro, 0) + ";"
+                    + NumToStr(stopPts, 2) + ";" + NumToStr(stopPts * TakeProfitRR, 2) + ";FINE" + NewLine);
+            end;
         end;
     end
     else if Close < orLow then begin
@@ -208,6 +224,11 @@ if canWork then begin
             BuyToCover ("OBO-S-SL0") next bar at stopPx stop;
             BuyToCover ("OBO-S-TP0") next bar at tgtPx limit;
             tradesToday = tradesToday + 1;
+            if bridgeOn then begin
+                bridgeId = "OBO-" + NumToStr(Date, 0) + "-" + NumToStr(Time, 0);
+                FileAppend(BridgeFile, "APRI;" + bridgeId + ";OBO;NQ;-1;" + NumToStr(BridgeMicro, 0) + ";"
+                    + NumToStr(stopPts, 2) + ";" + NumToStr(stopPts * TakeProfitRR, 2) + ";FINE" + NewLine);
+            end;
         end;
     end;
 end;
