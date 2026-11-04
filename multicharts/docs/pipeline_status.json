@@ -7,9 +7,10 @@
   "updated": "2026-11-04",
   "groups": [
    {
-    "title": "DriftPullback e' live su LucidFlex 50k dal 26/10",
+    "title": "Prima run DriftPullback su LucidFlex: finita il 02/11, MLL toccato",
     "note": "configurazione reale e diario in mc/docs/go_live.md",
     "items": [
+     "**Da fare subito: spegnere AA su `Drift_LIVE`, confermare il fallimento sulla dashboard Lucid.** Il grafico crede di avere posizioni che il conto non ha.",
      "**Ogni sera, la prima settimana: ogni trade reale contro il backtest dello stesso giorno** (stessi ingressi, orari, uscite). Se divergono ci si ferma. Vale da Stage 9.",
      "Configurazione: segnale `Drift_LIVE` (= `DriftPullback_v21.txt`, `BaseCts 2`), grafico **NQZ6 Rithmic**, mapping **NQZ6 → MNQZ6**, auto trading **AA**, stop **emulati** (Emulate locally, dal 28/10), limit Native. Il P&L del grafico e' 10 volte quello del conto.",
      "**Non toccare DriftPullback.** Un filtro o una variante adesso sarebbe una v2, validabile solo sul live.",
@@ -1091,6 +1092,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-04",
+   "text": "**Prima run DPB su LucidFlex finita il 02/11: MLL toccato alle 10:11:11 CT** (da confermare sulla dashboard). Saldo stimato $48.128,52 contro MLL $48.129, chiusura forzata dal broker. 15 trade, 6 vinti, −$1.841,50 lordi contro −$1.858 del grafico: esecuzione allineata, sfortuna dentro l'atteso (pass 41,6%). Il 03/11 il grafico e' andato avanti senza il conto: AA da spegnere. Report `DPB_LIVE_2026-10-26_2026-11-03.xlsx`."
+  },
   {
    "date": "2026-11-04",
    "text": "**Book deciso: DPB 1 + Gold pct1 1 + Overnight Bias ORB 1 micro, su LucidFlex.** 58,7% iid, $118 per funded, giornata peggiore −$1.099; solo 2026 69,1%. VaultBreak v8 fuori, in SA come forward. Si imposta a fine run DPB, dopo aver valutato i risultati; Gold non prima del 16/11."
