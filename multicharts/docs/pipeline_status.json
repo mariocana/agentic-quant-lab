@@ -1010,9 +1010,13 @@
     {
      "date": "2026-11-04",
      "text": "**Stage 1, primo giro invalido, non verbalizzato.** Input `MinStopPoints 60` e `MaxStopPoints 250` rimasti sul grafico (la v4 non li ha) e template predefinito di MC con il venerdi' chiuso alle 15:15: due trade passano il weekend perche' il flat delle 15:55 non scatta. Il log non stampava l'ADX: aggiunto, solo stampa. Report non tenuto."
+    },
+    {
+     "date": "2026-11-04",
+     "text": "**Stage 1, secondo giro: meccanica giusta, manca il report a 1 contratto.** Il report arrivato e' il x10 (60 trade), il file a 1 contratto sul Desktop e' stato sovrascritto. Log contro List of Trades: 60 su 60, ADX sempre >= 20 e in calo, ingressi alla barra dopo il segnale, flat anche il venerdi' (15:56 il 23/10), nessun weekend. Stop fra 2,5 e 721,5 punti, trade peggiore $558 per micro: sopra i $500 della via B gia' in questi mesi."
     }
    ],
-   "next": "Fase 1 da rigirare: template 17:00-16:00 senza pause, MinStopPoints 0, MaxStopPoints 0, codice ricompilato, ShowLog 1; report VWAPADX_S1_100gg.xlsx e _x10, piu' il log.",
+   "next": "Report a 1 contratto: stesso grafico, Num_Contracts 1, salvato con un nome diverso dal x10; poi lab.py giudica s1.",
    "spec": "strategies/VWAP_Pullback/SPEC_ADX.md"
   },
   {
