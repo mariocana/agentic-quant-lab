@@ -1075,6 +1075,10 @@
     {
      "date": "2026-11-04",
      "text": "**Template confermato da Mario il 04/11:** CME Globex 17:00-16:00 senza pause. I run di fase 1, IS e OOS sono validi, i verdetti restano."
+    },
+    {
+     "date": "2026-11-04",
+     "text": "**Bridge verso MT5:** input `BridgeFile` spento di default, scrive i segnali solo in tempo reale, logica e backtest invariati. Bozza in `bridge/`, mai compilata."
     }
    ],
    "next": "Nel book deciso il 04/11, 1 micro: con l'automazione spenta fino alla nuova squadra, a fine run DPB. Serve la configurazione del grafico live in `go_live.md`.",
