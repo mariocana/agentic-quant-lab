@@ -979,6 +979,10 @@
     {
      "date": "2026-11-02",
      "text": "**fase 3b, gate marginale: passa.** **Entra per lo script: Δ iid +3,0 pp, Δ contiguo +7,7 pp, giornata peggiore -$1.104, avg $9,35 per micro.** Book DPB OOS a 2 micro, candidata a 1 micro, nessun --dal. Diagnostica fuori verdetto, solo 2026 (--dal 2026-01-01, dopo la correzione del bug di --dal): Δ iid -1,9 pp, Δ contiguo +1,4, avg -$0,84 per micro: l'aumento viene dal 2025. Verdetto asimmetrico: entra solo come prova dal vivo, e il live e' il vero OOS. Verdetto in `strategies/VaultBreak/verdicts/SPEC_v8_book.md`."
+    },
+    {
+     "date": "2026-11-04",
+     "text": "**Template confermato da Mario il 04/11:** CME Globex 17:00-16:00 senza pause. I run di fase 1, IS e OOS sono validi, i verdetti restano."
     }
    ],
    "next": "**Decisione di Mario**: entra per le regole, ma l'aumento viene dal 2025 e il 2026 è a zero. Se entra: paper almeno una settimana a 1 micro accanto a DPB, poi live, due settimane prima di qualsiasi altra aggiunta.",
@@ -1052,6 +1056,10 @@
     {
      "date": "2026-11-04",
      "text": "**fase 3b, gate marginale: passa.** **Entra per lo script: Δ iid +2,9 pp, Δ contiguo +6,5 pp, giornata peggiore -$1.104, avg $49,06 per micro.** Book DPB OOS a 2 micro, candidata a 1 micro. Controllo fuori verdetto, solo 2026: Δ iid +7,9, contiguo +17,1; il 2025 da solo vale poco (t 0,29). Risultato concentrato: senza i 10 trade migliori t 0,26. Verdetto asimmetrico: entra solo come prova dal vivo, forward pulito dal 1/9/2026. Il posto nel book si decide con le altre candidate. Verdetto in `strategies/OvernightBiasORB/verdicts/SPEC_book.md`."
+    },
+    {
+     "date": "2026-11-04",
+     "text": "**Template confermato da Mario il 04/11:** CME Globex 17:00-16:00 senza pause. I run di fase 1, IS e OOS sono validi, i verdetti restano."
     }
    ],
    "next": "**Decisione di Mario**: passa il gate per le regole, solo come prova dal vivo. Il posto nel book si decide con Gold pct1 e VaultBreak v8, dopo VWAP + ADX.",
