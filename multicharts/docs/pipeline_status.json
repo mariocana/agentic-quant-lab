@@ -1100,6 +1100,10 @@
  "log": [
   {
    "date": "2026-11-05",
+   "text": "**Tre documenti IVB archiviati.** Foundation: rassegna generica su ORB e Initial Balance, nessuna regola. Report di validazione di Matteo Conti: è il nostro ORB Breakout (823 trade, avg $183), lavora sul log dell'autore senza rieseguire sui dati; da noi OOS t 0,63 e 0,80, e DD ~$2.590 per micro oltre l'MLL. Triple AAA di Valentini: il quadro discrezionale di Balance, Momentum, OrderTrack e RubberBand. Mai testati: ingresso con ordine stop al massimo del range (noi su chiusura a 5 minuti) e il bias IVB come filtro di giornata."
+  },
+  {
+   "date": "2026-11-05",
    "text": "**Idea scartata: Prop Model #2 RubberBand (divergenza delta/prezzo, ingresso oltre l'estremo, 1:1, LR 15).** Misurata su NQ RTH 2020-2024 con UpVol-DownVol come proxy del delta: a 5 minuti con filtro 3.972 trade, -$29, t -3,57, peggio del delta concorde (-$10) a ogni timeframe e negativa anche lorda. Delta forte: 73 trade in 5 anni, t 1,47, migliore di 12 varianti, compatibile col caso. Quattro idee dell'ingest chiuse."
   },
   {
