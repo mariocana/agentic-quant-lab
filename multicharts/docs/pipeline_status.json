@@ -1100,6 +1100,10 @@
  "log": [
   {
    "date": "2026-11-05",
+   "text": "**Idea scartata: Balance Model (auction market theory, fade di VAH/VAL verso il POC su NQ).** Più processo discrezionale che algoritmico: il trigger vero (big trade che falliscono sul bordo, tape) non si testa su barre. Misurato su NQ 1 min 2021-2024, 998 giornate: le statistiche del playbook tornano (POC toccato 80,1% da dentro la value) ma un livello specchio dal lato opposto fa 81,4%, quindi il POC non è una calamita. Fade del bordo con target POC e stop uguale: 364 trade, t −0,28. Rientro in value: 252 trade, +$59 per NQ, t 1,09, unico segnale debole, non portato avanti."
+  },
+  {
+   "date": "2026-11-05",
    "text": "**Saltate senza run due Strategy of the Month.** BTC settembre: il codice dell'autore misura 07:55-08:25 CT, il PDF 08:30-09:00; sul 2020-2024 lo short lordo fa -0,8 bp (t -0,10), verdetto causa A confermato, appendice alla SPEC. Noise area NQ di ottobre: scritta dal PDF in `strategies/NoiseAreaNQ` (codice dell'autore non disponibile, non compilata) e archiviata: famiglia VaultBreak, stesso OOS già usato."
   },
   {
