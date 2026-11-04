@@ -1094,6 +1094,10 @@
  "log": [
   {
    "date": "2026-11-04",
+   "text": "**Script del corso di nuovo funzionante** (`docs/colab_corso/.venv`). Book DPB + Gold pct1 + Overnight Bias a 1 micro su regole Apex 50K: 25,8%, 59,6% dei tentativi scade ai 21 giorni; alla size scelta dallo script (9 micro) 44,5%. Stage B: mix uguale 42,1% contro le singole 33-38%. Output `docs/book_DPB_GAR_OBO_colab_corso.txt`."
+  },
+  {
+   "date": "2026-11-04",
    "text": "**VWAP Pullback + ADX v4: cimitero in fase 2.** IS 2020–2024: 605 trade, **t 0,58**, avg $22, WR 64%, peggiore $601 per micro: fallisce la via A e la via B (t > 1,03). L'autore dichiarava WR 82% e avg $300. OOS ricevuto ma non aperto. Delle tre del corso restano VaultBreak v8 e Overnight Bias ORB, entrambe solo come prova dal vivo."
   },
   {
