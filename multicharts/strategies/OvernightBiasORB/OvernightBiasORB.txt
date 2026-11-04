@@ -236,16 +236,22 @@ end;
 { ===== USCITE: riemesse a ogni barra in posizione; il blocco d'ingresso
   copre la barra del fill. Stop e target dalla close del SEGNALE ===== }
 if MarketPosition = 1 then begin
-    if Time >= FlatTime then
-        Sell ("OBO-XL") next bar at market
+    if Time >= FlatTime then begin
+        Sell ("OBO-XL") next bar at market;
+        if bridgeOn then
+            FileAppend(BridgeFile, "CHIUDI;" + bridgeId + ";OBO;NQ;0;0;0;0;FINE" + NewLine);
+    end
     else begin
         Sell ("OBO-L-SL") next bar at stopPx stop;
         Sell ("OBO-L-TP") next bar at tgtPx limit;
     end;
 end;
 if MarketPosition = -1 then begin
-    if Time >= FlatTime then
-        BuyToCover ("OBO-XS") next bar at market
+    if Time >= FlatTime then begin
+        BuyToCover ("OBO-XS") next bar at market;
+        if bridgeOn then
+            FileAppend(BridgeFile, "CHIUDI;" + bridgeId + ";OBO;NQ;0;0;0;0;FINE" + NewLine);
+    end
     else begin
         BuyToCover ("OBO-S-SL") next bar at stopPx stop;
         BuyToCover ("OBO-S-TP") next bar at tgtPx limit;
