@@ -1094,6 +1094,10 @@
  "log": [
   {
    "date": "2026-11-04",
+   "text": "**Cartella `live/`:** un conto, una riga in `conti.csv` e una cartella con report, ordini, log e dashboard; `docs/live_conti.py` calcola pass rate e costi reali. Primo conto: $80,50, MLL il 02/11."
+  },
+  {
+   "date": "2026-11-04",
    "text": "**Nuova eval LucidFlex con il book intero, AA dal 16/11** (DPB 1, Gold pct1 1, Overnight Bias 1). Precisata la regola delle 2 settimane: vale per le aggiunte a un conto in corso. Configurazione dei tre grafici in `go_live.md`, sezione 12, con tre punti da verificare al primo trade."
   },
   {
@@ -1102,7 +1106,7 @@
   },
   {
    "date": "2026-11-04",
-   "text": "**Prima run DPB su LucidFlex finita il 02/11: MLL toccato alle 10:11:11 CT** (da confermare sulla dashboard). Saldo stimato $48.128,52 contro MLL $48.129, chiusura forzata dal broker. 15 trade, 6 vinti, −$1.841,50 lordi contro −$1.858 del grafico: esecuzione allineata, sfortuna dentro l'atteso (pass 41,6%). Il 03/11 il grafico e' andato avanti senza il conto: AA da spegnere. Report `DPB_LIVE_2026-10-26_2026-11-03.xlsx`."
+   "text": "**Prima run DPB su LucidFlex finita il 02/11: MLL toccato alle 10:11:11 CT** (da confermare sulla dashboard). Saldo stimato $48.128,52 contro MLL $48.129, chiusura forzata dal broker. 15 trade, 6 vinti, −$1.841,50 lordi contro −$1.858 del grafico: esecuzione allineata, sfortuna dentro l'atteso (pass 41,6%). Il 03/11 il grafico e' andato avanti senza il conto: AA da spegnere. Report in `live/2026-10-26_lucidflex50k_dpb/`."
   },
   {
    "date": "2026-11-04",
