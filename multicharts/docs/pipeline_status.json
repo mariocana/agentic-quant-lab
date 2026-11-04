@@ -1100,6 +1100,10 @@
  "log": [
   {
    "date": "2026-11-05",
+   "text": "**JPMorgan Collar archiviato come playbook.** Lo smorzamento fino al reset non si vede: ES RTH 2016-2024, 36 reset JHEQX, range del giorno in linea (t 0,06) e ultima ora più mossa (1,31 volte la mediana, t 4,28), ma uguale ai fine mese dei fondi minori (1,33): è il fine mese, non il collar. Muri dei nuovi strike non testati (mancano gli strike storici). Quattro eventi l'anno, niente strategia."
+  },
+  {
+   "date": "2026-11-05",
    "text": "**Tre documenti IVB archiviati.** Foundation: rassegna generica su ORB e Initial Balance, nessuna regola. Report di validazione di Matteo Conti: è il nostro ORB Breakout (823 trade, avg $183), lavora sul log dell'autore senza rieseguire sui dati; da noi OOS t 0,63 e 0,80, e DD ~$2.590 per micro oltre l'MLL. Triple AAA di Valentini: il quadro discrezionale di Balance, Momentum, OrderTrack e RubberBand. Mai testati: ingresso con ordine stop al massimo del range (noi su chiusura a 5 minuti) e il bias IVB come filtro di giornata."
   },
   {
