@@ -163,7 +163,7 @@ si vuole ([prezzi](https://algovps.com/pricing)). Alternativa: QuantVPS Lite+ a 
 |---|---|
 | **27/11** | Black Friday: decisione sulla licenza MultiCharts |
 | **29/11** | **fine del mese gratuito**. Se scade a eval aperta, **l'automazione si ferma** |
-| **09/11** | Gold Asian Range in AA (sezione 11), dopo le 2 settimane di DPB |
+| **fine della run DPB** | si valutano i risultati e si imposta la nuova squadra: DPB 1 + Gold 1 + Overnight Bias 1 micro (sezione 11). Gold non prima del 16/11 |
 | **21–22/11** | rollover dell'oro: grafico GCZ6 → GCG7 **e** mapping → GCG7 → MGCG7 |
 | **~11/12** | rollover: grafico NQZ6 → NQH7 **e** mapping → NQH7 → MNQH7 |
 
@@ -198,9 +198,11 @@ E le soglie dello Stage 9 restano: drawdown al **75esimo percentile → si riduc
 Entra nel book dopo il gate marginale del 02/11 (+9,0 pp iid, +15,6 contiguo con DPB a 2
 micro; dettagli e avvertenze in `strategies/GoldAsianRange/README_GAR.md`). **1 MGC.**
 
-**Quando.** La regola del gate chiede almeno 2 settimane di live fra un'aggiunta e l'altra: DPB
-è live dal 26/10, quindi **AA dal 09/11**. Fino ad allora il grafico gira in **SA** (segnali
-senza ordini) e serve per i controlli qui sotto.
+**Quando.** Decisione del 04/11: book **DPB 1 + Gold 1 + Overnight Bias ORB 1 micro** su LucidFlex
+(`pipeline_semplice.md`). Si imposta **finita la run in corso con DPB a 2 micro**, dopo aver valutato
+i risultati, e non prima del 16/11: la variante di Gold chiede almeno 2 settimane di paper dal
+02/11. Fino ad allora il grafico gira in **SA** (segnali senza ordini) e serve per i controlli qui
+sotto.
 
 ### Il grafico
 

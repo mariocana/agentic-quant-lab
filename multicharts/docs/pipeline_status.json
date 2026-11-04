@@ -4,7 +4,7 @@
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
  "todo": {
-  "updated": "2026-10-29",
+  "updated": "2026-11-04",
   "groups": [
    {
     "title": "DriftPullback e' live su LucidFlex 50k dal 26/10",
@@ -20,8 +20,7 @@
     "title": "Aperti al 26/10",
     "note": "la seconda gamba: eccesso positivo >= 3 errori standard e bassa correlazione con DriftPullback, non deve reggere il conto da sola (seconda_gamba.md)",
     "items": [
-     "**Gate marginale (fase 3b)** — coda in `pipeline_semplice.md`: Gold Asian Range A (serve l'OOS da MC), poi ORB cutoff11, VaultBreak MaxTrades1, ORB senza cutoff (OOS gia' nel repo), VWAP Pullback filtrata (serve l'OOS). Trend Following (Unger) chiusa il 29/10: materiale di Unger finito.",
-     "**Tre del corso allo Stage 0 → fase 1 (100 giorni)**: VaultBreak v8 (@NQ 30m Globex), VWAP Pullback + ADX v4 (@NQ 1m Globex), Overnight Bias ORB (@NQ 15m Globex, `Mario_OvernightBiasORB`). Spec e profili negli header dei codici.",
+     "**Book deciso il 04/11: DPB 1 + Gold pct1 1 + Overnight Bias ORB 1 micro su LucidFlex.** Finita la run in corso con DPB a 2 micro si valutano i risultati e si imposta la nuova squadra (Gold non prima del 16/11). Intanto Gold, Overnight Bias e VaultBreak v8 in SA. Da decidere allora: una alla volta o insieme (`pipeline_semplice.md`).",
      "**Prompt del ricercatore rivisto il 26/10** (`mc/docs/prompt_ricerca_strategie.md`): obiettivo la seconda gamba (t >= 3 sull'IS, correlazione sul P&L giornaliero, >= 0,4 trade al giorno), metro l'eccesso sul caso, praticanti alla pari dei paper con filtro P1-P6, vincitori di gara con t >= 3 e OOS = forward dalla data del PDF. `gate0.py` allineato. Triage fatto: 105 fonti ignorate per dominio, 122 giudicate nella v10, **nessuna candidata**; 5 aperte, fra cui un articolo 2026 sul ritiro di liquidita' prima dei dati macro delle 08:30 CT (403, da aprire con altro accesso). **Prossimo: una ricerca vera col prompt nuovo, un solo focus per run.**",
      "**Storico @ES / @NQ di quantlake da riesportare con il template 17:00–16:00**: il controllo di `Mario_PtnBaseSA` ha trovato 27 sessioni su 93 diverse dal chart, tutte per dati mancanti nell'export (chiusure del venerdì alle 15:15, estremi fra 15:15 e 16:00)."
     ]
@@ -985,7 +984,7 @@
      "text": "**Template confermato da Mario il 04/11:** CME Globex 17:00-16:00 senza pause. I run di fase 1, IS e OOS sono validi, i verdetti restano."
     }
    ],
-   "next": "**Decisione di Mario**: entra per le regole, ma l'aumento viene dal 2025 e il 2026 è a zero. Se entra: paper almeno una settimana a 1 micro accanto a DPB, poi live, due settimane prima di qualsiasi altra aggiunta.",
+   "next": "Fuori dal book (decisione del 04/11): 2026 a zero. Resta in SA come forward, solo per dati.",
    "metrics": {
     "IS 2020-2024": "1.125 trade · avg $76,76 ± 27,65 · **t 2,78** · WR 65,3% · R:R 0,64 · PF 1,204 · peggiore −$1.515 (−$151,50 per micro)",
     "per anno (avg, t)": "2020 $140 t 2,45 · 2021 $92 t 1,53 · 2022 $55 t 0,84 · 2023 $75 t 1,23 · **2024 $29 t 0,45**",
@@ -1075,7 +1074,7 @@
      "text": "**Template confermato da Mario il 04/11:** CME Globex 17:00-16:00 senza pause. I run di fase 1, IS e OOS sono validi, i verdetti restano."
     }
    ],
-   "next": "**Decisione di Mario**: passa il gate per le regole, solo come prova dal vivo. Il posto nel book si decide con Gold pct1 e VaultBreak v8, dopo VWAP + ADX.",
+   "next": "Nel book deciso il 04/11, 1 micro: in SA fino alla nuova squadra, a fine run DPB. Serve la configurazione del grafico live in `go_live.md`.",
    "spec": "strategies/OvernightBiasORB/SPEC.md",
    "metrics": {
     "fase 2, IS": "455 trade · t 4.51 · WR 53.8% · R:R 1.45",
@@ -1092,6 +1091,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-04",
+   "text": "**Book deciso: DPB 1 + Gold pct1 1 + Overnight Bias ORB 1 micro, su LucidFlex.** 58,7% iid, $118 per funded, giornata peggiore −$1.099; solo 2026 69,1%. VaultBreak v8 fuori, in SA come forward. Si imposta a fine run DPB, dopo aver valutato i risultati; Gold non prima del 16/11."
+  },
   {
    "date": "2026-11-04",
    "text": "**`apex_50k_intraday` in `prop_firms.ini`, trailing intraday in `prop_sim.py`** (massimo prima del minimo, caso prudente; il gate marginale non cambia). Book 1/1/1 OOS: Lucid 58,7% e $118 per funded, Apex EOD 26,0% e $356, Apex Intraday 23,3% e $206. Sul 2026: 69,1%, 41,3%, 35,4%."

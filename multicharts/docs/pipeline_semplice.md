@@ -208,5 +208,14 @@ stesso giorno, ognuna misurata **contro DPB da sola**. Misurate l'una sopra l'al
 +2,8, e insieme la giornata peggiore è **−$1.488** (oltre il DLL): **le tre insieme non passano
 il criterio 3**. Pass rate: DPB 41,6 / 59,1 · DPB + VB8 45,0 / 66,9 · **DPB + GAR 51,0 / 74,4** ·
 DPB + GAR + VB8 53,0 / 69,2. Le candidate 3–5 sono state misurate contro tutti e tre i book e
-non entrano in nessuno, e neanche la 6 (03/11). **Coda finita**: il book di riferimento è da
-scegliere fra DPB + GAR e DPB + VB8.
+non entrano in nessuno, e neanche la 6 (03/11). **Coda finita.**
+
+**Decisione del 04/11/2026 (Mario): book DPB 1 + Gold pct1 1 + Overnight Bias ORB 1 micro, su
+LucidFlex.** `book_sim.py`, finestra 2025-01-01 → 2026-10-15: 58,7% iid, 68,5% contiguo, $118 per
+funded, giornata peggiore −$1.099; solo 2026: 69,1% e 94,4%. Scelto sopra 1/1/0/1 con VaultBreak v8
+(59,3% e 74,5%, ma sul 2026 57,3%, e VB8 ha il 2026 a t −0,12). VaultBreak v8 resta fuori, in SA
+come forward. Numeri ottimisti: size scelte su questi dati, filtro di Gold scelto dopo l'OOS.
+**Quando:** finita la run in corso con DPB a 2 micro si valutano i risultati e si imposta la nuova
+squadra. Gold e Overnight Bias intanto in SA; prima dell'AA almeno 2 settimane di paper (Gold non
+prima del 16/11). **Da decidere allora:** la regola delle 2 settimane fra un'aggiunta e l'altra
+chiede di aggiungerle una alla volta; farle partire insieme è un'eccezione da scrivere qui.
