@@ -271,3 +271,39 @@ Nel weekend del **21–22/11**, a mercato chiuso: grafico **GCZ6 → GCG7** e ma
 
 Come DPB: trade del conto (scheda Orders) contro il grafico, e le righe `GAR RNG`/`GAR ENT`
 del log contro il backtest dello stesso giorno. Se divergono, si spegne GAR e si capisce perché.
+
+## 12. La squadra: DPB + Gold + Overnight Bias sulla nuova eval (AA dal 16/11/2026)
+
+Decisione del 04/11 in `pipeline_semplice.md`. Tre grafici nello stesso MultiCharts, stessa
+connessione Rithmic, stesso conto, **1 micro ciascuna**.
+
+| | DPB | Gold | Overnight Bias ORB |
+|---|---|---|---|
+| Segnale | `Drift_LIVE` | `MarioGoldAsianRange` | `Mario_OvernightBiasORB` |
+| Grafico | NQZ6 5 min + data2 NQZ6 15 min | GCZ6 15 min | NQZ6 15 min |
+| Sessione | 17:00-16:00 senza pause | 24/7 | 17:00-16:00 senza pause |
+| Timezone | Exchange | Exchange (controllo del fuso, sezione 11) | Exchange |
+| Storico | qualche giorno | due giorni | **almeno 2 mesi** |
+| Mapping | NQZ6 → MNQZ6 | GCZ6 → MGCZ6 | NQZ6 → MNQZ6 (lo stesso) |
+| Exchange | CME | COMEX | CME |
+| Size | **`BaseCts 1`** | `Num_Contracts 1` | `NumContracts 1` |
+| Altri input | sezione 5 | sezione 11, `MaxRangePct 1` | tutti i default, `TradeStartEL 0`, `TradeEndEL 0` |
+| Flat dalle | 14:55 CT | 9:15 CT | 14:45 CT |
+
+**Il conto nuovo ha un codice nuovo:** su ogni grafico, ingranaggio → Account con *Lookup*.
+
+**AA solo con tutti e tre flat:** fra le **15:00 e le 16:00 CT** o fra le **17:00 e le 18:45 CT**.
+
+**Tre cose non verificate, da guardare al primo trade:**
+1. **DPB e Overnight Bias sono sullo stesso MNQZ6.** Il broker somma le posizioni: long 1 + short 1
+   sul conto è flat, ma ogni grafico tiene la sua. Non è mai stato provato qui. Se Overnight Bias
+   chiede la posizione iniziale con DPB aperta, il conto non è flat: per questo l'AA si accende
+   solo con tutti flat.
+2. **Stop sulla barra d'ingresso di Overnight Bias.** Nel backtest c'è (`OBO-L-SL0`). Dal vivo va
+   controllato nella scheda Orders che lo stop compaia subito dopo il fill, e non 15 minuti dopo.
+3. **Exchange COMEX per Gold e CME per NQ.** Va controllato che l'ingranaggio tenga un valore per
+   grafico e non uno solo per la connessione. Il primo ordine Gold rifiutato lo dirà.
+
+**Nel paper fino al 16/11** i tre grafici girano in SA e ogni sera si confrontano i segnali con
+il backtest dello stesso giorno.
+

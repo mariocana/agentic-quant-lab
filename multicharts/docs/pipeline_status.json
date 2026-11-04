@@ -21,7 +21,7 @@
     "title": "Aperti al 26/10",
     "note": "la seconda gamba: eccesso positivo >= 3 errori standard e bassa correlazione con DriftPullback, non deve reggere il conto da sola (seconda_gamba.md)",
     "items": [
-     "**Book deciso il 04/11: DPB 1 + Gold pct1 1 + Overnight Bias ORB 1 micro su LucidFlex.** Finita la run in corso con DPB a 2 micro si valutano i risultati e si imposta la nuova squadra (Gold non prima del 16/11). Intanto Gold, Overnight Bias e VaultBreak v8 in SA. Da decidere allora: una alla volta o insieme (`pipeline_semplice.md`).",
+     "**Nuova eval LucidFlex con il book intero, AA dal 16/11: DPB 1 + Gold pct1 1 + Overnight Bias ORB 1 micro.** Configurazione in `go_live.md` sezione 12. Fino ad allora i tre grafici in SA, confronto ogni sera. VaultBreak v8 fuori, in SA come forward.",
      "**Prompt del ricercatore rivisto il 26/10** (`mc/docs/prompt_ricerca_strategie.md`): obiettivo la seconda gamba (t >= 3 sull'IS, correlazione sul P&L giornaliero, >= 0,4 trade al giorno), metro l'eccesso sul caso, praticanti alla pari dei paper con filtro P1-P6, vincitori di gara con t >= 3 e OOS = forward dalla data del PDF. `gate0.py` allineato. Triage fatto: 105 fonti ignorate per dominio, 122 giudicate nella v10, **nessuna candidata**; 5 aperte, fra cui un articolo 2026 sul ritiro di liquidita' prima dei dati macro delle 08:30 CT (403, da aprire con altro accesso). **Prossimo: una ricerca vera col prompt nuovo, un solo focus per run.**",
      "**Storico @ES / @NQ di quantlake da riesportare con il template 17:00–16:00**: il controllo di `Mario_PtnBaseSA` ha trovato 27 sessioni su 93 diverse dal chart, tutte per dati mancanti nell'export (chiusure del venerdì alle 15:15, estremi fra 15:15 e 16:00)."
     ]
@@ -1092,6 +1092,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-04",
+   "text": "**Nuova eval LucidFlex con il book intero, AA dal 16/11** (DPB 1, Gold pct1 1, Overnight Bias 1). Precisata la regola delle 2 settimane: vale per le aggiunte a un conto in corso. Configurazione dei tre grafici in `go_live.md`, sezione 12, con tre punti da verificare al primo trade."
+  },
   {
    "date": "2026-11-04",
    "text": "**LucidFlex 50k: eval a $80** (era $69, Mario 04/11). Costo atteso per funded del book 1/1/1: $136 (era $118), sempre sotto Apex."

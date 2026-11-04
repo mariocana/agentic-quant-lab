@@ -217,5 +217,9 @@ funded, giornata peggiore −$1.099; solo 2026: 69,1% e 94,4%. Scelto sopra 1/1/
 come forward. Numeri ottimisti: size scelte su questi dati, filtro di Gold scelto dopo l'OOS.
 **Quando:** finita la run in corso con DPB a 2 micro si valutano i risultati e si imposta la nuova
 squadra. Gold e Overnight Bias intanto in SA; prima dell'AA almeno 2 settimane di paper (Gold non
-prima del 16/11). **Da decidere allora:** la regola delle 2 settimane fra un'aggiunta e l'altra
-chiede di aggiungerle una alla volta; farle partire insieme è un'eccezione da scrivere qui.
+prima del 16/11).
+
+**Precisazione alla regola delle 2 settimane (04/11/2026, prima di partire).** Vale per le aggiunte
+a un conto già in corso. Un conto nuovo parte con il book deciso: *«don't run a single strategy even
+in the evaluation phase»* (Live 004, 18:05), e la prima run con DPB da sola è finita sull'MLL il
+02/11. Il costo accettato: se qualcosa non torna nei primi giorni, è più difficile dire quale gamba.
