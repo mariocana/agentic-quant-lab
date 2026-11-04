@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-04",
+ "updated": "2026-11-05",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -1098,6 +1098,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-05",
+   "text": "**Saltate senza run due Strategy of the Month.** BTC settembre: il codice dell'autore misura 07:55-08:25 CT, il PDF 08:30-09:00; sul 2020-2024 lo short lordo fa -0,8 bp (t -0,10), verdetto causa A confermato, appendice alla SPEC. Noise area NQ di ottobre: scritta dal PDF in `strategies/NoiseAreaNQ` (codice dell'autore non disponibile, non compilata) e archiviata: famiglia VaultBreak, stesso OOS già usato."
+  },
   {
    "date": "2026-11-04",
    "text": "**Cartella `live/`:** un conto, una riga in `conti.csv` e una cartella con report, ordini, log e dashboard; `docs/live_conti.py` calcola pass rate e costi reali. Primo conto: $80,50, MLL il 02/11."

@@ -192,3 +192,31 @@ contratto non erano dichiarati, quindi non si può dire dove stia la differenza.
   short insieme, non una riapertura di questa;
 - nessuna variante pre‑registrata dello Stage 4 tocca il problema: `MinDropPts` e il buffer
   dello stop non creano l'asimmetria che manca, e i target in R peggiorano.
+
+---
+
+# Appendice — il codice dell'autore (05/11/2026)
+
+Trascrizione: `protocollo/10. Strategy of the Month/5. BTC Momentum September Winner.txt`, arrivato
+dopo il verdetto. **Il PDF di settembre e il codice non coincidono:** il PDF dice 08:30–09:00 CT, il
+codice `SignalStart 800` / `SignalEnd 825`. Con le barre timbrate alla chiusura il codice misura
+dalle **07:55 alle 08:25** ed entra sul close delle 08:25. Noi avevamo seguito il PDF.
+
+La versione del codice si ottiene da `BTC_First30.txt` con gli input, senza un file nuovo:
+`ORStart 755`, `OREnd 825`, `StopMode 0`. Restano due scarti: ingresso e uscita `this bar on close`
+invece di `next bar at market`, quasi lo stesso prezzo; e nessun filtro sui giorni.
+
+**Difetto del suo codice:** la domenica alle 17:05 il reset della data trova l'orario già oltre
+`SignalEnd`, quindi la prima barra da 5 minuti fa da segnale e può aprire uno short spurio, chiuso
+alla barra dopo.
+
+**Misura** (Binance BTCUSDT perp, 5 min, 2020–2024, lordo in bp per trade; OOS non guardato):
+
+| finestra | short | t | long | t |
+|---|---|---|---|---|
+| nostra 08:30–09:00 | +2,2 | 0,29 | +7,4 | 0,85 |
+| codice 07:55–08:25 | −0,8 | −0,10 | +9,6 | 1,08 |
+| nominale 08:00–08:30 | −4,1 | −0,45 | +0,8 | 0,10 |
+
+Sulla nostra finestra la misura torna col run MultiCharts senza stop (+1,3 bp). Nessuna finestra ha
+un edge sullo short e il long resta sopra: **il verdetto non cambia**, causa A. Lucid non offre crypto.
