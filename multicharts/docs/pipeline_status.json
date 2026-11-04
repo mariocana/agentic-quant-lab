@@ -21,7 +21,7 @@
     "title": "Aperti al 26/10",
     "note": "la seconda gamba: eccesso positivo >= 3 errori standard e bassa correlazione con DriftPullback, non deve reggere il conto da sola (seconda_gamba.md)",
     "items": [
-     "**Nuova eval LucidFlex con il book intero, AA dal 16/11: DPB 1 + Gold pct1 1 + Overnight Bias ORB 1 micro.** Configurazione in `go_live.md` sezione 12. Fino ad allora i tre grafici in SA, confronto ogni sera. VaultBreak v8 fuori, in SA come forward.",
+     "**Nuova eval LucidFlex con il book intero, AA dal 16/11: DPB 1 + Gold pct1 1 + Overnight Bias ORB 1 micro.** Configurazione in `go_live.md` sezione 12. Fino ad allora i tre grafici con l'automazione spenta, confronto ogni sera. VaultBreak v8 fuori, automazione spenta, come forward.",
      "**Prompt del ricercatore rivisto il 26/10** (`mc/docs/prompt_ricerca_strategie.md`): obiettivo la seconda gamba (t >= 3 sull'IS, correlazione sul P&L giornaliero, >= 0,4 trade al giorno), metro l'eccesso sul caso, praticanti alla pari dei paper con filtro P1-P6, vincitori di gara con t >= 3 e OOS = forward dalla data del PDF. `gate0.py` allineato. Triage fatto: 105 fonti ignorate per dominio, 122 giudicate nella v10, **nessuna candidata**; 5 aperte, fra cui un articolo 2026 sul ritiro di liquidita' prima dei dati macro delle 08:30 CT (403, da aprire con altro accesso). **Prossimo: una ricerca vera col prompt nuovo, un solo focus per run.**",
      "**Storico @ES / @NQ di quantlake da riesportare con il template 17:00–16:00**: il controllo di `Mario_PtnBaseSA` ha trovato 27 sessioni su 93 diverse dal chart, tutte per dati mancanti nell'export (chiusure del venerdì alle 15:15, estremi fra 15:15 e 16:00)."
     ]
@@ -901,7 +901,8 @@
    "metrics": {
     "IS 2020-2024 A (sEnd 1900)": "94 trade · WR 46,8% · avg +$69 · t 0,48 · PF 1,14 · 2020 = 90% del profitto",
     "IS 2020-2024 B (sEnd 1600, prop)": "50 trade · WR 44,0% · avg −$132 · **t −0,59** · PF 0,81 · lordo −$107/trade"
-   }
+   },
+   "next": ""
   },
   {
    "name": "Trend Following (Unger)",
@@ -936,7 +937,8 @@
      "date": "2026-10-29",
      "text": "**Gate marginale: NQ B non entra. Cimitero, definitivo.** OOS 2025-2026: 123 trade, avg $60 a contratto, t 0,18 (IS t 1,73); 2025 −$23.830, 2026 +$31.240. Nel book con DPB 2 micro il pass rate scende di 3,8 pp (iid) e 7,5 pp (contiguo). Strategia chiusa su tutti e quattro gli strumenti."
     }
-   ]
+   ],
+   "next": ""
   },
   {
    "name": "VaultBreak v8 (corso)",
@@ -985,7 +987,7 @@
      "text": "**Template confermato da Mario il 04/11:** CME Globex 17:00-16:00 senza pause. I run di fase 1, IS e OOS sono validi, i verdetti restano."
     }
    ],
-   "next": "Fuori dal book (decisione del 04/11): 2026 a zero. Resta in SA come forward, solo per dati.",
+   "next": "Fuori dal book (decisione del 04/11): 2026 a zero. Resta con l'automazione spenta come forward, solo per dati.",
    "metrics": {
     "IS 2020-2024": "1.125 trade · avg $76,76 ± 27,65 · **t 2,78** · WR 65,3% · R:R 0,64 · PF 1,204 · peggiore −$1.515 (−$151,50 per micro)",
     "per anno (avg, t)": "2020 $140 t 2,45 · 2021 $92 t 1,53 · 2022 $55 t 0,84 · 2023 $75 t 1,23 · **2024 $29 t 0,45**",
@@ -1075,7 +1077,7 @@
      "text": "**Template confermato da Mario il 04/11:** CME Globex 17:00-16:00 senza pause. I run di fase 1, IS e OOS sono validi, i verdetti restano."
     }
    ],
-   "next": "Nel book deciso il 04/11, 1 micro: in SA fino alla nuova squadra, a fine run DPB. Serve la configurazione del grafico live in `go_live.md`.",
+   "next": "Nel book deciso il 04/11, 1 micro: con l'automazione spenta fino alla nuova squadra, a fine run DPB. Serve la configurazione del grafico live in `go_live.md`.",
    "spec": "strategies/OvernightBiasORB/SPEC.md",
    "metrics": {
     "fase 2, IS": "455 trade · t 4.51 · WR 53.8% · R:R 1.45",

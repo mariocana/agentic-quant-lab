@@ -205,7 +205,7 @@ micro; dettagli e avvertenze in `strategies/GoldAsianRange/README_GAR.md`). **1 
 **Quando.** Decisione del 04/11: book **DPB 1 + Gold 1 + Overnight Bias ORB 1 micro** su LucidFlex
 (`pipeline_semplice.md`). Si imposta **finita la run in corso con DPB a 2 micro**, dopo aver valutato
 i risultati, e non prima del 16/11: la variante di Gold chiede almeno 2 settimane di paper dal
-02/11. Fino ad allora il grafico gira in **SA** (segnali senza ordini) e serve per i controlli qui
+02/11. Fino ad allora il grafico gira con l'**automazione spenta** (pulsante non verde) e serve per i controlli qui
 sotto.
 
 ### Il grafico
@@ -304,6 +304,11 @@ connessione Rithmic, stesso conto, **1 micro ciascuna**.
 3. **Exchange COMEX per Gold e CME per NQ.** Va controllato che l'ingranaggio tenga un valore per
    grafico e non uno solo per la connessione. Il primo ordine Gold rifiutato lo dirà.
 
-**Nel paper fino al 16/11** i tre grafici girano in SA e ogni sera si confrontano i segnali con
-il backtest dello stesso giorno.
+**Nel paper fino al 16/11** i tre grafici girano con l'**automazione spenta** e ogni sera si
+confrontano i segnali con il backtest dello stesso giorno.
+
+> ⚠️ **SA non vuol dire «senza ordini».** SA e AA sono i due modi dell'esecuzione automatica,
+> sincrono e asincrono: **con il pulsante verde mandano ordini veri tutti e due**. Quello che
+> conta è l'interruttore: il pulsante **non verde** vuol dire nessun ordine, qualunque sia la
+> scritta. Correzione del 04/11: qui era scritto il contrario.
 
