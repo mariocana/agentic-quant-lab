@@ -1,5 +1,5 @@
 #!/bin/sh
 # Python di quantlake (pandas, matplotlib) + openpyxl in ./libs + finto google.colab.
-# Prima volta: uv pip install --target mc/docs/colab_corso/libs --python python/quantlake/.venv/bin/python openpyxl
+# Prima volta: uv venv --python 3.13 docs/colab_corso/.venv && uv pip install --python docs/colab_corso/.venv/bin/python numpy pandas matplotlib openpyxl
 D=$(cd "$(dirname "$0")" && pwd)
-MPLBACKEND=Agg PYTHONPATH="$D:$D/libs" exec "$D/../../../python/quantlake/.venv/bin/python" -W ignore "$D/run_colab.py" "$@"
+MPLBACKEND=Agg PYTHONPATH="$D" exec "$D/.venv/bin/python" -W ignore "$D/run_colab.py" "$@"

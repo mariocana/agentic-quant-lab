@@ -7,14 +7,14 @@ script vanno a 0 (se no si contano due volte). Le regole sono quelle di Apex 50K
 scritte nello script.
 
 Uso (dalla root del repo):
-    mc/docs/colab_corso/run_colab.sh --pesi '{"dpb": 0.2, "vb_": 0.2}' \
-        mc/strategies/DriftPullback/reports/DPB_S5_OOS_2025-2026.xlsx \
-        mc/strategies/VaultBreak/reports/VB_S5_OOS_2025-2026.xlsx
+    docs/colab_corso/run_colab.sh --pesi '{"dpb": 0.2, "vb_": 0.2}' \
+        strategies/DriftPullback/reports/DPB_S5_OOS_2025-2026.xlsx \
+        strategies/VaultBreak/reports/VB_S5_OOS_2025-2026.xlsx
     opzioni: --oos 2023-01-01 (default: nessun filtro) · --comm 2.25 --slip 5.0
 """
 import os, sys, json
 
-SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'education',
+SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..',
                       'protocollo', '8. Livestreaming', 'PropFirm_MonteCarlo_Apex50K_1708_MultiStrats.py')
 
 arg = sys.argv[1:]
