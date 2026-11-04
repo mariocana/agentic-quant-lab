@@ -1004,7 +1004,8 @@
    "path": "mc/strategies/VWAP_Pullback",
    "stages": {
     "0": "pass",
-    "1": "pass"
+    "1": "pass",
+    "2": "fail"
    },
    "note": "**La v4 «C.S.» del trittico delle Live 4/5**: gate ADX(14) ≥ 20 e in calo, solo long, 1 trade al giorno, flat 15:55 CT. Nucleo identico alla nostra v1 (morta in fase 2, t 0,87); il gate è aggiunto a `VWAP_Pullback.txt` con 5 input spenti di default. Spec `SPEC_ADX.md`. Contaminata: il gate è nato dopo una performance recente scarsa ed è stato pubblicato il 3/7/2026 (Live 002, 31:26); quarta versione → via B con t IS > 1,03 (k = 4); verdetto OOS asimmetrico.",
    "log": [
@@ -1023,10 +1024,17 @@
     {
      "date": "2026-11-04",
      "text": "**Stage 1, meccanica: passa.** **Meccanica come da SPEC_ADX.** Preliminari: @NQ 1 min, Bar Magnifier spento come atteso su 1 minuto, $7,50 per lato con slippage 0, template 17:00-16:00 senza pause (il flat scatta alle 15:56 anche di venerdi'). Log contro List of Trades 60 su 60: ADX sempre >= 20 e in calo, ingressi alla barra dopo il segnale, TP e SL ai livelli del log. Solo long, max 1 al giorno, nessun overnight, x10 identico. Distanza dello stop misurata come chiede la SPEC: da 2,5 a 721,5 punti, 7 trade su 60 oltre 250 punti, trade peggiore $558 per micro. Verdetto in `strategies/VWAP_Pullback/verdicts/SPEC_ADX_s1.md`."
+    },
+    {
+     "date": "2026-11-04",
+     "text": "**fase 2, IS: non passa.** **Non passa ne' la via A ne' la via B: t 0,58** (soglie 2 e 1,03), 605 trade, avg $21,95 per NQ, WR 64%, R:R 0,60, trade peggiore $601 per micro (tetto $500). Dentro l'attesa bassa (t 0,5-1,5), lontano dai numeri dichiarati dall'autore (WR 82%, avg $300). 2020 negativo. Preliminari come da SPEC: @NQ 1 min, 2020-01-03 -> 2024-12-31, template 17:00-16:00, $7,50 per lato. Il report OOS arrivato insieme non e' stato aperto ne' copiato nel repo. Verdetto in `strategies/VWAP_Pullback/verdicts/SPEC_ADX_is.md`."
     }
    ],
-   "next": "Fase 2: IS 2020–2024, stesso grafico @NQ 1 min e stessi input (profilo v4, `ShowLog 0`), range dati **01/01/2020 → 31/12/2024** (il codice non ha TradeStartEL); esporta `VWAPADX_S2_IS_2020-2024.xlsx`. Via A, altrimenti via B: t > 1,03 e trade peggiore ≤ $500 per micro.",
-   "spec": "strategies/VWAP_Pullback/SPEC_ADX.md"
+   "next": "Chiusa. Cimitero (fase 2, IS): t 0,58, trade peggiore $601 per micro.",
+   "spec": "strategies/VWAP_Pullback/SPEC_ADX.md",
+   "metrics": {
+    "fase 2, IS": "605 trade · t 0.58 · WR 64.0% · R:R 0.60"
+   }
   },
   {
    "name": "Overnight Bias ORB (corso)",
@@ -1084,6 +1092,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-04",
+   "text": "**VWAP Pullback + ADX v4: cimitero in fase 2.** IS 2020–2024: 605 trade, **t 0,58**, avg $22, WR 64%, peggiore $601 per micro: fallisce la via A e la via B (t > 1,03). L'autore dichiarava WR 82% e avg $300. OOS ricevuto ma non aperto. Delle tre del corso restano VaultBreak v8 e Overnight Bias ORB, entrambe solo come prova dal vivo."
+  },
   {
    "date": "2026-11-04",
    "text": "**Overnight Bias ORB passa il gate marginale** (Δ iid +2,9, contiguo +6,5): OOS t 2,19, ma 2025 t 0,29 e senza i 10 trade migliori t 0,26. Corretti due bug di `lab.py`: alla via B in OOS applicava i criteri della via A, e leggeva i NO dei gate come preliminari (una bocciatura diventava `invalido`, cioè rigirabile). Nessun verdetto passato toccato. `book_sim.py --al`: il report DPB finisce il 15/10, gli altri dopo."
