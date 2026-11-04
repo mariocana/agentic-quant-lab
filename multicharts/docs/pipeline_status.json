@@ -1100,6 +1100,10 @@
  "log": [
   {
    "date": "2026-11-05",
+   "text": "**Idea scartata: Prop Model #1 OrderTrack (hyperscalping su 40 Range, limit ai bordi della value della candela chiusa, OCO 1:1, DeepCharts).** Non testabile: bracket da ~6 punti e value per candela chiedono dati tick, noi abbiamo l'1 minuto (range mediano 10-13 punti nelle prime due ore RTH). Il documento non dà nessun numero. Pareggio ~56% di WR, ~60% con lo slippage sugli stop emulati visto su DPB live; il cap da $1.500 supera il DLL di Lucid."
+  },
+  {
+   "date": "2026-11-05",
    "text": "**Idea scartata: Momentum Model (rottura di VAH/VAL, retest, continuazione su NQ).** Gemella del Balance Model: il filtro vero (size, tape, delta) non si testa su barre. Misurato su NQ 1 min 2021-2024: retest tenuto a fine giornata 255 trade, t 1,72, WR 26%, ma linee finte alla stessa distanza dall'open fanno t 1,04 e sulla rottura semplice meglio della linea vera (1,53 contro 1,27). Con target fisso l'effetto sparisce: è il trend intraday di NQ, non la value area."
   },
   {
