@@ -98,9 +98,10 @@ def misura(P, nomi, c, n, gmax):
     cal = sorted(set().union(*[set(g) for g in P.values()]))
     m = dict(zip(nomi, c))
     media = {k: st.mean([t for d in P[k] for t, _ in P[k][d]] or [0]) for k in nomi}
-    giorni = [[(t * m[k], g * m[k]) for k in nomi for t, g in P[k].get(d, [])] for d in cal]
-    zero = [[((t - media[k]) * m[k], (g - media[k]) * m[k]) for k in nomi for t, g in P[k].get(d, [])]
-            for d in cal]
+    giorni = [[ps.Trade(x[0] * m[k], x[1] * m[k], x.su * m[k]) for k in nomi for x in P[k].get(d, [])]
+              for d in cal]
+    zero = [[ps.Trade((x[0] - media[k]) * m[k], (x[1] - media[k]) * m[k], (x.su - media[k]) * m[k])
+             for k in nomi for x in P[k].get(d, [])] for d in cal]
     pnl = [sum(t for t, _ in tr) for tr in giorni]
     eq = pk = dd = 0
     for x in pnl:

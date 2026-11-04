@@ -47,6 +47,15 @@ COSTO_TENT = ATTIVAZIONE = None
 PROP = {}
 
 
+class Trade(tuple):
+    """(P&L, minimo dentro il trade) per micro, piu' il massimo dentro il trade in .su: serve solo
+    al trailing intraday. Si spacchetta come una coppia."""
+    def __new__(cls, t, giu, su=0.0):
+        o = tuple.__new__(cls, (t, giu))
+        o.su = su
+        return o
+
+
 def leggi_prop():
     """Tutte le prop di prop_firms.ini, come {sezione: dict}."""
     cp = configparser.ConfigParser(inline_comment_prefixes=('#',), interpolation=None)
@@ -74,8 +83,8 @@ def leggi_prop():
 def usa_prop(p):
     """Imposta le regole del conto su cui girano tentativo() e il resto."""
     global CONTO, TARGET, MLL, LOCK, COMM_MICRO, DLL, CONSISTENCY, COSTO_TENT, ATTIVAZIONE, PROP
-    if p['trailing'] != 'eod':
-        raise SystemExit('%s: trailing %r non supportato, solo eod' % (p['nome'], p['trailing']))
+    if p['trailing'] not in ('eod', 'intraday'):
+        raise SystemExit('%s: trailing %r non supportato' % (p['nome'], p['trailing']))
     PROP = p
     CONTO, TARGET, MLL = p['conto'], p['target'], p['mll']
     LOCK = CONTO + p['lock_sopra_conto']    # il trailing si ferma qui
@@ -110,6 +119,7 @@ def per_giorno(path, comm_micro):
     jp, jd = col['Profit ($)'], col['Date']
 
     jdd = col.get('Drawdown ($)')     # escursione peggiore DENTRO il trade
+    jru = col.get('Run-up ($)')       # massimo DENTRO il trade, per il trailing intraday
 
     giorni, ordine = {}, []
     for r in righe[hdr + 1:]:
@@ -134,10 +144,16 @@ def per_giorno(path, comm_micro):
             except ValueError:
                 giu = 0.0
         giu = min(giu, micro)             # non puo' essere meno profondo della chiusura
+        su = 0.0
+        if jru is not None and jru < len(r) and r[jru].strip():
+            try:
+                su = max(0.0, float(r[jru]) / 10.0)
+            except ValueError:
+                su = 0.0
         if d not in giorni:
             giorni[d] = []
             ordine.append(d)
-        giorni[d].append((micro, giu))
+        giorni[d].append(Trade(micro, giu, su))
     return cfg, [(d, giorni[d]) for d in ordine]
 
 
@@ -167,6 +183,9 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
     Consistency (> 0): al target si passa solo se la giornata migliore vale al massimo
     quella quota del profitto; se no si continua (LucidFlex 40%).
 
+    Trailing intraday: il limite sale anche sul massimo toccato dentro il trade. L'ordine fra
+    massimo e minimo non e' nei report: si assume prima il massimo, il caso prudente.
+
     Daily loss limit (DLL > 0): se la perdita della giornata, aperti inclusi, arriva al
     DLL, la posizione si chiude li' e la giornata finisce; il conto resta vivo (Apex).
     Si assume l'uscita esattamente sulla soglia: dal vivo e' a mercato, un po' sopra o sotto.
@@ -175,18 +194,23 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
     """
     bal, picco_eod, limite = CONTO, CONTO, CONTO - MLL
     grande = gradini is None
+    intraday = PROP.get('trailing') == 'intraday'
     giorno_max = 0.0                           # miglior giornata chiusa, per la consistency
     g = 0
     for g, trades in enumerate(seq_giorni, 1):
         inizio = bal
         stop_dll = bal - DLL if DLL else None
-        for t, giu in trades:
+        for tr in trades:
+            t, giu = tr
             n = n_micro
             if gradini is not None:
                 piccolo, buffer, ratchet = gradini
                 sopra = bal - CONTO >= buffer
                 grande = (grande or sopra) if ratchet else sopra
                 n = n_micro if grande else piccolo
+            if intraday:
+                picco_eod = max(picco_eod, bal + getattr(tr, 'su', 0.0) * n)
+                limite = min(picco_eod - MLL, LOCK)
             fondo = bal + giu * n
             if stop_dll is not None and fondo <= stop_dll and stop_dll > limite:
                 bal = stop_dll                 # il DLL arriva prima dell'MLL: giornata chiusa
@@ -194,6 +218,9 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
             if fondo <= limite:                # sfondato DENTRO il trade, non alla chiusura
                 return 'fail', g
             bal += t * n
+            if intraday:
+                picco_eod = max(picco_eod, bal)
+                limite = min(picco_eod - MLL, LOCK)
             if bal <= limite:
                 return 'fail', g
             if bal >= CONTO + TARGET:

@@ -1094,6 +1094,10 @@
  "log": [
   {
    "date": "2026-11-04",
+   "text": "**`apex_50k_intraday` in `prop_firms.ini`, trailing intraday in `prop_sim.py`** (massimo prima del minimo, caso prudente; il gate marginale non cambia). Book 1/1/1 OOS: Lucid 58,7% e $118 per funded, Apex EOD 26,0% e $356, Apex Intraday 23,3% e $206. Sul 2026: 69,1%, 41,3%, 35,4%."
+  },
+  {
+   "date": "2026-11-04",
    "text": "**`book_sim.py` dipende dalla prop:** `--prop`, `--confronta`, costi per strumento (`comm_mgc_rt`) e campo `automazione` in `prop_firms.ini`, colonne giorni al pass e $/funded. Book 1/1/1: LucidFlex DLL 40% 58,7% e $118 per funded; noDLL 50% 62,9% ma $207; Apex 26,0% e $356, con automazione vietata. Il 26,0% coincide con il 25,8% dello script del corso. Solo regole dell'eval: il funded manca."
   },
   {
