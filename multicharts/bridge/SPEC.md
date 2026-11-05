@@ -3,8 +3,12 @@
 **A cosa serve.** Eseguire sui CFD di una prop i segnali calcolati su NQ e GC, senza riscrivere le
 strategie. Il segnale resta quello del futures, con i suoi volumi. MT5 fa solo da esecutore.
 
-**Stato: mai compilato né provato.** Né `MarioBridge.mq5` né le righe in `OvernightBiasORB.txt`
-sono passati da un compilatore. Prima prova su challenge free.
+**Stato: mai compilato né provato.** Né `MarioBridge.mq5`, né `Mario_Bridge.txt`, né le chiamate nei
+segnali sono passati da un compilatore. Prima prova su challenge free.
+
+**Una funzione per tutti.** I segnali chiamano `Mario_Bridge` (`Mario_Bridge.txt`): controlla che il
+file sia impostato e che il calcolo sia in tempo reale, e scrive la riga. Il formato vive solo lì.
+Per aggiungere una strategia bastano gli input `BridgeFile` e `BridgeMicro` e le chiamate.
 
 ```text
 grafico MC → file nella cartella Common di MetaQuotes → MarioBridge.mq5 → conto CFD
@@ -43,9 +47,11 @@ lotti: avviso nel log. **Conto in USD**, altrimenti il valore del punto segue il
 2. `MarioBridge.mq5` in `MQL5/Experts`, compilare in MetaEditor (F7), trascinarlo su **un** grafico
    qualsiasi, *Algo Trading* acceso.
 3. Controllare il nome dei simboli in Market Watch (`SimboloNQ`, `SimboloGC`).
-4. Su `Mario_OvernightBiasORB` e `MarioGoldAsianRange` l'input `BridgeFile` =
+4. In PowerLanguage Editor: **New → Function**, nome `Mario_Bridge`, Return Type **Numeric**, incolla
+   `Mario_Bridge.txt`, compila. **Prima dei segnali**, che senza non compilano.
+5. Su `Mario_OvernightBiasORB` e `MarioGoldAsianRange` l'input `BridgeFile` =
    `C:\Users\<utente>\AppData\Roaming\MetaQuotes\Terminal\Common\Files\mario_bridge.csv`.
-5. Il pulsante di automazione di MultiCharts può restare **spento**: il segnale scrive il file lo
+6. Il pulsante di automazione di MultiCharts può restare **spento**: il segnale scrive il file lo
    stesso, in tempo reale. Non su backtest o ricalcolo.
 
 ## Il test, scritto prima di partire
