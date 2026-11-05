@@ -49,7 +49,7 @@ lotti: avviso nel log. **Conto in USD**, altrimenti il valore del punto segue il
 3. Controllare il nome dei simboli in Market Watch (`SimboloNQ`, `SimboloGC`).
 4. In PowerLanguage Editor: **New → Function**, nome `Mario_Bridge`, Return Type **Numeric**, incolla
    `Mario_Bridge.txt`, compila. **Prima dei segnali**, che senza non compilano.
-5. Su `Mario_OvernightBiasORB` e `MarioGoldAsianRange` l'input `BridgeFile` =
+5. Su `Drift_LIVE`, `Mario_OvernightBiasORB` e `MarioGoldAsianRange` l'input `BridgeFile` =
    `C:\Users\<utente>\AppData\Roaming\MetaQuotes\Terminal\Common\Files\mario_bridge.csv`.
 6. Il pulsante di automazione di MultiCharts può restare **spento**: il segnale scrive il file lo
    stesso, in tempo reale. Non su backtest o ricalcolo.
@@ -58,8 +58,10 @@ lotti: avviso nel log. **Conto in USD**, altrimenti il valore del punto segue il
 
 **Domanda:** il CFD replica il futures, a un costo che l'edge regge?
 
-**Overnight Bias e Gold insieme**, su simboli diversi. Soglia di Gold: entro **$10 per micro** su
-$47 di avg OOS, con lo stesso criterio. Un ordine stop sul CFD può scattare quando quello sul grafico
+**DPB, Overnight Bias e Gold insieme.** DPB e Overnight Bias sono sullo stesso US100: serve un conto
+**hedging**, con due posizioni separate. Soglia di Gold: entro **$10 per micro** su $47 di avg OOS,
+con lo stesso criterio. **Soglia di DPB: entro $2 per micro** su $5,70 di avg OOS, cioè l'edge deve
+restare sopra i due terzi; in punti di US100 vuol dire al massimo 1 punto di costo in più. Un ordine stop sul CFD può scattare quando quello sul grafico
 non scatta, e viceversa: è il rischio specifico, si conta a parte quante volte succede.
 
 **Si misura per ogni trade**, da `mario_bridge_fill.csv` e dalla storia MT5, contro il grafico:
@@ -77,6 +79,7 @@ conto free può essere diversa da quella di uno pagato.
 
 ## Da controllare sul conto free
 
+- [ ] conto in modalità hedging, non netting: DPB e Overnight Bias vanno tenute separate
 - [ ] il commento dell'ordine resta sulla posizione: `CHIUDI` lo usa per trovarla
 - [ ] specifiche di US100 e XAUUSD: valore del punto, spread, commissioni, orari
 - [ ] regole su EA, copiatori e operazioni uguali su più prop

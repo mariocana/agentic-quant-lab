@@ -66,7 +66,10 @@ inputs:
     SessStart( 930 ), SessEnd( 1430 ), FlatTime( 1455 ),
     VwapStart( 0830 ),        // type 2: RTH open (excludes premarket)
     VwapEnd( 1500 ),          // type 2: end of accumulation
-    SizeMode( 1 ), BaseCts( 1 ), CushionStep( 2000 ), MaxCts( 3 ), CushionAdj( 0 );
+    SizeMode( 1 ), BaseCts( 1 ), CushionStep( 2000 ), MaxCts( 3 ), CushionAdj( 0 ),
+    // --- bridge verso MT5 (bridge/SPEC.md): "" = spento, logica e backtest invariati ---
+    BridgeFile( "" ),
+    BridgeMicro( 1 );
 
 variables:
     ma2( 0 ), ma2prev( 0 ), driftPct( 0 ), anchorOK( false ),
@@ -77,7 +80,8 @@ variables:
     cushion( 0 ), curCts( 1 ),
     sPV( 0 ), sVol( 0 ), sVwap( 0 ), sVwapLast( 0 ), sVwapPrev( 0 ),
     atrEntry( 0 ), slipPts( 0 ),
-    atr2( 0 ), driftAtr( 0 ), driftLongOK( false ), driftShortOK( false );
+    atr2( 0 ), driftAtr( 0 ), driftLongOK( false ), driftShortOK( false ),
+    bridgeId( "" );
 
 slipPts = StopSlipTicks * MinMove / PriceScale;
 
@@ -226,6 +230,10 @@ if TotalTrades > tradeCount then begin
     tradeCount = TotalTrades;
 end;
 
+// ------------------- bridge: la posizione si e' chiusa sul grafico -------------------
+if MarketPosition = 0 and prevMP <> 0 then
+    Value1 = Mario_Bridge( BridgeFile, "CHIUDI", bridgeId, "DPB", "NQ", 0, 0, 0, 0, 0, 0 );
+
 // ------------------- entry counter -------------------
 if MarketPosition <> 0 and prevMP = 0 then
     tradesToday = tradesToday + 1;
@@ -243,6 +251,10 @@ if MarketPosition = 0
         if atrEntry <= 0 then atrEntry = Range;
         Buy ( "DriftPB.L" ) curCts contracts next bar at market;
         longArmed = false;
+        bridgeId = "DPB-" + NumToStr( Date, 0 ) + "-" + NumToStr( Time, 0 );
+        Value1 = Mario_Bridge( BridgeFile, "APRI", bridgeId, "DPB", "NQ", 1, BridgeMicro,
+                               IFF( ExitMode = 0, LongSLpts, LongSLatr * atrEntry ),
+                               IFF( ExitMode = 0, LongTPpts, LongTPatr * atrEntry ), 0, 0 );
     end;
 
     if TradeShorts and shortArmed and Close > Open then begin
@@ -250,6 +262,10 @@ if MarketPosition = 0
         if atrEntry <= 0 then atrEntry = Range;
         SellShort ( "DriftPB.S" ) curCts contracts next bar at market;
         shortArmed = false;
+        bridgeId = "DPB-" + NumToStr( Date, 0 ) + "-" + NumToStr( Time, 0 );
+        Value1 = Mario_Bridge( BridgeFile, "APRI", bridgeId, "DPB", "NQ", -1, BridgeMicro,
+                               IFF( ExitMode = 0, ShortSLpts, ShortSLatr * atrEntry ),
+                               IFF( ExitMode = 0, ShortTPpts, ShortTPatr * atrEntry ), 0, 0 );
     end;
 end;
 
@@ -280,6 +296,7 @@ end;
 if MarketPosition <> 0 and Time >= FlatTime then begin
     Sell       ( "L.Flat" ) next bar at market;
     BuyToCover ( "S.Flat" ) next bar at market;
+    Value1 = Mario_Bridge( BridgeFile, "CHIUDI", bridgeId, "DPB", "NQ", 0, 0, 0, 0, 0, 0 );
 end;
 
 SetExitOnClose;
