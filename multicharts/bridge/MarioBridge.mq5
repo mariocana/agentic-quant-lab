@@ -2,6 +2,7 @@
 //| MarioBridge: esegue su MT5 i segnali scritti da MultiCharts.      |
 //| Legge una riga per evento dal file nella cartella Common:         |
 //|   azione;id;strategia;strumento;lato;micro;stop;target;FINE       |
+//|   PENDENTE;...;target;su;giu;FINE  (ordini stop OCO ai bordi)     |
 //| Stop e target sono DISTANZE in punti, calcolate dal fill sul CFD. |
 //| Lotti: micro x valore del punto del micro / valore del punto      |
 //| per lotto, letto dalle specifiche del simbolo. Vedi bridge/SPEC.md|
@@ -85,8 +86,53 @@ void Apri(string id, string simbolo, int lato, double micro, double puntoMicro, 
    Registra(id, "APRI", simbolo, lotti, trade.ResultPrice());
 }
 
+// due ordini stop OCO: su e giu sono le distanze dei bordi dal prezzo, non i prezzi del futures
+void Pendenti(string id, string simbolo, double micro, double puntoMicro, double stopPts, double tgtPts,
+              double su, double giu)
+{
+   if(su <= 0) { Apri(id, simbolo, 1, micro, puntoMicro, stopPts, tgtPts); return; }   // gia' oltre il bordo
+   if(giu <= 0) { Apri(id, simbolo, -1, micro, puntoMicro, stopPts, tgtPts); return; }
+   double lotti = Lotti(simbolo, micro * puntoMicro);
+   if(lotti <= 0 || lotti > MaxLotti) { PrintFormat("%s: lotti %.2f fuori limite, ordini non inviati", id, lotti); return; }
+   int cifre = (int)SymbolInfoInteger(simbolo, SYMBOL_DIGITS);
+   double mid = (SymbolInfoDouble(simbolo, SYMBOL_ASK) + SymbolInfoDouble(simbolo, SYMBOL_BID)) / 2;
+   double alto = NormalizeDouble(mid + su, cifre), basso = NormalizeDouble(mid - giu, cifre);
+   double tpL = tgtPts > 0 ? NormalizeDouble(alto + tgtPts, cifre) : 0;
+   double tpS = tgtPts > 0 ? NormalizeDouble(basso - tgtPts, cifre) : 0;
+   if(!trade.BuyStop(lotti, alto, simbolo, NormalizeDouble(alto - stopPts, cifre), tpL, ORDER_TIME_GTC, 0, id))
+      PrintFormat("%s: buy stop rifiutato, %d %s", id, trade.ResultRetcode(), trade.ResultComment());
+   if(!trade.SellStop(lotti, basso, simbolo, NormalizeDouble(basso + stopPts, cifre), tpS, ORDER_TIME_GTC, 0, id))
+      PrintFormat("%s: sell stop rifiutato, %d %s", id, trade.ResultRetcode(), trade.ResultComment());
+   Registra(id, "PENDENTE", simbolo, lotti, mid);
+}
+
+// OCO: con una posizione aperta su un simbolo, gli ordini pendenti su quel simbolo si cancellano
+void Oco()
+{
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+   {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket == 0 || PositionGetInteger(POSITION_MAGIC) != Magic) continue;
+      string simbolo = PositionGetString(POSITION_SYMBOL);
+      for(int j = OrdersTotal() - 1; j >= 0; j--)
+      {
+         ulong ordine = OrderGetTicket(j);
+         if(ordine == 0 || OrderGetInteger(ORDER_MAGIC) != Magic || OrderGetString(ORDER_SYMBOL) != simbolo) continue;
+         string id = OrderGetString(ORDER_COMMENT);
+         if(trade.OrderDelete(ordine))
+            Registra(id, "APRI", simbolo, PositionGetDouble(POSITION_VOLUME), PositionGetDouble(POSITION_PRICE_OPEN));
+      }
+   }
+}
+
 void Chiudi(string id, string simbolo)
 {
+   for(int j = OrdersTotal() - 1; j >= 0; j--)
+   {
+      ulong ordine = OrderGetTicket(j);
+      if(ordine != 0 && OrderGetInteger(ORDER_MAGIC) == Magic && OrderGetString(ORDER_COMMENT) == id)
+         trade.OrderDelete(ordine);
+   }
    for(int i = PositionsTotal() - 1; i >= 0; i--)
    {
       ulong ticket = PositionGetTicket(i);
@@ -100,18 +146,23 @@ void Chiudi(string id, string simbolo)
 void Esegui(string riga)
 {
    string c[];
-   if(StringSplit(riga, ';', c) != 9) { Print("riga non valida: ", riga); return; }
+   int n = StringSplit(riga, ';', c);
+   if(n != 9 && !(n == 11 && c[0] == "PENDENTE")) { Print("riga non valida: ", riga); return; }
    string simbolo = c[3] == "NQ" ? SimboloNQ : (c[3] == "GC" ? SimboloGC : "");
    double punto = c[3] == "NQ" ? PuntoMicroNQ : PuntoMicroGC;
    if(simbolo == "") { Print("strumento sconosciuto: ", riga); return; }
    if(c[0] == "APRI")
       Apri(c[1], simbolo, (int)StringToInteger(c[4]), StringToDouble(c[5]), punto, StringToDouble(c[6]), StringToDouble(c[7]));
+   else if(c[0] == "PENDENTE")
+      Pendenti(c[1], simbolo, StringToDouble(c[5]), punto, StringToDouble(c[6]), StringToDouble(c[7]),
+               StringToDouble(c[8]), StringToDouble(c[9]));
    else if(c[0] == "CHIUDI")
       Chiudi(c[1], simbolo);
 }
 
 void OnTimer()
 {
+   Oco();
    int h = ApriFile();
    if(h == INVALID_HANDLE) return;
    FileSeek(h, offset, SEEK_SET);

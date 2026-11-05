@@ -46,14 +46,21 @@ Inputs:
     MaxRangePts(0),            { salta il giorno se il range e' piu' largo  (0 = off) }
     MaxRangePct(0),            { salta il giorno se il range supera questa % del prezzo (0 = off) }
     Num_Contracts(1),
-    ShowLog(0);
+    ShowLog(0),
+    { --- bridge verso MT5 (bridge/SPEC.md): "" = spento. Solo in tempo reale, non tocca la
+          logica ne' i backtest --- }
+    BridgeFile(""),
+    BridgeMicro(1);
 
 Variables:
     inWindow(false),
     rHi(0), rLo(0), rng(0), sd(0),
     armed(false), tradeDone(false), rBars(0),
     longStop(0), longTgt(0), shortStop(0), shortTgt(0),
-    posSL(0), posTP(0), wasIn(false);
+    posSL(0), posTP(0), wasIn(false),
+    bridgeOn(false), bridgeVivo(false), bridgeId(""), wasPos(0);
+
+bridgeOn = BridgeFile <> "" and GetAppInfo(aiRealTimeCalc) = 1;
 
 { ===== FINESTRA DEL RANGE (gestisce il wrap oltre la mezzanotte) ===== }
 if RangeStart < RangeEnd then
@@ -86,6 +93,14 @@ if inWindow = false and inWindow[1] and rng = 0 and rHi > 0 then begin
         Print("GAR RNG ", Date:8:0, " armTime=", Time:5:0, " barre=", rBars:3:0,
               " range=", rng:8:2, " hi=", rHi:9:2,
               " lo=", rLo:9:2, " pct=", 100 * rng / Close:5:2, " armed=", armed:2:0);
+    { al bridge le distanze dei bordi dal prezzo: GC e XAUUSD hanno prezzi diversi }
+    if bridgeOn and armed then begin
+        bridgeId = "GAR-" + NumToStr(Date, 0) + "-" + NumToStr(Time, 0);
+        FileAppend(BridgeFile, "PENDENTE;" + bridgeId + ";GAR;GC;0;" + NumToStr(BridgeMicro, 0) + ";"
+            + NumToStr(sd, 2) + ";" + NumToStr(TP_RR * sd, 2) + ";"
+            + NumToStr(rHi - Close, 2) + ";" + NumToStr(Close - rLo, 2) + ";FINE" + NewLine);
+        bridgeVivo = true;
+    end;
 end;
 
 { ===== ORDINI STOP AI BORDI (OCO: solo da flat) ===== }
@@ -130,4 +145,15 @@ if Time >= ExitTime and Time < RangeStart then begin
     if MarketPosition = 1  then Sell       ("EXIT-L") next bar at market;
     if MarketPosition = -1 then BuyToCover ("EXIT-S") next bar at market;
     armed = false;
+    if bridgeOn and bridgeVivo then begin
+        FileAppend(BridgeFile, "CHIUDI;" + bridgeId + ";GAR;GC;0;0;0;0;FINE" + NewLine);
+        bridgeVivo = false;
+    end;
 end;
+
+{ ===== BRIDGE: uscita prima dell'ora (stop preso sul grafico) ===== }
+if bridgeOn and bridgeVivo and wasPos <> 0 and MarketPosition = 0 then begin
+    FileAppend(BridgeFile, "CHIUDI;" + bridgeId + ";GAR;GC;0;0;0;0;FINE" + NewLine);
+    bridgeVivo = false;
+end;
+wasPos = MarketPosition;

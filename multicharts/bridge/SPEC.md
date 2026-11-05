@@ -12,12 +12,18 @@ grafico MC → file nella cartella Common di MetaQuotes → MarioBridge.mq5 → 
 
 ## Il formato
 
-Una riga per evento, `azione;id;strategia;strumento;lato;micro;stop;target;FINE`:
+Una riga per evento, `azione;id;strategia;strumento;lato;micro;stop;target;FINE`. Gli ordini stop
+di Gold hanno due campi in più, le distanze dei bordi dal prezzo:
 
 ```text
 APRI;OBO-1261105-1015;OBO;NQ;1;1;120.50;361.50;FINE
+PENDENTE;GAR-1261105-15;GAR;GC;0;1;24.00;0;11.50;12.50;FINE
 CHIUDI;OBO-1261105-1015;OBO;NQ;0;0;0;0;FINE
 ```
+
+**Gold: due ordini stop OCO.** L'EA li mette a prezzo CFD ± distanza, perché GC e XAUUSD hanno
+prezzi diversi: quando uno riempie cancella l'altro. Se il prezzo è già oltre il bordo, entra a
+mercato, come farebbe MultiCharts. Variante A: nessun target, uscita a tempo con `CHIUDI`.
 
 - **Stop e target sono distanze in punti**, calcolate dal fill sul CFD: NQ e US100 hanno prezzi
   diversi. Stanno sul server del broker, non emulate.
@@ -37,7 +43,7 @@ lotti: avviso nel log. **Conto in USD**, altrimenti il valore del punto segue il
 2. `MarioBridge.mq5` in `MQL5/Experts`, compilare in MetaEditor (F7), trascinarlo su **un** grafico
    qualsiasi, *Algo Trading* acceso.
 3. Controllare il nome dei simboli in Market Watch (`SimboloNQ`, `SimboloGC`).
-4. Su `Mario_OvernightBiasORB` l'input `BridgeFile` =
+4. Su `Mario_OvernightBiasORB` e `MarioGoldAsianRange` l'input `BridgeFile` =
    `C:\Users\<utente>\AppData\Roaming\MetaQuotes\Terminal\Common\Files\mario_bridge.csv`.
 5. Il pulsante di automazione di MultiCharts può restare **spento**: il segnale scrive il file lo
    stesso, in tempo reale. Non su backtest o ricalcolo.
@@ -46,7 +52,9 @@ lotti: avviso nel log. **Conto in USD**, altrimenti il valore del punto segue il
 
 **Domanda:** il CFD replica il futures, a un costo che l'edge regge?
 
-**Prima Overnight Bias**, poi Gold (ordini stop ai bordi del range: vanno aggiunti gli ordini pendenti).
+**Overnight Bias e Gold insieme**, su simboli diversi. Soglia di Gold: entro **$10 per micro** su
+$47 di avg OOS, con lo stesso criterio. Un ordine stop sul CFD può scattare quando quello sul grafico
+non scatta, e viceversa: è il rischio specifico, si conta a parte quante volte succede.
 
 **Si misura per ogni trade**, da `mario_bridge_fill.csv` e dalla storia MT5, contro il grafico:
 ritardo del fill, spread al fill, P&L in punti.
@@ -63,6 +71,7 @@ conto free può essere diversa da quella di uno pagato.
 
 ## Da controllare sul conto free
 
+- [ ] il commento dell'ordine resta sulla posizione: `CHIUDI` lo usa per trovarla
 - [ ] specifiche di US100 e XAUUSD: valore del punto, spread, commissioni, orari
 - [ ] regole su EA, copiatori e operazioni uguali su più prop
 - [ ] quando FTMO azzera la perdita giornaliera (Gold apre di notte)
