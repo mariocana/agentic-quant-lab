@@ -1090,6 +1090,25 @@
     "OOS 2025-26": "166 trade · avg $491 · t 2,19 · WR 54,8% · R:R 1,27 · **2025 t 0,29 · 2026 t 2,60** · senza i 10 migliori t 0,26 · peggiore $542,50 per micro · forward dal 1/9/2026: 19 trade, +$14.290",
     "gate marginale": "Δ iid **+2,9 pp**, Δ contiguo **+6,5 pp**, giornata peggiore −$1.104 · solo 2026: +7,9 / +17,1"
    }
+  },
+  {
+   "name": "First5 Pre-Open",
+   "family": "momentum d'apertura · prima candela da 5 minuti con filtro pre-open, long e short",
+   "instrument": "NQ 5m → MNQ",
+   "path": "strategies/First5PreOpen",
+   "spec": "strategies/First5PreOpen/SPEC.md",
+   "stages": {
+    "0": "pass"
+   },
+   "metrics": {},
+   "next": "Stage 1: 100 giorni in MultiCharts",
+   "note": "",
+   "log": [
+    {
+     "date": "2026-11-05",
+     "text": "**Pre-registrata** in `strategies/First5PreOpen/SPEC.md`."
+    }
+   ]
   }
  ],
  "blockers": [
