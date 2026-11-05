@@ -1,2 +1,2 @@
 conto,prop,sezione_ini,book,micro,acquisto,costo_usd,attivazione_usd,inizio,fine,esito,trade,vinti,pnl_lordo_usd,pnl_netto_usd,payout_usd,nota
-2026-10-26_lucidflex50k_dpb,LucidFlex 50k,lucidflex_50k,DPB,2,2026-10-26,80.50,0,2026-10-27,2026-11-02,fail da confermare,15,6,-1841.50,-1871.48,0,MLL toccato alle 10:11:11 CT; netto stimato con ~$1 per micro
+2026-10-26_lucidflex50k_dpb,LucidFlex 50k,lucidflex_50k,DPB,2,2026-10-26,80.50,0,2026-10-27,2026-11-02,fail,15,6,-1841.50,-1871.00,0,BREACHED sulla dashboard: MLL toccato il 02/11 alle 10:11:11 CT

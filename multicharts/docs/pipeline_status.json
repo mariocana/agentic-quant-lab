@@ -7,10 +7,9 @@
   "updated": "2026-11-04",
   "groups": [
    {
-    "title": "Prima run DriftPullback su LucidFlex: finita il 02/11, MLL toccato",
+    "title": "Prima run DriftPullback su LucidFlex: finita il 02/11, BREACHED",
     "note": "configurazione reale e diario in mc/docs/go_live.md",
     "items": [
-     "**Da fare subito: spegnere AA su `Drift_LIVE`, confermare il fallimento sulla dashboard Lucid.** Il grafico crede di avere posizioni che il conto non ha.",
      "**Ogni sera, la prima settimana: ogni trade reale contro il backtest dello stesso giorno** (stessi ingressi, orari, uscite). Se divergono ci si ferma. Vale da Stage 9.",
      "Configurazione: segnale `Drift_LIVE` (= `DriftPullback_v21.txt`, `BaseCts 2`), grafico **NQZ6 Rithmic**, mapping **NQZ6 → MNQZ6**, auto trading **AA**, stop **emulati** (Emulate locally, dal 28/10), limit Native. Il P&L del grafico e' 10 volte quello del conto.",
      "**Non toccare DriftPullback.** Un filtro o una variante adesso sarebbe una v2, validabile solo sul live.",
@@ -1121,6 +1120,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-05",
+   "text": "**Conto 1 confermato `BREACHED`:** saldo $48.129, P&L −$1.871, 5 giorni di trading; la stima era $48.128,52. Ordini, log e dashboard archiviati in `live/2026-10-26_lucidflex50k_dpb/`, numero di conto oscurato."
+  },
   {
    "date": "2026-11-05",
    "text": "**Dashboard Signal Guide v5 in coda, blocco dati.** Segnali su Zero Gamma di SPX e NDX con regole scritte: SPX-FIRST dichiara WR 66-70% e +19-25 a 10 minuti, ma è movimento e non P&L, 44 celle sul solo 2026, gradi dello stesso episodio. Serve lo storico al minuto di Zero Gamma e net GEX: verificare se GEXBot lo vende."

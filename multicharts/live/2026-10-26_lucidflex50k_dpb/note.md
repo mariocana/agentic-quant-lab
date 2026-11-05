@@ -1,7 +1,12 @@
 # LucidFlex 50k, DPB a 2 micro: 26/10 → 02/11/2026
 
-**Esito: MLL toccato il 02/11 alle 10:11:11 CT, da confermare sulla dashboard.** Saldo stimato
-$48.128,52 contro MLL $48.129. Diario giorno per giorno in `docs/go_live.md`.
+**Esito: `BREACHED`, confermato sulla dashboard Lucid.** MLL toccato il 02/11 alle 10:11:11 CT,
+saldo $48.129, P&L −$1.871, 5 giorni di trading. Saldo stimato prima della conferma: $48.128,52.
+Diario giorno per giorno in `docs/go_live.md`.
+
+Dashboard: 30/10 −$632 netti con $4 di commissioni (4 micro andata e ritorno: $1 a micro), 02/11
+−$615 netti. Automazione spenta il 04/11 alle 08:04 CT. Log filtrato: in `logs.csv` sono tolte
+le riconnessioni di TradeStation e i login di routine.
 
 | giorno | trade | conto lordo | grafico in MNQ |
 |---|---|---|---|
