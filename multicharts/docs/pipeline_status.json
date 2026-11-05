@@ -1100,6 +1100,10 @@
  "log": [
   {
    "date": "2026-11-05",
+   "text": "**Prop Firm Model di Fabervaale (breakdown del 4 giugno) archiviato.** È OrderTrack con un filtro GEX in tempo reale: una sola sessione (+3R), 40 Range e value per candela non testabili senza tick, e la scelta di entrare è dichiaratamente discrezionale. Niente per il lab sistematico."
+  },
+  {
+   "date": "2026-11-05",
    "text": "**JPMorgan Collar archiviato come playbook.** Lo smorzamento fino al reset non si vede: ES RTH 2016-2024, 36 reset JHEQX, range del giorno in linea (t 0,06) e ultima ora più mossa (1,31 volte la mediana, t 4,28), ma uguale ai fine mese dei fondi minori (1,33): è il fine mese, non il collar. Muri dei nuovi strike non testati (mancano gli strike storici). Quattro eventi l'anno, niente strategia."
   },
   {
