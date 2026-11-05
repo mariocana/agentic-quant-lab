@@ -1101,12 +1101,16 @@
     "0": "pass"
    },
    "metrics": {},
-   "next": "Stage 1: 100 giorni in MultiCharts",
+   "next": "Stage 1: @NQ 5 min, 2024-08-01 → 2024-12-31, run A a 1 contratto con log e run B a 10 contratti (F5P_S1_A_x1, F5P_S1_B_x10)",
    "note": "",
    "log": [
     {
      "date": "2026-11-05",
      "text": "**Pre-registrata** in `strategies/First5PreOpen/SPEC.md`."
+    },
+    {
+     "date": "2026-11-05",
+     "text": "**Codice pronto.** `First5PreOpen.txt` (`Mario_First5PreOpen`) e checklist dello Stage 1; non ancora compilato."
     }
    ]
   }
