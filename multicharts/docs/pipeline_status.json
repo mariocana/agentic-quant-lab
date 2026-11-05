@@ -1100,6 +1100,10 @@
  "log": [
   {
    "date": "2026-11-05",
+   "text": "**Dashboard Signal Guide v5 in coda, blocco dati.** Segnali su Zero Gamma di SPX e NDX con regole scritte: SPX-FIRST dichiara WR 66-70% e +19-25 a 10 minuti, ma è movimento e non P&L, 44 celle sul solo 2026, gradi dello stesso episodio. Serve lo storico al minuto di Zero Gamma e net GEX: verificare se GEXBot lo vende."
+  },
+  {
+   "date": "2026-11-05",
    "text": "**Prop Firm Model di Fabervaale (breakdown del 4 giugno) archiviato.** È OrderTrack con un filtro GEX in tempo reale: una sola sessione (+3R), 40 Range e value per candela non testabili senza tick, e la scelta di entrare è dichiaratamente discrezionale. Niente per il lab sistematico."
   },
   {
