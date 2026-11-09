@@ -30,8 +30,10 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
       - [x] `reference/hyperliquid_listings` e `universe_on(giorno)`: l'universo
             punto-nel-tempo, delistati compresi.
       - [ ] backfill completo dei 561 perp (~10 ore, in corso dal 09/11, riprende da solo).
-      - [ ] `underlying_market_open` in silver per gli HIP-3: serve una tabella che
-            associ ogni perp al calendario del sottostante (NYSE, CME, 24/7). ~mezza giornata.
+      - [x] `underlying_market_open` in silver (`silver/hyperliquid_ohlcv_1h` e `_1d`):
+            ogni perp associato al calendario del sottostante in
+            `reference/hyperliquid_underlying.py`. Fatto il 09/11. Da rivedere: le voci in
+            `NEEDS_REVIEW` (21) e i 4 perp non identificati (`UNIDENTIFIED`).
       - L'open interest storico non esiste nell'API: c'è solo dal registro del desk (punto 4).
 - [ ] **7. Simulatore livello 2 in alpha-quant**, calibrato contro i fill veri di
       `ai-desk/var/` prima di simulare qualunque cosa nuova. ~3-5 giorni.

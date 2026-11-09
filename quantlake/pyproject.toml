@@ -33,6 +33,7 @@ python-dotenv = "^1.0"
 # don't need, e.g. `poetry install --without geo,research`.
 
 # FastAPI dashboard (`poetry run dashboard`)
+exchange-calendars = ">=4.10"
 [tool.poetry.group.dashboard.dependencies]
 fastapi = "^0.136.0"
 uvicorn = {extras = ["standard"], version = "^0.45.0"}
