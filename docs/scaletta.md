@@ -36,7 +36,15 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
             `NEEDS_REVIEW` (21) e i 4 perp non identificati (`UNIDENTIFIED`).
       - L'open interest storico non esiste nell'API: c'è solo dal registro del desk (punto 4).
 - [ ] **7. Simulatore livello 2 in alpha-quant**, calibrato contro i fill veri di
-      `ai-desk/var/` prima di simulare qualunque cosa nuova. ~3-5 giorni.
+      `ai-desk/var/` prima di simulare qualunque cosa nuova.
+      - [x] 7.1 costi reali dal journal (`alphaquant.calibration.desk_fills`): 126 fill,
+            maker 1,5 bps, taker 4,5 bps + slippage 7,3 bps medio. Fatto il 09/11.
+      - [x] 7.2 profilo di venue `hyperliquid` in `config/costs.yaml`, fee verificate,
+            slippage no (misurato su testnet).
+      - [ ] 7.3 mercato storico che alimenta `run_cycle` del desk con le barre silver:
+            il backtest è il codice del desk. ~1-2 giorni.
+      - [ ] 7.4 replay dei cicli testnet 07-15/10: simulato contro reale. ~1 giorno.
+      - [ ] 7.5 uscita `SimResult` per i gate del punto 8. ~mezza giornata.
 - [ ] **8. Gate di portafoglio, registro delle prove, holdout bloccato dal codice.**
       Il loader rifiuta le date di holdout finché la spec non è registrata con il suo
       hash. ~3 giorni. Qui arriva il primo verdetto su `reversal_v1`.

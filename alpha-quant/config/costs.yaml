@@ -18,3 +18,25 @@ profiles:
     # USDⓈ-M perpetual, livello base VIP 0 (0,02% maker, 0,05% taker); il funding non è un costo
     # di commissione e arriva come evento da quantlake (silver/binance_um_funding)
     BTCUSDT-PERP: {fee: percent, maker: 0.0002, taker: 0.0005, slippage_ticks: 1, verified: false}
+
+# Costi per venue: per i mercati con centinaia di strumenti sotto un solo listino.
+# fee_verified / slippage_verified separati: la fee e una regola del listino, lo
+# slippage dipende dal book, e quello misurato su testnet (book sottili, mid della
+# venue fino al 2,6% lontano dal feed) e prudente per i nomi liquidi di mainnet.
+venues:
+  hyperliquid:
+    fee: percent
+    maker: 0.00015
+    taker: 0.00045
+    slippage_bps: {maker: 0.0, taker: 7.3}
+    fee_verified: true
+    slippage_verified: false
+    source: "126 fill reali del desk su testnet, 07-15/10/2026: maker 78 a 1,5 bps, taker 48 a 4,5 bps, slippage taker media 7,3 / mediana 5,5 / p90 15,7 bps (alphaquant.calibration.desk_fills)"
+  hyperliquid_hip3:
+    fee: percent
+    maker: 0.0003
+    taker: 0.0009
+    slippage_bps: {maker: 0.0, taker: 15.0}
+    fee_verified: false
+    slippage_verified: false
+    source: "nessun fill reale: fee doppie del listino base come ipotesi prudente, slippage taker doppio per book piu sottili"

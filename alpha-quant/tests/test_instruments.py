@@ -90,3 +90,22 @@ def test_source_reads_pinned_version(data_root, costs):
     assert QuantlakeInstrumentSource(data_root, costs=costs).get("ES").tick_size == 0.5
     pinned = QuantlakeInstrumentSource(data_root, costs=costs, version=0)
     assert pinned.version == 0 and pinned.get("ES").tick_size == 0.25
+
+
+def test_hyperliquid_venue_costs_come_from_real_fills():
+    from alphaquant.instruments.fees import load_venue_costs
+
+    hl = load_venue_costs("hyperliquid")
+    assert (hl.fee.maker, hl.fee.taker) == (0.00015, 0.00045)
+    assert hl.fee_verified and not hl.slippage_verified, "testnet slippage is not mainnet slippage"
+    assert hl.round_trip_bps("maker") == pytest.approx(3.0)
+    assert hl.round_trip_bps("taker") == pytest.approx(2 * (4.5 + 7.3))
+    hip3 = load_venue_costs("hyperliquid_hip3")
+    assert not hip3.fee_verified and hip3.round_trip_bps("taker") > hl.round_trip_bps("taker")
+
+
+def test_an_unknown_venue_is_an_error_not_a_zero():
+    from alphaquant.instruments.fees import load_venue_costs
+
+    with pytest.raises(KeyError):
+        load_venue_costs("binance")
