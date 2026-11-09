@@ -59,8 +59,10 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
       - [x] 8.2 holdout chiuso dal codice: `config/splits.yaml` (train 06/2023-03/2025,
             validation 04-12/2025, holdout 2026), `HistoricalMarket` rifiuta le date di
             holdout finché il registro non lo apre, una volta per spec. Fatto il 09/11.
-      - [ ] 8.3 gate di portafoglio: Sharpe netto, deflated Sharpe con `k`, drawdown,
-            quota dei costi sull'edge lordo. ~1 giorno.
+      - [x] 8.3 gate di portafoglio (`validation/portfolio.py`): giorni, trade, Sharpe
+            netto, deflated Sharpe con `k` dal registro, drawdown ≤ 25%, fee ≤ 50%
+            dell'edge lordo; holdout contro lo Sharpe di validation della stessa spec.
+            `alphaquant.evaluate`: spec → replay → gate → registro in una chiamata. Fatto il 09/11.
       - [ ] 8.4 primo verdetto su `reversal_v1` (aspetta il backfill completo). Nota nel
             registro: il suo holdout 2026 è stato visto in aggregato il 09/11. ~mezza giornata.
 - [ ] **9. Registro delle strategie e shadow mode per strategia nel desk.** ~1-2 giorni.
