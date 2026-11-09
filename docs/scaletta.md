@@ -7,8 +7,8 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
 
 - [x] **1. Test sui confini di import.** `ai-desk/` non importa da `alphaquant`,
       `quantlake`, `factory` né da SDK LLM. Fatto (`f66fdc8`).
-- [ ] **2. Alert Telegram.** Bot da @BotFather, `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`
-      su Railway. ~15 min.
+- [x] **2. Alert Telegram.** Bot da @BotFather, `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`
+      su Railway. Fatto il 09/11.
 - [ ] **3. Backup della lake.** `quantlake/data/` (2,6 GB) esiste in una copia sola. ~30 min.
 - [ ] **4. Snapshot di mercato nel desk.** A ogni ciclo: meta, contesti, funding, perp
       quotati, in un file giornaliero su `var/` più un endpoint. Nome diverso da `snapshot`,
