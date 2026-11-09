@@ -218,12 +218,21 @@ def preliminari(cfg, cts):
                 chiesto = datetime.date(anno, mese, gg)
             except (ValueError, OverflowError):
                 continue
-            # conta solo se il grafico e' PIU' STRETTO del richiesto; piu' largo va bene
+            # conta solo se il grafico e' PIU' STRETTO del richiesto; piu' largo va bene.
+            # Start Date / End Date di Settings sono il PRIMO e l'ULTIMO trade, non i
+            # bordi del grafico: uno scarto di qualche settimana puo' essere solo una
+            # strategia che non ha operato (First5PreOpen, 09/11/2026: primo trade il
+            # 09/01/2020 con grafico dal 01/01). Oltre un mese e' quasi certo il grafico.
             scarto = (atteso - chiesto).days if verso == 'inizio' else (chiesto - atteso).days
-            if scarto > 7:
+            if scarto > 31:
                 out.append((NO, '%s chiede %s ma i dati %s il %s: %d giorni mancanti. '
                                 'Il range del GRAFICO vince, allargalo e rigira.'
                             % (chiave, chiesto, 'partono' if verso == 'inizio' else 'finiscono',
+                               atteso, scarto)))
+            elif scarto > 7:
+                out.append((EH, '%s chiede %s ma il %s trade e\' del %s (%d giorni): '
+                                'controlla sul grafico che il Data Range copra la finestra.'
+                            % (chiave, chiesto, 'primo' if verso == 'inizio' else 'ultimo',
                                atteso, scarto)))
     # il session template NON e' nel foglio Settings: si deduce dall'ultima barra,
     # 16:00 CT = Globex 24h, 15:00 CT = RTH. Vale solo se il grafico finisce su un
