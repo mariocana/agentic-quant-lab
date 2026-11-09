@@ -1099,12 +1099,15 @@
    "stages": {
     "0": "pass",
     "1": "pass",
-    "2": "pass"
+    "2": "pass",
+    "5": "pass",
+    "8": "fail"
    },
    "metrics": {
-    "fase 2, IS": "642 trade · t 2.38 · WR 24.5% · R:R 4.11"
+    "fase 2, IS": "642 trade · t 2.38 · WR 24.5% · R:R 4.11",
+    "fase 3, OOS": "251 trade · t 1.55 · WR 29.9% · R:R 3.38"
    },
-   "next": "OOS 2025->oggi in MultiCharts, una volta sola, poi /lab report",
+   "next": "Chiusa. Cimitero (gate marginale).",
    "note": "",
    "log": [
     {
@@ -1130,6 +1133,14 @@
     {
      "date": "2026-11-09",
      "text": "**fase 2, IS: passa.** IS 2020-2024, via B: **passa**. Prima era sospeso: check_report segnava NO perche' il primo trade e' del 2020-01-09 e TradeStartEL e' 1200101. A Mario e' stato chiesto se il Data Range del grafico parte il 2020-01-01 o prima, e lui ha risposto di si'. Lo Start Date di Settings e' il primo ingresso (2020-01-09 08:40), non l'inizio del grafico, e il desk ha corretto check_report (commit 1d6829e): uno scarto di 8-31 giorni ora e' un avviso. Gli altri preliminari sono come da SPEC: @NQ 5 min, BM 1 min, 7,5$ per contratto e slippage 0. Ci sono 642 ingressi tutti alle 08:40, uscite a stop o alle 15:05, e l'ultimo trade e' del 2024-12-27, dentro TradeEndEL 1241231. Risultato: t 2,38 > 1,16 (k = 5) e trade peggiore $273 per micro <= $500, quindi il kill non scatta. n 642 e WR 24,5% stanno nelle bande del proxy, e t 2,38 sta nell'attesa della SPEC (1,5-2,4). Verdetto in `strategies/First5PreOpen/verdicts/SPEC_is.md`."
+    },
+    {
+     "date": "2026-11-09",
+     "text": "**fase 3, OOS: passa.** OOS 2025-2026, via B: **passa** (lo script registra le misure, il giudizio e' il gate marginale). Preliminari controllati sul report: @NQ 5 min, BM 1 min, 1 contratto, 7,5$ per contratto e slippage 0 come da SPEC (slippage dentro la commissione); trade dal 2025-01-02 al 2026-11-09, dentro l'OOS della SPEC (2025-01-01 -> oggi). Session template non leggibile dal report (ultima barra di oggi), ma i 251 ingressi sono tutti alle 08:40, le uscite a tempo tutte alle 15:05 e l'unica End of Day Exit e' alle 12:15 del 03/07/2025 (mezza giornata), coerenti con Globex in CT. Misure: 251 trade, t 1,55, WR 29,9%, R:R 3,38, trade peggiore $3.895 nel report ($390 per micro, sotto i $500), sopra l'attesa della SPEC (edge dimezzato, t 0,6-0,7). Verdetto asimmetrico, anche se lab.py non lo segnala: un run con TradeStartEL e TradeEndEL a 0 ha girato per errore sul 22/06 -> 06/11/2026, dentro questo OOS, ed e' a verbale nel diario (F5P_S1_run0_OOS2026_input-a-0_non-valido.xlsx, mai giudicato); fallire contava pieno, passare vale solo come prova dal vivo. Il report giudicato ha input corretti (TradeStartEL 1250101, TradeEndEL 0, 1 contratto, BM 1 min, 7,5$) secondo il desk. Verdetto in `strategies/First5PreOpen/verdicts/SPEC_oos.md`."
+    },
+    {
+     "date": "2026-11-09",
+     "text": "**fase 3b, gate marginale: non passa.** Gate marginale, OOS 2025-2026: **non passa**. Book di riferimento quello della decisione di Mario del 04/11/2026 in pipeline_semplice.md (DPB 1 + Gold Asian Range pct1 1 + Overnight Bias ORB 1 micro; Gold con i costi del report e di MGC 25:2.60 come nel suo gate), che supera il 'DPB a 2 micro' della sezione dei criteri; candidata a 1 micro, dal 2025-01-01, 477 giorni, LucidFlex 50k. Book 59,6% iid e 67,1% contiguo, con la candidata 57,6% e 67,4%: Δ iid -2,0 pp contro la soglia di +2,0 (criterio 1 fallisce), Δ contiguo +0,2, giornata peggiore -$1.099 sopra la DLL di $1.200, avg OOS +$39 per micro con t 1,55. Il kill della fase 3 della SPEC scatta: cimitero, definitivo. Il verdetto OOS era asimmetrico per il run con input a 0 sul 22/06 -> 06/11/2026 (a verbale nel diario), ma un fallimento conta pieno; il tetto di 3 strategie del book non entra in gioco perche' il gate non passa. Verdetto in `strategies/First5PreOpen/verdicts/SPEC_book.md`."
     }
    ]
   }
