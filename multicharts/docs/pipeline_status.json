@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-05",
+ "updated": "2026-11-09",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -1100,7 +1100,7 @@
     "0": "pass"
    },
    "metrics": {},
-   "next": "Stage 1: @NQ 5 min, 2024-08-01 → 2024-12-31, run A a 1 contratto con log e run B a 10 contratti (F5P_S1_A_x1, F5P_S1_B_x10)",
+   "next": "Stage 1, secondo giro: stessi run A e B con Bar Magnifier 1 min",
    "note": "",
    "log": [
     {
@@ -1110,6 +1110,10 @@
     {
      "date": "2026-11-05",
      "text": "**Codice pronto.** `First5PreOpen.txt` (`Mario_First5PreOpen`) e checklist dello Stage 1; non ancora compilato."
+    },
+    {
+     "date": "2026-11-09",
+     "text": "**Stage 1, primo giro: meccanica giusta ma da rifare, Bar Magnifier spento** (la SPEC lo chiede). Run A/B 2024-08-07 → 2024-12-31: 62 trade, ingressi tutti alle 08:35 (timbro 08:40), uno al giorno, stop al livello del log, 9 stop nella barra d'ingresso come i 'chiuso=1' del log, uscite a tempo alle 15:00 (timbro 15:05) e alle 12:00 il 29/11, x10 identico su 62 trade. **A verbale: un run con input a 0 ha girato sul 22/06 → 06/11/2026, dentro l'OOS (50 trade, report salvato come non valido): quel tratto di OOS è visto, il verdetto OOS diventa asimmetrico.**"
     }
    ]
   }
