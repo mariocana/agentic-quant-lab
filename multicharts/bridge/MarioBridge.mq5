@@ -62,6 +62,14 @@ double Lotti(string simbolo, double dollariAlPunto)
    return lotti;
 }
 
+// prezzo del fill: su FTMO ResultPrice() torna 0 per gli ordini a mercato, il deal ha quello vero
+double PrezzoEseguito()
+{
+   ulong deal = trade.ResultDeal();
+   if(deal > 0 && HistoryDealSelect(deal)) return HistoryDealGetDouble(deal, DEAL_PRICE);
+   return trade.ResultPrice();
+}
+
 void Registra(string id, string azione, string simbolo, double lotti, double prezzo)
 {
    int h = FileOpen(FileFill, FILE_READ|FILE_WRITE|FILE_TXT|FILE_ANSI|FILE_COMMON|FILE_SHARE_READ);
@@ -83,7 +91,7 @@ void Apri(string id, string simbolo, int lato, double micro, double puntoMicro, 
    double tp = tgtPts > 0 ? NormalizeDouble(prezzo + lato * tgtPts, cifre) : 0;
    bool ok = lato > 0 ? trade.Buy(lotti, simbolo, 0, sl, tp, id) : trade.Sell(lotti, simbolo, 0, sl, tp, id);
    if(!ok) { PrintFormat("%s: rifiutato, %d %s", id, trade.ResultRetcode(), trade.ResultComment()); return; }
-   Registra(id, "APRI", simbolo, lotti, trade.ResultPrice());
+   Registra(id, "APRI", simbolo, lotti, PrezzoEseguito());
 }
 
 // due ordini stop OCO: su e giu sono le distanze dei bordi dal prezzo, non i prezzi del futures
@@ -139,7 +147,7 @@ void Chiudi(string id, string simbolo)
       if(ticket == 0 || PositionGetInteger(POSITION_MAGIC) != Magic) continue;
       if(PositionGetString(POSITION_COMMENT) != id) continue;
       double lotti = PositionGetDouble(POSITION_VOLUME);
-      if(trade.PositionClose(ticket)) Registra(id, "CHIUDI", simbolo, lotti, trade.ResultPrice());
+      if(trade.PositionClose(ticket)) Registra(id, "CHIUDI", simbolo, lotti, PrezzoEseguito());
    }
 }
 
