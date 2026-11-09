@@ -42,7 +42,9 @@ remote = decisions_from_journal(deployed_rows())
 decisions = sorted(local + remote, key=lambda d: d.ts)
 print(f"decisioni live: {len(local)} dal journal locale, {len(remote)} dal desk su Railway")
 
-market = HistoricalMarket.from_quantlake()
+# A data audit: it checks that quantlake holds what the desk saw and computes no
+# performance, so it may read the holdout dates (the desk's decisions are there).
+market = HistoricalMarket.from_quantlake(holdout=None)
 rows = compare(Reversal(), market, decisions)
 causes = collections.Counter()
 for r in rows:

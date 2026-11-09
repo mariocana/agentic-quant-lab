@@ -54,8 +54,15 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
             alla variazione di equity. Il replay registra le versioni Delta lette. Fatto
             il 09/11.
 - [ ] **8. Gate di portafoglio, registro delle prove, holdout bloccato dal codice.**
-      Il loader rifiuta le date di holdout finché la spec non è registrata con il suo
-      hash. ~3 giorni. Qui arriva il primo verdetto su `reversal_v1`.
+      - [x] 8.1 `alphaquant.registry`: append-only con catena di hash, `k` = spec giudicate
+            in validation. File: `alpha-quant/registry/trials.jsonl`. Fatto il 09/11.
+      - [x] 8.2 holdout chiuso dal codice: `config/splits.yaml` (train 06/2023-03/2025,
+            validation 04-12/2025, holdout 2026), `HistoricalMarket` rifiuta le date di
+            holdout finché il registro non lo apre, una volta per spec. Fatto il 09/11.
+      - [ ] 8.3 gate di portafoglio: Sharpe netto, deflated Sharpe con `k`, drawdown,
+            quota dei costi sull'edge lordo. ~1 giorno.
+      - [ ] 8.4 primo verdetto su `reversal_v1` (aspetta il backfill completo). Nota nel
+            registro: il suo holdout 2026 è stato visto in aggregato il 09/11. ~mezza giornata.
 - [ ] **9. Registro delle strategie e shadow mode per strategia nel desk.** ~1-2 giorni.
 - [ ] **10. Agenti, in quest'ordine:**
       1. `SourceRef.page` obbligatorio: ogni numero preso da un paper porta la pagina. ~10 min.

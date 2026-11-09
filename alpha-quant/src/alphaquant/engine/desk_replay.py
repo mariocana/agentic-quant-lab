@@ -46,6 +46,7 @@ import time_machine
 from deltalake import DeltaTable
 
 from alphaquant.config import QUANTLAKE_DATA_ROOT
+from alphaquant.registry import HoldoutLocked, Registry
 from desk.data.hl_market import Candle
 from desk.execution.paper import PaperAdapter
 from desk.journal.log import read as read_journal
@@ -55,6 +56,17 @@ from desk.risk.state import RiskState
 from desk.schemas import AssetContext, OrderIntent, RiskVerdict
 
 DAY_MS = 86_400_000
+SPLITS_FILE = Path(__file__).resolve().parents[3] / "config" / "splits.yaml"
+
+
+def splits(venue: str = "hyperliquid", path: Path = SPLITS_FILE) -> dict[str, tuple[datetime, datetime]]:
+    """Segment -> (first moment, first moment after it), UTC."""
+    import yaml
+
+    raw = yaml.safe_load(Path(path).read_text())[venue]
+    return {k: (datetime.fromisoformat(a).replace(tzinfo=timezone.utc),
+                datetime.fromisoformat(b).replace(tzinfo=timezone.utc) + timedelta(days=1))
+            for k, (a, b) in raw.items()}
 
 
 def _ms(t: datetime) -> int:
@@ -65,8 +77,13 @@ class HistoricalMarket:
     """HLMarket's interface over quantlake tables, frozen at a moment `now`."""
 
     def __init__(self, daily: pl.DataFrame, funding: pl.DataFrame, listings: pl.DataFrame,
-                 meta: dict[str, dict] | None = None):
+                 meta: dict[str, dict] | None = None, holdout_start: datetime | None = None):
+        """holdout_start: from that moment on nothing is served until a registered
+        spec opens the holdout (unlock_holdout). None means no lock: only for data
+        audits that compute no performance, and for tests."""
         self.now: datetime | None = None
+        self.holdout_start = holdout_start
+        self.unlocked_for: str | None = None
         self.meta = meta or {}
         self._bars: dict[str, dict[str, list]] = {}
         for (sym,), g in daily.sort("timestamp").group_by("symbol", maintain_order=True):
@@ -87,7 +104,10 @@ class HistoricalMarket:
         self.versions: dict[str, int] = {}      # Delta version of every table read
 
     @classmethod
-    def from_quantlake(cls, root: Path = QUANTLAKE_DATA_ROOT, symbols: list[str] | None = None) -> "HistoricalMarket":
+    def from_quantlake(cls, root: Path = QUANTLAKE_DATA_ROOT, symbols: list[str] | None = None,
+                       holdout: str | None = "config") -> "HistoricalMarket":
+        """Locked by default at the holdout of config/splits.yaml. Pass holdout=None
+        only for a data audit that computes no performance."""
         versions = {}
 
         def load(path, cols=None, by_symbol=True):
@@ -99,10 +119,20 @@ class HistoricalMarket:
                 funding=load(root / "bronze" / "hyperliquid_funding", ["symbol", "timestamp", "funding_rate"]),
                 listings=load(root / "reference" / "hyperliquid_listings", by_symbol=False))
         m.versions = versions
+        m.holdout_start = splits()["holdout"][0] if holdout == "config" else None
         return m
 
     def at(self, t: datetime) -> None:
+        if self.holdout_start is not None and t >= self.holdout_start and self.unlocked_for is None:
+            raise HoldoutLocked(f"{t:%Y-%m-%d} is in the holdout (from {self.holdout_start:%Y-%m-%d}): "
+                                "register the spec and open its holdout first")
         self.now = t
+
+    def unlock_holdout(self, registry: Registry, spec_hash: str) -> None:
+        """Open the holdout for one frozen spec. The registry writes the opening
+        before a single bar is served, and refuses a second one."""
+        registry.open_holdout(spec_hash)
+        self.unlocked_for = spec_hash
 
     # ---- what the past knew at `now` -----------------------------------------
 

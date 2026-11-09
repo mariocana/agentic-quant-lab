@@ -104,3 +104,36 @@ def test_a_held_perp_that_is_delisted_gets_settled():
     if not held_dead:
         pytest.skip("the strategy did not happen to hold a delisted perp in this sample")
     assert set(res.settled_delistings) <= {"C00", "C01", "C14"} and res.settled_delistings
+
+
+def test_the_holdout_is_closed_by_the_code_not_by_a_request(tmp_path):
+    from alphaquant.registry import HoldoutLocked, Registry
+
+    daily = _daily(SYMS, 60)
+    lock = D0 + timedelta(days=40)
+    m = HistoricalMarket(daily, _funding(SYMS, 60), _listings(daily), holdout_start=lock)
+    m.at(lock - timedelta(hours=1))                                  # before: fine
+    with pytest.raises(HoldoutLocked):
+        m.at(lock)
+    with pytest.raises(HoldoutLocked):                               # replay goes through the same door
+        replay(Reversal(universe_size=15, min_day_volume_usd=1e6), m, load_limits(),
+               D0 + timedelta(days=35), D0 + timedelta(days=45))
+
+    reg = Registry(tmp_path / "t.jsonl")
+    spec = {"strategy": "desk.signals.reversal.Reversal", "params": {"universe_size": 15}}
+    from alphaquant.registry import RegistryError
+    with pytest.raises(RegistryError):
+        m.unlock_holdout(reg, "not-a-registered-spec")
+    h = reg.register_spec(spec)
+    m.unlock_holdout(reg, h)
+    m.at(lock + timedelta(days=1))                                   # open now, for this spec
+    other = HistoricalMarket(daily, _funding(SYMS, 60), _listings(daily), holdout_start=lock)
+    with pytest.raises(HoldoutLocked):
+        other.unlock_holdout(reg, h)                                 # spent: a second look is refused
+
+
+def test_quantlake_markets_are_locked_unless_told_otherwise():
+    from alphaquant.engine.desk_replay import splits
+
+    s = splits()
+    assert s["train"][1] <= s["validation"][0] < s["validation"][1] <= s["holdout"][0]
