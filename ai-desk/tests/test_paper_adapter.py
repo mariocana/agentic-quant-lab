@@ -90,3 +90,14 @@ def test_costs_follow_how_the_order_meets_the_book(tmp_path):
     maker, taker = go("limit_alo", "A"), go("limit_ioc", "B")
     assert maker.fee_usd == pytest.approx(0.15) and maker.fill_px == 100.0
     assert taker.fee_usd == pytest.approx(0.45) and taker.fill_px == pytest.approx(100.073)
+
+
+def test_funding_is_paid_by_the_side_the_rate_points_at(tmp_path):
+    a = PaperAdapter(starting_equity=10_000.0, fee_bps=0.0, slippage_bps=0.0, path=tmp_path / "p.json")
+    for asset, side in (("L", "buy"), ("S", "sell")):
+        i = OrderIntent(asset=asset, side=side, notional_usd=1_000.0, strategy_id="t", horizon_hours=1, reason="t")
+        a.execute(i, RiskVerdict(intent_id=i.id, decision="approve", approved_notional_usd=1_000.0), 100.0)
+    paid = a.apply_funding({"L": 0.001, "S": 0.001})        # positive rate: longs pay shorts
+    assert paid == pytest.approx(0.0)                        # one long, one short of the same size
+    assert a.apply_funding({"L": 0.001}) == pytest.approx(1.0)
+    assert a.account_state().equity_usd == pytest.approx(10_000.0 - 1.0)

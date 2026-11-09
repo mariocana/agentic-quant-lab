@@ -41,8 +41,9 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
             maker 1,5 bps, taker 4,5 bps + slippage 7,3 bps medio. Fatto il 09/11.
       - [x] 7.2 profilo di venue `hyperliquid` in `config/costs.yaml`, fee verificate,
             slippage no (misurato su testnet).
-      - [ ] 7.3 mercato storico che alimenta `run_cycle` del desk con le barre silver:
-            il backtest è il codice del desk. ~1-2 giorni.
+      - [x] 7.3 `alphaquant.engine.desk_replay`: il `run_cycle` del desk sul passato,
+            con orologio spostato (time_machine) e file in una cartella temporanea.
+            Funding regolato fra i cicli, delisting chiusi all'ultimo prezzo. Fatto il 09/11.
       - [ ] 7.4 replay dei cicli testnet 07-15/10: simulato contro reale. ~1 giorno.
       - [ ] 7.5 uscita `SimResult` per i gate del punto 8. ~mezza giornata.
 - [ ] **8. Gate di portafoglio, registro delle prove, holdout bloccato dal codice.**

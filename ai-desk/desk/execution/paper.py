@@ -134,6 +134,23 @@ class PaperAdapter(ExecutionAdapter):
                     filled_usd=notional, decision_px=mid_px, fill_px=fill_px, fee_usd=fee,
                     partial=notional < intent.notional_usd - 1e-9)
 
+    def apply_funding(self, rates: dict[str, float]) -> float:
+        """Settle funding: `rates` is the summed hourly rate per asset over the
+        period. On Hyperliquid a long pays size x price x rate when the rate is
+        positive and is paid when it is negative. Returns what the account paid.
+
+        The paper desk does not call this yet, so its equity ignores funding; a
+        backtest does, because over a five-day hold funding at 0.01%/h is 1.2%
+        of the position, more than the round trip costs."""
+        paid = 0.0
+        for asset, p in self.state["positions"].items():
+            r = rates.get(asset)
+            if r:
+                paid += p["size"] * self._mark(asset, p["entry_px"]) * r
+        self.state["cash"] -= paid
+        self._save()
+        return paid
+
     def flatten_all(self) -> list[Fill]:
         fills = []
         for asset, p in list(self.state["positions"].items()):
