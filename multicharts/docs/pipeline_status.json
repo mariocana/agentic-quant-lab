@@ -1097,10 +1097,11 @@
    "path": "strategies/First5PreOpen",
    "spec": "strategies/First5PreOpen/SPEC.md",
    "stages": {
-    "0": "pass"
+    "0": "pass",
+    "1": "pass"
    },
    "metrics": {},
-   "next": "Stage 1, secondo giro: stessi run A e B con Bar Magnifier 1 min",
+   "next": "IS 2020-2024 in MultiCharts, poi /lab report",
    "note": "",
    "log": [
     {
@@ -1114,6 +1115,10 @@
     {
      "date": "2026-11-09",
      "text": "**Stage 1, primo giro: meccanica giusta ma da rifare, Bar Magnifier spento** (la SPEC lo chiede). Run A/B 2024-08-07 → 2024-12-31: 62 trade, ingressi tutti alle 08:35 (timbro 08:40), uno al giorno, stop al livello del log, 9 stop nella barra d'ingresso come i 'chiuso=1' del log, uscite a tempo alle 15:00 (timbro 15:05) e alle 12:00 il 29/11, x10 identico su 62 trade. **A verbale: un run con input a 0 ha girato sul 22/06 → 06/11/2026, dentro l'OOS (50 trade, report salvato come non valido): quel tratto di OOS è visto, il verdetto OOS diventa asimmetrico.**"
+    },
+    {
+     "date": "2026-11-09",
+     "text": "**Stage 1, meccanica: passa.** Stage 1 secondo giro, con Bar Magnifier 1 min: **passa**. Preliminari controllati sul report: @NQ 5 min, BM 1 min acceso, commissione 7,5$ per contratto e slippage 0 come da SPEC (slippage dentro la commissione); trade fra 2024-08-07 e 2024-12-27, dentro la finestra di fase 1 della SPEC (2024-08-01 -> 2024-12-31), nessuno dopo il 2024 anche se il Range testato arriva al 2026-11-09 perche' il grafico e' piu' lungo (TradeEndEL 1241231). Session template non leggibile dal report (ultima barra di oggi), ma gli ingressi alle 08:40 richiedono la barra 830, e l'uscita alle 12:00 del Ringraziamento (28/11, festivo col Globex fino alle 12:00 CT) torna con un grafico Globex in CT. Controlli di lab.py: 62 ingressi tutti alle 08:40, max 1 trade al giorno, nessun trade a cavallo di due date, x10 esatto su 62 trade. Uscite: 41 stop (L/S-SL e 9 -SL0 sulla barra d'ingresso) a punti variabili come prevede la SPEC (stop sul livello della prima candela, non a distanza fissa), allo stesso livello del log di ShowLog del primo giro secondo il desk; 20 uscite a tempo tutte alle 15:05, una End of Day Exit alle 12:00 del 28/11; nessun target, come da TP_RR 0. A titolo informativo: t 1,81, WR 30,6%, R:R 4,56 su 62 trade.'. Verdetto in `strategies/First5PreOpen/verdicts/SPEC_s1.md`."
     }
    ]
   }
