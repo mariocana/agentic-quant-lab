@@ -1,3 +1,5 @@
+import pytest
+
 from desk.execution.paper import PaperAdapter
 from desk.schemas import OrderIntent, RiskVerdict
 
@@ -75,3 +77,16 @@ def test_flatten_all_with_costs_leaves_nothing(tmp_path):
     go(a, "ETH", "sell", 100.0, 10.0)
     a.flatten_all()
     assert a.account_state().positions == []
+
+
+def test_costs_follow_how_the_order_meets_the_book(tmp_path):
+    """Measured on the desk's real fills: a post-only order pays the maker fee and
+    no slippage, an IOC pays the taker fee and crosses the spread."""
+    a = PaperAdapter(starting_equity=10_000.0, path=tmp_path / "p.json")
+    def go(order_type, asset):
+        i = OrderIntent(asset=asset, side="buy", notional_usd=1_000.0, order_type=order_type,
+                        strategy_id="t", horizon_hours=1, reason="t")
+        return a.execute(i, RiskVerdict(intent_id=i.id, decision="approve", approved_notional_usd=1_000.0), 100.0)
+    maker, taker = go("limit_alo", "A"), go("limit_ioc", "B")
+    assert maker.fee_usd == pytest.approx(0.15) and maker.fill_px == 100.0
+    assert taker.fee_usd == pytest.approx(0.45) and taker.fill_px == pytest.approx(100.073)

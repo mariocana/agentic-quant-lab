@@ -1,7 +1,21 @@
-"""Paper adapter: simulates fills at mid +/- a fixed cost, keeps positions in a JSON
+"""Paper adapter: simulates fills at mid +/- a cost, keeps positions in a JSON
 file, marks them to market from the same context feed the live loop uses.
 
 This is the default adapter. The live one is opt-in.
+
+Costs depend on how the order meets the book, measured on 126 real fills of this
+desk (testnet, 07-15/10/2026, alpha-quant calibration/desk_fills):
+
+  maker (post-only, limit_alo)   1.5 bps fee, no slippage: it rests at the price
+  taker (limit_ioc)              4.5 bps fee + 7.3 bps mean slippage
+
+One flat 4.5 + 2 bps for everything, as before, made a maker round trip four
+times too expensive and a taker one half as expensive as it really is.
+
+Still optimistic in one way: a post-only order here always fills, at once. On
+the exchange it can rest and be cancelled, and how often that happens is not
+measured yet. The taker slippage was measured on testnet books, thinner than
+mainnet's: prudent for liquid names.
 """
 from __future__ import annotations
 
@@ -19,11 +33,20 @@ PAPER_PATH = VAR / "paper_account.json"
 class PaperAdapter(ExecutionAdapter):
     name = "paper"
 
-    def __init__(self, starting_equity: float = 10_000.0, fee_bps: float = 4.5,
-                 slippage_bps: float = 2.0, path: Path = PAPER_PATH):
+    COSTS = {"maker": {"fee_bps": 1.5, "slippage_bps": 0.0},
+             "taker": {"fee_bps": 4.5, "slippage_bps": 7.3}}
+
+    def __init__(self, starting_equity: float = 10_000.0, fee_bps: float | None = None,
+                 slippage_bps: float | None = None, path: Path = PAPER_PATH):
+        """fee_bps / slippage_bps, if given, apply the same cost to every order
+        (tests use zero to check the accounting alone)."""
         self.path = path
-        self.fee_bps = fee_bps
-        self.slippage_bps = slippage_bps
+        self.costs = {k: dict(v) for k, v in self.COSTS.items()}
+        for c in self.costs.values():
+            if fee_bps is not None:
+                c["fee_bps"] = fee_bps
+            if slippage_bps is not None:
+                c["slippage_bps"] = slippage_bps
         self.marks: dict[str, float] = {}
         if path.exists():
             self.state = json.loads(path.read_text())
@@ -65,7 +88,8 @@ class PaperAdapter(ExecutionAdapter):
         if intent.id in self.state["filled_intents"]:
             return None                                       # idempotent
         sign = 1 if intent.side == "buy" else -1
-        fill_px = mid_px * (1 + sign * self.slippage_bps / 1e4)
+        cost = self.costs["maker" if intent.order_type == "limit_alo" else "taker"]
+        fill_px = mid_px * (1 + sign * cost["slippage_bps"] / 1e4)
         notional = verdict.approved_notional_usd
         size = sign * notional / fill_px
 
@@ -82,7 +106,7 @@ class PaperAdapter(ExecutionAdapter):
                 # sliver one way or the other; closing exactly is what the venue would do.
                 size = -p["size"]
                 notional = abs(size) * fill_px
-        fee = notional * self.fee_bps / 1e4
+        fee = notional * cost["fee_bps"] / 1e4
         if p is None:
             self.state["positions"][intent.asset] = {
                 "size": size, "entry_px": fill_px, "opened_at": datetime.now(timezone.utc).isoformat(),
@@ -116,7 +140,7 @@ class PaperAdapter(ExecutionAdapter):
             mark = self._mark(asset, p["entry_px"])
             side = "sell" if p["size"] > 0 else "buy"
             # size the ticket at the price it will actually fill at, not at the mark
-            fill_px = mark * (1 + (1 if side == "buy" else -1) * self.slippage_bps / 1e4)
+            fill_px = mark * (1 + (1 if side == "buy" else -1) * self.costs["taker"]["slippage_bps"] / 1e4)
             intent = OrderIntent(asset=asset, side=side, notional_usd=abs(p["size"]) * fill_px, reduce_only=True,
                                  order_type="limit_ioc", strategy_id="risk", horizon_hours=0, reason="flatten_all")
             verdict = RiskVerdict(intent_id=intent.id, decision="approve", approved_notional_usd=intent.notional_usd)
