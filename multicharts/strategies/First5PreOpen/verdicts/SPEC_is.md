@@ -1,5 +1,5 @@
 ---
-esito: sospeso
+esito: passa
 fase: is
 data: 2026-11-09
 spec: strategies/First5PreOpen/SPEC.md
@@ -11,15 +11,11 @@ t: 2.38
 dd: 17115
 n: 642
 ---
-# strategies/First5PreOpen/SPEC.md — fase 2, IS: SOSPESO
+# strategies/First5PreOpen/SPEC.md — fase 2, IS: PASSA
 
 ## Il judge
 
-IS 2020-2024, via B: resta **sospeso**, ma ora per un limite dello strumento e non per una domanda aperta. Domanda a Mario: il Data Range del grafico parte il 2020-01-01 o prima? Risposta di Mario: si'. Il NO di check_report (dati dal 2020-01-09 contro TradeStartEL 1200101) e' quindi un falso allarme: lo Start Date del foglio Settings e' il primo ingresso (2020-01-09 08:40), come in tutti i report di First5PreOpen, s1 compreso. lab.py pero' rifiuta passa con un preliminare NO ('un preliminare e' NO: --esito invalido'), e un rigiro darebbe lo stesso NO. Il verbale resta sospeso finche' il controllo di check_report non viene corretto o la regola non si sblocca a mano. Esito dello script: passa, con t 2,38 > 1,16 (k = 5), trade peggiore $273 per micro <= $500, n 642 e WR 24,5%; ultimo trade il 2024-12-27, dentro TradeEndEL 1241231.
-
-## Avvisi
-
-- un controllo preliminare e' NO: il report e' invalido, va rigirato con le impostazioni giuste (esito obbligato: invalido)
+IS 2020-2024, via B: **passa**. Prima era sospeso: check_report segnava NO perche' il primo trade e' del 2020-01-09 e TradeStartEL e' 1200101. A Mario e' stato chiesto se il Data Range del grafico parte il 2020-01-01 o prima, e lui ha risposto di si'. Lo Start Date di Settings e' il primo ingresso (2020-01-09 08:40), non l'inizio del grafico, e il desk ha corretto check_report (commit 1d6829e): uno scarto di 8-31 giorni ora e' un avviso. Gli altri preliminari sono come da SPEC: @NQ 5 min, BM 1 min, 7,5$ per contratto e slippage 0. Ci sono 642 ingressi tutti alle 08:40, uscite a stop o alle 15:05, e l'ultimo trade e' del 2024-12-27, dentro TradeEndEL 1241231. Risultato: t 2,38 > 1,16 (k = 5) e trade peggiore $273 per micro <= $500, quindi il kill non scatta. n 642 e WR 24,5% stanno nelle bande del proxy, e t 2,38 sta nell'attesa della SPEC (1,5-2,4).
 
 ## Output dello script
 
@@ -35,7 +31,7 @@ CONTROLLI PRELIMINARI  (se sbaglia qui, i numeri sotto non valgono)
   OK   Bar Magnifier: Enabled1 Minute
   ?    Compression: 5 Minutes   Symbol: @NQ   Point Value: $20
   ?    Range testato: 2020-01-09 -> 2026-11-09  (2496 giorni)
-  NO   TradeStartEL chiede 2020-01-01 ma i dati partono il 2020-01-09: 8 giorni mancanti. Il range del GRAFICO vince, allargalo e rigira.
+  ?    TradeStartEL chiede 2020-01-01 ma il primo trade e' del 2020-01-09 (8 giorni): controlla sul grafico che il Data Range copra la finestra.
   ?    Ultima barra 15:40 di OGGI: giorno incompleto, il session template NON si deduce. Verificalo sul grafico.
 
 MISURE

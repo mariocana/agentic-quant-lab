@@ -1098,10 +1098,13 @@
    "spec": "strategies/First5PreOpen/SPEC.md",
    "stages": {
     "0": "pass",
-    "1": "pass"
+    "1": "pass",
+    "2": "pass"
    },
-   "metrics": {},
-   "next": "IS 2020-2024 in MultiCharts, poi /lab report",
+   "metrics": {
+    "fase 2, IS": "642 trade · t 2.38 · WR 24.5% · R:R 4.11"
+   },
+   "next": "OOS 2025->oggi in MultiCharts, una volta sola, poi /lab report",
    "note": "",
    "log": [
     {
@@ -1123,6 +1126,10 @@
     {
      "date": "2026-11-09",
      "text": "**Domanda del judge sull'IS, risposta di Mario:** il Data Range del grafico di F5P_S2_IS_2020-2024 parte dal 01/01/2020 o prima. Il NO di check_report ('dati dal 2020-01-09') è quindi un falso allarme: nel foglio Settings lo Start Date è il primo trade."
+    },
+    {
+     "date": "2026-11-09",
+     "text": "**fase 2, IS: passa.** IS 2020-2024, via B: **passa**. Prima era sospeso: check_report segnava NO perche' il primo trade e' del 2020-01-09 e TradeStartEL e' 1200101. A Mario e' stato chiesto se il Data Range del grafico parte il 2020-01-01 o prima, e lui ha risposto di si'. Lo Start Date di Settings e' il primo ingresso (2020-01-09 08:40), non l'inizio del grafico, e il desk ha corretto check_report (commit 1d6829e): uno scarto di 8-31 giorni ora e' un avviso. Gli altri preliminari sono come da SPEC: @NQ 5 min, BM 1 min, 7,5$ per contratto e slippage 0. Ci sono 642 ingressi tutti alle 08:40, uscite a stop o alle 15:05, e l'ultimo trade e' del 2024-12-27, dentro TradeEndEL 1241231. Risultato: t 2,38 > 1,16 (k = 5) e trade peggiore $273 per micro <= $500, quindi il kill non scatta. n 642 e WR 24,5% stanno nelle bande del proxy, e t 2,38 sta nell'attesa della SPEC (1,5-2,4). Verdetto in `strategies/First5PreOpen/verdicts/SPEC_is.md`."
     }
    ]
   }
