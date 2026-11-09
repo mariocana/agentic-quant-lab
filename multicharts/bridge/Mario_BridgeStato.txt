@@ -28,15 +28,15 @@ Inputs:
 
 Variables:
     intrabarpersist ultima(-999),
-    pos(0), file(""), riga("");
+    pos(0), percorso(""), riga("");
 
-file = Cartella + "mario_stato_" + Strat + ".csv";
+percorso = Cartella + "mario_stato_" + Strat + ".csv";
 pos = i_MarketPosition * i_CurrentContracts * MicroPerContratto;
 
 if GetAppInfo(aiRealTimeCalc) = 1 and pos <> ultima then begin
     riga = Strat + ";" + Strum + ";" + NumToStr(pos, 0) + ";" + NumToStr(StopEmergenzaPts, 2) + ";FINE";
-    FileDelete(file);
-    FileAppend(file, riga + NewLine);
+    FileDelete(percorso);
+    FileAppend(percorso, riga + NewLine);
     Print("STATO ", Strat, " PC=", FormatTime("HH:mm:ss", ComputerDateTime),
           " barra=", Time:4:0, " pos=", pos:3:0);
     ultima = pos;
