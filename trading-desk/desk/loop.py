@@ -1,7 +1,8 @@
 """One desk cycle: read -> strategy -> rebalance -> risk -> execute -> journal.
 
-Deterministic end to end. Phase 2 plugs the research layer in between
-strategy and rebalance as an extra filter; nothing downstream changes.
+Deterministic end to end. No research layer plugs in here: strategies are
+written and judged in the lab (factory/, alpha-quant/) and arrive as a class in
+desk.signals, listed in config/strategies.yaml.
 """
 from __future__ import annotations
 

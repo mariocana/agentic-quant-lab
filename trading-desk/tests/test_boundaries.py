@@ -5,7 +5,7 @@ from pathlib import Path
 from desk.execution.base import round_price, round_size
 
 ROOT = Path(__file__).resolve().parent.parent / "desk"
-LLM_MODULES = {"anthropic", "openai", "google", "langchain", "desk.research"}
+LLM_MODULES = {"anthropic", "openai", "google", "langchain"}
 
 
 def imports_of(path: Path) -> set[str]:
@@ -36,7 +36,7 @@ def test_the_desk_imports_nothing_from_the_lab():
     """One repository instead of three made this a rule instead of a wall: separate
     repos could not import each other by construction. The direction is lab -> desk,
     never the other way, and no LLM SDK anywhere in the desk either."""
-    forbidden = LAB_PACKAGES | (LLM_MODULES - {"desk.research"})
+    forbidden = LAB_PACKAGES | LLM_MODULES
     files = list(ROOT.rglob("*.py")) + list((ROOT.parent / "scripts").rglob("*.py"))
     assert files, "found no source to check"
     for f in files:
@@ -44,15 +44,9 @@ def test_the_desk_imports_nothing_from_the_lab():
         assert not bad, f"{f.relative_to(ROOT.parent)} imports {bad}: the desk must not depend on the lab"
 
 
-def test_research_never_imports_execution():
-    for f in (ROOT / "research").rglob("*.py"):
-        bad = {m for m in imports_of(f) if m.startswith("desk.execution")}
-        assert not bad, f"{f} imports {bad}"
-
-
 def test_strategies_and_execution_never_read_limits():
     """Limits are the risk engine's. Strategies size blind; execution sends what it is told."""
-    for pkg in ("signals", "execution", "data", "research"):
+    for pkg in ("signals", "execution", "data"):
         for f in (ROOT / pkg).rglob("*.py"):
             assert "load_limits" not in f.read_text() and "limits.yaml" not in f.read_text(), f"{f} reads limits"
 
@@ -141,3 +135,9 @@ def test_a_bad_configuration_never_kills_the_worker():
                     name = getattr(sub.exc.func, "id", "")
                     assert name != "SystemExit", \
                         f"{f.name}:{node.name}() raises SystemExit outside main()"
+
+
+def test_no_research_package_in_the_desk():
+    """The agents moved to factory/. A research/ folder coming back here would be
+    LLM code next to the API key again."""
+    assert not (ROOT / "research").exists() and not (ROOT / "backtest").exists()

@@ -21,10 +21,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-REGISTRY_PATH = Path(__file__).resolve().parents[2] / "registry" / "trials.jsonl"
+# ALPHAQUANT_REGISTRY points a test or a dry run elsewhere: a rehearsal must not
+# add trials to the real count.
+REGISTRY_PATH = Path(os.getenv("ALPHAQUANT_REGISTRY") or
+                     Path(__file__).resolve().parents[2] / "registry" / "trials.jsonl")
 GENESIS = "0" * 64
 
 

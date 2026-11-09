@@ -1,8 +1,8 @@
 """Contracts between modules. Everything that crosses a module boundary is one of these.
 
-Phase 1 uses Signal -> OrderIntent -> RiskVerdict -> Fill. Thesis / Review are the
-research-layer contracts for phase 2; they are defined now so the boundary is fixed
-before any LLM code exists.
+The cycle uses TargetPosition -> OrderIntent -> RiskVerdict -> Fill. Nothing here
+belongs to research: the agents live in factory/, outside this package, and reach
+the desk only as a strategy class merged by a human.
 """
 from __future__ import annotations
 
@@ -28,35 +28,6 @@ def asset_class(asset: str) -> AssetClass:
     """HIP-3 (builder-deployed) perps are namespaced, e.g. 'xyz:TSLA'. Thin books,
     isolated margin: the risk engine treats them as a separate class."""
     return "hip3" if ":" in asset else "crypto"
-
-
-class SourceRef(BaseModel):
-    url: str
-    quote: str
-    observed_at: datetime
-
-
-class Thesis(BaseModel):
-    """Analyst output (phase 2). Verifiable evidence, explicit falsifier, hard expiry."""
-    id: str = Field(default_factory=_id)
-    asset: str
-    direction: Literal["long", "short", "neutral"]
-    horizon_hours: int
-    catalyst: str
-    evidence: list[SourceRef]
-    confidence: float = Field(ge=0.0, le=1.0)
-    falsified_if: str
-    expires_at: datetime
-    created_at: datetime = Field(default_factory=_now)
-
-
-class Review(BaseModel):
-    """Adversary output (phase 2)."""
-    thesis_id: str
-    verdict: Literal["pass", "reject"]
-    already_priced: bool
-    single_source: bool
-    counter: str
 
 
 class Signal(BaseModel):

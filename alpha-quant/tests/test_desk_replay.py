@@ -136,4 +136,6 @@ def test_quantlake_markets_are_locked_unless_told_otherwise():
     from alphaquant.engine.desk_replay import splits
 
     s = splits()
-    assert s["train"][1] <= s["validation"][0] < s["validation"][1] <= s["holdout"][0]
+    assert s["train"][1] < s["validation"][0] < s["validation"][1] < s["holdout"][0]
+    # the last validation cycle (00:05 of its last day) is before the lock
+    assert s["validation"][1] + timedelta(minutes=5) < s["holdout"][0]

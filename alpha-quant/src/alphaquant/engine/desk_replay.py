@@ -60,12 +60,15 @@ SPLITS_FILE = Path(__file__).resolve().parents[3] / "config" / "splits.yaml"
 
 
 def splits(venue: str = "hyperliquid", path: Path = SPLITS_FILE) -> dict[str, tuple[datetime, datetime]]:
-    """Segment -> (first moment, first moment after it), UTC."""
+    """Segment -> (first day, last day), both inclusive, at 00:00 UTC: the shape
+    replay() takes. An exclusive end of midnight the day after put the last
+    validation cycle at 00:05 on 1 January, inside the holdout, and the lock
+    refused it: the first rehearsal of the factory found it."""
     import yaml
 
     raw = yaml.safe_load(Path(path).read_text())[venue]
     return {k: (datetime.fromisoformat(a).replace(tzinfo=timezone.utc),
-                datetime.fromisoformat(b).replace(tzinfo=timezone.utc) + timedelta(days=1))
+                datetime.fromisoformat(b).replace(tzinfo=timezone.utc))
             for k, (a, b) in raw.items()}
 
 

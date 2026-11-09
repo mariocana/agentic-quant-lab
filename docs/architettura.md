@@ -127,14 +127,33 @@ risultato, per il dossier. Anche le idee uccise al primo passaggio entrano nel r
 ricercatore cita un effetto, si deve poter aprire il paper e trovarlo. È la difesa contro un
 modello che attribuisce a un autore cose che l'autore non ha scritto.
 
+## Come gira la fabbrica
+
+Gli agenti sono subagent di Claude Code in `.claude/agents/`, diretti dalla skill
+`/quant-factory`: ricercatore, critico (due passaggi), spec builder, coder. Le regole
+dure sono codice nel pacchetto `factory/` e in alpha-quant:
+
+| comando | cosa garantisce |
+|---|---|
+| `factory check` | spec valida (ogni fonte con la pagina), codice attraverso il controllo statico e uno smoke run in un processo separato, senza credenziali, con perp appena quotati |
+| `factory freeze` | spec + hash del codice nel registro: da qui è una prova |
+| `factory evaluate` | il ciclo del desk sui giorni di validation, giudicato con `k` dal registro; a schermo solo PASS/FAIL e i nomi dei controlli falliti |
+| `factory holdout --yes` | l'unico sguardo all'holdout, deciso da una persona |
+| `factory promote` | la strategia entra nel desk come shadow, via pull request |
+
+Il muro informativo (il coder non vede mai le metriche) è una regola che gli agenti
+seguono, non una sandbox: i file con i numeri sono leggibili. Il controllo statico del
+codice è un linter, non una sandbox: per questo il codice generato gira solo nel
+laboratorio finché una persona non fa il merge.
+
 ## Convivenza con il `/lab` di multicharts
 
 Il repo `multicharts` ha la sua fabbrica (`/lab`, agenti `lab-coder` e `lab-judge`, regole in
 `docs/lab.py`, stato in `docs/pipeline_status.json`) per la catena prop in EasyLanguage.
 Le due catene non si toccano:
 
-1. **Nomi diversi.** Qui gli agenti si chiamano `factory-*` e la skill `/factory`, mai `lab-*`
-   o `/lab`.
+1. **Nomi diversi.** Qui gli agenti si chiamano `factory-*` e la skill `/quant-factory`, mai
+   `lab-*` o `/lab`. Non `/factory`: è già il nome del plugin software-factory installato.
 2. **Agenti e skill solo nel progetto.** Stanno in `agentic-quant-lab/.claude/`, mai in
    `~/.claude/`: a livello utente comparirebbero anche nelle sessioni aperte in multicharts.
 3. **Stato separato.** Il registro delle prove vive qui. Niente di questo repo legge o scrive

@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "factory"
+version = "0.1.0"
+description = "Strategy factory: specs, the static code gate and the commands the agents call"
+authors = ["mariocana"]
+packages = [{ include = "factory", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "~3.13"
+alphaquant = {path = "../alpha-quant", develop = true}
+trading-desk = {path = "../trading-desk", develop = true}
+pydantic = "^2.0"
+pyyaml = "^6.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+
+[tool.poetry.scripts]
+factory = "factory.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

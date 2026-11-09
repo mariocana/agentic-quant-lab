@@ -70,12 +70,12 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
       ogni shadow gira dopo il ciclo attivo nel suo conto paper `var/shadow/<id>/`, senza
       notifiche e senza via verso l'exchange. Endpoint `/api/strategies`. Fatto il 09/11.
       Manca: il funding nei conti paper (attivo e shadow).
-- [ ] **10. Agenti, in quest'ordine:**
-      1. `SourceRef.page` obbligatorio: ogni numero preso da un paper porta la pagina. ~10 min.
-      2. coder (il più verificabile)
-      3. spec builder
-      4. ricercatore + critico al **primo passaggio**, sull'ipotesi, prima del codice
-      5. critico al secondo passaggio, sul risultato: dossier append-only, nessun veto
+- [x] **10. Agenti.** Pacchetto `factory/` (spec con pagina obbligatoria, controllo
+      statico + smoke run, comandi `new/check/freeze/evaluate/holdout/promote/status`) e in
+      `.claude/` la skill `/quant-factory` con `factory-researcher`, `factory-critic`
+      (due passaggi), `factory-spec-builder`, `factory-coder`. Provato end to end sui dati
+      veri con un registro di prova. Il desk ha perso `research/`, `backtest/` e gli schemi
+      Thesis/Review. Fatto il 10/11.
 
 ## Pulizie
 
@@ -88,7 +88,7 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
 ## Vincoli di convivenza con multicharts
 
 Le regole stanno in `architettura.md`, sezione "Convivenza con il `/lab` di multicharts":
-nomi `factory-*`, agenti e skill solo in `agentic-quant-lab/.claude/`, stato e codice
+nomi `factory-*` e `/quant-factory`, agenti e skill solo in `agentic-quant-lab/.claude/`, stato e codice
 separati, tabelle ES/NQ di quantlake intatte.
 
 ## Decisioni aperte
