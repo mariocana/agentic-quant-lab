@@ -44,7 +44,11 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
       - [x] 7.3 `alphaquant.engine.desk_replay`: il `run_cycle` del desk sul passato,
             con orologio spostato (time_machine) e file in una cartella temporanea.
             Funding regolato fra i cicli, delisting chiusi all'ultimo prezzo. Fatto il 09/11.
-      - [ ] 7.4 replay dei cicli testnet 07-15/10: simulato contro reale. ~1 giorno.
+      - [ ] 7.4 decisioni live contro decisioni rigiocate (`scripts/compare_decisions.py`):
+            108 set di target, dal journal locale e dal desk su Railway. Strumento pronto
+            il 09/11; il verdetto aspetta la fine del backfill (oggi 653 differenze su
+            1.120 sono "no_bars"). Il P&L non si confronta: il testnet riempiva a prezzi
+            fino al 2,6% lontani da mainnet.
       - [ ] 7.5 uscita `SimResult` per i gate del punto 8. ~mezza giornata.
 - [ ] **8. Gate di portafoglio, registro delle prove, holdout bloccato dal codice.**
       Il loader rifiuta le date di holdout finché la spec non è registrata con il suo
