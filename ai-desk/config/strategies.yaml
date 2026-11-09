@@ -1,0 +1,19 @@
+# Le strategie che il desk fa girare. Si cambia con una pull request, non dalla UI:
+# e il cancello umano.
+#
+# mode: active   opera, sul conto del desk (paper o live, secondo la modalita del desk)
+#       shadow   gira ogni giorno nel suo conto paper, in var/shadow/<id>/, con lo
+#                stesso motore di rischio e lo stesso time stop. Non manda mai un
+#                ordine: e il test in avanti, l'unico out-of-sample che nessuno
+#                puo sbirciare.
+#
+# Al massimo una strategia active: il ledger tiene una riga per asset con un solo
+# strategy_id, quindi due strategie attive che vogliono lo stesso perp non sono
+# attribuibili. Prima della seconda attiva serve un subaccount per strategia.
+#
+# class deve stare in desk.signals: il file non puo importare codice da altrove.
+strategies:
+  - id: reversal_v1
+    class: desk.signals.reversal.Reversal
+    params: {}
+    mode: active

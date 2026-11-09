@@ -7,11 +7,13 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timedelta, timezone
+from functools import partial
+from pathlib import Path
 
 from desk.data.hl_market import HLMarket
 from desk.execution.base import ExecutionAdapter
-from desk.journal.log import record
-from desk.pm.notify import notify
+from desk.journal.log import record as _record
+from desk.pm.notify import notify as _notify
 from desk.risk import engine as risk
 from desk.risk.state import RiskState
 from desk.schemas import AccountState, OrderIntent
@@ -75,7 +77,13 @@ def time_stop_intents(account: AccountState, limits: dict, now: datetime | None 
 
 
 def run_cycle(market: HLMarket, strategy: Strategy, adapter: ExecutionAdapter, limits: dict,
-              state: RiskState, fetch_depth: bool = True, dry_run: bool = False) -> dict:
+              state: RiskState, fetch_depth: bool = True, dry_run: bool = False,
+              journal_path: Path | None = None, quiet: bool = False) -> dict:
+    """journal_path: write this cycle's records there instead of the desk's journal
+    (shadow strategies keep their own). quiet: no notifications (a shadow halting
+    is information for the lab, not a page for a human)."""
+    record = partial(_record, path=journal_path) if journal_path else _record
+    notify = (lambda _t: None) if quiet else _notify
     log.info("cycle start: strategy=%s adapter=%s dry_run=%s", strategy.id, adapter.name, dry_run)
     if not dry_run:
         _warn_if_too_soon(strategy)

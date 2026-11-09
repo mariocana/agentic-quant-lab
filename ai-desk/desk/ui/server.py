@@ -114,6 +114,11 @@ def universe():
     return service().universe()
 
 
+@app.get("/api/strategies")
+def strategies():
+    return service().strategies_view()
+
+
 @app.get("/api/market")
 def market_days():
     """Days of raw market state on this desk, for quantlake to pull."""

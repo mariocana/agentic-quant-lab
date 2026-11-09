@@ -233,7 +233,7 @@ def replay(strategy, market: HistoricalMarket, limits: dict, start: datetime, en
         def record(kind, payload, path=journal):
             desk_record(kind, payload, path)
 
-        with patch("desk.loop.record", record), patch("desk.loop.notify", notes.append):
+        with patch("desk.loop._notify", notes.append):
             adapter = PaperAdapter(starting_equity=equity, path=Path(d) / "paper.json")
             if costs:
                 adapter.costs = {k: dict(v) for k, v in costs.items()}
@@ -258,7 +258,7 @@ def replay(strategy, market: HistoricalMarket, limits: dict, start: datetime, en
                             settled.append(asset)
                             _settle(adapter, asset, market.last_close(asset) or adapter.state["positions"][asset]["entry_px"],
                                     record)
-                    run_cycle(market, strategy, adapter, limits, state, fetch_depth=False)
+                    run_cycle(market, strategy, adapter, limits, state, fetch_depth=False, journal_path=journal)
                     rows.append({"timestamp": t, "equity": adapter.account_state().equity_usd})
                 prev, t = t, t + timedelta(days=1)
             marks = {a: adapter._mark(a, p["entry_px"]) for a, p in adapter.state["positions"].items()}

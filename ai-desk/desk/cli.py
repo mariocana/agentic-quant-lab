@@ -62,17 +62,20 @@ def cmd_status(args):
 
 def cmd_run(args):
     from desk.loop import run_cycle
-    from desk.signals.reversal import Reversal
-    summary = run_cycle(_market(), Reversal(), _adapter(args.live), load_limits(), _risk_state(args.live),
+    from desk.signals.registry import active, load_strategies
+    a = active(load_strategies())
+    if a is None:
+        sys.exit("no active strategy in config/strategies.yaml")
+    summary = run_cycle(_market(), a.strategy, _adapter(args.live), load_limits(), _risk_state(args.live),
                         fetch_depth=not args.no_depth, dry_run=args.dry_run)
     print(json.dumps(summary, indent=2))
 
 
 def cmd_universe(args):
-    from desk.signals.reversal import Reversal
+    from desk.signals.registry import active, load_strategies
     m = _market()
     ctx = m.contexts()
-    for a in Reversal().universe(ctx):
+    for a in active(load_strategies()).strategy.universe(ctx):
         c = ctx[a]
         print(f"{a:<10} vol24h {c.day_volume_usd/1e6:>9,.1f}M  funding/h {c.funding_hourly:+.5%}  mid {c.mid_px:g}")
 

@@ -25,7 +25,8 @@ from desk.execution.paper import PAPER_PATH, PaperAdapter
 from desk.journal.log import read as read_journal, record
 from desk.loop import run_cycle
 from desk.risk.state import RiskState, state_path
-from desk.signals.reversal import Reversal
+from desk.shadow import run_shadow, shadow_state
+from desk.signals.registry import active, load_strategies, shadows
 
 UI_SETTINGS_PATH = VAR / "ui_settings.json"
 
@@ -149,7 +150,10 @@ class DeskService:
     def __init__(self):
         self.settings = settings()
         self.market = HLMarket(self.settings.data_url)
-        self.strategy = Reversal()
+        # config/strategies.yaml, changed by pull request: at most one active, any shadows
+        self.strategies = load_strategies()
+        a = active(self.strategies)
+        self.strategy = a.strategy if a else None
         self.ui = self._load_ui_settings()
         self.lock = threading.Lock()
         self.running = False
@@ -295,7 +299,8 @@ class DeskService:
             "positions": positions, "unmanaged": [p["asset"] for p in positions if not p["managed"]],
             "last_cycle": self.last_cycle,
             "limits": limits, "ui": self.ui, "next_run_utc": self._next_run().isoformat() if self.ui["schedule_enabled"] else None,
-            "strategy": {"id": self.strategy.id, "interval": self.strategy.interval, "horizon_hours": self.strategy.horizon_hours},
+            "strategy": ({"id": self.strategy.id, "interval": self.strategy.interval,
+                          "horizon_hours": self.strategy.horizon_hours} if self.strategy else None),
             "stale_code": self.code_changed_since_start(),
             "as_of": now.isoformat(),
         }
@@ -340,11 +345,13 @@ class DeskService:
         ctx = self.contexts()
         return [{"asset": a, "day_volume_usd": ctx[a].day_volume_usd, "funding_hourly": ctx[a].funding_hourly,
                  "mid_px": ctx[a].mid_px, "open_interest_usd": ctx[a].open_interest * ctx[a].mark_px}
-                for a in self.strategy.universe(ctx)]
+                for a in (self.strategy.universe(ctx) if self.strategy else [])]
 
     # ---- actions -------------------------------------------------------------
 
     def run(self, dry_run: bool = False, fetch_depth: bool = True) -> dict:
+        if self.strategy is None:
+            raise ValueError("no active strategy in config/strategies.yaml")
         if not self.lock.acquire(blocking=False):
             raise RuntimeError("a cycle is already running")
         self.running, self.last_error = True, None
@@ -362,6 +369,26 @@ class DeskService:
         finally:
             self.running = False
             self.lock.release()
+
+    def _run_shadows(self) -> None:
+        """Every shadow strategy, each in its own try: one failing must not stop the
+        others, and none of them can touch the active account."""
+        for e in shadows(self.strategies):
+            try:
+                summary = run_shadow(self.market, e.strategy, load_limits())
+                logging.getLogger(__name__).info("shadow %s: %s", e.id, summary)
+            except Exception:                      # noqa: BLE001
+                logging.getLogger(__name__).error("shadow %s failed\n%s", e.id, traceback.format_exc())
+
+    def strategies_view(self) -> list[dict]:
+        out = []
+        for e in self.strategies:
+            row = {"id": e.id, "mode": e.mode, "interval": e.strategy.interval,
+                   "horizon_hours": e.strategy.horizon_hours}
+            if e.mode == "shadow":
+                row |= shadow_state(e.id)
+            out.append(row)
+        return out
 
     def run_async(self, dry_run: bool = False) -> None:
         threading.Thread(target=self._safe_run, args=(dry_run,), daemon=True).start()
@@ -482,6 +509,7 @@ class DeskService:
                         last_run_day = now.date()
                         logging.getLogger(__name__).info("scheduled cycle")
                         self._safe_run(False)
+                        self._run_shadows()
                 if (now - last_snapshot).total_seconds() >= self.ui["snapshot_minutes"] * 60:
                     last_snapshot = now
                     st = self.state()

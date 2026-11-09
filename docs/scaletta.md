@@ -65,7 +65,11 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
             `alphaquant.evaluate`: spec → replay → gate → registro in una chiamata. Fatto il 09/11.
       - [ ] 8.4 primo verdetto su `reversal_v1` (aspetta il backfill completo). Nota nel
             registro: il suo holdout 2026 è stato visto in aggregato il 09/11. ~mezza giornata.
-- [ ] **9. Registro delle strategie e shadow mode per strategia nel desk.** ~1-2 giorni.
+- [x] **9. Registro delle strategie e shadow mode nel desk.** `ai-desk/config/strategies.yaml`
+      (al massimo una `active`, `shadow` quante si vuole, classi solo da `desk.signals`);
+      ogni shadow gira dopo il ciclo attivo nel suo conto paper `var/shadow/<id>/`, senza
+      notifiche e senza via verso l'exchange. Endpoint `/api/strategies`. Fatto il 09/11.
+      Manca: il funding nei conti paper (attivo e shadow).
 - [ ] **10. Agenti, in quest'ordine:**
       1. `SourceRef.page` obbligatorio: ogni numero preso da un paper porta la pagina. ~10 min.
       2. coder (il più verificabile)
