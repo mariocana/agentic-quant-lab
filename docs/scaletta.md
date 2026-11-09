@@ -24,8 +24,15 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
 
 ## Dopo (4-8 settimane)
 
-- [ ] **6. Connettore Hyperliquid in quantlake.** Barre, funding, OI, `listed_at`,
-      `underlying_market_open` come colonna della barra. ~1-2 giorni.
+- [ ] **6. Connettore Hyperliquid in quantlake.**
+      - [x] barre 1d (tutta la storia) e 1h (solo le ultime ~5000 per perp: aggiornare
+            almeno ogni qualche mese), funding orario dal 12/05/2023. Fatto il 09/11.
+      - [x] `reference/hyperliquid_listings` e `universe_on(giorno)`: l'universo
+            punto-nel-tempo, delistati compresi.
+      - [ ] backfill completo dei 561 perp (~10 ore, in corso dal 09/11, riprende da solo).
+      - [ ] `underlying_market_open` in silver per gli HIP-3: serve una tabella che
+            associ ogni perp al calendario del sottostante (NYSE, CME, 24/7). ~mezza giornata.
+      - L'open interest storico non esiste nell'API: c'è solo dal registro del desk (punto 4).
 - [ ] **7. Simulatore livello 2 in alpha-quant**, calibrato contro i fill veri di
       `ai-desk/var/` prima di simulare qualunque cosa nuova. ~3-5 giorni.
 - [ ] **8. Gate di portafoglio, registro delle prove, holdout bloccato dal codice.**
