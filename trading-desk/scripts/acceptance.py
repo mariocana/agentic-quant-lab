@@ -101,7 +101,7 @@ def verdicts(cycle: dict) -> list[dict]:
 
 
 def main() -> int:
-    print(f"\nai-desk — phase 1 acceptance\n{BASE}\n")
+    print(f"\ntrading-desk — phase 1 acceptance\n{BASE}\n")
     st = api("/api/state")
     if "_http_error" in st or "mode" not in st:
         print(f"  cannot reach the desk at {BASE}. Start it with: .venv/bin/desk ui")

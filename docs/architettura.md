@@ -33,14 +33,14 @@ flowchart TB
             INST[("reference/instruments")]
         end
 
-        subgraph AD["ai-desk/ — produzione"]
+        subgraph AD["trading-desk/ — produzione"]
             LOOP["loop.py<br/>signals to risk to execution to journal"]
             RISKE["risk/engine.py<br/>9 regole, codice puro"]
             VAR[("var/<br/>journal, ledger, fill veri")]
         end
     end
 
-    RAILWAY["Railway<br/>root ai-desk/, watch ai-desk/**<br/>qui vive la chiave dell'API wallet"]
+    RAILWAY["Railway<br/>root trading-desk/, watch trading-desk/**<br/>qui vive la chiave dell'API wallet"]
     HL(["Hyperliquid<br/>perp cripto + HIP-3"])
     PR{{"pull request<br/>il cancello umano"}}
     SHADOW["shadow mode<br/>8-12 settimane<br/>il vero out-of-sample"]
@@ -77,13 +77,13 @@ flowchart TB
 
 **Un repo perché writer e reader di un contratto si cambiano insieme.**
 `reference/instruments` è scritto da quantlake e letto in sola lettura da
-alpha-quant; l'interfaccia `Strategy` è dettata da ai-desk e scritta dal coder.
+alpha-quant; l'interfaccia `Strategy` è dettata da trading-desk e scritta dal coder.
 In entrambi i casi lo schema non può cambiare senza il suo lettore, e in un repo
 solo cambiano nello stesso commit con una sola esecuzione dei test. Una strategia
 generata viene validata contro il codice del desk che la farà girare davvero, non
 contro una dipendenza pinnata che può essere vecchia di una settimana.
 
-**La direzione delle dipendenze è una regola, non un muro.** `ai-desk/` non importa
+**La direzione delle dipendenze è una regola, non un muro.** `trading-desk/` non importa
 niente da `factory/`, da `alpha-quant/` o da `quantlake/`: è il sistema che tiene i
 soldi e deve poter girare con il minimo installato. Separare i repo lo garantiva per
 costruzione; qui va imposto da un test sui confini di import, come il desk già fa
@@ -147,7 +147,7 @@ Le due catene non si toccano:
 
 ## Il deploy
 
-Railway costruisce da `ai-desk/` (Root Directory) e guarda solo `ai-desk/**`
+Railway costruisce da `trading-desk/` (Root Directory) e guarda solo `trading-desk/**`
 (watch paths). Senza i watch path, un commit nella fabbrica farebbe ripartire il
 servizio che opera: è lo stesso difetto che aveva il deploy da my-codes, dove un
 commit su MultiCharts poteva ridistribuire il desk.

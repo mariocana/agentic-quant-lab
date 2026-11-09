@@ -1,6 +1,6 @@
 """Live decisions of the desk against the same decisions replayed on quantlake data.
 
-Reads the target sets from the local desk journal (ai-desk/var/journal.jsonl) and,
+Reads the target sets from the local desk journal (trading-desk/var/journal.jsonl) and,
 if DESK_URL / DESK_PASSWORD are set (they are in quantlake/.env), from the deployed
 desk too. Prints one line per decision and the causes of every disagreement.
 
@@ -37,7 +37,7 @@ def deployed_rows() -> list[dict]:
     return out
 
 
-local = decisions_from_journal(load_journal(LAB / "ai-desk" / "var" / "journal.jsonl"))
+local = decisions_from_journal(load_journal(LAB / "trading-desk" / "var" / "journal.jsonl"))
 remote = decisions_from_journal(deployed_rows())
 decisions = sorted(local + remote, key=lambda d: d.ts)
 print(f"decisioni live: {len(local)} dal journal locale, {len(remote)} dal desk su Railway")

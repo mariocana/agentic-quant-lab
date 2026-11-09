@@ -1,5 +1,5 @@
 [project]
-name = "ai-desk"
+name = "trading-desk"
 version = "0.1.0"
 description = "Agent-assisted systematic trading desk on Hyperliquid. Phase 1: deterministic core, no LLM."
 requires-python = ">=3.12"

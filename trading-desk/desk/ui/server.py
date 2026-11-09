@@ -19,7 +19,7 @@ from desk.ui.service import DeskService
 log = logging.getLogger(__name__)
 STATIC = Path(__file__).parent / "static"
 _STARTED_AT = time.time()
-app = FastAPI(title="ai-desk")
+app = FastAPI(title="trading-desk")
 svc: DeskService | None = None
 
 
@@ -68,7 +68,7 @@ async def require_password(request: Request, call_next):
             ok = False
     if not ok:
         return JSONResponse(status_code=401, content={"error": "authentication required"},
-                            headers={"WWW-Authenticate": 'Basic realm="ai-desk"'})
+                            headers={"WWW-Authenticate": 'Basic realm="trading-desk"'})
     return await call_next(request)
 
 

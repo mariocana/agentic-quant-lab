@@ -5,7 +5,7 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
 
 ## Adesso
 
-- [x] **1. Test sui confini di import.** `ai-desk/` non importa da `alphaquant`,
+- [x] **1. Test sui confini di import.** `trading-desk/` non importa da `alphaquant`,
       `quantlake`, `factory` né da SDK LLM. Fatto (`f66fdc8`).
 - [x] **2. Alert Telegram.** Bot da @BotFather, `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`
       su Railway. Fatto il 09/11.
@@ -36,7 +36,7 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
             `NEEDS_REVIEW` (21) e i 4 perp non identificati (`UNIDENTIFIED`).
       - L'open interest storico non esiste nell'API: c'è solo dal registro del desk (punto 4).
 - [ ] **7. Simulatore livello 2 in alpha-quant**, calibrato contro i fill veri di
-      `ai-desk/var/` prima di simulare qualunque cosa nuova.
+      `trading-desk/var/` prima di simulare qualunque cosa nuova.
       - [x] 7.1 costi reali dal journal (`alphaquant.calibration.desk_fills`): 126 fill,
             maker 1,5 bps, taker 4,5 bps + slippage 7,3 bps medio. Fatto il 09/11.
       - [x] 7.2 profilo di venue `hyperliquid` in `config/costs.yaml`, fee verificate,
@@ -65,7 +65,7 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
             `alphaquant.evaluate`: spec → replay → gate → registro in una chiamata. Fatto il 09/11.
       - [ ] 8.4 primo verdetto su `reversal_v1` (aspetta il backfill completo). Nota nel
             registro: il suo holdout 2026 è stato visto in aggregato il 09/11. ~mezza giornata.
-- [x] **9. Registro delle strategie e shadow mode nel desk.** `ai-desk/config/strategies.yaml`
+- [x] **9. Registro delle strategie e shadow mode nel desk.** `trading-desk/config/strategies.yaml`
       (al massimo una `active`, `shadow` quante si vuole, classi solo da `desk.signals`);
       ogni shadow gira dopo il ciclo attivo nel suo conto paper `var/shadow/<id>/`, senza
       notifiche e senza via verso l'exchange. Endpoint `/api/strategies`. Fatto il 09/11.
@@ -95,5 +95,3 @@ separati, tabelle ES/NQ di quantlake intatte.
 
 - Quale Sharpe live basta per mettere soldi propri.
 - Un subaccount per strategia, prima della seconda strategia live.
-- Rinominare `ai-desk/` (proposta: `trading-desk/`) e cambiare Root Directory e
-  Watch Paths su Railway.

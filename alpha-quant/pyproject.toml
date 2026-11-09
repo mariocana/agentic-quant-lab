@@ -14,7 +14,7 @@ pyarrow = "^24.0.0"
 pyyaml = "^6.0"
 exchange-calendars = "^4.6"
 numpy = ">=2.0"
-ai-desk = {path = "../ai-desk", develop = true}
+trading-desk = {path = "../trading-desk", develop = true}
 time-machine = ">=2.15"
 
 [tool.poetry.group.dev.dependencies]

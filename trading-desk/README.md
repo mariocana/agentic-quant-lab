@@ -1,4 +1,4 @@
-# ai-desk
+# trading-desk
 
 A systematic trading desk on Hyperliquid, built so that LLM agents can be added
 around it later without ever being able to move money on their own.
@@ -124,7 +124,8 @@ engine has the last word and that no path goes around it.
 The desk only trades when the process is alive. A laptop that sleeps misses cycles,
 so once the paper track matters, run it on a platform.
 
-1. **New project → Deploy from GitHub repo**, root directory `python/ai-desk`.
+1. **New project → Deploy from GitHub repo**, root directory `trading-desk`, watch paths
+   `trading-desk/**` (without them a commit anywhere in the lab redeploys the desk).
    `railway.json` points at the `Dockerfile`; nothing else to configure.
 2. **Add a volume mounted at `/app/var`.** Without it every deploy wipes the paper
    account, the risk state and the journal.

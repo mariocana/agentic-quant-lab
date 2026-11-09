@@ -1,4 +1,4 @@
-# ai-desk on a platform (Railway, Fly, Render).
+# trading-desk on a platform (Railway, Fly, Render).
 #
 # var/ holds the paper account, the risk state and the journal: mount a persistent
 # volume at /app/var or every deploy starts the desk from zero.

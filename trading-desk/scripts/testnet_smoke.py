@@ -47,7 +47,7 @@ def check(name: str, ok: bool, detail: str = "") -> bool:
 
 def main() -> int:
     s = settings()
-    print("\nai-desk — testnet smoke test\n")
+    print("\ntrading-desk — testnet smoke test\n")
 
     if not s.testnet:
         print("  REFUSING: HL_TESTNET is not 1. This sends a real order.")

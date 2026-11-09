@@ -4,7 +4,7 @@
 #   1. quantlake dashboard   http://127.0.0.1:8000    FastAPI + React dal laboratorio (vedi $QL), schede DATI / COT / EQUITY:
 #                                                     l'Equity desk sono montati dentro (/cot, /equity). Il frontend
 #                                                     si ricompila da solo se i sorgenti sono cambiati (serve npm)
-#   2. AI desk               http://127.0.0.1:8765    repo a parte (vedi $AI_DESK_DIR), saltato se non c'è
+#   2. trading desk          http://127.0.0.1:8765    trading-desk/ (vedi $DESK_DIR), saltato se non c'è
 #
 # Uso:
 #   ./start_frontends.sh              avvia tutto e apre il browser
@@ -12,18 +12,19 @@
 #   ./start_frontends.sh --rebuild    ricompila il frontend React della dashboard
 #
 # Ctrl+C ferma tutto. Log in <laboratorio>/quantlake/data/logs/frontends/.
-# Variabili: QL (default ../agentic-quant-lab/quantlake: il laboratorio e un repo
-#            a parte), PY (python di quantlake, default $QL/.venv/bin/python),
-#            AI_DESK_DIR (default $QL/../ai-desk), DASHBOARD_PORT, AI_DESK_PORT.
+# Variabili: QL (default <laboratorio>/quantlake), PY (python di quantlake, default
+#            l'ambiente poetry di quantlake), DESK_DIR (default <laboratorio>/trading-desk),
+#            DASHBOARD_PORT, DESK_PORT.
 # COT ed Equity desk girano anche da soli (python applications/cot_desk/app.py, .../equity_desk/app.py).
 
 set -u
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-QL="${QL:-$(cd "$ROOT/.." && pwd)/agentic-quant-lab/quantlake}"   # repo a parte da ottobre 2026
-PY="${PY:-$QL/.venv/bin/python}"
-AI_DESK_DIR="${AI_DESK_DIR:-$QL/../ai-desk}"   # pacchetto del laboratorio da ottobre 2026
+QL="${QL:-$ROOT/quantlake}"
+# quantlake vive in un ambiente poetry fuori dalla cartella, non in un .venv locale
+PY="${PY:-$(cd "$QL" && poetry env info --path 2>/dev/null)/bin/python}"
+DESK_DIR="${DESK_DIR:-$ROOT/trading-desk}"
 DASHBOARD_PORT="${DASHBOARD_PORT:-8000}"
-AI_DESK_PORT="${AI_DESK_PORT:-8765}"
+DESK_PORT="${DESK_PORT:-8765}"
 LOGS="$QL/data/logs/frontends"
 
 OPEN=1
@@ -93,18 +94,18 @@ if [ -x "$PY" ]; then
     bash -c 'cd "$1" && shift && exec "$@"' _ "$QL" \
     "$PY" -m quantlake.dashboard.cli --no-browser --port "$DASHBOARD_PORT" ${DASH_ARGS[@]+"${DASH_ARGS[@]}"}
 else
-  echo "1. quantlake: python non trovato in $PY, esegui 'poetry install' in python/quantlake"
+  echo "1. quantlake: python non trovato in $PY, esegui 'poetry install' in quantlake/"
 fi
 
-echo "2. AI desk"
-if [ ! -d "$AI_DESK_DIR" ]; then
-  echo "   · $AI_DESK_DIR non c'è (è sul branch features/ai-desk), salto"
-elif [ ! -x "$AI_DESK_DIR/.venv/bin/desk" ]; then
-  echo "   ✗ venv mancante: cd python/ai-desk && uv venv --python 3.12 && uv pip install -e ."
+echo "2. trading desk"
+if [ ! -d "$DESK_DIR" ]; then
+  echo "   · $DESK_DIR non c'è, salto"
+elif [ ! -x "$DESK_DIR/.venv/bin/desk" ]; then
+  echo "   ✗ venv mancante: cd trading-desk && uv venv --python 3.12 && uv pip install -e ."
 else
-  # cwd = python/ai-desk: config/ e var/ sono relativi alla cartella del progetto
-  start ai_desk "$AI_DESK_PORT" "http://127.0.0.1:$AI_DESK_PORT/" \
-    bash -c 'cd "$1" && exec .venv/bin/desk ui --port "$2"' _ "$AI_DESK_DIR" "$AI_DESK_PORT"
+  # cwd = trading-desk: config/ e var/ sono relativi alla cartella del progetto
+  start trading_desk "$DESK_PORT" "http://127.0.0.1:$DESK_PORT/" \
+    bash -c 'cd "$1" && exec .venv/bin/desk ui --port "$2"' _ "$DESK_DIR" "$DESK_PORT"
 fi
 
 if [ ${#PIDS[@]} -eq 0 ]; then
