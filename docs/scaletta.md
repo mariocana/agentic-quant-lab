@@ -15,7 +15,12 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
       principale e di tutti i dex HIP-3, in `var/market/AAAA-MM-GG.jsonl.gz` (~32 KB a
       campione, ~280 MB l'anno). Endpoint `/api/market` e `/api/market/{giorno}`. Fatto il
       09/11; parte al primo deploy.
-- [ ] **5. Ingest dello snapshot in `quantlake/bronze`.** ~2 ore.
+- [x] **5. Ingest in `quantlake/bronze`.** `applications/historical/hyperliquid_market.py`
+      copia i file giornalieri del desk in `bronze/_raw/hyperliquid_market/` (archivio
+      byte per byte) e li fonde in `bronze/hyperliquid_market`, una riga per
+      (campione, dex, asset), partizionata per dex. Fatto il 09/11. Si lancia a mano:
+      il desk tiene i file sul volume, quindi lanciarlo una volta a settimana non perde
+      niente.
 
 ## Dopo (4-8 settimane)
 
