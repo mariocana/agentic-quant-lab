@@ -140,7 +140,12 @@ domanda finale è sempre *alza il pass rate del book?*
 ## I criteri (fase 3b)
 
 Strumento: `mc/docs/gate_marginale.py`. Regole `lucidflex_50k` di `prop_firms.ini`. Book di
-riferimento: **quello live** (oggi DPB `DPB_S5_OOS_2025-2026` a 2 micro). Candidata a
+riferimento: **quello live o deciso**. Dal 04/11/2026 è DPB 1 micro + Gold Asian Range pct1 1 +
+Overnight Bias ORB 1 (vedi "Decisione del 04/11/2026" sotto), con i report
+`DPB_S5_OOS_2025-2026` · `GAR_S5_OOS_A_pct1_2025-2026` (costi `:1:25:2.60`) ·
+`OBO_S5_OOS_2025-2026`. Prima era DPB da sola a 2 micro: i gate già scritti nel registro valgono
+contro il book del loro giorno. Il book è al tetto di 3 strategie: una candidata che passa entra
+solo sostituendone una, su decisione di Mario. Candidata a
 **1 micro**, nessuna ricerca della size. 20.000 simulazioni, seed 20261029, numeri casuali comuni.
 
 1. **Δ pass rate iid ≥ +2,0 pp** rispetto al book da solo. Soglia fissata sopra il rumore
