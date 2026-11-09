@@ -114,6 +114,22 @@ def universe():
     return service().universe()
 
 
+@app.get("/api/market")
+def market_days():
+    """Days of raw market state on this desk, for quantlake to pull."""
+    from desk.data import market_record
+    return market_record.days()
+
+
+@app.get("/api/market/{day}")
+def market_day(day: str):
+    from desk.data import market_record
+    path = market_record.day_file(day)
+    if path is None:
+        raise HTTPException(404, f"no market file for {day!r}")
+    return FileResponse(path, media_type="application/gzip", filename=path.name)
+
+
 @app.get("/api/logs")
 def logs(last: int = 200):
     return list(service().logs)[-last:]

@@ -10,9 +10,11 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
 - [x] **2. Alert Telegram.** Bot da @BotFather, `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`
       su Railway. Fatto il 09/11.
 - [ ] **3. Backup della lake.** `quantlake/data/` (2,6 GB) esiste in una copia sola. ~30 min.
-- [ ] **4. Snapshot di mercato nel desk.** A ogni ciclo: meta, contesti, funding, perp
-      quotati, in un file giornaliero su `var/` più un endpoint. Nome diverso da `snapshot`,
-      che è già il campionatore dell'equity. ~2-3 ore. È l'unico dato irrecuperabile.
+      Rimandato il 09/11: serve un disco esterno, e il Mac ha 12 GB liberi (98% pieno).
+- [x] **4. Registro del mercato nel desk.** Ogni ora `metaAndAssetCtxs` grezzo del dex
+      principale e di tutti i dex HIP-3, in `var/market/AAAA-MM-GG.jsonl.gz` (~32 KB a
+      campione, ~280 MB l'anno). Endpoint `/api/market` e `/api/market/{giorno}`. Fatto il
+      09/11; parte al primo deploy.
 - [ ] **5. Ingest dello snapshot in `quantlake/bronze`.** ~2 ore.
 
 ## Dopo (4-8 settimane)

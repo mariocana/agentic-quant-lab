@@ -20,6 +20,7 @@ import yaml
 
 from desk.config import LIMITS_PATH, VAR, load_limits, settings
 from desk.data.hl_market import HLMarket
+from desk.data import market_record
 from desk.execution.paper import PAPER_PATH, PaperAdapter
 from desk.journal.log import read as read_journal, record
 from desk.loop import run_cycle
@@ -42,6 +43,8 @@ def _defaults() -> dict:
         "schedule_enabled": os.environ.get("DESK_SCHEDULE", "0") == "1",
         "schedule_time_utc": os.environ.get("DESK_SCHEDULE_UTC", "00:05"),
         "snapshot_minutes": int(os.environ.get("DESK_SNAPSHOT_MINUTES", "15")),
+        # Raw market state for quantlake. Hourly matches funding; ~35 KB a sample.
+        "market_minutes": int(os.environ.get("DESK_MARKET_MINUTES", "60")),
     }
 
 
@@ -468,6 +471,7 @@ class DeskService:
     def _scheduler(self):
         last_run_day = None
         last_snapshot = datetime.min.replace(tzinfo=timezone.utc)
+        last_market = datetime.min.replace(tzinfo=timezone.utc)
         while not self._stop.wait(30):
             try:
                 now = datetime.now(timezone.utc)
@@ -484,3 +488,12 @@ class DeskService:
                     record("snapshot", {"equity": st["equity_usd"], "gross": st["gross_usd"], "n_positions": len(st["positions"])})
             except Exception:                      # noqa: BLE001
                 logging.getLogger(__name__).error("scheduler tick failed\n%s", traceback.format_exc())
+            # Separate try: a market feed that is down must not stop the cycle or the
+            # equity snapshot, and they must not stop this.
+            try:
+                now = datetime.now(timezone.utc)
+                if (now - last_market).total_seconds() >= self.ui.get("market_minutes", 60) * 60:
+                    last_market = now
+                    market_record.record(self.market.info, now)
+            except Exception:                      # noqa: BLE001
+                logging.getLogger(__name__).error("market record failed\n%s", traceback.format_exc())
