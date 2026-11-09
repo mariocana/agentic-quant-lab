@@ -1,0 +1,45 @@
+{ =====================================================================
+  Mario_BridgeStato  -  bridge a stato verso MT5 (bridge/SPEC.md, v2)
+  ---------------------------------------------------------------------
+  In MultiCharts: Indicator. Sul grafico ACCANTO alla strategia.
+  Format Study -> Properties: "Update on every tick" ACCESO.
+
+  Scrive la POSIZIONE della strategia, non gli eventi: un file per
+  strategia, una riga sola, riscritta a ogni cambio:
+      strategia;strumento;posizione_in_micro;stop_emergenza;FINE
+  L'EA MarioBridgeStato la legge ogni secondo e allinea MT5.
+
+  Il test del 09/11 (Mario_PosTest) ha mostrato che l'indicatore vede
+  il cambio di posizione nel secondo del fill, anche a meta' barra.
+  Vale con l'automazione ACCESA (SA o AA, anche con broker Paper
+  Trader): ad automazione spenta la strategia si ricalcola solo a fine
+  barra e gli stop scattano in ritardo.
+
+  Scrive solo in tempo reale: backtest e ricalcoli non toccano il file.
+  I segnali non vanno modificati.
+  ===================================================================== }
+
+Inputs:
+    Strat("DPB"),              { nome: deve stare nell'input Strategie dell'EA }
+    Strum("NQ"),               { NQ o GC }
+    MicroPerContratto(1),      { micro su MT5 per contratto del grafico (1 se il grafico e' MNQ/MGC) }
+    StopEmergenzaPts(0),       { stop sul server del broker, in punti; 0 = nessuno }
+    Cartella("C:\Users\Administrator\AppData\Roaming\MetaQuotes\Terminal\Common\Files\");
+
+Variables:
+    intrabarpersist ultima(-999),
+    pos(0), file(""), riga("");
+
+file = Cartella + "mario_stato_" + Strat + ".csv";
+pos = i_MarketPosition * i_CurrentContracts * MicroPerContratto;
+
+if GetAppInfo(aiRealTimeCalc) = 1 and pos <> ultima then begin
+    riga = Strat + ";" + Strum + ";" + NumToStr(pos, 0) + ";" + NumToStr(StopEmergenzaPts, 2) + ";FINE";
+    FileDelete(file);
+    FileAppend(file, riga + NewLine);
+    Print("STATO ", Strat, " PC=", FormatTime("HH:mm:ss", ComputerDateTime),
+          " barra=", Time:4:0, " pos=", pos:3:0);
+    ultima = pos;
+end;
+
+Plot1(pos, "Pos");

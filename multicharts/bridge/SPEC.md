@@ -14,6 +14,57 @@ Per aggiungere una strategia bastano gli input `BridgeFile` e `BridgeMicro` e le
 grafico MC → file nella cartella Common di MetaQuotes → MarioBridge.mq5 → conto CFD
 ```
 
+## v2: bridge a stato (09/11/2026), sostituisce quello a eventi
+
+**Perché.** Il bridge a eventi (sotto) non copia le uscite: MC chiude a fine barra, mentre il CFD
+mette stop e target subito, dal suo fill, e il 05/11 un SL del grafico è diventato un TP sul CFD.
+Il design di mc2mt5 copia invece la **posizione**. Il test del 09/11 con `Mario_PosTest` ha dato
+il risultato: un indicatore a ogni tick vede la posizione della strategia cambiare **nel secondo del
+fill**, anche a metà barra (uscite DPB alle 09:46:31 e 10:27:03). Serve l'automazione **accesa**
+(SA o AA, anche con broker Paper Trader): ad automazione spenta la strategia si ricalcola a fine
+barra.
+
+```text
+strategia sul grafico → Mario_BridgeStato (indicatore, ogni tick) → mario_stato_<STRAT>.csv
+                      → MarioBridgeStato.mq5 (ogni secondo) → conto CFD
+```
+
+- **Il file:** una riga, riscritta a ogni cambio, `DPB;NQ;-1;120.00;FINE` = DPB short 1 micro,
+  stop d'emergenza a 120 punti. Una riga senza `FINE`, o il file mancante mentre MC lo riscrive:
+  si rilegge al secondo dopo.
+- **L'EA agisce solo sui cambi.** Posizione voluta diversa dall'ultima letta: chiude il lato
+  sbagliato e apre a mercato. Fino a 5 tentativi, poi si ferma fino al cambio successivo.
+- **Niente riaperture.** Se lo stop d'emergenza chiude la posizione, l'EA non la riapre finché MC non
+  cambia di nuovo. All'avvio non insegue niente: prende lo stato com'è e scrive nel log se MC e MT5
+  sono diversi.
+- **Una strategia = un magic** (`Magic` + posizione nella lista `Strategie`): non dipende dal
+  commento, che i broker possono riscrivere. Conto hedging, come prima.
+- **Stop d'emergenza sul server del broker**, circa 1,5 volte lo stop della strategia: protegge se
+  MC, il VPS o la connessione cadono. Le uscite normali le decide MC. Senza target sul broker.
+- **I segnali non si toccano.** Le chiamate a `Mario_Bridge` restano, spente con `BridgeFile` vuoto.
+- **Cambi di size dentro un trade non si copiano** (stesso lato, più micro): nessuna delle tre
+  strategie li fa.
+
+| grafico | Strat | Strum | StopEmergenzaPts | perché |
+|---|---|---|---|---|
+| `Drift_LIVE` | DPB | NQ | 120 | stop fisso 80 |
+| `Mario_OvernightBiasORB` | OBO | NQ | 300 | stop 0,30 × ATR, oggi ~200 |
+| `MarioGoldAsianRange` | GAR | GC | 60 | stop = range, al massimo ~1% (~40 punti) |
+
+**Installazione v2.**
+1. **Togliere `MarioBridge` (v1) da MT5 e mettere `BridgeFile` vuoto sui tre segnali.** Con tutti e
+   due accesi ogni trade si apre due volte.
+2. `MarioBridgeStato.mq5` in `MQL5/Experts`, F7, su un grafico qualsiasi, *Algo Trading* acceso.
+   Nel log d'avvio deve leggersi `margine: hedging`.
+3. PowerLanguage Editor: **New → Indicator** `Mario_BridgeStato`, compila. Sui tre grafici, accanto
+   alla strategia, con gli input della tabella e **Update on every tick** acceso.
+4. Automazione accesa su tutti e tre i grafici. Senza conto futures: broker **Paper Trader**.
+
+**Il test v2:** le stesse soglie sotto, più due conteggi. Uscite a metà barra del grafico contro quelle
+del CFD, con la differenza di orario. Stop d'emergenza scattati: dovrebbero essere zero.
+
+## v1: bridge a eventi (04/11/2026)
+
 ## Il formato
 
 Una riga per evento, `azione;id;strategia;strumento;lato;micro;stop;target;FINE`. Gli ordini stop
