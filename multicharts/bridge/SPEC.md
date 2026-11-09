@@ -41,7 +41,9 @@ strategia sul grafico → Mario_BridgeStato (indicatore, ogni tick) → mario_st
   commento, che i broker possono riscrivere. Conto hedging, come prima.
 - **Stop d'emergenza sul server del broker**, circa 1,5 volte lo stop della strategia: protegge se
   MC, il VPS o la connessione cadono. Le uscite normali le decide MC. Senza target sul broker.
-- **I segnali non si toccano.** Le chiamate a `Mario_Bridge` restano, spente con `BridgeFile` vuoto.
+- **I segnali non si toccano.** Le chiamate a `Mario_Bridge` sono state tolte dai tre segnali il
+  09/11 (tornati alle versioni prima del bridge). `Mario_Bridge.txt` e `MarioBridge.mq5` restano solo
+  come storia della v1.
 - **Cambi di size dentro un trade non si copiano** (stesso lato, più micro): nessuna delle tre
   strategie li fa.
 
@@ -52,8 +54,8 @@ strategia sul grafico → Mario_BridgeStato (indicatore, ogni tick) → mario_st
 | `MarioGoldAsianRange` | GAR | GC | 60 | stop = range, al massimo ~1% (~40 punti) |
 
 **Installazione v2.**
-1. **Togliere `MarioBridge` (v1) da MT5 e mettere `BridgeFile` vuoto sui tre segnali.** Con tutti e
-   due accesi ogni trade si apre due volte.
+1. **Togliere `MarioBridge` (v1) da MT5** e ricompilare i tre segnali in MC dalla versione del repo,
+   senza bridge.
 2. `MarioBridgeStato.mq5` in `MQL5/Experts`, F7, su un grafico qualsiasi, *Algo Trading* acceso.
    Nel log d'avvio deve leggersi `margine: hedging`.
 3. PowerLanguage Editor: **New → Indicator** `Mario_BridgeStato`, compila. Sui tre grafici, accanto

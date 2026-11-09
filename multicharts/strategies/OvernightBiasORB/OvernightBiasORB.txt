@@ -52,10 +52,6 @@ Inputs:
           YYY = anno - 1900 (1200101 = 1 gen 2020). 0 = disattivato --- }
     TradeStartEL(0),
     TradeEndEL(0),
-    { --- bridge verso MT5 (bridge/SPEC.md): "" = spento. Solo in tempo reale, non tocca la
-          logica ne' i backtest. Percorso del file nella cartella Common di MetaQuotes --- }
-    BridgeFile(""),
-    BridgeMicro(1),
     ShowLog(0);                { 1 = stampa bias del giorno e ogni ingresso (non e' logica) }
 
 Variables:
@@ -77,8 +73,7 @@ Variables:
     onPos(0), canWork(false),
     adxOK(true), barRngOK(true), avgRng(0),
     trVal(0), trSum(0), kk(0),
-    atrStopOK(false), dateOK(false),
-    wasPos(0), bridgeId("");
+    atrStopOK(false), dateOK(false);
 
 Arrays:
     trBuf[200](0);
@@ -187,11 +182,6 @@ canWork = dateOK and orDone and regimeOK and adxOK and atrStopOK
           and Time > OREnd and Time <= LastEntry
           and MarketPosition = 0 and tradesToday < MaxTradesPerDay;
 
-{ ===== BRIDGE: la posizione si e' chiusa sul grafico ===== }
-if wasPos <> 0 and MarketPosition = 0 then
-    Value1 = Mario_Bridge(BridgeFile, "CHIUDI", bridgeId, "OBO", "NQ", 0, 0, 0, 0, 0, 0);
-wasPos = MarketPosition;
-
 { ===== ENTRY: prima chiusura oltre l'OR. Un breakout scartato non chiude il lato ===== }
 if canWork then begin
     if Close > orHigh then begin
@@ -205,9 +195,6 @@ if canWork then begin
             Sell ("OBO-L-SL0") next bar at stopPx stop;
             Sell ("OBO-L-TP0") next bar at tgtPx limit;
             tradesToday = tradesToday + 1;
-            bridgeId = "OBO-" + NumToStr(Date, 0) + "-" + NumToStr(Time, 0);
-            Value1 = Mario_Bridge(BridgeFile, "APRI", bridgeId, "OBO", "NQ", 1, BridgeMicro,
-                                  stopPts, stopPts * TakeProfitRR, 0, 0);
         end;
     end
     else if Close < orLow then begin
@@ -221,9 +208,6 @@ if canWork then begin
             BuyToCover ("OBO-S-SL0") next bar at stopPx stop;
             BuyToCover ("OBO-S-TP0") next bar at tgtPx limit;
             tradesToday = tradesToday + 1;
-            bridgeId = "OBO-" + NumToStr(Date, 0) + "-" + NumToStr(Time, 0);
-            Value1 = Mario_Bridge(BridgeFile, "APRI", bridgeId, "OBO", "NQ", -1, BridgeMicro,
-                                  stopPts, stopPts * TakeProfitRR, 0, 0);
         end;
     end;
 end;
@@ -231,20 +215,16 @@ end;
 { ===== USCITE: riemesse a ogni barra in posizione; il blocco d'ingresso
   copre la barra del fill. Stop e target dalla close del SEGNALE ===== }
 if MarketPosition = 1 then begin
-    if Time >= FlatTime then begin
-        Sell ("OBO-XL") next bar at market;
-        Value1 = Mario_Bridge(BridgeFile, "CHIUDI", bridgeId, "OBO", "NQ", 0, 0, 0, 0, 0, 0);
-    end
+    if Time >= FlatTime then
+        Sell ("OBO-XL") next bar at market
     else begin
         Sell ("OBO-L-SL") next bar at stopPx stop;
         Sell ("OBO-L-TP") next bar at tgtPx limit;
     end;
 end;
 if MarketPosition = -1 then begin
-    if Time >= FlatTime then begin
-        BuyToCover ("OBO-XS") next bar at market;
-        Value1 = Mario_Bridge(BridgeFile, "CHIUDI", bridgeId, "OBO", "NQ", 0, 0, 0, 0, 0, 0);
-    end
+    if Time >= FlatTime then
+        BuyToCover ("OBO-XS") next bar at market
     else begin
         BuyToCover ("OBO-S-SL") next bar at stopPx stop;
         BuyToCover ("OBO-S-TP") next bar at tgtPx limit;
