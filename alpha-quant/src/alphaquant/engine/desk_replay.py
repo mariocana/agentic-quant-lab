@@ -84,15 +84,22 @@ class HistoricalMarket:
                 cum.append(s)
             self._funding[sym] = ([_ms(x) for x in g["timestamp"]], rates, cum)
         self._listings = listings
+        self.versions: dict[str, int] = {}      # Delta version of every table read
 
     @classmethod
     def from_quantlake(cls, root: Path = QUANTLAKE_DATA_ROOT, symbols: list[str] | None = None) -> "HistoricalMarket":
-        def load(path, cols=None):
-            filters = [("symbol", "in", symbols)] if symbols else None
-            return pl.from_arrow(DeltaTable(str(path)).to_pyarrow_table(columns=cols, filters=filters))
-        return cls(daily=load(root / "bronze" / "hyperliquid_ohlcv_1d"),
-                   funding=load(root / "bronze" / "hyperliquid_funding", ["symbol", "timestamp", "funding_rate"]),
-                   listings=pl.from_arrow(DeltaTable(str(root / "reference" / "hyperliquid_listings")).to_pyarrow_table()))
+        versions = {}
+
+        def load(path, cols=None, by_symbol=True):
+            dt = DeltaTable(str(path))
+            versions[str(path.relative_to(root))] = dt.version()   # so the run can be redone identically
+            filters = [("symbol", "in", symbols)] if symbols and by_symbol else None
+            return pl.from_arrow(dt.to_pyarrow_table(columns=cols, filters=filters))
+        m = cls(daily=load(root / "bronze" / "hyperliquid_ohlcv_1d"),
+                funding=load(root / "bronze" / "hyperliquid_funding", ["symbol", "timestamp", "funding_rate"]),
+                listings=load(root / "reference" / "hyperliquid_listings", by_symbol=False))
+        m.versions = versions
+        return m
 
     def at(self, t: datetime) -> None:
         self.now = t
@@ -177,6 +184,9 @@ class ReplayResult:
     notifications: list[str] = field(default_factory=list)
     funding_paid: float = 0.0
     settled_delistings: list[str] = field(default_factory=list)
+    last_marks: dict[str, float] = field(default_factory=dict)
+    start_equity: float = 0.0
+    versions: dict[str, int] = field(default_factory=dict)
 
     def fills(self) -> list[dict]:
         return [r for r in self.journal if r.get("kind") == "fill"]
@@ -205,20 +215,30 @@ def replay(strategy, market: HistoricalMarket, limits: dict, start: datetime, en
                 with time_machine.travel(t, tick=False):
                     market.at(t)
                     if prev is not None:
-                        paid += adapter.apply_funding(market.funding_between(prev, t))
+                        rates = market.funding_between(prev, t)
+                        per_asset = {a: p["size"] * adapter._mark(a, p["entry_px"]) * rates[a]
+                                     for a, p in adapter.state["positions"].items() if rates.get(a)}
+                        total = adapter.apply_funding(rates)
+                        assert abs(total - sum(per_asset.values())) < 1e-9, "funding split does not add up"
+                        for a, amt in per_asset.items():
+                            record("funding", {"asset": a, "paid_usd": amt})
+                        paid += total
                     for asset in list(adapter.state["positions"]):
                         if market.is_dead(asset):
                             settled.append(asset)
-                            _settle(adapter, asset, market.last_close(asset) or adapter.state["positions"][asset]["entry_px"])
+                            _settle(adapter, asset, market.last_close(asset) or adapter.state["positions"][asset]["entry_px"],
+                                    record)
                     run_cycle(market, strategy, adapter, limits, state, fetch_depth=False)
                     rows.append({"timestamp": t, "equity": adapter.account_state().equity_usd})
                 prev, t = t, t + timedelta(days=1)
+            marks = {a: adapter._mark(a, p["entry_px"]) for a, p in adapter.state["positions"].items()}
         log = read_journal(journal) if journal.exists() else []
     eq = pl.DataFrame(rows, schema={"timestamp": pl.Datetime("us", "UTC"), "equity": pl.Float64})
-    return ReplayResult(equity=eq, journal=log, notifications=notes, funding_paid=paid, settled_delistings=settled)
+    return ReplayResult(equity=eq, journal=log, notifications=notes, funding_paid=paid, settled_delistings=settled,
+                        last_marks=marks, start_equity=equity, versions=dict(market.versions))
 
 
-def _settle(adapter: PaperAdapter, asset: str, px: float) -> None:
+def _settle(adapter: PaperAdapter, asset: str, px: float, record) -> None:
     """Close a position in a perp that stopped trading, at its last price, no costs."""
     p = adapter.state["positions"][asset]
     side = "sell" if p["size"] > 0 else "buy"
@@ -227,6 +247,9 @@ def _settle(adapter: PaperAdapter, asset: str, px: float) -> None:
     saved = adapter.costs
     adapter.costs = {k: {"fee_bps": 0.0, "slippage_bps": 0.0} for k in saved}
     adapter.set_marks({asset: px})
-    adapter.execute(intent, RiskVerdict(intent_id=intent.id, decision="approve",
-                                        approved_notional_usd=intent.notional_usd), px)
+    record("intent", intent)
+    fill = adapter.execute(intent, RiskVerdict(intent_id=intent.id, decision="approve",
+                                               approved_notional_usd=intent.notional_usd), px)
+    if fill:
+        record("fill", fill)
     adapter.costs = saved
