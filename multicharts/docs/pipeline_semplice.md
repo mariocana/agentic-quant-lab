@@ -144,8 +144,7 @@ riferimento: **quello live o deciso**. Dal 04/11/2026 è DPB 1 micro + Gold Asia
 Overnight Bias ORB 1 (vedi "Decisione del 04/11/2026" sotto), con i report
 `DPB_S5_OOS_2025-2026` · `GAR_S5_OOS_A_pct1_2025-2026` (costi `:1:25:2.60`) ·
 `OBO_S5_OOS_2025-2026`. Prima era DPB da sola a 2 micro: i gate già scritti nel registro valgono
-contro il book del loro giorno. Il book è al tetto di 3 strategie: una candidata che passa entra
-solo sostituendone una, su decisione di Mario. Candidata a
+contro il book del loro giorno. Tetto del book: 5 strategie (10/11/2026). Candidata a
 **1 micro**, nessuna ricerca della size. 20.000 simulazioni, seed 20261029, numeri casuali comuni.
 
 1. **Δ pass rate iid ≥ +2,0 pp** rispetto al book da solo. Soglia fissata sopra il rumore
@@ -161,7 +160,7 @@ Tutti e quattro. Se ne manca uno: cimitero, senza rigirare con altri micro o alt
 - **Una candidata, un run.** Il risultato si scrive nella tabella sotto, anche se è negativo.
 - **L'ordine è fissato qui.** Se una candidata entra, il book di riferimento per le
   successive diventa il nuovo book.
-- **Tetto di 3 strategie nel book** (decisione del 15/10).
+- **Tetto di 5 strategie nel book** (decisione di Mario del 10/11/2026, prima era 3 dal 15/10): l'obiettivo è il pass rate più alto nel minor numero di giorni, e 3 era un limite di lavoro, non di rischio. Ogni aggiunta passa comunque dal gate marginale.
 - Il book che esce dal gate **non è validato**: è un'ipotesi da confermare dal vivo. Si
   aggiunge una strategia alla volta, con almeno 2 settimane di live fra un'aggiunta e l'altra.
 
