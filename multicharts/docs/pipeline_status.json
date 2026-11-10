@@ -1154,12 +1154,16 @@
     "0": "pass"
    },
    "metrics": {},
-   "next": "Stage 1: 100 giorni in MultiCharts",
+   "next": "Stage 1: @ES 5 min dal 02/01/2020 al 29/05/2020, TradeStartEL 1200201 / TradeEndEL 1200529, run A a 1 contratto con log (ML_S1_x1 + ML_S1_log), run B a 10 (ML_S1_x10)",
    "note": "",
    "log": [
     {
      "date": "2026-11-10",
      "text": "**Pre-registrata** in `strategies/MondayLong/SPEC.md`."
+    },
+    {
+     "date": "2026-11-10",
+     "text": "**Codice pronto.** `MondayLong.txt` (`Mario_MondayLong`) e checklist dello Stage 1; SPEC corretta prima del codice (fase 3 contro il book in vigore, tetto 5). Non ancora compilato."
     }
    ]
   }
