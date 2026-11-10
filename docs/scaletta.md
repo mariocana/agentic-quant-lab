@@ -66,8 +66,11 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
             netto, deflated Sharpe con `k` dal registro, drawdown ≤ 25%, fee ≤ 50%
             dell'edge lordo; holdout contro lo Sharpe di validation della stessa spec.
             `alphaquant.evaluate`: spec → replay → gate → registro in una chiamata. Fatto il 09/11.
-      - [ ] 8.4 primo verdetto su `reversal_v1` (aspetta il backfill completo). Nota nel
-            registro: il suo holdout 2026 è stato visto in aggregato il 09/11. ~mezza giornata.
+      - [x] 8.4 primo verdetto su `reversal_v1`, 10/11: **FAIL in validation**
+            (04-12/2025). Sharpe -2,02, rendimento -17,4%, drawdown 18,1%, deflated
+            Sharpe 0,038 con k=1. Perde prima dei costi (P&L lordo -1.739, fee 109,
+            funding +105 incassato): non è un problema di costi, il segnale ha il segno
+            sbagliato su quel periodo. L'holdout non si spende. k = 1.
 - [x] **9. Registro delle strategie e shadow mode nel desk.** `trading-desk/config/strategies.yaml`
       (al massimo una `active`, `shadow` quante si vuole, classi solo da `desk.signals`);
       ogni shadow gira dopo il ciclo attivo nel suo conto paper `var/shadow/<id>/`, senza
