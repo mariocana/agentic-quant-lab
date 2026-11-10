@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-09",
+ "updated": "2026-11-10",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -1151,6 +1151,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-10",
+   "text": "**GEX dashboard: letti la Masterspec v1.9.4 e la GEX Research 2025-2026, resta in coda con blocco dati.** Ricerca onesta (rami negativi, regole congelate, OOS dal 26/08/2026) ma l'edge è dichiaratamente del regime 2026: LONG CROSS 2026 N 107 +18,5 pt a 10 min, set-dic 2025 ~-3,3; RETEST 2025 negativo. Servono i dati GEXBot al minuto o il forward dal 26/08/2026."
+  },
   {
    "date": "2026-11-05",
    "text": "**Conto 1 confermato `BREACHED`:** saldo $48.129, P&L −$1.871, 5 giorni di trading; la stima era $48.128,52. Ordini, log e dashboard archiviati in `live/2026-10-26_lucidflex50k_dpb/`, numero di conto oscurato."
