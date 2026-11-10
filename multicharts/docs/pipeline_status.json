@@ -1143,6 +1143,25 @@
      "text": "**fase 3b, gate marginale: non passa.** Gate marginale, OOS 2025-2026: **non passa**. Book di riferimento quello della decisione di Mario del 04/11/2026 in pipeline_semplice.md (DPB 1 + Gold Asian Range pct1 1 + Overnight Bias ORB 1 micro; Gold con i costi del report e di MGC 25:2.60 come nel suo gate), che supera il 'DPB a 2 micro' della sezione dei criteri; candidata a 1 micro, dal 2025-01-01, 477 giorni, LucidFlex 50k. Book 59,6% iid e 67,1% contiguo, con la candidata 57,6% e 67,4%: Δ iid -2,0 pp contro la soglia di +2,0 (criterio 1 fallisce), Δ contiguo +0,2, giornata peggiore -$1.099 sopra la DLL di $1.200, avg OOS +$39 per micro con t 1,55. Il kill della fase 3 della SPEC scatta: cimitero, definitivo. Il verdetto OOS era asimmetrico per il run con input a 0 sul 22/06 -> 06/11/2026 (a verbale nel diario), ma un fallimento conta pieno; il tetto di 3 strategie del book non entra in gioco perche' il gate non passa. Verdetto in `strategies/First5PreOpen/verdicts/SPEC_book.md`."
     }
    ]
+  },
+  {
+   "name": "Monday Long",
+   "family": "effetto calendario · long del lunedì, domenica 19:00 CT → lunedì 15:55 CT",
+   "instrument": "ES 5m → MES",
+   "path": "strategies/MondayLong",
+   "spec": "strategies/MondayLong/SPEC.md",
+   "stages": {
+    "0": "pass"
+   },
+   "metrics": {},
+   "next": "Stage 1: 100 giorni in MultiCharts",
+   "note": "",
+   "log": [
+    {
+     "date": "2026-11-10",
+     "text": "**Pre-registrata** in `strategies/MondayLong/SPEC.md`."
+    }
+   ]
   }
  ],
  "blockers": [
