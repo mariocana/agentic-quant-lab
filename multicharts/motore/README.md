@@ -50,6 +50,24 @@ python3 -m motore.calibra dpb strategies/DriftPullback/reports/DPB_S2_IS_mode0.x
 python3 -m motore.calibra obo strategies/OvernightBiasORB/reports/OBO_S2_IS_2020-2024.xlsx --diff
 ```
 
+## Nella pipeline (`lab.py`)
+
+```bash
+python3 -m motore.esegui obo s1  strategies/OvernightBiasORB/SPEC.md     # + report _x10
+python3 -m motore.esegui obo is  strategies/OvernightBiasORB/SPEC.md
+python3 -m motore.esegui obo oos strategies/OvernightBiasORB/SPEC.md
+python3 docs/lab.py giudica <SPEC> <fase> <report _motore>               # come per MC
+python3 docs/lab.py replica <SPEC> <fase> <report MC>                    # MC replica il motore
+```
+
+- Il report del motore ha la forma di quello di MC: `check_report`, i controlli dello Stage 1,
+  `gate_marginale` e `book_sim` lo leggono uguale (provato su OBO: stesse misure del report MC).
+- La riga `Fonte` di Settings finisce nel verdetto (`fonte: motore`).
+- Il suffisso `_motore` e' un rerun per il k, non una variante.
+- `replica`: soglia della calibrazione (90% dei trade, net entro il 10%). Scrive
+  `verdicts/<SPEC>_<fase>_replica.md` e una riga nel log della strategia.
+- Finestre: s1 = ultimi 100 giorni di dati; is = 2020-2024; oos = 2025 → ultimo giorno completo.
+
 ## Struttura
 
 | file | cosa |
@@ -59,3 +77,5 @@ python3 -m motore.calibra obo strategies/OvernightBiasORB/reports/OBO_S2_IS_2020
 | `strategie/` | una strategia per file, registrata in `strategie/__init__.py` |
 | `mc_report.py` | List of Trades di un report MC |
 | `calibra.py` | motore contro report MC |
+| `esegui.py` | una fase della pipeline: report nella cartella della strategia |
+| `report.py` | il report .xlsx con la forma di quello di MC |

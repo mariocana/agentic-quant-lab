@@ -41,6 +41,12 @@ Uso:
         --micro 1 --book strategies/DriftPullback/reports/DPB_S5_OOS_2025-2026.xlsx:2
     python3 docs/lab.py verbale strategies/X/SPEC.md is --nota "..."
     python3 docs/lab.py verbale strategies/X/SPEC.md oos --esito invalido --nota "commissione a zero"
+    python3 docs/lab.py replica strategies/X/SPEC.md oos strategies/X/reports/X_OOS.xlsx   # MC replica il motore
+
+Report del motore Python (python3 -m motore.esegui ...): stessa forma di quelli di MC, si giudicano
+uguali; la riga Fonte di Settings finisce nel verdetto. Il suffisso _motore e' un rerun per il k.
+Dopo un verdetto sul motore, il report di MultiCharts e' una replica (lab.py replica), non un nuovo
+sguardo: stessa soglia della calibrazione, 90% dei trade e net entro il 10%.
 
 Solo libreria standard.
 """
@@ -203,7 +209,7 @@ def verdetti_cartella(spec):
 IS_REPORT = re.compile(r'(^|[_-])(S2|S4|Stage2|IS)([_-]|\.xlsx$)', re.I)
 # parti del nome che indicano un rerun della stessa variante, non una variante nuova
 RERUN = re.compile(r'(^|[_-])(S2|S4|Stage2|IS|IS-intero|intero|meta\d|costi-onesti|range-corto|'
-                   r'non-valido|\d{4}(-\d{4})?)(?=[_-]|$)', re.I)
+                   r'non-valido|motore|x10|\d{4}(-\d{4})?)(?=[_-]|$)', re.I)
 
 
 def report_is_passati(spec):
@@ -345,6 +351,20 @@ def data_report(report):
     if primo:
         return dt.datetime.fromisoformat(primo.splitlines()[-1]), 'commit del report'
     return dt.datetime.fromtimestamp(os.path.getmtime(report)).astimezone(), 'data del file'
+
+
+def fonte_report(report):
+    """'motore' se il report l'ha scritto motore/ (riga Fonte di Settings), altrimenti 'MultiCharts'."""
+    import check_report as cr, zipfile
+    try:
+        z = zipfile.ZipFile(report)
+        n = cr._find(z, 'Settings')
+        for r in (cr._sheet(z, n) if n else []):
+            if len(r) >= 2 and r[0].strip() == 'Fonte' and 'motore' in r[1]:
+                return 'motore'
+    except (zipfile.BadZipFile, KeyError):
+        pass
+    return 'MultiCharts'
 
 
 def gira_check_report(report, fase_cr, dd_is):
@@ -507,7 +527,9 @@ def cmd_giudica(a):
     if fase == 'oos':
         mio = v.get((stem(spec), 'oos'))
         if mio and mio.get('esito') != 'invalido':
-            fail('l\'OOS di %s e\' gia\' stato giudicato (%s): non si rigira' % (stem(spec), mio.get('esito')))
+            extra = (' Se questo e\' il report MC che replica l\'OOS del motore: lab.py replica %s oos %s'
+                     % (rel(spec), rel(report))) if mio.get('fonte') == 'motore' else ''
+            fail('l\'OOS di %s e\' gia\' stato giudicato (%s): non si rigira.%s' % (stem(spec), mio.get('esito'), extra))
         if mio:
             avvisi.append('OOS gia\' visto in un run invalido: se passa, vale solo come prova dal vivo')
         sorelle = [s for (s, f) in v if f == 'oos' and s != stem(spec)]
@@ -516,8 +538,12 @@ def cmd_giudica(a):
                           'passare vale solo come prova dal vivo' % ', '.join(sorelle))
 
     # 5. lo script della fase
+    fonte = fonte_report(report)
+    if fonte == 'motore':
+        avvisi.append('report del motore Python (motore/): il report definitivo e\' la replica in MultiCharts, '
+                      'con lab.py replica dopo il verdetto')
     dati = {'fase': fase, 'spec': rel(spec), 'spec_commit': sha[:10], 'report': rel(report),
-            'via': info['via'], 'avvisi': avvisi}
+            'via': info['via'], 'fonte': fonte, 'avvisi': avvisi}
     if fase == 'book':
         if not a.book:
             fail('book: serve almeno un --book report.xlsx:micro (il book live di riferimento)')
@@ -637,7 +663,7 @@ def cmd_verbale(a):
     metr = dati.get('metriche', {})
     fm = ['esito: %s' % esito, 'fase: %s' % fase, 'data: %s' % oggi, 'spec: %s' % dati['spec'],
           'spec_commit: %s' % dati['spec_commit'], 'report: %s' % dati['report'], 'via: %s' % dati['via'],
-          'esito_script: %s' % (script or '-')]
+          'esito_script: %s' % (script or '-'), 'fonte: %s' % dati.get('fonte', 'MultiCharts')]
     if metr and 't' in metr:
         fm += ['t: %.2f' % metr['t'], 'dd: %.0f' % metr['dd'], 'n: %d' % metr['n']]
     corpo = ['# %s — %s: %s' % (dati['spec'], NOME[fase], esito.upper()), '']
@@ -683,6 +709,61 @@ def cmd_verbale(a):
     if fase == 'book' and esito in ('passa', 'non passa'):
         aggiungi_registro(entry['name'] if entry else rel(spec), dati['registro'], esito)
     print('verbale: %s (%s)' % (rel(path), esito))
+
+
+SOGLIA_REPLICA_TRADE, SOGLIA_REPLICA_NET = 0.90, 0.10      # come la calibrazione di motore/
+
+
+def cmd_replica(a):
+    """Il report MC che replica una fase giudicata sul report del motore: stessi trade, stesso net?"""
+    spec, fase = a.spec, a.fase
+    v = verdetti_cartella(spec).get((stem(spec), fase))
+    if not v:
+        fail('nessun verdetto %s per %s' % (fase, rel(spec)))
+    if v.get('fonte') != 'motore':
+        fail('il verdetto %s di %s non viene dal motore: non c\'e\' niente da replicare' % (fase, rel(spec)))
+    if fonte_report(a.report) != 'MultiCharts':
+        fail('%s e\' un report del motore: la replica va fatta in MultiCharts' % rel(a.report))
+    sys.path.insert(0, ROOT)
+    from motore import mc_report
+    py = mc_report.trade(os.path.join(ROOT, v['report']))
+    mc = mc_report.trade(a.report)
+    if not mc:
+        fail('nessun trade nel report MC')
+    # solo i giorni coperti da tutti e due: i dati del motore possono finire prima
+    fine = min(py[-1].t_out, mc[-1].t_out).date() if py else mc[-1].t_out.date()
+    mc = [t for t in mc if t.t_out.date() <= fine]
+    py = [t for t in py if t.t_out.date() <= fine]
+    k = lambda t: (t.t_in, t.lato)
+    ip, im = {k(t): t for t in py}, {k(t): t for t in mc}
+    comuni = [x for x in im if x in ip]
+    net = lambda ts: sum((t.p_out - t.p_in) * t.lato * t.qta for t in ts)
+    n_mc, n_py = net(mc), net(py)
+    quota = len(comuni) / len(mc)
+    scarto = (n_py - n_mc) / abs(n_mc) if n_mc else float('inf')
+    ok = quota >= SOGLIA_REPLICA_TRADE and abs(scarto) <= SOGLIA_REPLICA_NET
+    righe = ['REPLICA %s di %s fino al %s' % (fase, rel(spec), fine),
+             '  motore: %s' % v['report'], '  MultiCharts: %s' % rel(a.report),
+             '  trade MC %d, motore %d, in comune %d (%.1f%% di MC; soglia %.0f%%)'
+             % (len(mc), len(py), len(comuni), 100 * quota, 100 * SOGLIA_REPLICA_TRADE),
+             '  punti netti MC %.2f, motore %.2f: scarto %+.1f%% (soglia %.0f%%)'
+             % (n_mc, n_py, 100 * scarto, 100 * SOGLIA_REPLICA_NET),
+             '  ESITO: %s' % ('REPLICA OK: il verdetto del motore resta' if ok else
+                             'REPLICA NON OK: la strategia si ferma finche\' non si capisce la differenza')]
+    testo = '\n'.join(righe)
+    path = file_verdetto(spec, fase)[:-3] + '_replica.md'
+    with open(path, 'w', encoding='utf8') as f:
+        f.write('---\nesito: %s\nfase: %s\ndata: %s\nreport_mc: %s\nreport_motore: %s\n---\n```\n%s\n```\n'
+                % ('ok' if ok else 'non ok', fase, dt.date.today().isoformat(), rel(a.report), v['report'], testo))
+    d = carica_status()
+    entry = voce(d, spec)
+    if entry is not None:
+        entry.setdefault('log', []).append({'date': dt.date.today().isoformat(), 'text':
+            '**Replica MC di %s: %s** (%d/%d trade, net %+.1f%%). Verbale in `%s`.'
+            % (NOME[fase], 'ok' if ok else 'NON ok', len(comuni), len(mc), 100 * scarto, rel(path))})
+        salva_status(d)
+    print(testo)
+    print('verbale: %s' % rel(path))
 
 
 def aggiungi_registro(nome, r, esito):
@@ -846,6 +927,9 @@ def main():
     s = sub.add_parser('verbale'); s.add_argument('spec'); s.add_argument('fase', choices=FASI)
     s.add_argument('--esito', choices=['passa', 'non passa', 'bug', 'invalido', 'sospeso'])
     s.add_argument('--nota'); s.set_defaults(fn=cmd_verbale)
+    s = sub.add_parser('replica', help='il report MC che replica una fase giudicata col motore')
+    s.add_argument('spec'); s.add_argument('fase', choices=['s1', 'is', 'oos']); s.add_argument('report')
+    s.set_defaults(fn=cmd_replica)
     a = p.parse_args()
     a.fn(a)
 

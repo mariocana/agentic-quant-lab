@@ -98,14 +98,15 @@ def _percorso(o, h, l, c):
 
 class Motore:
     def __init__(self, barre, strategia, punto=20.0, comm_lato=0.0, tick=0.25, esci_a_chiusura=True,
-                 pausa_sessione=dt.timedelta(minutes=30)):
-        self.barre, self.s, self.tick = barre, strategia, tick
+                 pausa_sessione=dt.timedelta(minutes=30), molt=1):
+        self.barre, self.s, self.tick, self.molt = barre, strategia, tick, molt
         self.ctx = Contesto(barre, punto, comm_lato)
         self.esci_a_chiusura, self.pausa = esci_a_chiusura, pausa_sessione
 
     # --- esecuzione ---
     def _apri(self, lato, qta, t, p, nome):
         ctx = self.ctx
+        qta *= self.molt                         # molt 10: il test di scaling x10 dello Stage 1
         ctx.pos = lato * qta
         ctx.trade = Trade(lato, qta, t, p, nome)
 

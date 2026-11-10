@@ -67,7 +67,16 @@ guardare sul grafico. Nella checklist scrivi anche i valori per i controlli auto
 finestra degli orari d'ingresso come li scrive MultiCharts (chiusura della barra del fill),
 trade massimi al giorno, flat la sera sì/no, stop e target in punti.
 
-Committa codice e checklist insieme, con `-- <percorsi>`.
+**Poi la stessa strategia in Python per il motore** (`motore/README.md`): `motore/strategie/<nome>.py`
+riga per riga dal tuo EasyLanguage, sul modello di `dpb.py` e `obo.py` (stato in variabili, metodo
+`su_barra(ctx)`, ordini con `ctx.buy/sell_short/sell/buy_to_cover`, nomi dei segnali identici a
+quelli dell'EasyLanguage), e la riga in `motore/strategie/__init__.py` (simbolo, timeframe, punto
+20, commissione 7,5 per lato, riscaldamento in giorni). Le due versioni devono fare la stessa cosa:
+la replica in MultiCharts lo verifica trade per trade. Prova che giri:
+`python3 -m motore.esegui <nome> s1 <SPEC>` e guarda che i trade abbiano senso, senza giudicarli.
+Non lanciare is e oos: li lancia il desk.
+
+Committa codice EasyLanguage, Python e checklist insieme, con `-- <percorsi>`.
 
 Non modificare la SPEC. Se scrivendo il codice scopri che la SPEC è ambigua o sbagliata, fermati
 e dillo al desk: una SPEC cambiata dopo il commit è una variante nuova.

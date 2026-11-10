@@ -90,9 +90,23 @@ report già girati. Per le voci rilevanti apri il documento citato prima di parl
 4. Leggi la SPEC e mostrala a Mario in breve: ipotesi, via, attesa, kill. Se qualcosa non va,
    il coder la corregge **prima** del codice (nuovo commit, ancora nessun run: va bene).
 5. `python3 docs/lab.py nuova "<Nome>" <SPEC> --famiglia "..." --strumento "..."`.
-6. Coder, `MODE=codice`. `lab.py annota <SPEC> "**Codice pronto.** <cosa>" --next "Stage 1: <run da
-   girare>"`. Poi di' a Mario esattamente cosa girare: file, chart, periodo, nome dell'xlsx da
-   esportare (dalla checklist), e che poi basta `/lab report <Nome> <file>`.
+6. Coder, `MODE=codice` (EasyLanguage e Python). `lab.py annota <SPEC> "**Codice pronto.** <cosa>"
+   --next "Stage 1 col motore"`. Poi le fasi col motore (sezione **Motore Python**). Su NQ/ES non
+   serve niente da Mario fino alla replica; su Gold di' a Mario cosa girare in MultiCharts: file,
+   chart, periodo, nome dell'xlsx (dalla checklist), e che poi basta `/lab report <Nome> <file>`.
+
+## Motore Python (dal 10/11/2026)
+
+Le fasi s1, is e oos si girano prima col motore (`motore/`, calibrato su DPB e Overnight Bias al 100%
+dei trade). Il coder scrive anche la versione Python. Tu:
+
+1. `python3 -m motore.esegui <nome> s1 <SPEC>`, poi judge con il report `_motore` (e il `_x10`).
+2. Se passa: `is`, poi `oos` (una volta sola: quello del motore **e'** lo sguardo all'OOS).
+3. Dopo ogni verdetto di' a Mario il risultato. Se l'OOS passa, Mario gira in MultiCharts IS e OOS
+   con la checklist e tu `python3 docs/lab.py replica <SPEC> <fase> <report MC>`. Replica non ok
+   (meno del 90% dei trade o net oltre il 10%) = la strategia si ferma finche' non si capisce
+   perche': di solito la versione Python non fa quello che fa l'EasyLanguage.
+4. Gold non ha ancora i dati (`GC_1min.csv`): per Gold resta il flusso con MultiCharts.
 
 ## Report
 
