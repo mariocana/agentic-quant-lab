@@ -1153,6 +1153,10 @@
  "log": [
   {
    "date": "2026-11-10",
+   "text": "**Ingest: IvbModel1_EA.mq5 archiviato.** IVB Model 1 (Morpheus) = ORB a 30 minuti con candela di conferma, stop sulla candela di breakout e 4x7x3 combinazioni di ingresso/target/uscita: famiglia ORB già morta OOS."
+  },
+  {
+   "date": "2026-11-10",
    "text": "**Ingest: MACD reversion (SSRN 4878676 + EA MQL5) archiviato.** Paper su un solo anno (2023) senza OOS, Sharpe 1,03 solo a tolerance 0,1 (0,15 dà −0,01), Sharpe 'migliorato' con Kelly sul capitale; famiglia della mean reversion intraday già morta (VWAP Fade, Fast Alpha)."
   },
   {
