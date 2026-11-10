@@ -1153,6 +1153,10 @@
  "log": [
   {
    "date": "2026-11-10",
+   "text": "**Ingest: TurtleBreakout_EA.mq5 archiviato.** Turtle classico (SMA 200, canale 40, stop 2 ATR) multi-day: fuori profilo prop (overnight, WR basso), parametri generici, nessun test dichiarato."
+  },
+  {
+   "date": "2026-11-10",
    "text": "**Ingest: IvbModel1_EA.mq5 archiviato.** IVB Model 1 (Morpheus) = ORB a 30 minuti con candela di conferma, stop sulla candela di breakout e 4x7x3 combinazioni di ingresso/target/uscita: famiglia ORB già morta OOS."
   },
   {
