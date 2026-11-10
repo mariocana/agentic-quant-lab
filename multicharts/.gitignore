@@ -55,3 +55,7 @@ docs/colab_corso/libs/
 
 # /lab: giudizi in attesa di verbale
 strategies/*/verdicts/*.pending.json
+
+# cache del motore
+motore/.cache/
+__pycache__/
