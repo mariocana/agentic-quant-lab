@@ -169,11 +169,11 @@ stare dentro o fuori dalla banda 0,5-1 (attorno a 1) sarebbe un caso, non una pr
 strategia. E il t ≥ 2 della via A è una soglia per k = 1: con quattro varianti già viste non
 vuol dire quello che dice. Si giudica solo con la via B.
 
-**Fase 3.** Book di riferimento dal 04/11/2026: **DPB 1 micro + Gold Asian Range pct1 1 + Overnight
-Bias ORB 1**, con i report scritti in `pipeline_semplice.md`. MondayLong a **1 micro**. I quattro
+**Fase 3.** Book di riferimento: **quello in vigore in `pipeline_semplice.md` al momento del
+gate**, con i report scritti lì. Oggi (10/11/2026) è **DPB 1 micro + Gold Asian Range pct1 1 +
+Overnight Bias ORB 1**, tetto del book 5 strategie. MondayLong a **1 micro**. I quattro
 criteri del gate tutti insieme (Δ pass rate iid ≥ +2,0 pp, Δ contiguo ≥ 0, giornata peggiore del
-book ≥ −$1.200, avg trade OOS > 0). Il book è al tetto di 3: se passa, entra **solo sostituendone
-una, su decisione di Mario**. Il verdetto è asimmetrico (punto 3 della contaminazione).
+book ≥ −$1.200, avg trade OOS > 0). Il verdetto è asimmetrico (punto 3 della contaminazione).
 
 ## Cosa è congelato e cosa è libero
 
@@ -203,5 +203,5 @@ slippage 0. Point value $50. 1 contratto (Stage 1 anche 10). I risultati per mic
 - via: B            # via A esclusa: R:R non è una regola (uscita a tempo, stop 90 e target 100), e il t >= 2 vale per k = 1
 - k-varianti: 4     # il desk ha visto su dati proxy le tre versioni con filtro dell'autore e la senza filtro; si registra solo la senza filtro con stop 90
 - attesa: t IS in MultiCharts fra 1,5 e 2,5, WR 55-62%, 232 trade (lunedì 2020-2024 esclusi i festivi NYSE), trade peggiore -$453 per micro (lo stop) salvo un gap oltre lo stop. La misura del desk senza stop è t 2,51 su 257 lunedì festivi compresi: stop e festivi la spostano, in una direzione che non sappiamo; poco più di metà del profitto viene dal 2020, ed è il rischio principale
-- kill: fase 2 t <= 1,03 (soglia di lab.py prereg per k = 4) o trade peggiore > $500 per micro, anche se per un gap; fase 3 gate marginale contro DPB 1 + Gold pct1 1 + Overnight Bias ORB 1 micro, MondayLong a 1 micro, tutti e quattro i criteri; verdetto OOS asimmetrico, fuori campione pulito dopo il 21/09/2026; book al tetto di 3, entra solo sostituendone una su decisione di Mario
+- kill: fase 2 t <= 1,03 (soglia di lab.py prereg per k = 4) o trade peggiore > $500 per micro, anche se per un gap; fase 3 gate marginale contro il book in vigore in pipeline_semplice.md al momento del gate (oggi DPB 1 + Gold pct1 1 + Overnight Bias ORB 1 micro, tetto 5), MondayLong a 1 micro, tutti e quattro i criteri; verdetto OOS asimmetrico, fuori campione pulito dopo il 21/09/2026
 - costi: $15 per lato nel campo commissione di @ES ($30 a giro, $3 per micro), slippage incluso; slippage di MultiCharts 0
