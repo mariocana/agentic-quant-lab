@@ -1153,6 +1153,10 @@
  "log": [
   {
    "date": "2026-11-10",
+   "text": "**Ingest: R113 Renko-EMA-CCI (scheda forex 2020 + EA) archiviata.** Nessun test, scalping su brick da 1-10 pip, Renko non testabile in modo affidabile su barre a 1 minuto."
+  },
+  {
+   "date": "2026-11-10",
    "text": "**Ingest: Trap 12PM (EA) misurato e archiviato.** Breakout della candela da 15 minuti di mezzogiorno NY, SL = TP = range, IS 2020-2024: NQ 1.024 trade t −0,20, ES 1.025 trade t −0,53, WR intorno al 50%."
   },
   {
