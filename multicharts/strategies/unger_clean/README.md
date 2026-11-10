@@ -26,6 +26,7 @@ Regole per ogni codice:
 | 9 | Stop Progressivi | `12. Materiale extra/12x04.2` | **modulo d'uscita, tenuto a disposizione** (24/10/2026) in `StopProgressivi/`: stop e target che si riducono di una percentuale per ogni giorno in posizione. Con i fattori a 0 restano fissi |
 | 10 | FXFader | `12. Materiale extra/12x02.1` (Trade Navigator) | **riscritto in PowerLanguage e archiviato** (24/10/2026) in `FXFader/`: 6B 60 min, stop 100 tick = $625 a contratto (causa B), stessa idea di ESCounter (causa A) |
 | 11 | WeeklyBump | `12. Materiale extra/12x02.2` (Trade Navigator) | **riscritto in PowerLanguage e archiviato** (24/10/2026) in `WeeklyBump/`: barre settimanali su 67 futures, posizione tenuta tutta la settimana |
+| 12 | **Trend Following sul Nasdaq** (Unger Academy, due strategie) | PDF gratuito `NasdaqRegoleUngerAcademy.pdf` | **trascritte, mai girate** (10/11/2026) in `Nasdaq/`: NQ 15 min, S1 multi-day fino a 8 giorni, S2 fino a 1 giorno. Proxy IS 2020–2024: S1 +$19–21 per micro, t 1,85–2,20, sopra il controllo; S2 debole. **Disclaimer: tengono la posizione nella pausa 16:00–17:00 CT, che le prop chiudono — da verificare prima del live** |
 
 Nota: i file `9x02` e `9x03` del modulo 9 sono **lo stesso video** (stesso md5): manca la
 parte 3 originale.

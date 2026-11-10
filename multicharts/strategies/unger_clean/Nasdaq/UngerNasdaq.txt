@@ -1,0 +1,73 @@
+{ Mario_UngerNasdaq — "Strategie Trend Following sul Nasdaq", Unger Academy (PDF gratuito
+  NasdaqRegoleUngerAcademy.pdf). Due strategie nello stesso codice, scelte con Strategia.
+  Trascritte il 10/11/2026: MAI COMPILATO, MAI GIRATO in MultiCharts. Vedi README.md, e il
+  disclaimer sulla pausa delle 16:00-17:00 CT prima di qualunque uso live.
+
+  Chart: @NQ 15 min, sessione CME 17:00-16:00 CT senza pause, timezone Exchange (CT).
+  "Orario dell'exchange" del PDF = ora del chart. HighD/LowD/OpenD = sessione del template.
+
+  Strategia 1 (multi-day):
+      long : C > AverageFC(C,65) e C incrocia al rialzo HighD(1) - 10
+      short: C < AverageFC(C,5)  e C incrocia al ribasso il livello del minimo di ieri:
+             ShortTesto 0 = LowD(1) - 35 (la formula del PDF, "lowd1-35")
+             ShortTesto 1 = LowD(1) + 35 (il testo del PDF, "minimo piu' 35 punti")
+      ingressi fra 11:00 e 15:00; stop $1.300, target $3.000, massimo 8 giorni a mercato.
+  Strategia 2 (fino a 1 giorno):
+      long : C > OpenD(0) + 6 * ATR(200) e Momentum(C,50) > 20, finestra 17:15-14:00
+      short: C < OpenD(0) - 8.5 * ATR(200),                     finestra 21:00-12:00
+      stop $600, target $2.000, break-even a $600, massimo 1 giorno a mercato.
+  Stop, target e break-even in $ a contratto (SetStopContract), come nel PDF.
+  Il PDF non dice cosa fare con un segnale opposto in posizione: qui si inverte, come fa
+  MultiCharts di default. }
+
+Inputs:
+    Strategia(1),              { 1 o 2 }
+    ShortTesto(0),             { solo Strategia 1: 0 = LowD(1)-35 (formula), 1 = LowD(1)+35 (testo) }
+    NumContracts(1),
+    ShowLog(0);
+
+Variables:
+    inWinL(false), inWinS(false), lvlL(0), lvlS(0),
+    stopUSD(0), tgtUSD(0), beUSD(0), maxGiorni(0), mp(0);
+
+if CurrentBar = 1 and Strategia <> 1 and Strategia <> 2 then
+    RaiseRunTimeError("Strategia deve essere 1 o 2.");
+
+mp = MarketPosition;
+
+if Strategia = 1 then begin
+    stopUSD = 1300;  tgtUSD = 3000;  beUSD = 0;  maxGiorni = 8;
+    inWinL = Time > 1100 and Time <= 1500;
+    inWinS = inWinL;
+    lvlL = HighD(1) - 10;
+    if ShortTesto = 1 then lvlS = LowD(1) + 35 else lvlS = LowD(1) - 35;
+    if inWinL and Close > AverageFC(Close, 65) and Close crosses over lvlL then
+        Buy ("UN1-L") NumContracts contracts next bar at market;
+    if inWinS and Close < AverageFC(Close, 5) and Close crosses under lvlS then
+        SellShort ("UN1-S") NumContracts contracts next bar at market;
+end
+else begin
+    stopUSD = 600;  tgtUSD = 2000;  beUSD = 600;  maxGiorni = 1;
+    inWinL = Time > 1715 or Time <= 1400;      { scavalca la mezzanotte }
+    inWinS = Time > 2100 or Time <= 1200;
+    if inWinL and Close > OpenD(0) + 6 * AvgTrueRange(200) and Momentum(Close, 50) > 20 then
+        Buy ("UN2-L") NumContracts contracts next bar at market;
+    if inWinS and Close < OpenD(0) - 8.5 * AvgTrueRange(200) then
+        SellShort ("UN2-S") NumContracts contracts next bar at market;
+end;
+
+{ ===== USCITE: in $ a contratto, come nel PDF ===== }
+SetStopContract;
+SetStopLoss(stopUSD);
+SetProfitTarget(tgtUSD);
+if beUSD > 0 then SetBreakeven(beUSD);
+
+{ massimo di giorni a mercato: giorni di calendario dalla data d'ingresso }
+if mp = 1 and DateToJulian(Date) - DateToJulian(EntryDate) >= maxGiorni then
+    Sell ("UN-XL") next bar at market;
+if mp = -1 and DateToJulian(Date) - DateToJulian(EntryDate) >= maxGiorni then
+    BuyToCover ("UN-XS") next bar at market;
+
+if ShowLog = 1 and mp <> 0 and mp[1] <> mp then
+    Print("UN", Strategia:1:0, " ", Date:8:0, " ", Time:5:0, " dir=", mp:2:0,
+          " entry=", EntryPrice:9:2, " stop$=", stopUSD:6:0, " tgt$=", tgtUSD:6:0);
