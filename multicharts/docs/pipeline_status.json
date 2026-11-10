@@ -1153,6 +1153,10 @@
  "log": [
   {
    "date": "2026-11-10",
+   "text": "**Ingest: GoldenDeathCross_EA.mq5 archiviato.** Incrocio di medie generico, trend e contrarian nello stesso EA, nessun test; 50/200 fuori profilo, 5/15 nella famiglia a orizzonte corto già morta per i costi."
+  },
+  {
+   "date": "2026-11-10",
    "text": "**Ingest: TurtleBreakout_EA.mq5 archiviato.** Turtle classico (SMA 200, canale 40, stop 2 ATR) multi-day: fuori profilo prop (overnight, WR basso), parametri generici, nessun test dichiarato."
   },
   {
