@@ -1153,6 +1153,10 @@
  "log": [
   {
    "date": "2026-11-10",
+   "text": "**Ingest: MACD reversion (SSRN 4878676 + EA MQL5) archiviato.** Paper su un solo anno (2023) senza OOS, Sharpe 1,03 solo a tolerance 0,1 (0,15 dà −0,01), Sharpe 'migliorato' con Kelly sul capitale; famiglia della mean reversion intraday già morta (VWAP Fade, Fast Alpha)."
+  },
+  {
+   "date": "2026-11-10",
    "text": "**Ingest: OrbBreakout_EA.mq5 archiviato.** È ORB_Breakout (range 30 minuti, stop all'estremo opposto, 1R), già morta OOS (t 0,63 e 0,80); unica differenza il flat alle 14:00 NY invece delle 15:00 NY."
   },
   {
