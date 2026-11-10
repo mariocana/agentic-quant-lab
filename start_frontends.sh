@@ -1,117 +1,44 @@
 #!/bin/bash
-# Avvia tutti i frontend del repo e li apre nel browser.
+# Avvia la pagina unica del laboratorio e la apre nel browser: http://127.0.0.1:8000
 #
-#   1. quantlake dashboard   http://127.0.0.1:8000    FastAPI + React dal laboratorio (vedi $QL), schede DATI / COT / EQUITY:
-#                                                     l'Equity desk sono montati dentro (/cot, /equity). Il frontend
-#                                                     si ricompila da solo se i sorgenti sono cambiati (serve npm)
-#   2. trading desk          http://127.0.0.1:8765    trading-desk/ (vedi $DESK_DIR), saltato se non c'è
+#   Dati, COT, Equity   quantlake (le sue tabelle e i suoi desk)
+#   Trading desk        il desk su Railway, attraverso il server (password presa da quantlake/.env)
+#   Laboratorio         registro delle prove e idee in fabbrica
 #
 # Uso:
-#   ./start_frontends.sh              avvia tutto e apre il browser
+#   ./start_frontends.sh              compila la shell se i sorgenti sono cambiati, avvia, apre il browser
 #   ./start_frontends.sh --no-open    senza aprire il browser
-#   ./start_frontends.sh --rebuild    ricompila il frontend React della dashboard
+#   ./start_frontends.sh --rebuild    ricompila comunque la shell React (fe/web)
 #
-# Ctrl+C ferma tutto. Log in <laboratorio>/quantlake/data/logs/frontends/.
-# Variabili: QL (default <laboratorio>/quantlake), PY (python di quantlake, default
-#            l'ambiente poetry di quantlake), DESK_DIR (default <laboratorio>/trading-desk),
-#            DASHBOARD_PORT, DESK_PORT.
-# COT ed Equity desk girano anche da soli (python applications/cot_desk/app.py, .../equity_desk/app.py).
+# Il server ascolta solo su 127.0.0.1: da qui si comanda il desk (kill switch, flatten),
+# quindi non va mai esposto. Ctrl+C lo ferma. Variabile: PORT (default 8000).
 
-set -u
+set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-QL="${QL:-$ROOT/quantlake}"
-# quantlake vive in un ambiente poetry fuori dalla cartella, non in un .venv locale
-PY="${PY:-$(cd "$QL" && poetry env info --path 2>/dev/null)/bin/python}"
-DESK_DIR="${DESK_DIR:-$ROOT/trading-desk}"
-DASHBOARD_PORT="${DASHBOARD_PORT:-8000}"
-DESK_PORT="${DESK_PORT:-8765}"
-LOGS="$QL/data/logs/frontends"
-
-OPEN=1
-DASH_ARGS=()
+PORT="${PORT:-8000}"
+OPEN=1; REBUILD=0
 for arg in "$@"; do
   case "$arg" in
     --no-open) OPEN=0 ;;
-    --rebuild) DASH_ARGS+=(--rebuild) ;;
-    -h|--help) sed -n 2,18p "$0"; exit 0 ;;
+    --rebuild) REBUILD=1 ;;
+    -h|--help) sed -n 2,14p "$0"; exit 0 ;;
     *) echo "argomento sconosciuto: $arg (usa --help)"; exit 2 ;;
   esac
 done
 
-open_url() {
-  [ "$OPEN" = 1 ] || return 0
-  if command -v open >/dev/null; then open "$1"            # macOS
-  elif command -v xdg-open >/dev/null; then xdg-open "$1" >/dev/null 2>&1
-  fi
-}
-
-port_busy() { curl -s --noproxy '*' -o /dev/null -m 1 "http://127.0.0.1:$1/"; }
-
-wait_up() {  # wait_up <name> <url> <pid>
-  for _ in $(seq 1 240); do
-    if curl -s --noproxy '*' -o /dev/null -m 1 -f "$2"; then return 0; fi
-    if ! kill -0 "$3" 2>/dev/null; then
-      echo "   ✗ si è fermato, ultime righe di $LOGS/$1.log:"; tail -5 "$LOGS/$1.log" | sed 's/^/     /'
-      return 1
-    fi
-    sleep 0.5
-  done
-  echo "   ✗ non risponde dopo 2 minuti, vedi $LOGS/$1.log"; return 1
-}
-
-PIDS=()
-cleanup() {
-  echo; echo "Fermo i frontend..."
-  for pid in ${PIDS[@]+"${PIDS[@]}"}; do kill "$pid" 2>/dev/null; done
-  wait 2>/dev/null
-  exit 0
-}
-trap cleanup INT TERM
-
-start() {  # start <name> <port> <health-url> <cmd...>
-  local name=$1 port=$2 health=$3; shift 3
-  if port_busy "$port"; then
-    echo "   · porta $port già in uso, lo considero già avviato"
-    open_url "http://127.0.0.1:$port"
-    return
-  fi
-  "$@" > "$LOGS/$name.log" 2>&1 &
-  local pid=$!
-  PIDS+=("$pid")
-  if wait_up "$name" "$health" "$pid"; then
-    echo "   ✓ http://127.0.0.1:$port"
-    open_url "http://127.0.0.1:$port"
-  fi
-}
-
-mkdir -p "$LOGS"
-
-
-if [ -x "$PY" ]; then
-  export PYTHONPATH="$QL/src${PYTHONPATH:+:$PYTHONPATH}"
-  echo "1. quantlake dashboard + COT + Equity (compila il frontend React se è cambiato, ~1 min)"
-  start dashboard "$DASHBOARD_PORT" "http://127.0.0.1:$DASHBOARD_PORT/api/layers" \
-    bash -c 'cd "$1" && shift && exec "$@"' _ "$QL" \
-    "$PY" -m quantlake.dashboard.cli --no-browser --port "$DASHBOARD_PORT" ${DASH_ARGS[@]+"${DASH_ARGS[@]}"}
-else
-  echo "1. quantlake: python non trovato in $PY, esegui 'poetry install' in quantlake/"
+WEB="$ROOT/fe/web"
+DIST="$WEB/dist/index.html"
+stale() { [ ! -f "$DIST" ] || [ -n "$(find "$WEB/src" "$WEB/index.html" -newer "$DIST" -print -quit)" ]; }
+if [ "$REBUILD" = 1 ] || stale; then
+  echo "· compilo la shell (fe/web)…"
+  ( cd "$WEB" && { [ -d node_modules ] || npm install --no-audit --no-fund --loglevel=error; } && npm run build >/dev/null )
 fi
 
-echo "2. trading desk"
-if [ ! -d "$DESK_DIR" ]; then
-  echo "   · $DESK_DIR non c'è, salto"
-elif [ ! -x "$DESK_DIR/.venv/bin/desk" ]; then
-  echo "   ✗ venv mancante: cd trading-desk && uv venv --python 3.12 && uv pip install -e ."
-else
-  # cwd = trading-desk: config/ e var/ sono relativi alla cartella del progetto
-  start trading_desk "$DESK_PORT" "http://127.0.0.1:$DESK_PORT/" \
-    bash -c 'cd "$1" && exec .venv/bin/desk ui --port "$2"' _ "$DESK_DIR" "$DESK_PORT"
+if [ "$OPEN" = 1 ]; then
+  ( for _ in $(seq 1 60); do
+      curl -fs "http://127.0.0.1:$PORT/api/apps" >/dev/null 2>&1 && { open "http://127.0.0.1:$PORT"; exit; }
+      sleep 1
+    done ) &
 fi
-
-if [ ${#PIDS[@]} -eq 0 ]; then
-  echo; echo "Nessun server avviato da questo script."
-  exit 0
-fi
-echo
-echo "Tutto avviato. Ctrl+C per fermare."
-wait
+echo "· http://127.0.0.1:$PORT  (Ctrl+C per fermare)"
+cd "$ROOT/quantlake" && exec poetry run python ../fe/server.py "$PORT"

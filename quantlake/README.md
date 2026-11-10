@@ -38,7 +38,7 @@ poetry install --without geo,research,desk,dashboard # core pipeline only
 | Group       | For                                                         |
 |-------------|-------------------------------------------------------------|
 | (core)      | bronze/silver/gold, connectors, live runners                |
-| `dashboard` | `poetry run dashboard` (FastAPI + DuckDB)                   |
+| `dashboard` | the API behind the lab's single page (`../fe/`): FastAPI + DuckDB |
 | `geo`       | Sentinel-2 / USDA CDL connectors, `examples/satelite_exercise` |
 | `research`  | notebooks, `applications/live/ml_based_strategy` (scikit-learn model) |
 | `desk`      | `applications/cot_desk` (Flask + Anthropic)                 |
@@ -75,7 +75,6 @@ applications/
   historical/          bootstrap / resumable backfills, one script per source
   live/                live strategies (poll-based or WebSocket via live.run)
   cot_desk/            COT positioning UI (see its README)
-dashboard/             React frontend
 examples/              small per-layer examples and notebooks
 launchd/               macOS scheduled jobs
 ```
@@ -89,7 +88,7 @@ the same range never creates duplicates.
 poetry run python applications/historical/binance.py   # backfill a source
 poetry run python applications/historical/binance_um.py  # USDⓈ-M perpetual OHLCV + funding (2019 head via REST)
 poetry run python applications/live/macro.py           # a live strategy
-poetry run dashboard                                   # http://127.0.0.1:8000
+../start_frontends.sh                                  # the lab's single page, http://127.0.0.1:8000
 poetry run maintain                                    # compact + vacuum all tables
 poetry run python examples/reference/seed_instruments.py  # create/update reference/instruments
 poetry run python applications/historical/multicharts.py [--full | --replace]  # @ES/@NQ export; --replace after a re-export
@@ -97,7 +96,7 @@ poetry run python applications/historical/ohlcv_gold.py  # plain OHLCV gold read
 poetry run python applications/historical/multicharts_rolls.py  # ES/NQ contracts → rolls + continuous gold, check vs @ES
 ```
 
-`../../start_frontends.sh` starts the dashboard and the COT desk together.
+The frontend lives in `../fe/`: one page with tabs for this data, the COT and Equity desks, the trading desk and the lab. `../start_frontends.sh` builds and starts it.
 
 ### Scheduled jobs (macOS)
 

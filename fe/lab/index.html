@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Laboratorio</title>
+<style>
+  :root {
+    --bg: #0a0a0b; --panel: #111113; --elevated: #16161a; --border: #1f1f23;
+    --fg: #e4e4e7; --muted: #71717a; --dim: #52525b; --accent: #f59e0b;
+    --up: #22c55e; --down: #f87171;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 13px/1.5 Inter, system-ui, sans-serif; padding: 20px 24px; }
+  h1 { font: 600 12px "JetBrains Mono", Menlo, monospace; letter-spacing: .08em; color: var(--accent); margin: 0 0 4px; }
+  h2 { font: 600 11px "JetBrains Mono", Menlo, monospace; letter-spacing: .08em; color: var(--muted);
+       text-transform: uppercase; margin: 28px 0 8px; }
+  .lead { color: var(--muted); margin: 0 0 16px; max-width: 760px; }
+  .kpis { display: flex; gap: 12px; flex-wrap: wrap; }
+  .kpi { background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; min-width: 150px; }
+  .kpi .v { font: 600 20px "JetBrains Mono", Menlo, monospace; }
+  .kpi .l { color: var(--muted); font-size: 11px; }
+  .wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
+  table { border-collapse: collapse; width: 100%; font: 12px "JetBrains Mono", Menlo, monospace; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; background: var(--panel); position: sticky; top: 0; }
+  td.num { text-align: right; }
+  .pass { color: var(--up); } .fail { color: var(--down); } .dim { color: var(--dim); }
+  .note { white-space: normal; color: var(--muted); max-width: 560px; }
+  .empty { color: var(--dim); padding: 14px; }
+</style>
+</head>
+<body>
+<h1>LABORATORIO</h1>
+<p class="lead">Le idee in fabbrica e il registro delle prove. Il registro è append-only: ogni strategia
+  giudicata in validation conta in <b>k</b>, e alza l'asticella per tutte le successive.</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="v" id="k">–</div><div class="l">k · prove in validation</div></div>
+  <div class="kpi"><div class="v" id="nideas">–</div><div class="l">idee in fabbrica</div></div>
+  <div class="kpi"><div class="v" id="nrows">–</div><div class="l">righe nel registro</div></div>
+</div>
+
+<h2>Idee in fabbrica</h2>
+<div class="wrap"><table id="ideas"><thead><tr>
+  <th>idea</th><th>stadio</th><th>critico</th><th>validation</th><th>holdout</th>
+</tr></thead><tbody></tbody></table></div>
+
+<h2>Registro delle prove</h2>
+<div class="wrap"><table id="registry"><thead><tr>
+  <th>#</th><th>quando</th><th>tipo</th><th>strategia</th><th>segmento</th><th>esito</th>
+  <th class="num">Sharpe</th><th class="num">rendimento</th><th class="num">drawdown</th><th>nota</th>
+</tr></thead><tbody></tbody></table></div>
+
+<script>
+const BASE = location.pathname.replace(/\/[^/]*$/, "");   // works at /lab/ and standalone
+const $ = (s) => document.querySelector(s);
+const pct = (v) => v == null ? "" : (v * 100).toFixed(1) + "%";
+const num = (v) => v == null ? "" : v.toFixed(2);
+const verdict = (v) => v == null ? '<span class="dim">–</span>' : v ? '<span class="pass">PASS</span>' : '<span class="fail">FAIL</span>';
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+async function load() {
+  const [reg, st] = await Promise.all([
+    fetch(BASE + "/api/registry").then((r) => r.json()),
+    fetch(BASE + "/api/staging").then((r) => r.json()),
+  ]);
+  $("#k").textContent = reg.k;
+  $("#nideas").textContent = st.ideas.length;
+  $("#nrows").textContent = reg.rows.length;
+
+  $("#ideas tbody").innerHTML = st.ideas.length ? st.ideas.map((i) => `<tr>
+      <td>${esc(i.id)}</td><td>${esc(i.stage)}</td>
+      <td>${i.critic === "KILL" ? '<span class="fail">KILL</span>' : i.critic === "GO" ? '<span class="pass">GO</span>' : '<span class="dim">–</span>'}</td>
+      <td>${verdict(i.validation)}</td><td>${verdict(i.holdout)}</td></tr>`).join("")
+    : '<tr><td colspan="5" class="empty">Nessuna idea in fabbrica. Apri una sessione nel laboratorio e scrivi /quant-factory.</td></tr>';
+
+  $("#registry tbody").innerHTML = reg.rows.slice().reverse().map((r) => `<tr>
+      <td>${r.seq}</td><td>${esc(r.ts)}</td><td>${esc(r.kind)}</td><td>${esc(r.spec)}</td>
+      <td>${esc(r.segment || "")}</td><td>${r.kind === "run" ? verdict(r.passed) : ""}</td>
+      <td class="num">${num(r.sharpe)}</td><td class="num">${pct(r.total_return)}</td><td class="num">${pct(r.max_dd)}</td>
+      <td class="note">${esc(r.text || "")}</td></tr>`).join("");
+}
+load();
+setInterval(load, 30000);
+</script>
+</body>
+</html>

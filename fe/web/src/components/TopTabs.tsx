@@ -1,5 +1,6 @@
-// Top-level tabs: the data lake (this app) and the desks mounted by the server
-// under /cot and /equity (GET /api/apps). The active tab lives in the URL hash.
+// Top-level tabs of the lab's single page: the data lake (this app) and every other
+// app the server mounts (GET /api/apps): trading desk, COT, Equity, Laboratorio.
+// The active tab lives in the URL hash.
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Database } from "lucide-react";
@@ -36,7 +37,7 @@ export function TopTabs({ tab, apps, onChange }: { tab: string; apps: DeskApp[];
   return (
     <nav className="flex h-10 shrink-0 items-center gap-1 border-b border-border bg-bg-panel px-3">
       <Database className="mr-2 h-4 w-4 text-accent" />
-      <span className="mr-4 font-mono text-xs font-semibold tracking-wide">QUANTLAKE</span>
+      <span className="mr-4 font-mono text-xs font-semibold tracking-wide">AGENTIC QUANT LAB</span>
       {tabs.map((t) => (
         <button
           key={t.key}
