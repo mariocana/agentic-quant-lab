@@ -35,12 +35,19 @@ nel repo: la cache sta in `motore/.cache/` (ignorata).
 |---|---|---|---|---|---|---|
 | DPB | `DPB_S5_OOS_2025-2026` (fino al 07/10/2026) | 1.421 | **100%** | 1.418 | $84.220 → $85.010 (+0,9%) | ✅ |
 | DPB | `DPB_S2_IS_mode0` (2020-2024) | 3.499 | **100%** | 3.499 | $194.110 → $195.440 (+0,7%) | ✅ |
+| OBO | `OBO_S2_IS_2020-2024` | 455 | **100%** | **455** | $182.680 → $182.680 (0,0%) | ✅ |
+| OBO | `OBO_S5_OOS_2025-2026` (fino al 07/10/2026) | 160 | **100%** | 156 | $63.185 → $63.220 (+0,1%) | ✅ |
 
-Gli scarti: 3 trade OOS con l'entrata a 0,25-0,50 punti (dati di TradeStation riscritti dopo il
+OBO verifica cose che DPB non usa: ADX di Wilder, ATR giornaliero, EMA, ordini d'uscita messi
+insieme all'ingresso (attivi gia' nella barra del fill, `OBO-L-SL0`) e l'arrotondamento al tick di
+stop e target, nel verso prudente. Gli scarti OOS di OBO: due entrate dell'11/09/2026, dati riscritti.
+
+Gli scarti di DPB: 3 trade OOS con l'entrata a 0,25-0,50 punti (dati di TradeStation riscritti dopo il
 report) e un giorno, il 18/07/2024, che nel report MC non c'e' (4 trade in piu' nel motore).
 
 ```bash
 python3 -m motore.calibra dpb strategies/DriftPullback/reports/DPB_S2_IS_mode0.xlsx --diff
+python3 -m motore.calibra obo strategies/OvernightBiasORB/reports/OBO_S2_IS_2020-2024.xlsx --diff
 ```
 
 ## Struttura

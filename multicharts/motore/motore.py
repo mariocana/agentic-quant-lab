@@ -9,10 +9,12 @@
   prezzo del limite o migliore.
 - Le uscite le mette la strategia dalla chiusura della barra d'ingresso in poi: nella barra in cui
   entra non c'e' ancora nessuno stop, esattamente come in MC.
+- Prezzi di stop e limite arrotondati al tick nel verso prudente: buy stop e sell limit in su,
+  sell stop e buy limit in giu' (verificato sui report di Overnight Bias).
 - `esci_a_chiusura`: SetExitOnClose, flat alla chiusura dell'ultima barra della sessione.
 - P&L in punti; i dollari li fa `Trade.dollari` con valore del punto e commissione per lato.
 """
-import datetime as dt
+import datetime as dt, math
 
 
 class Ordine:
@@ -95,9 +97,9 @@ def _percorso(o, h, l, c):
 
 
 class Motore:
-    def __init__(self, barre, strategia, punto=20.0, comm_lato=0.0, esci_a_chiusura=True,
+    def __init__(self, barre, strategia, punto=20.0, comm_lato=0.0, tick=0.25, esci_a_chiusura=True,
                  pausa_sessione=dt.timedelta(minutes=30)):
-        self.barre, self.s = barre, strategia
+        self.barre, self.s, self.tick = barre, strategia, tick
         self.ctx = Contesto(barre, punto, comm_lato)
         self.esci_a_chiusura, self.pausa = esci_a_chiusura, pausa_sessione
 
@@ -168,6 +170,10 @@ class Motore:
         for o in [o for o in ordini if o.tipo == 'mercato']:
             self._esegui(o, bar.t, bar.o)
         pend = [o for o in ordini if o.tipo != 'mercato']
+        for o in pend:                           # al tick, nel verso prudente, come MC
+            q = o.prezzo / self.tick
+            su = (o.tipo == 'stop') == (o.lato > 0)      # buy stop e sell limit in su
+            o.prezzo = (math.ceil(q - 1e-9) if su else math.floor(q + 1e-9)) * self.tick
         for o1, h1, l1, c1 in bar.sub:
             if ctx.trade:                        # escursioni del trade aperto
                 tr = ctx.trade
