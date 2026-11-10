@@ -127,6 +127,21 @@ risultato, per il dossier. Anche le idee uccise al primo passaggio entrano nel r
 ricercatore cita un effetto, si deve poter aprire il paper e trovarlo. È la difesa contro un
 modello che attribuisce a un autore cose che l'autore non ha scritto.
 
+## Il percorso verso il live
+
+Il laboratorio esiste per un conto live futuro, ed è l'unico percorso che segue:
+
+1. **validation** (aprile-dicembre 2025): il ciclo del desk rigiocato, giudicato con `k`
+   dal registro. Una bocciatura chiude l'idea.
+2. **holdout** (2026): un solo sguardo, deciso da una persona. Lo Sharpe deve restare
+   almeno a metà di quello di validation.
+3. **shadow**: la strategia gira ogni giorno nel desk, in un conto paper suo, su dati
+   che nessuno ha visto. È l'unico out-of-sample che non si può sbirciare.
+4. **live**: `mode: active` in `strategies.yaml`, con una pull request.
+
+Fra 3 e 4 manca ancora un cancello scritto in codice: oggi il passaggio a live è una
+decisione umana sui numeri dello shadow.
+
 ## Come gira la fabbrica
 
 Gli agenti sono subagent di Claude Code in `.claude/agents/`, diretti dalla skill

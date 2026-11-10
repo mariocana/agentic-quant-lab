@@ -1,18 +1,15 @@
-"""The prop pipeline's gates (mc/docs/pipeline_semplice.md): trade list in, verdict out.
+"""The go-live path's gates: a strategy's equity curve and trades in, verdict out.
 
-Prop criteria make the verdict; live (own capital) criteria are frozen and only
-printed. Deterministic: same trades, config and seed give the same verdict.
+    validation  is it worth its one look at the holdout?
+    holdout     is it worth the forward test in shadow mode?
+
+Deterministic: same replay, same verdict. Nothing here sends a strategy to live
+money; that is the forward test's job, in the trading desk.
 """
-from alphaquant.validation.gates import (
-    Check, GateConfig, GateResult, LiveConfig, gate2, gate4, gate5, gate6, gate7, live_checks, split_sample,
+from alphaquant.validation.checks import Check, GateResult
+from alphaquant.validation.portfolio import (
+    PortfolioGateConfig, PortfolioMetrics, deflated_sharpe, holdout_gate, measure_portfolio, validation_gate,
 )
-from alphaquant.validation.metrics import Metrics, max_drawdown, measure
-from alphaquant.validation.prop import LUCIDFLEX_50K, PropAccount, PropReport, simulate
-from alphaquant.validation.resampling import bootstrap_mean, dd_at_horizons, monte_carlo
-from alphaquant.validation.trades import TRADE_LOG_SCHEMA, TradeLog
 
-__all__ = [
-    "Check", "GateConfig", "GateResult", "LUCIDFLEX_50K", "LiveConfig", "Metrics", "PropAccount", "PropReport",
-    "TRADE_LOG_SCHEMA", "TradeLog", "bootstrap_mean", "dd_at_horizons", "gate2", "gate4", "gate5", "gate6",
-    "gate7", "live_checks", "max_drawdown", "measure", "monte_carlo", "simulate", "split_sample",
-]
+__all__ = ["Check", "GateResult", "PortfolioGateConfig", "PortfolioMetrics", "deflated_sharpe",
+           "holdout_gate", "measure_portfolio", "validation_gate"]

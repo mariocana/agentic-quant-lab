@@ -1,9 +1,8 @@
 """Gates for portfolio strategies: equity curve and trades in, verdict out.
 
-The prop gates judge an intraday strategy on one instrument by win rate and
-reward-to-risk. A dollar-neutral book of thirty perps rebalanced every day has no
-win rate worth the name; what matters is whether the curve beats zero after
-costs by more than the search that found it could explain. So:
+A dollar-neutral book of thirty perps rebalanced every day has no win rate worth
+the name; what matters is whether the curve beats zero after costs by more than
+the search that found it could explain. So:
 
   sharpe        annualised on daily equity returns (365 days: the market never closes)
   deflated      probability that the true Sharpe is above what the best of k
@@ -30,7 +29,7 @@ from statistics import NormalDist
 import numpy as np
 
 from alphaquant.engine.types import SimResult
-from alphaquant.validation.gates import Check, GateResult
+from alphaquant.validation.checks import Check, GateResult
 
 PERIODS_PER_YEAR = 365
 EULER_GAMMA = 0.5772156649015329

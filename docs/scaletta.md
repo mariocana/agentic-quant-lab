@@ -88,7 +88,7 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
 - [ ] `acceptance.py` legge la password da `.env`.
 - [ ] `.env.example`: manca `DESK_PASSWORD`, `HL_UNIFIED_COLLATERAL` è doppio.
 - [ ] Le 9 posizioni orfane su testnet.
-- [ ] I due test `DriftPullback` di alpha-quant: in pensione o con dati sintetici.
+- [x] I due test `DriftPullback` di alpha-quant: tolti con la metodologia prop, 10/11.
 - [ ] README alla radice del laboratorio.
 
 ## Vincoli di convivenza con multicharts
@@ -101,3 +101,10 @@ separati, tabelle ES/NQ di quantlake intatte.
 
 - Quale Sharpe live basta per mettere soldi propri.
 - Un subaccount per strategia, prima della seconda strategia live.
+
+## Prossimo sul percorso verso il live
+
+- [ ] Il cancello dallo shadow al live, in codice: giorni minimi di shadow, Sharpe in
+      avanti contro quello di validation, decisioni dello shadow uguali a quelle del
+      replay sugli stessi giorni. Serve un endpoint del desk che esponga il journal
+      dello shadow.

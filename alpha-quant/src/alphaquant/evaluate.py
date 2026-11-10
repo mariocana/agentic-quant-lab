@@ -18,7 +18,7 @@ from datetime import datetime
 from alphaquant.engine.desk_replay import HistoricalMarket, replay, splits
 from alphaquant.engine.desk_trades import to_simresult
 from alphaquant.registry import Registry
-from alphaquant.validation.gates import GateResult
+from alphaquant.validation.checks import GateResult
 from alphaquant.validation.portfolio import (
     PERIODS_PER_YEAR, PortfolioMetrics, holdout_gate, measure_portfolio, validation_gate,
 )

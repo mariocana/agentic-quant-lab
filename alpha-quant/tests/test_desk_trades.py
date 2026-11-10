@@ -6,7 +6,6 @@ import pytest
 from alphaquant.engine.desk_replay import HistoricalMarket, replay
 from alphaquant.engine.desk_trades import to_simresult, trades_from_journal
 from alphaquant.engine.types import ExitReason
-from alphaquant.validation import TradeLog
 from desk.config import load_limits
 from desk.signals.reversal import Reversal
 
@@ -57,5 +56,4 @@ def test_a_real_replay_becomes_a_simresult_whose_trades_add_up_to_the_equity_cha
     assert pnl == pytest.approx(res.equity["equity"][-1] - res.start_equity, abs=1e-6)
     assert sim.trades["funding_quote"].sum() == pytest.approx(-res.funding_paid, abs=1e-9)
     assert "time" in sim.trades["exit_reason"].to_list()
-    log = TradeLog.from_simresult(sim)
-    assert len(log) == sim.trades.height and log.source == "reversal_v1"
+    assert sim.meta["strategy"] == "reversal_v1" and sim.meta["level"] == 2
