@@ -42,7 +42,9 @@ COMM_FULL    = 15.00   # $/round-turn gia' dentro il P&L del report (NQ: 7,50 pe
 GUARDIA_GG   = 60      # senza scadenza, un tentativo ancora aperto dopo 60 giorni conta come non passato
 
 # regole del conto in uso: le imposta usa_prop()
-CONTO = TARGET = MLL = LOCK = COMM_MICRO = DLL = CONSISTENCY = 0.0
+CONTO = TARGET = MLL = LOCK = COMM_MICRO = DLL = CONSISTENCY = TARGET2 = 0.0
+DLL_HARD = False
+MIN_GIORNI = 0
 COSTO_TENT = ATTIVAZIONE = None
 PROP = {}
 
@@ -76,6 +78,9 @@ def leggi_prop():
                       comm={k[5:-3].upper(): num(v) for k, v in c.items()
                             if k.startswith('comm_') and k.endswith('_rt') and k != 'comm_micro_rt'},
                       automazione=c.get('automazione', 'none').strip().lower(),
+                      dll_tipo=c.get('dll_tipo', 'soft').strip().lower(),
+                      min_giorni=int(num(c.get('min_giorni', '0')) or 0),
+                      target_fase2=num(c.get('target_fase2', '0')) or 0.0,
                       fonte=c.get('fonte', ''), verificato=c.get('verificato', 'none'))
     return out
 
@@ -83,11 +88,18 @@ def leggi_prop():
 def usa_prop(p):
     """Imposta le regole del conto su cui girano tentativo() e il resto."""
     global CONTO, TARGET, MLL, LOCK, COMM_MICRO, DLL, CONSISTENCY, COSTO_TENT, ATTIVAZIONE, PROP
-    if p['trailing'] not in ('eod', 'intraday'):
+    global TARGET2, DLL_HARD, MIN_GIORNI
+    if p['trailing'] not in ('eod', 'intraday', 'static'):
         raise SystemExit('%s: trailing %r non supportato' % (p['nome'], p['trailing']))
     PROP = p
     CONTO, TARGET, MLL = p['conto'], p['target'], p['mll']
-    LOCK = CONTO + p['lock_sopra_conto']    # il trailing si ferma qui
+    if p['trailing'] == 'static':
+        LOCK = CONTO - MLL                  # limite fermo dal primo giorno (FTMO)
+    else:
+        LOCK = CONTO + p['lock_sopra_conto']    # il trailing si ferma qui
+    TARGET2 = p.get('target_fase2', 0.0)
+    DLL_HARD = p.get('dll_tipo', 'soft') == 'hard'
+    MIN_GIORNI = p.get('min_giorni', 0)
     COMM_MICRO = p['comm_micro_rt']
     COSTO_TENT = p['costo_tentativo']
     ATTIVAZIONE = p['attivazione']
@@ -174,7 +186,22 @@ def stato_attuale(giorni):
 
 
 def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
-    """Un tentativo. seq_giorni = iterabile di liste di P&L per micro.
+    """Un tentativo, in una o due fasi (target_fase2 > 0: FTMO 2-Step). La seconda fase
+    riparte da CONTO con gli stessi limiti e usa i giorni che seguono la prima; i giorni
+    ritornati sono la somma. Senza scadenza, le due fasi stanno nella stessa guardia di giorni."""
+    it = iter(seq_giorni)
+    e, g1 = _fase(it, n_micro, giorni_max, gradini, TARGET)
+    if e != 'pass' or not TARGET2:
+        return e, g1
+    resto = giorni_max - g1 if giorni_max else 0
+    if giorni_max and resto <= 0:
+        return 'aperto', g1
+    e, g2 = _fase(it, n_micro, resto, gradini, TARGET2)
+    return e, g1 + g2
+
+
+def _fase(seq_giorni, n_micro, giorni_max, gradini, target):
+    """Una fase. seq_giorni = iterabile di liste di P&L per micro.
 
     gradini = (micro_iniziali, buffer, ratchet): si tradano micro_iniziali finche' il
     profitto e' sotto +buffer, poi n_micro. La size si decide all'ingresso di ogni trade.
@@ -189,6 +216,10 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
     Daily loss limit (DLL > 0): se la perdita della giornata, aperti inclusi, arriva al
     DLL, la posizione si chiude li' e la giornata finisce; il conto resta vivo (Apex).
     Si assume l'uscita esattamente sulla soglia: dal vivo e' a mercato, un po' sopra o sotto.
+    Con dll_tipo hard (FTMO) toccare il DLL boccia il tentativo.
+
+    Giorni minimi (min_giorni > 0): al target si passa solo dopo almeno quei giorni con trade;
+    prima si continua a tradare.
 
     Ritorna ('pass'|'fail'|'aperto', giorni_usati).
     """
@@ -196,9 +227,11 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
     grande = gradini is None
     intraday = PROP.get('trailing') == 'intraday'
     giorno_max = 0.0                           # miglior giornata chiusa, per la consistency
-    g = 0
+    g = attivi = 0
     for g, trades in enumerate(seq_giorni, 1):
         inizio = bal
+        if trades:
+            attivi += 1
         stop_dll = bal - DLL if DLL else None
         for tr in trades:
             t, giu = tr
@@ -213,6 +246,8 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
                 limite = min(picco_eod - MLL, LOCK)
             fondo = bal + giu * n
             if stop_dll is not None and fondo <= stop_dll and stop_dll > limite:
+                if DLL_HARD:
+                    return 'fail', g           # FTMO: la perdita giornaliera chiude il conto
                 bal = stop_dll                 # il DLL arriva prima dell'MLL: giornata chiusa
                 break
             if fondo <= limite:                # sfondato DENTRO il trade, non alla chiusura
@@ -223,7 +258,7 @@ def tentativo(seq_giorni, n_micro, giorni_max, gradini=None):
                 limite = min(picco_eod - MLL, LOCK)
             if bal <= limite:
                 return 'fail', g
-            if bal >= CONTO + TARGET:
+            if bal >= CONTO + target and attivi >= MIN_GIORNI:
                 # consistency: il giorno migliore (oggi compreso) <= quota del profitto,
                 # altrimenti si continua a tradare (Lucid: "keep trading until...")
                 if not CONSISTENCY or max(giorno_max, bal - inizio) <= CONSISTENCY * (bal - CONTO):
