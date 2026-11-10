@@ -1153,6 +1153,10 @@
  "log": [
   {
    "date": "2026-11-10",
+   "text": "**Ingest: OrbBreakout_EA.mq5 archiviato.** È ORB_Breakout (range 30 minuti, stop all'estremo opposto, 1R), già morta OOS (t 0,63 e 0,80); unica differenza il flat alle 14:00 NY invece delle 15:00 NY."
+  },
+  {
+   "date": "2026-11-10",
    "text": "**Ingest: port MQL5 di agosto degli 11 codici di Unger (Trading System Supremacy) archiviati.** Doppioni di strategies/unger_clean con parametri generici e orari del broker: nessuna strategia nuova; con il bridge MC -> MT5 gli EA non servono."
   },
   {
