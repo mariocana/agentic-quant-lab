@@ -1,6 +1,6 @@
 """Barre da quantlake (agentic-quant-lab) in sola lettura.
 
-Il file e' l'export di MultiCharts a 1 minuto (`<SIMBOLO>_1min.csv`): ora di Chicago, `time` = ora di
+Il file e' l'export di MultiCharts a 1 minuto (`<SIMBOLO>_1min.csv`, piu' `<SIMBOLO>_recent.csv`): ora di Chicago, `time` = ora di
 CHIUSURA della barra (HHMM), sessione 17:00-16:00 senza pause, continuous back-adjusted di
 TradeStation. Le barre piu' lunghe si costruiscono come le costruisce MultiCharts: etichetta = ora
 di chiusura, confini allineati all'orologio (1701-1705 -> barra delle 17:05). Ogni barra tiene le
@@ -38,12 +38,11 @@ def file_1min(simbolo):
     return os.path.join(DATI, 'multicharts', '%s_1min.csv' % simbolo)
 
 
-def minuti(simbolo, dal, al):
-    """Barre da 1 minuto fra dal e al (date, inclusi): (datetime chiusura, o, h, l, c, volume)."""
-    p = file_1min(simbolo)
-    if not os.path.exists(p):
-        raise SystemExit('mancano i dati: %s (QUANTLAKE_DATA=%s)' % (p, DATI))
-    d0, d1 = int(dal.strftime('%Y%m%d')), int(al.strftime('%Y%m%d'))
+def file_recente(simbolo):
+    return os.path.join(DATI, 'multicharts', '%s_recent.csv' % simbolo)
+
+
+def _leggi(p, d0, d1):
     out = []
     with open(p, newline='') as f:
         r = csv.reader(f)
@@ -56,6 +55,37 @@ def minuti(simbolo, dal, al):
             t = dt.datetime(d // 10000, d // 100 % 100, d % 100, hm // 100, hm % 100)
             out.append((t, float(riga[2]), float(riga[3]), float(riga[4]), float(riga[5]), int(riga[6])))
     return out
+
+
+def minuti(simbolo, dal, al):
+    """Barre da 1 minuto fra dal e al (date, inclusi): (datetime chiusura, o, h, l, c, volume).
+
+    Storico `<SIMBOLO>_1min.csv` piu' il recente `<SIMBOLO>_recent.csv` (workspace sempre aperto,
+    ultimi giorni): dove si sovrappongono vince il recente. Se sulla sovrapposizione i prezzi non
+    coincidono c'e' stato un rollover dopo lo storico (il continuous e' riaggiustato all'indietro):
+    si ferma, va riesportato lo storico."""
+    p = file_1min(simbolo)
+    if not os.path.exists(p):
+        raise SystemExit('mancano i dati: %s (QUANTLAKE_DATA=%s)' % (p, DATI))
+    d0, d1 = int(dal.strftime('%Y%m%d')), int(al.strftime('%Y%m%d'))
+    out = _leggi(p, d0, d1)
+    pr = file_recente(simbolo)
+    if not os.path.exists(pr):
+        return out
+    rec = _leggi(pr, d0, d1)
+    if not rec:
+        return out
+    vecchi = {r[0]: r for r in out if r[0] >= rec[0][0]}
+    diversi = [r for r in rec if r[0] in vecchi and abs(vecchi[r[0]][4] - r[4]) > 1e-6]
+    if len(diversi) > 0.05 * max(1, sum(1 for r in rec if r[0] in vecchi)):
+        raise SystemExit('%s: %d barre del recente con un prezzo diverso dallo storico (es. %s): '
+                         'rollover dopo l\'export dello storico, riesporta %s_1min.csv'
+                         % (simbolo, len(diversi), diversi[0][0], simbolo))
+    prima = [r for r in out if r[0] < rec[0][0]]
+    if prima and rec[0][0] - prima[-1][0] > dt.timedelta(days=4):
+        raise SystemExit('%s: buco fra lo storico (fino al %s) e il recente (dal %s): riesporta %s_1min.csv'
+                         % (simbolo, prima[-1][0].date(), rec[0][0].date(), simbolo))
+    return prima + rec
 
 
 def aggrega(mins, tf):
@@ -83,9 +113,12 @@ def aggrega(mins, tf):
 
 def barre(simbolo, tf, dal, al):
     """Barre da tf minuti, con cache. dal/al: date."""
-    p = file_1min(simbolo)
-    st = os.stat(p)
-    nome = '%s_%d_%s_%s_%d_%d.pkl' % (simbolo, tf, dal, al, int(st.st_mtime), st.st_size)
+    firma = []
+    for p in (file_1min(simbolo), file_recente(simbolo)):
+        if os.path.exists(p):
+            st = os.stat(p)
+            firma.append('%d_%d' % (int(st.st_mtime), st.st_size))
+    nome = '%s_%d_%s_%s_%s.pkl' % (simbolo, tf, dal, al, '_'.join(firma))
     cp = os.path.join(CACHE, nome)
     if os.path.exists(cp):
         with open(cp, 'rb') as f:
@@ -98,8 +131,13 @@ def barre(simbolo, tf, dal, al):
 
 
 def ultimo_giorno(simbolo):
-    with open(file_1min(simbolo), 'rb') as f:
-        f.seek(-200, 2)
-        riga = f.read().decode().strip().splitlines()[-1]
-    d = int(riga.split(',')[0])
-    return dt.date(d // 10000, d // 100 % 100, d % 100)
+    ultimo = None
+    for p in (file_1min(simbolo), file_recente(simbolo)):
+        if not os.path.exists(p) or os.path.getsize(p) < 200:
+            continue
+        with open(p, 'rb') as f:
+            f.seek(-200, 2)
+            d = int(f.read().decode().strip().splitlines()[-1].split(',')[0])
+        g = dt.date(d // 10000, d // 100 % 100, d % 100)
+        ultimo = max(ultimo, g) if ultimo else g
+    return ultimo
