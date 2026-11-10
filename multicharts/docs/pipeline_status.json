@@ -1153,6 +1153,10 @@
  "log": [
   {
    "date": "2026-11-10",
+   "text": "**Ingest: R103/C Fractal-RSI scalping (scheda forex 2019 + EA) archiviata.** La scheda dice 'DA TESTARE', nessuno stop, scalping 1-5 minuti su forex."
+  },
+  {
+   "date": "2026-11-10",
    "text": "**Ingest: R109 Zona Neutra (scheda forex 2019 + EA) archiviata.** Breakout del range di 144 barre da 5 minuti con CCI(5), 50/50 pip, nessun test; tiene i perdenti la notte; su Lucid solo 6E intero (stop $625)."
   },
   {
