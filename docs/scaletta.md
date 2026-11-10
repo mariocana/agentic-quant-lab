@@ -24,18 +24,18 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
 
 ## Dopo (4-8 settimane)
 
-- [ ] **6. Connettore Hyperliquid in quantlake.**
+- [x] **6. Connettore Hyperliquid in quantlake.**
       - [x] barre 1d (tutta la storia) e 1h (solo le ultime ~5000 per perp: aggiornare
             almeno ogni qualche mese), funding orario dal 12/05/2023. Fatto il 09/11.
       - [x] `reference/hyperliquid_listings` e `universe_on(giorno)`: l'universo
             punto-nel-tempo, delistati compresi.
-      - [ ] backfill completo dei 561 perp (~10 ore, in corso dal 09/11, riprende da solo).
+      - [x] backfill completo dei 561 perp: finito il 10/11, zero errori.
       - [x] `underlying_market_open` in silver (`silver/hyperliquid_ohlcv_1h` e `_1d`):
             ogni perp associato al calendario del sottostante in
             `reference/hyperliquid_underlying.py`. Fatto il 09/11. Da rivedere: le voci in
             `NEEDS_REVIEW` (21) e i 4 perp non identificati (`UNIDENTIFIED`).
       - L'open interest storico non esiste nell'API: c'è solo dal registro del desk (punto 4).
-- [ ] **7. Simulatore livello 2 in alpha-quant**, calibrato contro i fill veri di
+- [x] **7. Simulatore livello 2 in alpha-quant**, calibrato contro i fill veri di
       `trading-desk/var/` prima di simulare qualunque cosa nuova.
       - [x] 7.1 costi reali dal journal (`alphaquant.calibration.desk_fills`): 126 fill,
             maker 1,5 bps, taker 4,5 bps + slippage 7,3 bps medio. Fatto il 09/11.
@@ -56,7 +56,7 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
             piatto, con fee e funding della posizione; la somma dei P&L netti è uguale
             alla variazione di equity. Il replay registra le versioni Delta lette. Fatto
             il 09/11.
-- [ ] **8. Gate di portafoglio, registro delle prove, holdout bloccato dal codice.**
+- [x] **8. Gate di portafoglio, registro delle prove, holdout bloccato dal codice.**
       - [x] 8.1 `alphaquant.registry`: append-only con catena di hash, `k` = spec giudicate
             in validation. File: `alpha-quant/registry/trials.jsonl`. Fatto il 09/11.
       - [x] 8.2 holdout chiuso dal codice: `config/splits.yaml` (train 06/2023-03/2025,
