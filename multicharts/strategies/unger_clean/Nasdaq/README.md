@@ -1,6 +1,6 @@
 # Unger Academy — Strategie Trend Following sul Nasdaq (trascritte, mai girate)
 
-**Fonte:** `NasdaqRegoleUngerAcademy.pdf`, PDF gratuito della Unger Academy (4 pagine, nessun
+**Fonte:** `NasdaqRegoleUngerAcademy.pdf` (copia in questa cartella), PDF gratuito della Unger Academy (4 pagine, nessun
 periodo né risultato dichiarato). Port MQL5 in `ingest/mql5/unger/nasdaq/`. Codice MultiCharts:
 `UngerNasdaq.txt`, da salvare come `Mario_UngerNasdaq`, **mai compilato né girato**.
 
