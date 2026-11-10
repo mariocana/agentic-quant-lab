@@ -1153,6 +1153,10 @@
  "log": [
   {
    "date": "2026-11-10",
+   "text": "**COT Dealer Rank (The Bridge, COT EXAMPLE) lasciato in protocollo, non portato.** Posizione settimanale senza stop, fuori profilo prop. Variante Legacy misurata su NQ 2020-2024: 92 settimane in posizione, +$56 per micro, t 0,65, short −$67, settimana peggiore −$2.144 per micro; non batte lo stare long (+$81). La variante TFF di default non è testabile (manca il report TFF)."
+  },
+  {
+   "date": "2026-11-10",
    "text": "**Unger Academy, Trend Following sul Nasdaq: trascritte in strategies/unger_clean/Nasdaq, mai girate.** Proxy IS 2020-2024: S1 +$19 per micro (t 1,85; +$21 con lo short del testo, t 2,20), sopra un controllo long a orario fisso (+$7,5); S2 +$4, debole. Disclaimer: tengono la posizione nella pausa 16:00-17:00 CT, che le prop chiudono; da verificare per conto prima del live."
   },
   {
