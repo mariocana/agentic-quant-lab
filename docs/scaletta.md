@@ -44,11 +44,14 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
       - [x] 7.3 `alphaquant.engine.desk_replay`: il `run_cycle` del desk sul passato,
             con orologio spostato (time_machine) e file in una cartella temporanea.
             Funding regolato fra i cicli, delisting chiusi all'ultimo prezzo. Fatto il 09/11.
-      - [ ] 7.4 decisioni live contro decisioni rigiocate (`scripts/compare_decisions.py`):
-            108 set di target, dal journal locale e dal desk su Railway. Strumento pronto
-            il 09/11; il verdetto aspetta la fine del backfill (oggi 653 differenze su
-            1.120 sono "no_bars"). Il P&L non si confronta: il testnet riempiva a prezzi
-            fino al 2,6% lontani da mainnet.
+      - [x] 7.4 decisioni live contro decisioni rigiocate (`scripts/compare_decisions.py`),
+            a backfill completo, 10/11: sui cicli del desk paper alle 00:05 con dati
+            completi (31/10-08/11) **9 su 9 identiche**, stessi asset, stessi lati, stessa
+            size al centesimo. Le differenze hanno due cause verificate: i cicli di ottobre
+            erano su testnet, dove il desk tiene solo i perp quotati lì (21 in meno); il
+            09-10/11 la barra del giorno prima non era ancora in quantlake (backfill partito
+            il 09 sera). Il P&L non si confronta: il testnet riempiva a prezzi fino al 2,6%
+            lontani da mainnet.
       - [x] 7.5 `engine/desk_trades.to_simresult`: i fill diventano trade da piatto a
             piatto, con fee e funding della posizione; la somma dei P&L netti è uguale
             alla variazione di equity. Il replay registra le versioni Delta lette. Fatto
