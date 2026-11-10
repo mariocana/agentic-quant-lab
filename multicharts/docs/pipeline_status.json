@@ -1153,6 +1153,10 @@
  "log": [
   {
    "date": "2026-11-10",
+   "text": "**Ingest: port MQL5 di agosto degli 11 codici di Unger (Trading System Supremacy) archiviati.** Doppioni di strategies/unger_clean con parametri generici e orari del broker: nessuna strategia nuova; con il bridge MC -> MT5 gli EA non servono."
+  },
+  {
+   "date": "2026-11-10",
    "text": "**GEX dashboard: letti la Masterspec v1.9.4 e la GEX Research 2025-2026, resta in coda con blocco dati.** Ricerca onesta (rami negativi, regole congelate, OOS dal 26/08/2026) ma l'edge è dichiaratamente del regime 2026: LONG CROSS 2026 N 107 +18,5 pt a 10 min, set-dic 2025 ~-3,3; RETEST 2025 negativo. Servono i dati GEXBot al minuto o il forward dal 26/08/2026."
   },
   {
