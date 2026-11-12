@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "ricerca"
+version = "0.2.0"
+description = "Il desk di ricerca: il perimetro, il registro delle idee e i comandi che la skill /ricerca chiama"
+authors = ["mariocana"]
+packages = [{ include = "ricerca", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "~3.13"
+pydantic = "^2.0"
+pyyaml = "^6.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+
+[tool.poetry.scripts]
+ricerca = "ricerca.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

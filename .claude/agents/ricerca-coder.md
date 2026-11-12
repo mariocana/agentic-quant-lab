@@ -13,7 +13,7 @@ Il desk ti passa `ID` e, se è un secondo giro, l'errore da correggere.
 
 ## Cosa leggi
 
-- `factory/staging/<ID>/hypothesis.md`, sezione «Regola eseguibile»: è il tuo contratto.
+- `ricerca/idee/<ID>/hypothesis.md`, sezione «Regola eseguibile»: è il tuo contratto.
 - `multicharts/motore/README.md` (la semantica: ordini alla barra dopo, stop e limite sul
   percorso a 1 minuto, nessuno stop nella barra d'ingresso).
 - `multicharts/motore/strategie/dpb.py` e `obo.py` come modello, e `__init__.py`.
@@ -48,7 +48,7 @@ sera se l'orizzonte lo chiede. Zero trade, o trade fuori finestra, sono un bug t
 
 - Non lanciare `motore.misura`, `motore.esegui` con le fasi `is` o `oos`, né altro che stampi
   P&L. Non usare date dal 2025 in poi.
-- Non leggere `factory/staging/*/misura.json`, `alpha-quant/registry/`,
+- Non leggere `ricerca/idee/*/misura.json`, `ricerca/registro/`,
   `multicharts/strategies/*/reports/` e `verdicts/`.
 - Non cambiare la regola. Se è ambigua o non si può scrivere, fermati e dillo al desk: una
   regola cambiata dopo il critico è un'idea nuova.

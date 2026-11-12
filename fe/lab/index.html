@@ -33,24 +33,24 @@
 </head>
 <body>
 <h1>LABORATORIO</h1>
-<p class="lead">Le idee in fabbrica e il registro delle prove. Il registro è append-only: ogni strategia
-  giudicata in validation conta in <b>k</b>, e alza l'asticella per tutte le successive.</p>
+<p class="lead">Le idee del desk di ricerca e il loro registro. Il registro è append-only: ogni idea
+  che arriva alla misura conta, e alza la soglia t per tutte le successive.</p>
 
 <div class="kpis">
-  <div class="kpi"><div class="v" id="k">–</div><div class="l">k · prove in validation</div></div>
-  <div class="kpi"><div class="v" id="nideas">–</div><div class="l">idee in fabbrica</div></div>
-  <div class="kpi"><div class="v" id="nrows">–</div><div class="l">righe nel registro</div></div>
+  <div class="kpi"><div class="v" id="nideas">–</div><div class="l">idee nate</div></div>
+  <div class="kpi"><div class="v" id="nmeasured">–</div><div class="l">idee misurate</div></div>
+  <div class="kpi"><div class="v" id="nkilled">–</div><div class="l">idee uccise</div></div>
 </div>
 
-<h2>Idee in fabbrica</h2>
+<h2>Idee</h2>
 <div class="wrap"><table id="ideas"><thead><tr>
-  <th>idea</th><th>stadio</th><th>critico</th><th>validation</th><th>holdout</th>
+  <th>idea</th><th>stadio</th><th>critico</th><th class="num">eccesso (pp)</th><th class="num">errori standard</th>
 </tr></thead><tbody></tbody></table></div>
 
-<h2>Registro delle prove</h2>
+<h2>Registro</h2>
 <div class="wrap"><table id="registry"><thead><tr>
-  <th>#</th><th>quando</th><th>tipo</th><th>strategia</th><th>segmento</th><th>esito</th>
-  <th class="num">Sharpe</th><th class="num">rendimento</th><th class="num">drawdown</th><th>nota</th>
+  <th>#</th><th>quando</th><th>tipo</th><th>idea</th><th>porta</th><th>orizzonte</th><th>mercato</th>
+  <th>passo</th><th class="num">eccesso (pp)</th><th>nota</th>
 </tr></thead><tbody></tbody></table></div>
 
 <script>
@@ -66,20 +66,20 @@ async function load() {
     fetch(BASE + "/api/registry").then((r) => r.json()),
     fetch(BASE + "/api/staging").then((r) => r.json()),
   ]);
-  $("#k").textContent = reg.k;
-  $("#nideas").textContent = st.ideas.length;
-  $("#nrows").textContent = reg.rows.length;
+  $("#nideas").textContent = reg.ideas;
+  $("#nmeasured").textContent = reg.measured;
+  $("#nkilled").textContent = reg.killed;
 
   $("#ideas tbody").innerHTML = st.ideas.length ? st.ideas.map((i) => `<tr>
       <td>${esc(i.id)}</td><td>${esc(i.stage)}</td>
       <td>${i.critic === "KILL" ? '<span class="fail">KILL</span>' : i.critic === "GO" ? '<span class="pass">GO</span>' : '<span class="dim">–</span>'}</td>
-      <td>${verdict(i.validation)}</td><td>${verdict(i.holdout)}</td></tr>`).join("")
-    : '<tr><td colspan="5" class="empty">Nessuna idea in fabbrica. Apri una sessione nel laboratorio e scrivi /quant-factory.</td></tr>';
+      <td class="num">${num(i.eccesso_pp)}</td><td class="num">${num(i.errori_standard)}</td></tr>`).join("")
+    : '<tr><td colspan="5" class="empty">Nessuna idea. Apri una sessione nel laboratorio e scrivi /ricerca nuova.</td></tr>';
 
   $("#registry tbody").innerHTML = reg.rows.slice().reverse().map((r) => `<tr>
-      <td>${r.seq}</td><td>${esc(r.ts)}</td><td>${esc(r.kind)}</td><td>${esc(r.spec)}</td>
-      <td>${esc(r.segment || "")}</td><td>${r.kind === "run" ? verdict(r.passed) : ""}</td>
-      <td class="num">${num(r.sharpe)}</td><td class="num">${pct(r.total_return)}</td><td class="num">${pct(r.max_dd)}</td>
+      <td>${r.seq}</td><td>${esc(r.ts)}</td><td>${esc(r.kind)}</td><td>${esc(r.idea)}</td>
+      <td>${esc(r.door || "")}</td><td>${esc(r.horizon || "")}</td><td>${esc(r.market || "")}</td>
+      <td>${esc(r.step || "")}</td><td class="num">${num(r.eccesso_pp)}</td>
       <td class="note">${esc(r.text || "")}</td></tr>`).join("");
 }
 load();

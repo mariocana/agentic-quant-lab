@@ -1,5 +1,13 @@
 # Scaletta
 
+> **12/11/2026: cambio di rotta.** La fabbrica Hyperliquid è chiusa: `alpha-quant/`,
+> `/quant-factory` e gli agenti `factory-*` sono stati tolti (restano in git fino a `7cc21f9`).
+> Il laboratorio ora è il desk di ricerca a monte di `/lab` ([desk_ricerca.md](desk_ricerca.md)),
+> con multicharts dentro. `trading-desk/` resta, fermo, per il bridge MultiCharts → Hyperliquid.
+> Quello che segue è la storia fino al 10/11: i punti 7, 8 e 10 descrivono codice che non c'è più.
+>
+> **Adesso:** il giro di prova di `/ricerca` (tre idee morte e DriftPullback), e il backup del lake.
+
 Ordine deliberato: prima il validatore, gli agenti per ultimi. La fabbrica senza un
 cancello che sa dire "non funziona" produce falsi positivi più in fretta.
 

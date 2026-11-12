@@ -120,21 +120,21 @@ sono altre quattro.
 
 ## Il perimetro
 
-Sta in [`factory/research.yaml`](../factory/research.yaml) e si cambia con un commit. Lo
+Sta in [`ricerca/perimetro.yaml`](../ricerca/perimetro.yaml) e si cambia con un commit. Lo
 leggono gli agenti e lo fa rispettare il codice.
 
 | cosa | oggi | chi lo fa rispettare |
 |---|---|---|
-| Orizzonti | **intraday acceso**; daily e swing spenti | `factory idea` rifiuta un orizzonte spento |
+| Orizzonti | **intraday acceso**; daily e swing spenti | `ricerca idea` rifiuta un orizzonte spento |
 | Vincoli dell'orizzonte | intraday: flat a fine giornata, almeno 1 segnale al giorno | il critico |
-| Mercati | NQ ed ES (hanno lo storico a 1 minuto); GC, CL e BTC senza dati | `factory idea` rifiuta un mercato senza dati |
-| Minimi della misura | eccesso ad almeno 3 errori standard, almeno $10 al giorno per micro | `factory measure` stampa SOPRA o SOTTO SOGLIA |
-| Tetto mensile | 8 idee nuove alla misura, dalle due porte insieme | `factory measure` rifiuta la nona |
+| Mercati | NQ ed ES (hanno lo storico a 1 minuto); GC, CL e BTC senza dati | `ricerca idea` rifiuta un mercato senza dati |
+| Minimi della misura | eccesso ad almeno 3 errori standard, almeno $10 al giorno per micro | `ricerca measure` stampa SOPRA o SOTTO SOGLIA |
+| Tetto mensile | 8 idee nuove alla misura, dalle due porte insieme | `ricerca measure` rifiuta la nona |
 
 - **Per accendere daily o swing non basta cambiare `attivo`.** Serve anche una misura per
   quell'orizzonte (`misura:` nel file): oggi il motore legge barre a 1 minuto di una sessione,
   e non c'è uno storico giornaliero su molti mercati. Con l'orizzonte acceso e la misura
-  mancante, `factory idea` rifiuta lo stesso.
+  mancante, `ricerca idea` rifiuta lo stesso.
 - **Un perimetro cambiato vale per le idee nuove.** Quelle già nel registro restano con
   l'orizzonte e il mercato del loro giorno.
 
@@ -225,13 +225,13 @@ L'ultima riga è il lavoro sui dati che questa proposta richiede davvero.
 |---|---|---|
 | Skill del desk di ricerca | `.claude/skills/ricerca/` | nuova |
 | Ricercatore, critico, coder | `.claude/agents/ricerca-*.md` | nuovi |
-| Perimetro | `factory/research.yaml`, `factory/src/factory/research.py` | nuovo |
-| Comandi `idea`, `measure`, `kill` | `factory/src/factory/cli.py` | nuovi |
-| Voci `idea`, `measure`, `killed` | `alpha-quant/src/alphaquant/registry.py` | nuove |
+| Perimetro | `ricerca/perimetro.yaml`, `ricerca/src/ricerca/perimetro.py` | nuovo |
+| Comandi `idea`, `measure`, `kill` | `ricerca/src/ricerca/cli.py` | nuovi |
+| Voci `idea`, `measure`, `killed` | `ricerca/src/ricerca/registry.py` | nuove |
 | Misura | `multicharts/motore/misura.py` | nuova |
 | `quantlake/` | | resta, ed è il centro. Serve un backup (punto 3 della scaletta) |
-| `/quant-factory`, agenti `factory-*`, replay del desk, gate di portafoglio | | fermi. Restano validi per un'idea giornaliera su perp, se un giorno torna |
-| `trading-desk/` | | solo esecutore della terza via, opzionale. Le cinque correzioni dell'audit si fanno prima di aprirla, non prima |
+| `alpha-quant/`, `/quant-factory`, agenti `factory-*` | | tolti il 12/11/2026: la fabbrica Hyperliquid è chiusa. Restano nella storia di git, fino al commit `7cc21f9` |
+| `trading-desk/` | | resta, fermo: sarà l'esecutore del bridge MultiCharts → Hyperliquid. Le cinque correzioni dell'audit si fanno prima di aprire quella via |
 
 ## Il confine con `/lab`
 
@@ -259,8 +259,8 @@ Dal 12/11/2026 multicharts sta in questo repository, in `multicharts/`.
 |---|---|---|
 | Quando accendere daily e swing | spenti: prima serve uno storico giornaliero e una misura per quell'orizzonte | |
 | Mercati | NQ ed ES | esportare GC e CL da MultiCharts (in `motore` sono «da fare»); BTC da Binance |
-| Tetto mensile | 8 | un altro numero in `research.yaml` |
-| Chi tiene il conto totale delle idee per la soglia t di `pipeline_live.md` | il registro di qui (`factory status`), letto a mano quando `/lab` scrive la SPEC | un conto in `lab.py` |
+| Tetto mensile | 8 | un altro numero in `perimetro.yaml` |
+| Chi tiene il conto totale delle idee per la soglia t di `pipeline_live.md` | il registro di qui (`ricerca status`), letto a mano quando `/lab` scrive la SPEC | un conto in `lab.py` |
 | Le idee dei praticanti | alla pari dei paper | solo paper |
 
 ## Cosa manca

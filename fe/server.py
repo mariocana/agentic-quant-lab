@@ -3,7 +3,7 @@
     Dati            quantlake's tables and charts (its own React app, fe/web)
     COT, Equity     quantlake's desks, Flask apps mounted under /cot and /equity
     Trading desk    the deployed desk (Railway), proxied under /desk/
-    Laboratorio     the trial registry and the ideas in the factory, under /lab/
+    Laboratorio     the ideas of the research desk and their registry, under /lab/
 
 Everything that was a portal of its own is a tab here: the React shell asks
 /api/apps which tabs exist and keeps each one mounted once opened.
@@ -35,8 +35,8 @@ from fastapi.staticfiles import StaticFiles
 FE = Path(__file__).resolve().parent
 LAB = FE.parent
 WEB_DIST = FE / "web" / "dist"
-REGISTRY = LAB / "alpha-quant" / "registry" / "trials.jsonl"
-STAGING = LAB / "factory" / "staging"
+REGISTRY = LAB / "ricerca" / "registro" / "trials.jsonl"
+STAGING = LAB / "ricerca" / "idee"
 
 # quantlake's API (/api/...) with COT and Equity already mounted as tabs
 from quantlake.dashboard.server import _mounted, app  # noqa: E402
@@ -71,51 +71,47 @@ if DESK_URL:
     _mounted.insert(0, {"key": "desk", "label": "Trading desk", "path": "/desk/"})
 
 
-# ── Laboratorio: registry and factory ────────────────────────────────────────
+# ── Laboratorio: the research desk's ideas and registry ─────────────────────────
 def _registry_rows() -> list[dict]:
     if not REGISTRY.exists():
         return []
-    rows, specs = [], {}
+    rows = []
     for line in REGISTRY.read_text().splitlines():
         if not line.strip():
             continue
         e = json.loads(line)
-        if e["kind"] == "spec":
-            specs[e["spec_hash"]] = e["spec"].get("id", e["spec_hash"][:12])
         m = e.get("metrics") or {}
         rows.append({"seq": e["seq"], "ts": e["ts"][:16].replace("T", " "), "kind": e["kind"],
-                     "spec": specs.get(e.get("spec_hash"), (e.get("spec_hash") or "")[:12]),
-                     "segment": e.get("segment"), "passed": m.get("passed"),
-                     "sharpe": m.get("sharpe"), "total_return": m.get("total_return"),
-                     "max_dd": m.get("max_dd"), "text": e.get("text")})
+                     "idea": e.get("idea") or (e.get("spec") or {}).get("id") or "",
+                     "door": e.get("door"), "horizon": e.get("horizon"), "market": e.get("market"),
+                     "step": e.get("step"), "eccesso_pp": m.get("eccesso_pp"),
+                     "errori_standard": m.get("errori_standard"),
+                     "text": e.get("reason") or e.get("title") or e.get("text")})
     return rows
 
 
 @app.get("/lab/api/registry")
 def lab_registry():
     rows = _registry_rows()
-    k = len({r["spec"] for r in rows if r["kind"] == "run" and r["segment"] == "validation"})
-    return {"k": k, "rows": rows}
+    return {"ideas": sum(r["kind"] == "idea" for r in rows),
+            "measured": len({r["idea"] for r in rows if r["kind"] == "measure"}),
+            "killed": sum(r["kind"] == "killed" for r in rows), "rows": rows}
 
 
 @app.get("/lab/api/staging")
 def lab_staging():
     out = []
     for d in sorted(p for p in STAGING.iterdir() if p.is_dir()) if STAGING.exists() else []:
-        stage = "idea"
-        for f, s in (("hypothesis.md", "ipotesi"), ("critique.md", "critica"), ("spec.yaml", "spec"),
-                     ("strategy.py", "codice"), ("FROZEN", "congelata"), ("validation.json", "validata"),
-                     ("dossier.md", "dossier"), ("holdout.json", "holdout")):
+        stage = "nata"
+        for f, s in (("hypothesis.md", "ipotesi"), ("critique.md", "critica"), ("misura.json", "misurata"),
+                     ("dossier.md", "dossier"), ("KILLED", "uccisa")):
             if (d / f).exists():
                 stage = s
-        verdicts = {}
-        for f in ("validation", "holdout"):
-            p = d / f"{f}.json"
-            if p.exists():
-                verdicts[f] = json.loads(p.read_text()).get("passed")
         critique = (d / "critique.md").read_text() if (d / "critique.md").exists() else ""
-        out.append({"id": d.name, "stage": stage, **verdicts,
-                    "critic": "KILL" if "VERDETTO: KILL" in critique else "GO" if "VERDETTO: GO" in critique else None})
+        misura = json.loads((d / "misura.json").read_text()) if (d / "misura.json").exists() else {}
+        out.append({"id": d.name, "stage": stage,
+                    "critic": "KILL" if "VERDETTO: KILL" in critique else "GO" if "VERDETTO: GO" in critique else None,
+                    "eccesso_pp": misura.get("eccesso_pp"), "errori_standard": misura.get("errori_standard")})
     return {"ideas": out}
 
 

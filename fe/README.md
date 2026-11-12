@@ -7,7 +7,7 @@ Un server, una pagina, le schede in alto:
 | Dati | quantlake: tabelle, grafici, workflow (l'app React in `web/`) |
 | Trading desk | il desk su Railway, attraverso `/desk/` |
 | COT, Equity | i desk di quantlake (`quantlake/applications/`), montati sotto `/cot` e `/equity` |
-| Laboratorio | registro delle prove e idee in fabbrica (`lab/`) |
+| Laboratorio | le idee del desk di ricerca e il loro registro (`lab/`) |
 
 ```bash
 ./start_frontends.sh
@@ -25,7 +25,7 @@ http://127.0.0.1:8000.
 - `web/` è la shell React. Chiede a `/api/apps` quali schede esistono e tiene
   montata ogni scheda una volta aperta, così non perde lo stato.
 - `lab/index.html` è la scheda del laboratorio: legge
-  `alpha-quant/registry/trials.jsonl` e `factory/staging/`, in sola lettura.
+  `ricerca/registro/trials.jsonl` e `ricerca/idee/`, in sola lettura.
 
 ## Il trading desk passa dal server, e perché
 
