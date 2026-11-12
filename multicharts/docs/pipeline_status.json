@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-10",
+ "updated": "2026-11-12",
  "goal": "Strategie per passare l'eval prop e incassare i payout. Nient'altro.",
  "profile": "WR 54–72% · R:R 0.5–1 · trade frequenti · sviluppo a 1 contratto NQ, size in micro dal simulatore (il rischio è un output, non un input)",
  "prop": "**LucidFlex 50k** · target $3.000 · MLL **$2.000** · EOD trailing che **si blocca** a $52.100 (locked $50.100) · consistency **40%** (50% con add-on, verificata 25/10) · 4 mini / 40 micro · **nessun daily loss** · automazione **permessa** (verificato 30/09/2026). Apex escluso: vieta esplicitamente l'automazione.",
@@ -1174,6 +1174,10 @@
   "Promemoria: la licenza MultiCharts mensile copre fino al **29/11**, Black Friday il **27/11**. Due giorni di margine per la lifetime."
  ],
  "log": [
+  {
+   "date": "2026-11-12",
+   "text": "**Audit del 12/11 e simulatore dei payout.** Book 1/1/1 su LucidFlex: pass 59% sull'OOS, 30-37% con Gold alla media IS; EV per conto funded $5.460 (soglia di prelievo $6.000), per tentativo $3.129 sull'OOS e $460-940 negli stress, circa zero a edge zero. Aggiunti `gate_marginale.py --intervallo` (informativo: il Δ ha un intervallo largo 7-17 punti), `audit_stress.py`, `funded_sim.py` con `prop_funded.ini`, e la bozza `pipeline_live.md` (conto minimo $100.000, stop a −15%). Tutto in `docs/audit_2026-11-12.md`, sul branch audit-e-gate-intervallo; nessuna regola della pipeline è cambiata."
+  },
   {
    "date": "2026-11-10",
    "text": "**Tetto del book alzato da 3 a 5 strategie (decisione di Mario, 10/11/2026).** Combinazioni fino a 5 su LucidFlex, 1 micro ciascuna, 2025-01-01 → 2026-10-15: DPB+GAR+OBO 57,9% iid, 68,4% contiguo, 29 giorni; +VB8 61,0% / 77,4% / 25 giorni (giornata peggiore −$1.219, appena oltre il DLL soft); tutte e 5 (con First5 Pre-Open) 57,6% / 78,9% / 23 giorni. Solo 2026: DPB+GAR+OBO 67,9% / 94,4% / 24 giorni, +VB8 63,3% / 94,4% / 22. Numeri scelti sugli stessi dati: ottimisti."
