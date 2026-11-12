@@ -1176,6 +1176,10 @@
  "log": [
   {
    "date": "2026-11-12",
+   "text": "**Giro su FTMO (audit_ftmo.py).** Corretto `prop_firms.ini`: nell'1-Step la perdita massima è trailing a fine giornata, non statica (ftmo.com, 12/11). Book sull'OOS: 1-Step 50k a 1/1/1 pass 95%, EV per tentativo $13.464; 2-Step 50k a 2/2/2 pass 85%, $19.245; con Gold alla media IS e Overnight Bias a metà $3.600-4.000, contro $462 su Lucid. **Non è ancora un numero su cui decidere:** costi del CFD non misurati (li dà il bridge), cinque assunzioni sul funded FTMO non verificate, EV positivo anche a edge zero. Dettaglio in `docs/audit_2026-11-12.md`."
+  },
+  {
+   "date": "2026-11-12",
    "text": "**Audit del 12/11 e simulatore dei payout.** Book 1/1/1 su LucidFlex: pass 59% sull'OOS, 30-37% con Gold alla media IS; EV per conto funded $5.460 (soglia di prelievo $6.000), per tentativo $3.129 sull'OOS e $460-940 negli stress, circa zero a edge zero. Aggiunti `gate_marginale.py --intervallo` (informativo: il Δ ha un intervallo largo 7-17 punti), `audit_stress.py`, `funded_sim.py` con `prop_funded.ini`, e la bozza `pipeline_live.md` (conto minimo $100.000, stop a −15%). Tutto in `docs/audit_2026-11-12.md`, sul branch audit-e-gate-intervallo; nessuna regola della pipeline è cambiata."
   },
   {
