@@ -7,12 +7,16 @@ Quanto costa davvero il CFD lo dira' il test del bridge: qui c'e' la sensibilita
 piu' per trade, in $ per micro.
 
 Eval: senza scadenza, guardia a GUARDIA giorni (non i 60 di prop_sim: il target e' il 10%).
-Funded, assunzioni NON verificate sulle pagine FTMO del 12/11/2026 (da confermare):
-  - reward ogni CICLO giorni di trading (14 di calendario), si preleva tutto il profitto;
-  - dopo il reward il saldo torna al capitale iniziale e i limiti ripartono (scritto per l'1-Step);
-  - split SPLIT per tutti (90% verificato per l'1-Step; il 2-Step standard puo' essere 80%);
+Funded. Verificato sulle FAQ FTMO il 12/11/2026: primo reward dal 14° giorno dalla prima
+operazione; split 90% sull'1-Step, 80% sul 2-Step (90% solo con Scaling Plan o Premium: non
+contato); posizioni chiuse prima della richiesta; nell'1-Step i limiti ripartono dopo il reward.
+Assunzioni NON verificate (da confermare):
+  - anche i reward successivi ogni CICLO giorni di trading (14 di calendario), prelevando tutto;
+  - dopo il reward il saldo torna al capitale iniziale anche nel 2-Step;
   - 1-Step: reward solo se il giorno migliore del ciclo e' <= 50% del profitto del ciclo;
   - 2-Step: la quota dell'eval torna con il primo reward (prop_firms.ini).
+Non modellata: la regola dell'Allocazione Massima di Capitale (piu' conti con la stessa strategia,
+EA di terze parti): puo' negare il conto funded.
 
 Size scelte guardando queste tabelle sono scelte sugli stessi dati. Solo lettura, nessun verdetto.
 
@@ -25,7 +29,8 @@ import prop_sim as ps
 import audit_stress as au
 
 N_SIM, SEED, BLOCCO = 4000, 20261112, 5
-GUARDIA, ORIZZONTE, CICLO, SPLIT = 250, 252, 10, 0.90
+GUARDIA, ORIZZONTE, CICLO = 250, 252, 10
+SPLIT = {'1step': 0.90, '2step': 0.80}
 SEZIONI = ('ftmo_1step_50k', 'ftmo_2step_50k', 'ftmo_1step_100k', 'ftmo_2step_100k')
 
 
@@ -55,6 +60,7 @@ def funded(seq):
     statico = ps.PROP['trailing'] == 'static'
     bal = picco = conto
     limite = conto - mll
+    split = SPLIT['2step' if ps.TARGET2 else '1step']
     incassato, premi, migliore, in_ciclo = 0.0, 0, 0.0, 0
     for trades in seq:
         inizio = bal
@@ -72,7 +78,7 @@ def funded(seq):
             limite = picco - mll
         profitto = bal - conto
         if in_ciclo >= CICLO and profitto > 0 and (not ps.CONSISTENCY or migliore <= ps.CONSISTENCY * profitto):
-            incassato += SPLIT * profitto
+            incassato += split * profitto
             premi += 1
             bal = picco = conto
             limite, migliore, in_ciclo = conto - mll, 0.0, 0
@@ -105,7 +111,7 @@ def main():
     mo, mi = media(Po), media(Pi)
     book = lambda k, sh=None: au.giorni(Po, {'DPB': k, 'GAR': k, 'OBO': k}, sh)
     print('%d simulazioni per riga, blocchi di %d giorni · eval: guardia %d giorni · funded: %d giorni, '
-          'reward ogni %d, split %.0f%%' % (N_SIM, BLOCCO, GUARDIA, ORIZZONTE, CICLO, 100 * SPLIT))
+          'reward ogni %d, split 90%% (1-Step) e 80%% (2-Step)' % (N_SIM, BLOCCO, GUARDIA, ORIZZONTE, CICLO))
     print('gg = giorni mediani al pass · EV fund = $ incassati per conto funded · EV/tent = pass x EV - quota\n')
 
     scelta = {}
