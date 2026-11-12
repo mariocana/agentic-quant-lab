@@ -1,12 +1,79 @@
 # Il laboratorio come desk di ricerca: proposta (12/11/2026)
 
 **Stato: proposta, niente è in vigore.** Segue l'[audit del 12/11](audit_2026-11-12.md) e la
-decisione di Mario di portare le strategie in live con MultiCharts, un bridge verso il desk e la
-pipeline live di multicharts (`pipeline_live.md`, ancora in bozza).
+decisione di Mario di portare le strategie in live con MultiCharts e la pipeline live di
+multicharts (`pipeline_live.md`, ancora in bozza). L'esecuzione ha tre vie: broker futures, bridge
+MT5 e, se si vuole, bridge verso il desk Hyperliquid.
 
 **In una riga: questo repository smette di validare e di scegliere, e fa tre cose a monte di
 `/lab`: propone ipotesi, le contesta sulle fonti, e misura l'edge in Python prima che esista una
 riga di EasyLanguage.** Il verdetto resta a multicharts.
+
+## Lo schema
+
+Tratteggiato = opzionale.
+
+```mermaid
+flowchart TB
+    TU(["tu: un'idea, un paper,<br/>una strategia di un praticante"])
+    TEMA(["un tema dato al ricercatore,<br/>o ricerca libera"])
+
+    subgraph RIC["Ricerca: propone e scarta presto"]
+        direction LR
+        R["ricercatore<br/>ipotesi e fonti"]
+        C["critico<br/>GO o KILL"]
+        M["misura<br/>edge sul caso"]
+        D["dossier<br/>decidi tu"]
+        R --> C --> M --> D
+    end
+
+    subgraph VAL["Validazione: la pipeline live, in multicharts"]
+        direction LR
+        S["SPEC e codice<br/>pre-registrata"]
+        F14["motore e MultiCharts<br/>fasi 1-4"]
+        F5["size e book<br/>fase 5"]
+        F6["forward<br/>fase 6, per ogni via"]
+        S --> F14 --> F5 --> F6
+    end
+
+    subgraph ESE["Esecuzione: tre vie"]
+        MC["MultiCharts sul VPS<br/>segnale e posizione voluta"]
+        B1["broker futures<br/>prop, poi IBKR"]
+        B2["bridge MT5<br/>CFD delle prop"]
+        B3["bridge Hyperliquid<br/>desk e perp"]
+        MC --> B1
+        MC --> B2
+        MC -.-> B3
+    end
+
+    QL[("quantlake<br/>dati per ricerca, misura e motore")]
+    REG[("registro delle idee<br/>ogni idea, viva o morta")]
+    CIM(["cimitero"])
+
+    TU --> R
+    TEMA --> R
+    D --> S
+    F6 --> MC
+    C -. "KILL" .-> CIM
+    M -. "sotto soglia" .-> CIM
+    F14 -. "fallisce" .-> CIM
+    QL -.-> R
+    QL -.-> M
+    QL -.-> F14
+    R -.-> REG
+    CIM -.-> REG
+
+    classDef opt stroke-dasharray:5 5
+    class B3 opt
+```
+
+- **Il segnale nasce in un posto solo**, MultiCharts. Le tre vie sono solo esecuzione.
+- **Solo la prima via esegue lo strumento validato.** MT5 esegue un CFD e Hyperliquid un perp,
+  con prezzo, costi e orari diversi, e sul perp il funding: il forward si rifà su ogni via.
+- **Lo stesso segnale su tre conti è lo stesso rischio tre volte.** Il bilancio di rischio di
+  `pipeline_live.md` si conta sulla somma delle vie.
+- **Lo stop d'emergenza sta su ogni venue.** Nel bridge MT5 c'è; sul desk Hyperliquid oggi non
+  viene piazzato (audit, sezione 2), e conta solo se si apre la terza via.
 
 ## Una correzione a quello che ho detto
 
@@ -29,7 +96,7 @@ sono altre quattro.
 
 | passo | chi | cosa | esce | quanto costa |
 |---|---|---|---|---|
-| 1 | tu, o il ricercatore su un tema | un'osservazione, un paper, una strategia di un praticante | una riga nel registro: l'idea esiste | minuti |
+| 1 | tu, o il ricercatore su un tema (le due porte, sotto) | un'osservazione, un paper, una strategia di un praticante | una riga nel registro: l'idea esiste | minuti |
 | 2 | `factory-researcher` | ipotesi falsificabile, meccanismo, chi perde, fonti con pagina, cosa la ucciderebbe | `hypothesis.md` | minuti |
 | 3 | `factory-critic` | apre le fonti, applica i filtri eliminatori, fa il conto frequenza × edge contro i costi | `critique.md`: GO o KILL | minuti |
 | 4 | codice, non un agente | la misura preliminare sull'in-sample: eccesso sul caso, numero di setup, intervallo | `misura.json` | secondi |
@@ -42,6 +109,50 @@ sono altre quattro.
   nella SPEC.
 - **Il ricercatore e il critico non vedono le misure delle altre idee**, come oggi non vedono i
   verdetti.
+
+## Le due porte
+
+| | parte da | cosa fa il ricercatore |
+|---|---|---|
+| **Tu** | un'osservazione, un paper, una strategia di un praticante | la mette in forma: ipotesi falsificabile, meccanismo, chi perde, fonti con pagina, cosa la ucciderebbe |
+| **Il ricercatore** | un tema che gli dai, o una ricerca libera nella letteratura | propone lui l'ipotesi, nella stessa forma |
+
+Dal passo 2 in poi il percorso è identico.
+
+- **Anche la tua idea passa dal critico e dalla misura.** Il critico non sa chi l'ha proposta.
+- **Ogni idea entra nel registro appena nasce**, anche se muore dopo cinque minuti.
+- **Il tetto mensile vale sulla somma** delle due porte.
+- **Precedenza alle tue.** L'unica strategia viva su diciotto viene dai praticanti, e dalle nove
+  ricerche automatiche nessuna. La ricerca libera serve soprattutto sullo spazio che la pipeline
+  live apre: giornaliero e swing.
+- **Una terza porta resta chiusa: la variante di un'idea morta.** È un'idea nuova, con il
+  riferimento alla madre nel registro, e conta nel totale.
+
+## Come si avvia un'idea
+
+**Oggi non si può ancora:** servono i punti 1-4 dell'ordine dei lavori in fondo. Quando ci sono,
+un'idea parte così, dentro una sessione Claude Code in questo repository.
+
+Partendo da un paper:
+
+| | chi | cosa succede |
+|---|---|---|
+| 1 | tu | apri la skill e dai il paper (il PDF o il link) e un nome per l'idea |
+| 2 | skill | crea la cartella dell'idea, ci salva il paper e scrive la voce `idea` nel registro |
+| 3 | ricercatore | legge il paper e scrive `hypothesis.md`: ogni numero con la sua pagina, e la soglia della misura |
+| 4 | critico | riapre il paper alle pagine citate, applica i filtri, fa il conto frequenza × edge. Scrive GO o KILL |
+| 5 | skill | **si ferma e ti dice l'esito.** Con KILL l'idea è chiusa e registrata |
+| 6 | codice | con GO gira la misura sull'in-sample e la confronta con la soglia scritta al passo 3 |
+| 7 | skill | **si ferma e ti mostra il dossier.** Sotto soglia l'idea è chiusa |
+| 8 | tu | decidi se vale una SPEC. Se sì, il dossier va in `strategies/<X>/` di multicharts e parte `/lab` |
+
+- **Senza paper** (una tua osservazione, o un tema): cambia solo il passo 1. Il ricercatore
+  cerca lui le fonti; se non ne trova lo scrive, e il critico decide se il meccanismo regge da solo.
+- **Un paper può contenere più idee.** Ognuna è una cartella e una voce nel registro.
+- **La misura ha bisogno di una regola eseguibile**: cosa è un setup, quando si entra, dove
+  stanno stop e target. Se il paper non la dà, la scrive il ricercatore nell'ipotesi, prima della
+  misura; è il punto in cui un'idea vaga diventa falsificabile o muore.
+- **Tempo atteso:** minuti fino al passo 7, se i dati ci sono già nel lake.
 
 ## Il dossier
 
@@ -88,7 +199,7 @@ L'ultima riga è il lavoro sui dati che questa proposta richiede davvero.
 | una libreria di misura, nuova | in `alpha-quant/`, con i suoi test |
 | `factory-spec-builder`, `factory-coder`, `factory check/freeze/evaluate/holdout/promote` | fermi: SPEC e codice li scrive `/lab` |
 | replay del desk, gate di portafoglio, `splits.yaml` | fermi. Restano validi per un'idea giornaliera su perp, se un giorno torna |
-| `trading-desk/` | solo esecutore del bridge. Le cinque correzioni dell'audit valgono lo stesso |
+| `trading-desk/` | solo esecutore della terza via, opzionale. Le cinque correzioni dell'audit si fanno prima di aprirla, non prima |
 
 ## Il confine con multicharts
 
