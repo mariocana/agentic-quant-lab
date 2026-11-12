@@ -6,13 +6,13 @@ TradeStation. Le barre piu' lunghe si costruiscono come le costruisce MultiChart
 di chiusura, confini allineati all'orologio (1701-1705 -> barra delle 17:05). Ogni barra tiene le
 sue barre da 1 minuto per il Bar Magnifier.
 
-Percorso dei dati: variabile QUANTLAKE_DATA, default il repo agentic-quant-lab accanto a questo.
+Percorso dei dati: variabile QUANTLAKE_DATA, default `quantlake/data` di questo stesso repository.
 Cache delle barre lette in motore/.cache (ignorata da git): si rifa' quando il CSV cambia.
 """
 import csv, os, pickle, datetime as dt
 
-DATI = os.environ.get('QUANTLAKE_DATA',
-                      os.path.expanduser('~/Documents/Repo/agentic-quant-lab/quantlake/data'))
+DATI = os.environ.get('QUANTLAKE_DATA', os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'quantlake', 'data'))
 CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.cache')
 
 

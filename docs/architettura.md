@@ -161,23 +161,26 @@ seguono, non una sandbox: i file con i numeri sono leggibili. Il controllo stati
 codice è un linter, non una sandbox: per questo il codice generato gira solo nel
 laboratorio finché una persona non fa il merge.
 
-## Convivenza con il `/lab` di multicharts
+## multicharts dentro il laboratorio (dal 12/11/2026)
 
-Il repo `multicharts` ha la sua fabbrica (`/lab`, agenti `lab-coder` e `lab-judge`, regole in
-`docs/lab.py`, stato in `docs/pipeline_status.json`) per la catena prop in EasyLanguage.
-Le due catene non si toccano:
+La catena MultiCharts sta in `multicharts/`, importata dal repository `my-codes` con la sua
+storia (commit `25de898`, ramo `audit-e-gate-intervallo`). Fuori sono rimasti il materiale del
+corso (`protocollo/`, `education/`) e i vecchi progetti Python.
 
-1. **Nomi diversi.** Qui gli agenti si chiamano `factory-*` e la skill `/quant-factory`, mai
-   `lab-*` o `/lab`. Non `/factory`: è già il nome del plugin software-factory installato.
-2. **Agenti e skill solo nel progetto.** Stanno in `agentic-quant-lab/.claude/`, mai in
-   `~/.claude/`: a livello utente comparirebbero anche nelle sessioni aperte in multicharts.
-3. **Stato separato.** Il registro delle prove vive qui. Niente di questo repo legge o scrive
-   `pipeline_status.json`, il registro delle varianti o `docs/lab.py`, e viceversa.
-4. **Nessun codice condiviso.** Le regole possono somigliarsi (pre-registrazione, OOS una
-   volta, soglia che sale con k), ma ognuno ha la sua implementazione: cambiare una non può
-   rompere l'altra.
-5. **Le tabelle ES/NQ di quantlake restano intatte.** multicharts ci confronta i suoi export:
-   niente vacuum, niente cambi di schema, niente riscritture su quelle tabelle.
+1. **Due skill, nomi diversi.** `/lab` con `lab-coder` e `lab-judge` per la catena MultiCharts;
+   `/quant-factory` con gli agenti `factory-*` per la fabbrica Hyperliquid. Tutti in `.claude/`
+   alla radice.
+2. **`/lab` si lancia dalla radice**: `python3 multicharts/docs/lab.py ...` e
+   `PYTHONPATH=multicharts python3 -m motore...`. I percorsi dentro `pipeline_status.json`
+   restano relativi a `multicharts/`.
+3. **Gli sha sono cambiati.** L'import ha riscritto la storia: `multicharts/docs/commit_map_unione.tsv`
+   tiene la corrispondenza vecchio → nuovo, e `lab.py` la usa per le righe `registrata: <sha>`
+   delle SPEC, che non sono state toccate.
+4. **Stato ancora separato.** `pipeline_status.json` e il registro delle varianti sono di `/lab`;
+   `alpha-quant/registry` è della fabbrica. Il conto unico delle idee è nella proposta
+   [desk_ricerca.md](desk_ricerca.md), non ancora costruito.
+5. **Le tabelle ES/NQ di quantlake restano intatte**: `motore` le legge da `quantlake/data`
+   di questo stesso repository.
 
 ## Il deploy
 

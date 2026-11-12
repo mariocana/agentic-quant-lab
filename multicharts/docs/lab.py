@@ -90,6 +90,20 @@ def git(*args):
     return r.returncode, r.stdout.strip()
 
 
+def commit_dopo_unione(sha):
+    """Gli sha scritti prima del 12/11/2026 sono quelli del vecchio repo (my-codes). L'unione con
+    agentic-quant-lab ha riscritto la storia sotto multicharts/ e ogni commit ha uno sha nuovo:
+    docs/commit_map_unione.tsv tiene la corrispondenza vecchio -> nuovo. Le SPEC non si toccano."""
+    mappa = os.path.join(DOCS, 'commit_map_unione.tsv')
+    if not os.path.isfile(mappa):
+        return sha
+    for riga in open(mappa):
+        vecchio, _, nuovo = riga.strip().partition('\t')
+        if vecchio.startswith(sha.lower()):
+            return nuovo
+    return sha
+
+
 # ------------------------------------------------------------------ SPEC e verdetti
 
 def leggi_spec(spec):
@@ -124,7 +138,7 @@ def data_preregistrazione(spec, info, sha, quando):
     se dopo quel commit la SPEC ha avuto soltanto righe AGGIUNTE dentro il blocco Pre-registrazione."""
     if not info['registrata']:
         return quando, None
-    base = info['registrata']
+    base = commit_dopo_unione(info['registrata'])
     code, out = git('log', '-1', '--format=%H %cI', base)
     if code or not out:
         fail('registrata: %s non e\' un commit di questo repo' % base)

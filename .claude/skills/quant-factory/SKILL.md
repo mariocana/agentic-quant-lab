@@ -76,7 +76,7 @@ reading those files, stop it and tell the user.
 
 ## Names
 
-This skill and its agents (`factory-*`) live only in this repository's
-`.claude/`. The multicharts repository has its own `/lab`, `lab-coder`,
-`lab-judge`: never call them from here, never read or write its
-`pipeline_status.json` or `docs/lab.py`.
+This skill and its agents (`factory-*`) are for the Hyperliquid factory. The MultiCharts chain
+lives in `multicharts/` with its own skill `/lab` and agents `lab-coder`, `lab-judge`: never
+call them from here, never read or write `multicharts/docs/pipeline_status.json` or
+`multicharts/docs/lab.py`.

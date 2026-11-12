@@ -144,7 +144,7 @@ Partendo da un paper:
 | 5 | skill | **si ferma e ti dice l'esito.** Con KILL l'idea è chiusa e registrata |
 | 6 | codice | con GO gira la misura sull'in-sample e la confronta con la soglia scritta al passo 3 |
 | 7 | skill | **si ferma e ti mostra il dossier.** Sotto soglia l'idea è chiusa |
-| 8 | tu | decidi se vale una SPEC. Se sì, il dossier va in `strategies/<X>/` di multicharts e parte `/lab` |
+| 8 | tu | decidi se vale una SPEC. Se sì, il dossier va in `multicharts/strategies/<X>/` e parte `/lab` |
 
 - **Senza paper** (una tua osservazione, o un tema): cambia solo il passo 1. Il ricercatore
   cerca lui le fonti; se non ne trova lo scrive, e il critico decide se il meccanismo regge da solo.
@@ -201,12 +201,14 @@ L'ultima riga è il lavoro sui dati che questa proposta richiede davvero.
 | replay del desk, gate di portafoglio, `splits.yaml` | fermi. Restano validi per un'idea giornaliera su perp, se un giorno torna |
 | `trading-desk/` | solo esecutore della terza via, opzionale. Le cinque correzioni dell'audit si fanno prima di aprirla, non prima |
 
-## Il confine con multicharts
+## Il confine con `/lab`
 
-- **Passa un file solo**: il dossier, copiato in `strategies/<X>/` da te o dal desk di `/lab`.
-- **Niente qui legge o scrive `pipeline_status.json` o `lab.py`**, e viceversa: le regole di
-  convivenza di `architettura.md` restano.
-- **Il conto totale delle idee** sta qui. Come arriva a `lab.py` è una decisione aperta.
+Dal 12/11/2026 multicharts sta in questo repository, in `multicharts/`.
+
+- **Passa un file solo**: il dossier, che va in `multicharts/strategies/<X>/`.
+- **Il desk di ricerca non scrive `pipeline_status.json` e non lancia `lab.py`**: da lì in poi
+  lavora `/lab`.
+- **Il conto totale delle idee** sta nel registro. Come arriva a `lab.py` è una decisione aperta.
 
 ## Cosa non aspettarsi
 

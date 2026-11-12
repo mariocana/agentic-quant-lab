@@ -91,11 +91,10 @@ cancello che sa dire "non funziona" produce falsi positivi più in fretta.
 - [x] I due test `DriftPullback` di alpha-quant: tolti con la metodologia prop, 10/11.
 - [ ] README alla radice del laboratorio.
 
-## Vincoli di convivenza con multicharts
+## multicharts
 
-Le regole stanno in `architettura.md`, sezione "Convivenza con il `/lab` di multicharts":
-nomi `factory-*` e `/quant-factory`, agenti e skill solo in `agentic-quant-lab/.claude/`, stato e codice
-separati, tabelle ES/NQ di quantlake intatte.
+Dal 12/11/2026 sta in `multicharts/`: vedi `architettura.md`, sezione "multicharts dentro il
+laboratorio".
 
 ## Decisioni aperte
 
