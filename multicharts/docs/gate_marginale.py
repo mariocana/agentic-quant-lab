@@ -20,6 +20,9 @@ micro. Es. GC a 12.5$/lato e MGC: --cand GAR_S5_OOS.xlsx:1:25:2.60
 
 --dal / --al AAAA-MM-GG tengono solo i giorni dentro la finestra (il chart parte qualche giorno
 prima dell'OOS; i report possono finire in date diverse).
+
+--intervallo aggiunge, dopo il verdetto, l'intervallo al 90% del Δ iid ricampionando il calendario
+(vedi intervallo()). Non cambia il verdetto ne' le righe che lab.py legge.
 """
 import sys, os, random, math, statistics as st
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +31,11 @@ import prop_sim as ps
 N_SIM      = 20000
 SEED       = 20261029
 SOGLIA_IID = 2.0      # punti percentuali, pre-registrata il 29/10/2026
+
+# --intervallo: incertezza del Δ iid dovuta ai dati (12/11/2026). Solo informativo.
+N_BOOT     = 200      # calendari ricampionati
+N_SIM_BOOT = 2000     # tentativi per calendario
+BLOCCO     = 5        # giorni per blocco: una settimana di trading
 
 
 DAL = AL = None
@@ -63,8 +71,40 @@ def contiguo(seq, gmax):
     return 100.0 * sum(esiti) / len(esiti)
 
 
+def intervallo(solo, con, gmax):
+    """Quanto e' incerto il Δ iid per via dei DATI, non del numero di simulazioni.
+
+    Le N_SIM simulazioni pescano sempre dagli stessi giorni: l'errore che tolgono e' quello del
+    Monte Carlo, non quello di avere un solo campione di giorni. Qui si ricampiona il calendario
+    a blocchi di BLOCCO giorni (N_BOOT volte, stessa lunghezza), e su ogni calendario ricampionato
+    si rifa' il confronto a numeri casuali comuni con N_SIM_BOOT tentativi. Il rumore del Monte
+    Carlo interno allarga un po' l'intervallo: e' il verso prudente.
+
+    Ritorna (5° percentile, mediana, 95° percentile, quota di Δ > 0, quota di Δ >= SOGLIA_IID).
+    """
+    rng, n, delta = random.Random(SEED + 1), len(solo), []
+    for _ in range(N_BOOT):
+        pool = []
+        while len(pool) < n:
+            i = rng.randrange(n)
+            pool += [(i + j) % n for j in range(BLOCCO)]
+        pool = pool[:n]
+        a = b = 0
+        for _ in range(N_SIM_BOOT):
+            idx = [pool[rng.randrange(n)] for _ in range(gmax)]
+            a += ps.tentativo([solo[i] for i in idx], 1, gmax)[0] == 'pass'
+            b += ps.tentativo([con[i] for i in idx], 1, gmax)[0] == 'pass'
+        delta.append(100.0 * (b - a) / N_SIM_BOOT)
+    delta.sort()
+    q = lambda p: delta[min(len(delta) - 1, int(p * len(delta)))]
+    return (q(0.05), q(0.50), q(0.95),
+            100.0 * sum(d > 0 for d in delta) / len(delta),
+            100.0 * sum(d >= SOGLIA_IID for d in delta) / len(delta))
+
+
 def main():
     global DAL, AL
+    con_intervallo = False
     ps.usa_prop(ps.leggi_prop()[ps.PROP_DEFAULT])   # prima di caricare: fissa il costo per micro
     arg = sys.argv[1:]
     spec_book, spec_cand = [], None
@@ -78,6 +118,8 @@ def main():
             DAL = arg.pop(0)
         elif k == '--al':
             AL = arg.pop(0)
+        elif k == '--intervallo':
+            con_intervallo = True
     # si carica dopo aver letto tutti gli argomenti: --dal vale in qualunque posizione
     book = [carica(x) for x in spec_book]
     cand = carica(spec_cand) if spec_cand else None
@@ -121,6 +163,17 @@ def main():
         print('  %s %s' % ('✅' if ok else '❌', nome))
     print('  (giornata peggiore del book con la candidata: $%.0f)' % peggiore)
     print('\nVERDETTO: %s' % ('ENTRA NEL BOOK' if all(ok for _, ok in crit) else 'NON ENTRA'))
+
+    if con_intervallo:
+        lo, med, hi, sopra0, sopra_soglia = intervallo(solo, con, gmax)
+        print('\nINTERVALLO SUL Δ iid (informativo, non entra nel verdetto)')
+        print('  %d calendari ricampionati a blocchi di %d giorni, %d tentativi ciascuno'
+              % (N_BOOT, BLOCCO, N_SIM_BOOT))
+        print('  Δ iid: mediana %+.1f pp, 90%% fra %+.1f e %+.1f' % (med, lo, hi))
+        print('  calendari con Δ > 0: %.0f%%  |  con Δ >= +%.1f pp: %.0f%%'
+              % (sopra0, SOGLIA_IID, sopra_soglia))
+        print('  %s il limite inferiore e\' sopra zero'
+              % ('✅' if lo > 0 else '❌'))
 
 
 if __name__ == '__main__':
