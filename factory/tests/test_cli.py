@@ -87,6 +87,7 @@ def idea_args(**kw):
         pass
     a = A()
     a.id, a.title, a.door, a.parent, a.step, a.reason = "fine_mese", "Flussi di fine mese", "user", None, None, None
+    a.horizon, a.market = "intraday", "NQ"
     for k, v in kw.items():
         setattr(a, k, v)
     return a
@@ -109,6 +110,40 @@ def test_a_measure_is_recorded_from_its_file_and_counted(lab, tmp_path):
     (tmp_path / "staging" / "fine_mese" / "misura.json").write_text(json.dumps({"eccesso_pp": 0.4, "trade": 900}))
     cli.cmd_measure(idea_args())
     assert Registry().ideas_measured() == 1
+
+
+def test_an_idea_outside_the_perimeter_is_not_registered(lab, tmp_path):
+    from alphaquant.registry import Registry
+    for kw in ({"horizon": "daily"}, {"horizon": "scalping"}, {"market": "GC"}, {"market": "YM"}):
+        with pytest.raises(SystemExit, match="fuori dal perimetro"):
+            cli.cmd_idea(idea_args(**kw))
+    assert Registry().ideas() == [] and not (tmp_path / "staging" / "fine_mese").exists()
+
+
+def test_the_monthly_cap_stops_new_ideas_but_not_a_rerun(lab, tmp_path, capsys):
+    import factory.research as research
+    cap = research.load_perimeter().misura.idee_al_mese_max
+    good = {"errori_standard": 3.4, "dollari_al_giorno_per_micro": 15.0}
+    for i in range(cap + 1):
+        a = idea_args(id=f"idea_{i}")
+        cli.cmd_idea(a)
+        (tmp_path / "staging" / a.id / "misura.json").write_text(json.dumps(good))
+        if i < cap:
+            cli.cmd_measure(a)
+    with pytest.raises(SystemExit, match="tetto mensile"):
+        cli.cmd_measure(idea_args(id=f"idea_{cap}"))
+    cli.cmd_measure(idea_args(id="idea_0"))                 # already measured: a rerun, not a new look
+
+
+def test_the_floor_is_the_same_for_every_idea(lab, tmp_path, capsys):
+    cli.cmd_idea(idea_args())
+    f = tmp_path / "staging" / "fine_mese" / "misura.json"
+    f.write_text(json.dumps({"errori_standard": 3.2, "dollari_al_giorno_per_micro": 15.0}))
+    cli.cmd_measure(idea_args())
+    assert "SOPRA SOGLIA" in capsys.readouterr().out
+    f.write_text(json.dumps({"errori_standard": 0.45, "dollari_al_giorno_per_micro": 2.0}))
+    cli.cmd_measure(idea_args())
+    assert "SOTTO SOGLIA" in capsys.readouterr().out
 
 
 def test_a_killed_idea_is_closed_for_good(lab, tmp_path):

@@ -10,10 +10,12 @@
 
 The research desk (docs/desk_ricerca.md) stops at the dossier and uses three more:
 
-    factory idea <id> --title T --door user|researcher [--parent ID]
-                                     the idea exists: a folder and a line in the registry
+    factory idea <id> --title T --door user|researcher --horizon H --market M [--parent ID]
+                                     the idea exists: a folder and a line in the registry.
+                                     Refused outside the perimeter of research.yaml
     factory measure <id>             record staging/<id>/misura.json (written by
-                                     `python3 -m motore.misura ... --json`): a counted look
+                                     `python3 -m motore.misura ... --json`): a counted look.
+                                     Refused past the monthly cap; prints SOPRA / SOTTO SOGLIA
     factory kill <id> --step critic|measure|user --reason R
                                      close the idea; it stays in the registry
 
@@ -96,7 +98,11 @@ def cmd_idea(a):
     d = _dir(a.id)
     if d.exists():
         sys.exit(f"{d} exists already")
-    Registry().register_idea(a.id, a.title, a.door, a.parent)      # refuses before anything is written
+    from factory.research import load_perimeter
+    outside = load_perimeter().check_idea(a.horizon, a.market)
+    if outside:
+        sys.exit("fuori dal perimetro:\n  " + "\n  ".join(outside))
+    Registry().register_idea(a.id, a.title, a.door, a.parent, a.horizon, a.market)   # refuses before anything is written
     d.mkdir(parents=True)
     (d / "hypothesis.md").write_text(HYPOTHESIS_TEMPLATE.format(id=a.id))
     print(f"idea {a.id} registered ({a.door}); created factory/staging/{a.id}/hypothesis.md")
@@ -107,9 +113,18 @@ def cmd_measure(a):
     f = _dir(a.id) / "misura.json"
     if not f.exists():
         sys.exit(f"factory/staging/{a.id}/misura.json is missing: run the measure with --json first")
-    reg = Registry()
-    reg.record_measure(a.id, json.loads(f.read_text()))
-    print(f"measure of {a.id} recorded; ideas measured so far: {reg.ideas_measured()}")
+    from factory.research import load_perimeter, this_month
+    per, reg = load_perimeter(), Registry()
+    month = reg.ideas_first_measured_in(this_month())
+    if a.id not in month and len(month) >= per.misura.idee_al_mese_max:
+        sys.exit(f"tetto mensile raggiunto: {len(month)} idee misurate questo mese "
+                 f"(massimo {per.misura.idee_al_mese_max} in research.yaml). L'idea aspetta il mese prossimo.")
+    metrics = json.loads(f.read_text())
+    reg.record_measure(a.id, metrics)
+    below = per.check_measure(metrics)
+    print("SOPRA SOGLIA" if not below else "SOTTO SOGLIA: " + "; ".join(below))
+    print(f"(idee misurate: {len(reg.ideas_first_measured_in(this_month()))} questo mese su "
+          f"{per.misura.idee_al_mese_max}, {reg.ideas_measured()} in tutto)")
 
 
 def cmd_kill(a):
@@ -221,6 +236,10 @@ def cmd_status(a):
                      ("validation.json", "validated"), ("holdout.json", "holdout")):
             if (d / f).exists():
                 stage = s
+        for f, st in (("critique.md", "critique"), ("misura.json", "measured"), ("dossier.md", "dossier"),
+                      ("KILLED", "killed")):
+            if (d / f).exists():
+                stage = st
         extra = ""
         for f in ("validation.json", "holdout.json"):
             if (d / f).exists():
@@ -247,6 +266,8 @@ def main():
     p.add_argument("--title", required=True)
     p.add_argument("--door", required=True, choices=("user", "researcher"))
     p.add_argument("--parent")
+    p.add_argument("--horizon", required=True, help="intraday, daily, swing: must be on in research.yaml")
+    p.add_argument("--market", required=True, help="a market with data in research.yaml")
     p.set_defaults(fn=cmd_idea)
     p = sub.add_parser("measure")
     p.add_argument("id")

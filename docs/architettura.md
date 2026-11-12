@@ -167,9 +167,10 @@ La catena MultiCharts sta in `multicharts/`, importata dal repository `my-codes`
 storia (commit `25de898`, ramo `audit-e-gate-intervallo`). Fuori sono rimasti il materiale del
 corso (`protocollo/`, `education/`) e i vecchi progetti Python.
 
-1. **Due skill, nomi diversi.** `/lab` con `lab-coder` e `lab-judge` per la catena MultiCharts;
-   `/quant-factory` con gli agenti `factory-*` per la fabbrica Hyperliquid. Tutti in `.claude/`
-   alla radice.
+1. **Tre skill, nomi diversi.** `/ricerca` con gli agenti `ricerca-*` porta un'idea fino al
+   dossier ([desk_ricerca.md](desk_ricerca.md)); `/lab` con `lab-coder` e `lab-judge` la porta
+   dalla SPEC al verdetto; `/quant-factory` con gli agenti `factory-*` è la fabbrica
+   Hyperliquid, oggi ferma. Tutti in `.claude/` alla radice.
 2. **`/lab` si lancia dalla radice**: `python3 multicharts/docs/lab.py ...` e
    `PYTHONPATH=multicharts python3 -m motore...`. I percorsi dentro `pipeline_status.json`
    restano relativi a `multicharts/`.
@@ -177,8 +178,8 @@ corso (`protocollo/`, `education/`) e i vecchi progetti Python.
    tiene la corrispondenza vecchio → nuovo, e `lab.py` la usa per le righe `registrata: <sha>`
    delle SPEC, che non sono state toccate.
 4. **Stato ancora separato.** `pipeline_status.json` e il registro delle varianti sono di `/lab`;
-   `alpha-quant/registry` è della fabbrica. Il conto unico delle idee è nella proposta
-   [desk_ricerca.md](desk_ricerca.md), non ancora costruito.
+   `alpha-quant/registry` è della fabbrica e, dal 12/11, tiene anche il conto delle idee del
+   desk di ricerca (voci `idea`, `measure`, `killed`).
 5. **Le tabelle ES/NQ di quantlake restano intatte**: `motore` le legge da `quantlake/data`
    di questo stesso repository.
 

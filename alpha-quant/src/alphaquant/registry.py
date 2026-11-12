@@ -115,7 +115,8 @@ class Registry:
 
     # ---- the research desk: ideas ------------------------------------------------
 
-    def register_idea(self, idea: str, title: str, door: str, parent: str | None = None) -> None:
+    def register_idea(self, idea: str, title: str, door: str, parent: str | None = None,
+                      horizon: str | None = None, market: str | None = None) -> None:
         """An idea is counted from birth, whatever happens to it next."""
         if door not in ("user", "researcher"):
             raise ValueError(f"door is 'user' or 'researcher', not {door!r}")
@@ -123,7 +124,8 @@ class Registry:
             raise RegistryError(f"idea {idea!r} is already registered: a variant is a new idea with parent=")
         if parent is not None and parent not in self.ideas():
             raise RegistryError(f"parent {parent!r} is not a registered idea")
-        self._append("idea", {"idea": idea, "title": title, "door": door, "parent": parent})
+        self._append("idea", {"idea": idea, "title": title, "door": door, "parent": parent,
+                              "horizon": horizon, "market": market})
 
     def record_measure(self, idea: str, metrics: dict) -> None:
         self._require_open(idea)
@@ -151,6 +153,15 @@ class Registry:
         """How many ideas have looked at the data: the number the pipeline's t
         threshold rises with (pipeline_live.md, fase 2)."""
         return len({e["idea"] for e in self.entries() if e["kind"] == "measure"})
+
+    def ideas_first_measured_in(self, month: str) -> list[str]:
+        """Ideas whose FIRST measure fell in `month` ("YYYY-MM", UTC): what the monthly
+        cap counts. A rerun of an idea already measured is not a new look."""
+        first: dict[str, str] = {}
+        for e in self.entries():
+            if e["kind"] == "measure":
+                first.setdefault(e["idea"], e["ts"])
+        return [i for i, ts in first.items() if ts.startswith(month)]
 
     # ---- what gets read --------------------------------------------------------
 

@@ -1,6 +1,7 @@
-# Il laboratorio come desk di ricerca: proposta (12/11/2026)
+# Il laboratorio come desk di ricerca (12/11/2026)
 
-**Stato: proposta, niente è in vigore.** Segue l'[audit del 12/11](audit_2026-11-12.md) e la
+**Stato: costruito il 12/11/2026, mai provato su un'idea vera.** Skill `/ricerca`, tre agenti,
+misura, registro e perimetro ci sono e i test passano; manca il giro di prova in fondo. Segue l'[audit del 12/11](audit_2026-11-12.md) e la
 decisione di Mario di portare le strategie in live con MultiCharts e la pipeline live di
 multicharts (`pipeline_live.md`, ancora in bozza). L'esecuzione ha tre vie: broker futures, bridge
 MT5 e, se si vuole, bridge verso il desk Hyperliquid.
@@ -22,9 +23,10 @@ flowchart TB
         direction LR
         R["ricercatore<br/>ipotesi e fonti"]
         C["critico<br/>GO o KILL"]
+        K["coder<br/>regola nel motore"]
         M["misura<br/>edge sul caso"]
         D["dossier<br/>decidi tu"]
-        R --> C --> M --> D
+        R --> C --> K --> M --> D
     end
 
     subgraph VAL["Validazione: la pipeline live, in multicharts"]
@@ -94,21 +96,47 @@ sono altre quattro.
 
 ## Il percorso di un'idea
 
-| passo | chi | cosa | esce | quanto costa |
-|---|---|---|---|---|
-| 1 | tu, o il ricercatore su un tema (le due porte, sotto) | un'osservazione, un paper, una strategia di un praticante | una riga nel registro: l'idea esiste | minuti |
-| 2 | `factory-researcher` | ipotesi falsificabile, meccanismo, chi perde, fonti con pagina, cosa la ucciderebbe | `hypothesis.md` | minuti |
-| 3 | `factory-critic` | apre le fonti, applica i filtri eliminatori, fa il conto frequenza × edge contro i costi | `critique.md`: GO o KILL | minuti |
-| 4 | codice, non un agente | la misura preliminare sull'in-sample: eccesso sul caso, numero di setup, intervallo | `misura.json` | secondi |
-| 5 | tu | leggi il dossier e decidi se vale una SPEC | il dossier passa a multicharts | |
-| 6 | `/lab` in multicharts | SPEC pre-registrata, codice, fasi 1-7 | verdetto, come oggi | giorni |
+| passo | chi | cosa | esce |
+|---|---|---|---|
+| 1 | `/ricerca` | nome, orizzonte e mercato dell'idea; cosa è già stato fatto (`lab.py cerca`) | cartella e voce `idea` nel registro, o un rifiuto se è fuori perimetro |
+| 2 | `ricerca-ricercatore` | ipotesi falsificabile, meccanismo, chi perde, fonti con pagina, regola eseguibile, soglia della misura | `hypothesis.md` |
+| 3 | `ricerca-critico` | riapre le fonti, applica i filtri eliminatori, fa il conto frequenza × edge contro i costi | `critique.md`: GO o KILL |
+| 4 | `ricerca-coder` | scrive la regola come strategia Python del motore, senza vedere numeri | `multicharts/motore/strategie/<id>.py` |
+| 5 | codice | la misura sull'in-sample, contata nel registro | `misura.json`, SOPRA o SOTTO SOGLIA |
+| 6 | `/ricerca` | mette in fila ipotesi, critica e misura | `dossier.md` |
+| 7 | tu | decidi se vale una SPEC | il dossier passa a `/lab` |
 
-- **Si ferma dopo 3 e dopo 4.** Un KILL o una misura sotto soglia chiude l'idea, e resta nel
+- **Si ferma dopo 3, 5 e 6.** Un KILL o una misura sotto soglia chiude l'idea, e resta nel
   registro.
-- **La soglia della misura si scrive al passo 2**, prima di misurare, come soglia, attesa e kill
-  nella SPEC.
-- **Il ricercatore e il critico non vedono le misure delle altre idee**, come oggi non vedono i
-  verdetti.
+- **La soglia della misura si scrive al passo 2**, prima di misurare. Non può stare sotto i
+  minimi del perimetro; può essere più severa.
+- **Il passo 4 è il costo che il primo disegno non contava.** La misura parte dai trade del
+  motore, quindi ogni idea che passa il critico va scritta in Python. Non sono più «secondi»:
+  è il lavoro di un agente, e se arriva a una SPEC `lab-coder` riparte da quel file.
+- **Ricercatore, critico e coder non vedono mai una misura**, né la propria né quelle delle
+  altre idee.
+- **L'ordine dei commit è la prova**: ipotesi prima della critica, critica prima del codice,
+  codice prima della misura.
+
+## Il perimetro
+
+Sta in [`factory/research.yaml`](../factory/research.yaml) e si cambia con un commit. Lo
+leggono gli agenti e lo fa rispettare il codice.
+
+| cosa | oggi | chi lo fa rispettare |
+|---|---|---|
+| Orizzonti | **intraday acceso**; daily e swing spenti | `factory idea` rifiuta un orizzonte spento |
+| Vincoli dell'orizzonte | intraday: flat a fine giornata, almeno 1 segnale al giorno | il critico |
+| Mercati | NQ ed ES (hanno lo storico a 1 minuto); GC, CL e BTC senza dati | `factory idea` rifiuta un mercato senza dati |
+| Minimi della misura | eccesso ad almeno 3 errori standard, almeno $10 al giorno per micro | `factory measure` stampa SOPRA o SOTTO SOGLIA |
+| Tetto mensile | 8 idee nuove alla misura, dalle due porte insieme | `factory measure` rifiuta la nona |
+
+- **Per accendere daily o swing non basta cambiare `attivo`.** Serve anche una misura per
+  quell'orizzonte (`misura:` nel file): oggi il motore legge barre a 1 minuto di una sessione,
+  e non c'è uno storico giornaliero su molti mercati. Con l'orizzonte acceso e la misura
+  mancante, `factory idea` rifiuta lo stesso.
+- **Un perimetro cambiato vale per le idee nuove.** Quelle già nel registro restano con
+  l'orizzonte e il mercato del loro giorno.
 
 ## Le due porte
 
@@ -130,29 +158,25 @@ Dal passo 2 in poi il percorso è identico.
 
 ## Come si avvia un'idea
 
-**Oggi non si può ancora:** servono i punti 1-4 dell'ordine dei lavori in fondo. Quando ci sono,
-un'idea parte così, dentro una sessione Claude Code in questo repository.
+In una sessione Claude Code aperta in questo repository:
 
-Partendo da un paper:
+| cosa hai | cosa scrivi |
+|---|---|
+| un paper | `/ricerca nuova` e il PDF o il link |
+| un'idea tua, o una strategia di un praticante | `/ricerca nuova` e l'idea con parole tue |
+| un tema | `/ricerca tema flussi di fine mese sugli indici` |
+| niente, vuoi una proposta | `/ricerca tema` |
+| vuoi sapere a che punto sono le idee | `/ricerca stato` |
 
-| | chi | cosa succede |
-|---|---|---|
-| 1 | tu | apri la skill e dai il paper (il PDF o il link) e un nome per l'idea |
-| 2 | skill | crea la cartella dell'idea, ci salva il paper e scrive la voce `idea` nel registro |
-| 3 | ricercatore | legge il paper e scrive `hypothesis.md`: ogni numero con la sua pagina, e la soglia della misura |
-| 4 | critico | riapre il paper alle pagine citate, applica i filtri, fa il conto frequenza × edge. Scrive GO o KILL |
-| 5 | skill | **si ferma e ti dice l'esito.** Con KILL l'idea è chiusa e registrata |
-| 6 | codice | con GO gira la misura sull'in-sample e la confronta con la soglia scritta al passo 3 |
-| 7 | skill | **si ferma e ti mostra il dossier.** Sotto soglia l'idea è chiusa |
-| 8 | tu | decidi se vale una SPEC. Se sì, il dossier va in `multicharts/strategies/<X>/` e parte `/lab` |
+Il desk ti chiede nome, orizzonte e mercato, poi fa i passi 1-6 fermandosi dopo il critico,
+dopo la misura e sul dossier.
 
-- **Senza paper** (una tua osservazione, o un tema): cambia solo il passo 1. Il ricercatore
-  cerca lui le fonti; se non ne trova lo scrive, e il critico decide se il meccanismo regge da solo.
-- **Un paper può contenere più idee.** Ognuna è una cartella e una voce nel registro.
-- **La misura ha bisogno di una regola eseguibile**: cosa è un setup, quando si entra, dove
-  stanno stop e target. Se il paper non la dà, la scrive il ricercatore nell'ipotesi, prima della
-  misura; è il punto in cui un'idea vaga diventa falsificabile o muore.
-- **Tempo atteso:** minuti fino al passo 7, se i dati ci sono già nel lake.
+- **Un paper può contenere più idee.** Il ricercatore scrive la migliore ed elenca le altre:
+  ognuna, se la apri, è una cartella e una voce nel registro.
+- **La regola eseguibile la scrive il ricercatore**, dalla fonte: cosa è un setup, quando si
+  entra, stop, target, uscita a tempo. Senza parametri liberi. È il punto in cui un'idea vaga
+  diventa falsificabile o muore.
+- **Se il comando rifiuta**, l'idea non esiste: fuori perimetro, o tetto mensile raggiunto.
 
 ## Il dossier
 
@@ -172,9 +196,15 @@ Partendo da un paper:
 - **Cosa misura.** Win rate osservato meno win rate di un random walk con la stessa geometria
   realizzata, più frequenza e dollari al giorno per micro. È il metro di
   `cosa_uccide_le_strategie.md`: non dipende dal rapporto target/stop.
-- **Prima va calibrata**, come `motore`: deve ritrovare tre numeri già noti, DriftPullback +2,8
-  punti, VWAP Fade −0,62, ON Reversal +0,68. Finché non li ritrova non si usa.
-- **Solo in-sample.** Mai la riserva di `pipeline_live.md` né l'out-of-sample 2025-2026.
+- **Si calcola dai trade del motore**, non da un indicatore: stop e target risolti sul percorso
+  a 1 minuto, ogni trade conta, R:R realizzato al netto dei costi. I tre bug degli indicatori
+  di misura qui non hanno dove stare.
+- **Calibrata su DriftPullback**, in-sample 2020-2024: WR 63,55% (SPEC 63,5%), R:R 0,641
+  (0,640), caso 60,92% (61,0%), eccesso +2,62 punti (+2,6), t 3,03 (3,01). È un test
+  (`multicharts/motore/test_misura.py`). VWAP Fade e ON Reversal non sono calibrabili: non
+  sono nel motore, e ON Reversal era su YM, che nel lake non c'è.
+- **Solo in-sample.** Il comando non ha un'opzione per altri periodi: mai la riserva di
+  `pipeline_live.md` né l'out-of-sample 2025-2026.
 - **Ogni misura conta.** È uno sguardo ai dati: entra nel registro e nel totale delle idee.
 - **Non autorizza una strategia**: «un indicatore di misura al massimo la propone».
 
@@ -189,17 +219,19 @@ Dati che ci sono oggi nel lake:
 
 L'ultima riga è il lavoro sui dati che questa proposta richiede davvero.
 
-## Cosa succede ai pezzi di questo repository
+## Dove sta ogni pezzo
 
-| pezzo | destino |
-|---|---|
-| `quantlake/` | resta, ed è il centro. Serve un backup (punto 3 della scaletta) |
-| `factory-researcher`, `factory-critic` (primo passaggio) | restano; cambiano mercato, vincoli e filtri nel prompt |
-| `alpha-quant/registry` | resta, con due voci nuove: `idea` e `killed` |
-| una libreria di misura, nuova | in `alpha-quant/`, con i suoi test |
-| `factory-spec-builder`, `factory-coder`, `factory check/freeze/evaluate/holdout/promote` | fermi: SPEC e codice li scrive `/lab` |
-| replay del desk, gate di portafoglio, `splits.yaml` | fermi. Restano validi per un'idea giornaliera su perp, se un giorno torna |
-| `trading-desk/` | solo esecutore della terza via, opzionale. Le cinque correzioni dell'audit si fanno prima di aprirla, non prima |
+| pezzo | dove | stato |
+|---|---|---|
+| Skill del desk di ricerca | `.claude/skills/ricerca/` | nuova |
+| Ricercatore, critico, coder | `.claude/agents/ricerca-*.md` | nuovi |
+| Perimetro | `factory/research.yaml`, `factory/src/factory/research.py` | nuovo |
+| Comandi `idea`, `measure`, `kill` | `factory/src/factory/cli.py` | nuovi |
+| Voci `idea`, `measure`, `killed` | `alpha-quant/src/alphaquant/registry.py` | nuove |
+| Misura | `multicharts/motore/misura.py` | nuova |
+| `quantlake/` | | resta, ed è il centro. Serve un backup (punto 3 della scaletta) |
+| `/quant-factory`, agenti `factory-*`, replay del desk, gate di portafoglio | | fermi. Restano validi per un'idea giornaliera su perp, se un giorno torna |
+| `trading-desk/` | | solo esecutore della terza via, opzionale. Le cinque correzioni dell'audit si fanno prima di aprirla, non prima |
 
 ## Il confine con `/lab`
 
@@ -223,23 +255,19 @@ Dal 12/11/2026 multicharts sta in questo repository, in `multicharts/`.
 
 ## Da decidere (Mario)
 
-| | proposta | alternativa |
+| | oggi | alternativa |
 |---|---|---|
-| Perimetro della ricerca | anche giornaliero e swing, come permette `pipeline_live.md` | solo intraday, come oggi |
-| Mercati | futures CME, più BTC ed ETH | solo gli strumenti di `motore` |
-| Dati giornalieri su molti futures | una fonte nuova in quantlake, prima di cercare lì | restare su ES e NQ |
-| Quante idee al mese arrivano alla misura | un tetto, per esempio 8 | nessun tetto, e la soglia t sale |
-| Chi tiene il conto totale delle idee | il registro di qui, letto a mano quando `/lab` scrive la SPEC | un conto in `lab.py` |
-| Le idee dei praticanti | alla pari dei paper, con il filtro loro del 26/10 | solo paper |
+| Quando accendere daily e swing | spenti: prima serve uno storico giornaliero e una misura per quell'orizzonte | |
+| Mercati | NQ ed ES | esportare GC e CL da MultiCharts (in `motore` sono «da fare»); BTC da Binance |
+| Tetto mensile | 8 | un altro numero in `research.yaml` |
+| Chi tiene il conto totale delle idee per la soglia t di `pipeline_live.md` | il registro di qui (`factory status`), letto a mano quando `/lab` scrive la SPEC | un conto in `lab.py` |
+| Le idee dei praticanti | alla pari dei paper | solo paper |
 
-## Ordine dei lavori
+## Cosa manca
 
-1. Libreria di misura e calibrazione sui tre numeri noti.
-2. Voci `idea` e `killed` nel registro, e il comando che le scrive.
-3. Nuovi prompt di ricercatore e critico: vincoli della pipeline live, filtri di
-   `come_scegliere_un_paper.md`, formato del dossier.
-4. Skill che dirige i passi 1-5 e si ferma al dossier.
-5. Un primo giro su tre idee già morte e una viva: il critico e la misura devono uccidere le
-   morte e lasciare DriftPullback.
-
-Il punto 5 è il test dell'impianto: se non distingue quelle quattro, non serve.
+1. **Il giro di prova.** Tre idee già morte (per esempio VWAP Fade, ON Reversal, NQ First5) e
+   DriftPullback, rifatte da zero con `/ricerca`: critico e misura devono uccidere le prime e
+   lasciare viva la quarta. Se non distingue quelle quattro, l'impianto non serve. Consuma
+   quattro degli otto posti del mese.
+2. **La misura per daily e swing**, il giorno in cui si accendono.
+3. **Il conto delle idee dentro `lab.py`**, se si decide di non leggerlo a mano.
