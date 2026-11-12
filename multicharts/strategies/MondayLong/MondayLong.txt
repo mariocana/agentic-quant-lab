@@ -1,0 +1,218 @@
+{ =====================================================================
+  MondayLong  -  ES, long del lunedi' senza filtro, con stop  -  PowerLanguage
+  ---------------------------------------------------------------------
+  Dal corso: "9.TheBridge/STRATEGIES/PROP FIRM COMPLEMENTARY/
+  1. Monday Long ES (EMA distance filter).txt" (L644ES v2.1), scheletro e
+  calendario dei festivi dell'autore. Spec: SPEC.md (pre-registrata).
+  In MultiCharts: Mario_MondayLong.
+
+  Rispetto a L644ES cambiano solo:
+    - niente filtro EMA/ATR (e quindi niente EMA, niente ATR giornaliero);
+    - StopPts 90 invece di 0 (unica modifica di regola, vedi SPEC);
+    - finestra TradeStartEL/TradeEndEL e ShowLog (non sono logica);
+    - rete di sicurezza ML-Safety: se una posizione arriva in una sessione
+      diversa da quella d'ingresso esce subito. Non deve mai scattare.
+
+  REGOLE (SPEC.md)
+    1) ENTRY: Buy this bar on close sulla barra delle EntryTime (19:00 CT)
+       della domenica, cioe' della sessione Globex che appartiene al lunedi'.
+       Solo se flat, solo se il lunedi' non e' festivo NYSE ne' a chiusura
+       anticipata (calendario calcolato per regola, blocco dell'autore).
+    2) STOP StopPts punti e TARGET TargetPts punti dal prezzo d'ingresso,
+       per contratto (SetStopContract), attivi dalla barra dopo l'ingresso.
+    3) USCITA A TEMPO: Sell this bar on close sulla barra delle ExitTime
+       (15:55 CT) del lunedi'; la barra delle 16:00 fa da rete se manca.
+
+  CHART: @ES 5 min, sessione CME Globex 17:00-16:00 CT senza pause,
+         timezone Exchange (CT), barre timbrate alla chiusura.
+         Bar Magnifier 1 min, IOG off. Commissione $15 per lato per
+         contratto (slippage incluso), slippage 0. Nessun indicatore:
+         basta che il chart parta qualche giorno prima di TradeStartEL.
+
+  Orari in ora del chart. Se il chart non e' in timezone Exchange, gli
+  orari NON sono quelli della SPEC e nessun errore lo segnala.
+  ===================================================================== }
+
+Inputs:
+    EntryTime(1900),           { domenica sera: gia' sessione del lunedi' }
+    ExitTime(1555),            { uscita a tempo del lunedi' }
+    SessionWeekday(1),         { 1 = lunedi' }
+    StopPts(90),               { punti ES; 90 x $50 = $4.500 per ES, $450 per MES }
+    TargetPts(100),            { punti ES; backstop come nell'originale }
+    NumContracts(1),
+    { --- finestra di trading (non e' logica): data EasyLanguage YYYMMDD,
+          YYY = anno - 1900 (1200101 = 1 gen 2020), confrontata con la data
+          della SESSIONE (il lunedi'). 0 = disattivato --- }
+    TradeStartEL(0),
+    TradeEndEL(0),
+    ShowLog(0);                { 1 = stampa ingressi, uscite e domeniche saltate }
+
+Variables:
+    SessionDay(0), SessionDate(0), NoTradeDay(false), dateOK(false),
+    entrySess(0), wasLong(false), jj(0),
+    { calendario dei festivi }
+    CalYear(0), NumClosures(0), NumEarly(0), yy(0), Yr4(0), HolDate(0), Wd(0), ThanksDay(0),
+    EaA(0), EaB(0), EaC(0), EaD(0), EaE(0), EaF(0), EaG(0), EaH(0), EaI(0), EaK(0),
+    EaL(0), EaM(0), EasterMo(0), EasterDy(0);
+
+Arrays:
+    Closures[30](0), EarlyCloses[10](0);
+
+{ =====================================================================
+  CALENDARIO DEI FESTIVI NYSE, per regola (blocco di L644ES v2.1, invariato).
+  Ricostruito sulla prima barra di ogni anno solare, per l'anno e il
+  successivo: una domenica 31/12 sa gia' del lunedi' 1/1.
+  Chiusure: Capodanno (dom -> lun 2/1; sab -> non osservato), MLK (3o lun
+  gen), Presidents' Day (3o lun feb), Venerdi' Santo, Memorial Day (ultimo
+  lun mag), Juneteenth (dal 2022), 4 luglio, Labor Day (1o lun set),
+  Thanksgiving (4o gio nov), Natale. Date fisse: sab -> ven, dom -> lun.
+  Chiusure anticipate (13:00 ET): 3/7 se lun-gio, giorno dopo Thanksgiving,
+  24/12 se lun-gio.
+  ===================================================================== }
+if IntPortion(Date / 10000) <> CalYear then begin
+    CalYear = IntPortion(Date / 10000);
+    NumClosures = 0;
+    NumEarly = 0;
+    for yy = CalYear to CalYear + 1 begin
+        Yr4 = 1900 + yy;
+
+        { Capodanno }
+        HolDate = yy * 10000 + 101;  Wd = DayOfWeek(HolDate);
+        if Wd = 0 then HolDate = HolDate + 1;
+        if Wd = 6 then HolDate = 0;
+        if HolDate > 0 then begin  Closures[NumClosures] = HolDate;  NumClosures = NumClosures + 1;  end;
+
+        { Martin Luther King: 3o lunedi' di gennaio }
+        HolDate = yy * 10000 + 101;
+        HolDate = HolDate + Mod(1 - DayOfWeek(HolDate) + 7, 7) + 14;
+        Closures[NumClosures] = HolDate;  NumClosures = NumClosures + 1;
+
+        { Presidents' Day: 3o lunedi' di febbraio }
+        HolDate = yy * 10000 + 201;
+        HolDate = HolDate + Mod(1 - DayOfWeek(HolDate) + 7, 7) + 14;
+        Closures[NumClosures] = HolDate;  NumClosures = NumClosures + 1;
+
+        { Venerdi' Santo: Pasqua (computus gregoriano) meno 2 giorni }
+        EaA = Mod(Yr4, 19);  EaB = IntPortion(Yr4 / 100);  EaC = Mod(Yr4, 100);
+        EaD = IntPortion(EaB / 4);  EaE = Mod(EaB, 4);  EaF = IntPortion((EaB + 8) / 25);
+        EaG = IntPortion((EaB - EaF + 1) / 3);
+        EaH = Mod(19 * EaA + EaB - EaD - EaG + 15, 30);
+        EaI = IntPortion(EaC / 4);  EaK = Mod(EaC, 4);
+        EaL = Mod(32 + 2 * EaE + 2 * EaI - EaH - EaK, 7);
+        EaM = IntPortion((EaA + 11 * EaH + 22 * EaL) / 451);
+        EasterMo = IntPortion((EaH + EaL - 7 * EaM + 114) / 31);
+        EasterDy = Mod(EaH + EaL - 7 * EaM + 114, 31) + 1;
+        HolDate = JulianToDate(DateToJulian(yy * 10000 + EasterMo * 100 + EasterDy) - 2);
+        Closures[NumClosures] = HolDate;  NumClosures = NumClosures + 1;
+
+        { Memorial Day: ultimo lunedi' di maggio }
+        HolDate = yy * 10000 + 531;
+        HolDate = HolDate - Mod(DayOfWeek(HolDate) - 1 + 7, 7);
+        Closures[NumClosures] = HolDate;  NumClosures = NumClosures + 1;
+
+        { Juneteenth: festivo NYSE dal 2022 }
+        if yy >= 122 then begin
+            HolDate = yy * 10000 + 619;  Wd = DayOfWeek(HolDate);
+            if Wd = 6 then HolDate = HolDate - 1;
+            if Wd = 0 then HolDate = HolDate + 1;
+            Closures[NumClosures] = HolDate;  NumClosures = NumClosures + 1;
+        end;
+
+        { 4 luglio }
+        HolDate = yy * 10000 + 704;  Wd = DayOfWeek(HolDate);
+        if Wd = 6 then HolDate = HolDate - 1;
+        if Wd = 0 then HolDate = HolDate + 1;
+        Closures[NumClosures] = HolDate;  NumClosures = NumClosures + 1;
+
+        { Labor Day: 1o lunedi' di settembre }
+        HolDate = yy * 10000 + 901;
+        HolDate = HolDate + Mod(1 - DayOfWeek(HolDate) + 7, 7);
+        Closures[NumClosures] = HolDate;  NumClosures = NumClosures + 1;
+
+        { Thanksgiving: 4o giovedi' di novembre }
+        ThanksDay = yy * 10000 + 1101;
+        ThanksDay = ThanksDay + Mod(4 - DayOfWeek(ThanksDay) + 7, 7) + 21;
+        Closures[NumClosures] = ThanksDay;  NumClosures = NumClosures + 1;
+
+        { Natale }
+        HolDate = yy * 10000 + 1225;  Wd = DayOfWeek(HolDate);
+        if Wd = 6 then HolDate = HolDate - 1;
+        if Wd = 0 then HolDate = HolDate + 1;
+        Closures[NumClosures] = HolDate;  NumClosures = NumClosures + 1;
+
+        { Chiusure anticipate: 3/7 (lun-gio), giorno dopo Thanksgiving, 24/12 (lun-gio) }
+        Wd = DayOfWeek(yy * 10000 + 703);
+        if Wd >= 1 and Wd <= 4 then begin  EarlyCloses[NumEarly] = yy * 10000 + 703;  NumEarly = NumEarly + 1;  end;
+        EarlyCloses[NumEarly] = ThanksDay + 1;  NumEarly = NumEarly + 1;
+        Wd = DayOfWeek(yy * 10000 + 1224);
+        if Wd >= 1 and Wd <= 4 then begin  EarlyCloses[NumEarly] = yy * 10000 + 1224;  NumEarly = NumEarly + 1;  end;
+    end;
+
+    if ShowLog = 1 then begin
+        for jj = 0 to NumClosures - 1 begin  Print("ML CAL chiusura   ", Closures[jj]:8:0);  end;
+        for jj = 0 to NumEarly - 1 begin  Print("ML CAL anticipata ", EarlyCloses[jj]:8:0);  end;
+    end;
+end;
+
+{ ===== SESSIONE: una barra dopo le 16:30 appartiene alla sessione del
+  giorno dopo (la domenica sera e' gia' lunedi'). Una barra timbrata 2400
+  ha Time > 1630 e cade correttamente nella sessione del giorno dopo ===== }
+if Time > 1630 then begin
+    SessionDay  = DayOfWeek(Date) + 1;
+    SessionDate = JulianToDate(DateToJulian(Date) + 1);
+end
+else begin
+    SessionDay  = DayOfWeek(Date);
+    SessionDate = Date;
+end;
+
+NoTradeDay = false;
+for jj = 0 to NumClosures - 1 begin
+    if Closures[jj] = SessionDate then NoTradeDay = true;
+end;
+for jj = 0 to NumEarly - 1 begin
+    if EarlyCloses[jj] = SessionDate then NoTradeDay = true;
+end;
+
+dateOK = (TradeStartEL = 0 or SessionDate >= TradeStartEL)
+     and (TradeEndEL   = 0 or SessionDate <= TradeEndEL);
+
+{ ===== LOG DELL'USCITA. Si vede alla chiusura della barra dello stop/target, o
+  alla barra dopo l'uscita a tempo. ExitTime(1) non si puo' usare: ExitTime e'
+  il nome dell'input, come nell'originale ===== }
+if wasLong and MarketPosition = 0 then begin
+    if ShowLog = 1 then
+        Print("ML EXIT ", ExitDate(1):8:0, " vista alla barra ", Date:8:0, " ", Time:5:0, " px=", ExitPrice(1):9:2,
+              " entry=", EntryPrice(1):9:2, " punti=", (ExitPrice(1) - EntryPrice(1)):7:2,
+              " P&L=", PositionProfit(1):9:2);
+    wasLong = false;
+end;
+
+{ ===== ENTRY: domenica sera, alla chiusura della barra delle EntryTime ===== }
+if Time = EntryTime and SessionDay = SessionWeekday and MarketPosition = 0 and dateOK then begin
+    if NoTradeDay then begin
+        if ShowLog = 1 then
+            Print("ML SKIP ", Date:8:0, " ", Time:5:0, " sessione ", SessionDate:8:0, " festiva o a chiusura anticipata");
+    end
+    else begin
+        Buy ("ML-L") NumContracts contracts this bar on close;
+        entrySess = SessionDate;
+        wasLong   = true;              { cosi' si logga anche uno stop sulla prima barra dopo l'ingresso }
+        if ShowLog = 1 then
+            Print("ML ENT  ", Date:8:0, " ", Time:5:0, " sessione ", SessionDate:8:0,
+                  " close=", Close:9:2, " SL=", (Close - StopPts):9:2, " TP=", (Close + TargetPts):9:2);
+    end;
+end;
+
+{ ===== USCITE: stop e target in punti dal prezzo d'ingresso, per contratto ===== }
+SetStopContract;
+if StopPts > 0 then SetStopLoss(StopPts * BigPointValue);
+if TargetPts > 0 then SetProfitTarget(TargetPts * BigPointValue);
+
+if MarketPosition > 0 then begin
+    wasLong = true;
+    if SessionDate <> entrySess then
+        Sell ("ML-Safety") this bar on close           { non deve mai scattare }
+    else if Time >= ExitTime and Time <= 1630 then
+        Sell ("ML-Time") this bar on close;
+end;

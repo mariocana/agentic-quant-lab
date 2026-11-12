@@ -1,0 +1,31 @@
+# Scheda Logs di MultiCharts, export del 05/11/2026, solo le righe di esecuzione. Tolte le riconnessioni
+# di TradeStation e i login di routine di Rithmic. Ora del VPS (CT).
+ora,livello,fonte,messaggio
+2026-11-05 02:42:55,Information,Paper Trader Rithmic,Connected to Paper Trading
+2026-11-04 08:04:38,Warning,Drift_LIVE,The Automated Order Execution mode has been turned off
+2026-11-03 11:51:00,Error,Drift_LIVE,Didn't receive final status for order LX limit @28387 BrokerID 1093902011
+2026-11-03 11:11:00,Error,Drift_LIVE,Didn't receive final status for order LX limit @28386 BrokerID 1093902010
+2026-11-03 10:26:00,Error,Drift_LIVE,Didn't receive final status for order LX limit @28446 BrokerID 1093902008
+2026-11-03 10:26:00,Error,Drift_LIVE,Didn't receive final status for order LX stop @28325.5 BrokerID -115
+2026-11-03 10:22:21,Information,Rithmic,Bid 28325.25 triggered. Emulated Order -115 Sell 2 Stop @28325.5 submitted as Sell 2 Market
+2026-11-03 09:46:00,Error,Drift_LIVE,Didn't receive final status for order LX limit @28353.8 BrokerID 1093902007
+2026-11-02 16:05:01,Error,Drift_LIVE,Sell Market 2 Rejected: Account is done for day
+2026-11-02 10:17:11,Error,Drift_LIVE,Sell Market 2 Rejected: Account is done for day
+2026-11-02 10:17:11,Information,Rithmic,Bid 28677.5 triggered. Emulated Order -113 Sell 2 Stop @28677.5 submitted as Sell 2 Market
+2026-11-02 10:15:00,Error,Drift_LIVE,Sell Limit 2 Rejected: Account is done for day
+2026-11-02 10:11:11,Error,Drift_LIVE,Sell Limit 2 Rejected: Rejected at RMS - Only liquidation trades allowed
+2026-11-02 09:52:57,Information,Rithmic,Bid 28753.75 triggered. Emulated Order -110 Sell 2 Stop @28753.75 submitted as Sell 2 Market
+2026-11-02 08:19:00,Error,Rithmic,MNQZ7.CME-Delayed: mrv error 13 (permission denied)
+2026-11-02 08:18:31,Information,Drift_LIVE,The Automated Order Execution mode has been turned on
+2026-10-31 02:00:34,Error,Rithmic,Market Data Connection Login Failed (permission denied); PnL and Trading System Connection Broken
+2026-10-30 10:15:00,Information,Rithmic,Bid 28704 triggered. Emulated Order -109 Sell 2 Stop @28704.25 submitted as Sell 2 Market
+2026-10-30 09:38:27,Information,Rithmic,Ask 28753.5 triggered. Emulated Order -108 Buy 2 Stop @28753.5 submitted as Buy 2 Market
+2026-10-29 14:51:16,Information,Rithmic,Ask 29544 triggered. Emulated Order -107 Buy 2 Stop @29544 submitted as Buy 2 Market
+2026-10-29 11:15:49,Information,Rithmic,Bid 29552 triggered. Emulated Order -105 Sell 2 Stop @29552.5 submitted as Sell 2 Market
+2026-10-28 13:08:58,Information,Rithmic,Bid 29805 triggered. Emulated Order -103 Sell 2 Stop @29805 submitted as Sell 2 Market
+2026-10-28 11:54:25,Information,Rithmic,Ask 29892 triggered. Emulated Order -102 Buy 2 Stop @29885.75 submitted as Buy 2 Market
+2026-10-28 06:35:33,Information,Drift_LIVE,The Automated Order Execution mode has been turned on
+2026-10-26 12:25:00,Error,Drift_LIVE,Buy Market 2 Rejected: Invalid order parameters: Account field is empty
+2026-10-26 10:30:00,Error,Drift_LIVE,Buy Market 2 Rejected: Invalid order parameters: Account field is empty
+2026-10-26 10:10:00,Error,Drift_LIVE,Buy Market 2 Rejected: Invalid order parameters: Account field is empty
+2026-10-26 09:47:16,Warning,Rithmic,Received logout message - logging out

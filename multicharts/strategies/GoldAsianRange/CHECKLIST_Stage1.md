@@ -1,0 +1,450 @@
+# CHECKLIST Stage 1 — GoldAsianRange
+
+Chart: `@GC` · 15 min · Bar Magnifier 1 min · commissione **$12,50 per contratto**
+(slippage ripiegata dentro, campo slippage 0) · Point Value $100 · Backtesting Mode Classic.
+Periodo del chart: **2026‑06‑16 04:00 → 2026‑10‑08 20:00** (83 finestre di range,
+78 giorni con trade).
+
+Report in `reports/`:
+
+| run | `TP_RR` | `Num_Contracts` | file |
+|---|---|---|---|
+| A | 0 | 1 | `GAR_S1_A_tp0_x1.xlsx` |
+| B | 0 | 10 | `GAR_S1_B_tp0_x10.xlsx` |
+| C | 1 | 1 | `GAR_S1_C_tp1_x1.xlsx` |
+| D | 1 | 10 | `GAR_S1_D_tp1_x10.xlsx` |
+
+Tutti gli altri input ai default di spec: `RangeStart 2000`, `RangeEnd 0`,
+`ExitTime 1000`, `StopFrac 1.0`, `TradeLongs 1`, `TradeShorts 1`,
+`MinRangePts 0`, `MaxRangePts 0`.
+
+---
+
+## Primo giro (08/10/2026) — **invalido**, sessione sbagliata
+
+Template sessione `COMEX: Metals Futures (Electronic)`. Il chart **non conteneva le barre
+fra 07:45 e 14:15**: il time exit, che cerca la prima barra con `Time >= 1000`, finiva
+sulle 14:15. Quattro trade artefatto (entra 14:15, esce 14:29) e tutte le altre uscite a
+tempo fuori posto. Run scartato, nessun report conservato.
+
+Il log `GAR RNG` di quel giro dava `barre= 16` e `armTime= 0` su tutte le 83 giornate, e su
+quella base avevo scritto che MC timbra la barra di mezzanotte `0` e non `2400`.
+
+> ⚠️ **Corretto il 13/10/2026 dal gate date.** Quell'affermazione valeva per il template
+> `COMEX: Metals Futures (Electronic)`, non per il **24/7** che usiamo. Con il 24/7 MC
+> timbra la barra di mezzanotte **`2400`**, quindi `Time >= 2000` la include e il log dà
+> **`barre= 17` e `armTime= 15`**. Vedi la sezione del gate date in fondo: la finestra
+> misurata è **19:45 → 00:00** (4h15), non 20:00 → 00:00 (4h00). Il numero di barre resta
+> costante su tutte le giornate, quindi la misura è consistente — ma è 15 minuti più larga
+> della spec.
+
+## Secondo giro (09/10/2026) — sessione 24/7, **Gate 1 passato**
+
+### Check 1 — trade dove previsto ✅
+Entrate distribuite da **00:30 a 09:45**, cioè tutte dopo la chiusura del range (00:00) e
+tutte prima di `ExitTime` (10:00). Nessuna entrata fuori finestra. Il buco 07:45→14:15 e i
+quattro trade a 14:15 sono spariti.
+
+Moda sulle prime barre dopo la chiusura del range, come atteso da una strategia di
+breakout: 16 entrate a 00:30, 6 a 00:45, 9 a 01:15.
+
+### Check 2 — un trade al giorno ✅
+`giorni con >1 trade: []` su 78 giorni. L'OCO via `tradeDone` + `MarketPosition = 0`
+funziona.
+
+### Check 3 — flat all'ora prevista ✅
+Variante A: **63 uscite su 78 alle 10:15**, le altre 15 sono stop (`L-SL`/`S-SL`).
+Variante B (C): 41 a tempo, 22 a target, 15 a stop. Le uscite a tempo cadono sulla barra
+delle 10:15 perché `Time >= 1000` scatta sulla barra timbrata 10:00 e l'ordine `next bar
+at market` riempie sulla successiva — comportamento corretto, non un difetto.
+
+**Zero posizioni overnight** (0/78: entrata e uscita sempre nello stesso giorno di
+calendario). Questo **annulla il rischio di rollover** segnalato nella spec: la posizione
+non attraversa mai un break di sessione, quindi i giorni di rollover del continuous non
+vanno annotati.
+
+### Check 4 — SL/TP = quelli della spec ✅
+Prova diretta sul trade peggiore: **massima distanza di stop 43,90 punti**,
+43,90 × $100 = $4.390, più $25 di commissione andata/ritorno = **$4.415**, che è
+esattamente il trade peggiore riportato da MC. Lo stop viene colpito al prezzo, senza gap:
+in questo campione **nessuna uscita ha superato il livello di stop**.
+
+Le 15 uscite a stop sono identiche fra A e C (n=15, min 20,60, mediana 31,30, max 43,90
+punti), come deve essere: `TP_RR` non tocca lo stop.
+
+Con `TP_RR = 1` la distanza di target **è** l'ampiezza del range: i 22 target raggiunti
+danno mediana **37,75 punti**, che coincide con la mediana del range misurata dal log
+`GAR RNG` del primo giro (**≈ 37,8**). Due misure indipendenti, stesso numero.
+
+### Check 5 — con 10 contratti P&L ×10 ✅
+Rapporto esatto su ogni metrica in dollari, invarianza esatta su ogni rapporto:
+
+| metrica | ×1 | ×10 | rapporto |
+|---|---|---|---|
+| **A → B** (`TP_RR 0`) | | | |
+| Net Profit | $69.660 | $696.600 | **10,000000** |
+| Gross Profit | $136.465 | $1.364.650 | **10,000000** |
+| Gross Loss | −$66.805 | −$668.050 | **10,000000** |
+| Max Strategy Drawdown | −$14.295 | −$142.950 | **10,000000** |
+| Max Close To Close DD | −$9.920 | −$99.200 | **10,000000** |
+| Commission Paid | $1.950 | $19.500 | **10,000000** |
+| Profit Factor | 2,04 | 2,04 | 1,000000 |
+| Total # of Trades | 78 | 78 | 1,000000 |
+| % Profitable | 57,69% | 57,69% | 1,000000 |
+| Max # Contracts Held | 1 | 10 | 10,000000 |
+| **C → D** (`TP_RR 1`) | | | |
+| Net Profit | $58.920 | $589.200 | **10,000000** |
+| Gross Profit | $123.990 | $1.239.900 | **10,000000** |
+| Gross Loss | −$65.070 | −$650.700 | **10,000000** |
+| Max Strategy Drawdown | −$10.420 | −$104.200 | **10,000000** |
+| Max Close To Close DD | −$8.560 | −$85.600 | **10,000000** |
+| Profit Factor | 1,91 | 1,91 | 1,000000 |
+| % Profitable | 58,97% | 58,97% | 1,000000 |
+
+Nota: GoldAsianRange usa bracket a livello di prezzo (`next bar at posSL stop`), non
+`SetStopLoss`, quindi **non è esposta al difetto `CurrentContracts` sulla barra d'ingresso**
+che ha richiesto due giri su NQ First5. Il test ×10 lo conferma e basta.
+
+### Check 6 — nessun trade nel weekend non voluto ✅
+Entrate e uscite **solo lun–ven**, zero sabato/domenica:
+Lun 13 · Mar 17 · Mer 17 · Gio 16 · Ven 15.
+
+Il venerdì sera non esiste una finestra 20:00–00:00 (il mercato chiude alle 16:00 CT),
+quindi non si generano trade il sabato. Corretto per costruzione.
+
+**Giorni lavorativi senza trade: 4.**
+
+| giorno | causa |
+|---|---|
+| 2026‑07‑03 | venerdì prima del 4 luglio — **half‑day/festivo US**, annotato |
+| 2026‑06‑22 | lunedì, nessun lato del range toccato prima delle 10:00 |
+| 2026‑08‑17 | idem |
+| 2026‑08‑31 | idem |
+
+I tre lunedì senza trade spiegano il conteggio del lunedì più basso (13 vs 15–17): il
+range costruito la domenica sera incorpora il gap del weekend, è più largo e viene rotto
+meno spesso. Osservazione, non difetto.
+
+---
+
+## ✅ Gate 1 — **passato** (09/10/2026)
+
+Meccanica corretta al 100% su tutti e sei i controlli del protocollo. Report in `reports/`.
+
+## Numeri indicativi (NON un giudizio di Gate 2)
+
+Gate 2 si giudica sull'IS 2020‑2024 con n ≥ 200. Questi sono 78 trade su 4 mesi e servono
+solo a sapere se vale la pena spendere lo Stage 2.
+
+| | variante A (`TP_RR 0`) | variante B (`TP_RR 1`) |
+|---|---|---|
+| trade | 78 | 78 |
+| Net Profit (GC) | $69.660 | $58.920 |
+| avg trade (GC) | $893 | $755 |
+| → **avg trade per MGC** | **$89** | **$75** |
+| WR | 57,7% | 59,0% |
+| Profit Factor | 2,04 | 1,91 |
+| avg win / avg loss | 1,50 | 1,33 |
+| Max Strategy DD (GC) | −$14.295 | −$10.420 |
+| → **DD per MGC** | **$1.429** | **$1.042** |
+| trade peggiore (GC) | −$4.415 | −$4.415 |
+| → **peggiore per MGC** | **$442** | **$442** |
+
+### Il dato che conta: l'unità di rischio entra nel budget
+
+Soglia Gate 2 sul trade peggiore: **÷10 ≤ $500**. Qui è **$442**. **Passa.**
+
+È la prima volta nella pipeline. Le tre strategie su @NQ morivano proprio qui
+(First5: DD/micro $5.784, trade peggiore/micro $1.044). Il muro «l'edge esiste ma l'unità
+di rischio non sta nell'MLL» **non si presenta su MGC**.
+
+### Due cose da registrare come scostamenti dalla spec
+
+1. **Il range è più largo di quanto la spec assumeva.** La spec diceva «range tipico
+   $10–25 → $100–250 per MGC». Misurato: **mediana ≈ 37,8 punti ≈ $378 per MGC**, media
+   ≈ 42 pt ≈ $425. Da 1,5 a 3,8 volte l'assunzione. Resta sotto la soglia di gate
+   ($500), ma l'assunzione della spec era sbagliata e va corretta lì.
+2. **La variante A non ha il profilo che la spec le attribuiva.** Spec: «WR 34%,
+   R:R > 1, non rispetta il profilo prop». Misurato: **WR 57,7%** con avg win/avg loss
+   **1,50**. La ricerca del corso riportava WR ~34%; su questi dati non si riproduce.
+   Possibile causa: il time exit a 10:00 CT chiude molte posizioni in piccolo utile che
+   in un'altra configurazione sarebbero diventate perdite. Da verificare nello Stage 2,
+   dove il campione è 5 anni invece di 4 mesi.
+
+   Conseguenza pratica: **entrambe le varianti vanno allo Stage 2**, non solo la B. La
+   pre-registrazione «Gate 2 si giudica sulla variante B» era motivata dall'attesa
+   WR 34% della variante A; quell'attesa è smentita dal dato, non da una scelta a
+   posteriori sui risultati.
+
+### Punti aperti prima/dentro lo Stage 2
+
+- **ADR dell'oro non misurata.** Un range asiatico di 37,8 punti su un sottostante a
+  $4.100–4.400 va rapportato al range giornaliero medio del periodo. Se il range asiatico
+  fosse una frazione dominante dell'ADR, lo stop «tutto il range» sarebbe strutturalmente
+  sovradimensionato. Da misurare.
+- **Gate date non ancora eseguito** (il controllo pre-registrato su una finestra di date
+  ristretta, come fatto per First5).
+
+---
+
+## ADR — misurata (13/10/2026), punto aperto chiuso
+
+Indicatore `GAR_ADR_Study.txt` sullo stesso chart. **n = 84 giornate**, 17/06 → 12/10/2026.
+Tutte le misure in punti @GC.
+
+| | mediana | media | p10 | p90 | min | max |
+|---|---|---|---|---|---|---|
+| `asia` — finestra del range | **39,05** | 42,88 | 27,15 | 66,16 | 20,60 | 85,20 |
+| `trade` — finestra 00:00→10:00 | **57,00** | 64,70 | 39,22 | 98,13 | 26,00 | 149,60 |
+| `h24` — 24 ore precedenti | **92,90** | 99,97 | 58,80 | 150,77 | 42,80 | 242,40 |
+
+### La domanda pre-registrata e la sua risposta
+
+La regola era scritta prima di misurare, in `SPEC.md`: «*se il range asiatico è una frazione
+dominante dell'ADR, lo stop «tutto il range» è strutturalmente sovradimensionato e la
+variante `StopFrac` < 1 diventa il caso base, non un'alternativa*».
+
+**`asia / h24` = 0,447 mediano** (media 0,462; p10 0,263; p90 0,643).
+
+Il range asiatico è **meno della metà** del movimento giornaliero. La condizione
+pre-registrata **non è soddisfatta**: più di metà dell'escursione della giornata avviene
+fuori dalla finestra asiatica, quindi c'è spazio perché la rottura prosegua.
+
+**Conseguenza: `StopFrac 1.0` resta il caso base dello Stage 2.** La regola ha sparato e la
+risposta è «non cambiare niente». Le varianti `StopFrac` 0.5/0.75 restano dove erano
+pre-registrate, allo Stage 4.
+
+### Il target a 1R è raggiungibile
+
+`trade / asia` = **1,531 mediano** (media 1,668): nella giornata tipica la finestra di
+trading è una volta e mezza il range asiatico, quindi un target a 1R ci sta con margine.
+
+| | giorni | % |
+|---|---|---|
+| `trade` < `asia` → **1R irraggiungibile anche in teoria** | 18 / 84 | **21,4%** |
+| `trade` < 0,5 × `asia` → **nemmeno 0,5R** | 1 / 84 | **1,2%** |
+
+Il 21,4% combacia con il comportamento osservato della variante B: 22 target su 78 trade
+(28%) sono stati raggiunti. Numeri indipendenti, stessa storia.
+
+Nota per lo Stage 4: a `TP_RR 0.5` il target diventa irraggiungibile solo nell'1,2% dei
+giorni invece che nel 21,4%. Era già pre-registrata; ora si sa **perché** dovrebbe aiutare.
+
+### Il rischio per MGC, per `StopFrac`
+
+| `StopFrac` | mediana | p90 | max |
+|---|---|---|---|
+| **1.00** (base) | **$390** | **$662** | **$852** |
+| 0.75 | $293 | $496 | $639 |
+| 0.50 | $195 | $331 | $426 |
+| 0.35 | $137 | $232 | $298 |
+
+Soglia Gate 2 sul trade peggiore: **÷10 ≤ $500**.
+
+Con `StopFrac 1.0` la **mediana passa ($390) ma il 90° percentile no ($662)**, e il caso
+peggiore del campione è $852. Il trade peggiore *realizzato* nel run era $442 — molto
+meglio del massimo teorico. Il motivo non è fortuna:
+
+### Meccanismo di autolimitazione (nuovo, da registrare)
+
+I giorni con il range più largo **tendono a non generare nessun trade**, perché un range
+largo è più difficile da rompere entro le 10 ore della finestra.
+
+Nel decile più largo del periodo confrontabile (8 giorni, `asia` > 67 punti):
+
+| giorno | `asia` | trade? |
+|---|---|---|
+| 1260622 | 85,20 | **no** |
+| 1260825 | 84,50 | sì |
+| 1260630 | 76,70 | sì |
+| 1260831 | 75,90 | **no** |
+| 1260928 | 75,20 | sì |
+| 1260703 | 72,40 | **no** — ma è la vigilia del 4 luglio, half‑day |
+| 1260805 | 68,60 | sì |
+| 1260623 | 67,60 | sì |
+
+**3 su 8 senza trade (38%) contro un 4,9% complessivo.** Scontando 1260703, che si spiega
+col calendario e non con l'ampiezza, restano 2 su 8 (25%): comunque **cinque volte** il
+tasso di base.
+
+Quindi l'esposizione effettiva è più vicina alla mediana che al massimo. Ma è una proprietà
+del campione, non una garanzia: su cinque anni di Stage 2 qualche giornata larga entrerà.
+**Da sorvegliare al Gate 2, non da correggere adesso.**
+
+### Contesto: l'oro in questo periodo
+
+`h24` mediano 92,90 punti su un sottostante a $4.100–4.400 = **~2,2% di escursione
+giornaliera**. È un periodo volatile, e va ricordato quando si leggeranno i numeri dello
+Stage 2 sul 2020–2024.
+
+---
+
+## Gate date — **pre-registrato il 13/10/2026, prima del run**
+
+### Impostazioni del run
+
+| | |
+|---|---|
+| Finestra del chart | **2026‑09‑01 → 2026‑09‑30** |
+| Variante | **C** — `TP_RR 1`, `Num_Contracts 1`, **`ShowLog 1`** |
+| Tutto il resto | default di spec: `RangeStart 2000`, `RangeEnd 0`, `ExitTime 1000`, `StopFrac 1.0`, `TradeLongs 1`, `TradeShorts 1`, `MinRangePts 0`, `MaxRangePts 0` |
+| Chart | @GC 15 min, template **24/7**, timezone **Exchange**, Bar Magnifier 1 min |
+| Costi | commissione **$12,50 per contratto**, slippage 0 |
+
+Variante C e non A perché ha il mix di uscite più ricco (TP, SL, tempo): più cose possono
+rompersi in modo visibile.
+
+### Perché questo gate esiste
+
+In MultiCharts **l'intervallo di dati del chart È l'intervallo del backtest**. Non c'è un
+"backtest from/to" separato. Quindi restringere il chart non isola un periodo: cambia anche
+quali barre esistono per costruire il primo range. Il gate verifica che la strategia non sia
+**dipendente dal punto di partenza del chart**.
+
+### Le 9 attese, scritte prima di vedere i risultati
+
+Riferimento: il run dello Stage 1 (chart 16/06 → 08/10), variante C, che su settembre fa
+**22 trade e $23.940**.
+
+| # | Attesa | Valore |
+|---|---|---|
+| 1 | `Start Date` / `End Date` nel foglio Settings | esattamente la finestra impostata, non di più |
+| 2 | **Il 01/09 perde il trade.** Il chart parte il 01/09 alle 00:00, quindi la finestra 20:00–00:00 della sera del 31/08 non esiste → nessun range → nessun arming | **trade = 21**, non 22 |
+| 3 | Net Profit = $23.940 − $3.315 (lo short del 01/09) | **$20.625** |
+| 4 | Primo trade | **02/09, 08:15, long, entry 4380.90, uscita `L-TP` 4432.60, +$5.145** |
+| 5 | Ultimo trade | **30/09, 01:30, short, entry 4198.60, uscita `S-SL` 4219.70, −$2.135** |
+| 6 | Mix dei segnali di uscita | `L-TP` 5 · `S-TP` **3** · `L-SL` 3 · `S-SL` 3 · `EXIT-S` 5 · `EXIT-L` 2 |
+| 7 | Direzioni e esiti | long/short **10 / 11** · vincenti/perdenti **12 / 9** |
+| 8 | Righe `GAR RNG` nel log | **21**, datate 1260902 → 1260930, **tutte con `barre= 16` e `armTime= 0`** |
+| 9 | I valori `range=` del log | **identici** a `reports/GAR_ADR_log.txt` per quei 21 giorni (vedi tabella sotto) |
+
+L'attesa **9 è la più importante**: se il range di un giorno cambia solo perché il chart
+parte in settembre invece che in giugno, la misura è contaminata dalla finestra e tutto
+quello che abbiamo concluso sull'ADR va rifatto.
+
+### I 21 valori attesi (attesa 9)
+
+| data | `range=` | | data | `range=` | | data | `range=` |
+|---|---|---|---|---|---|---|---|
+| 1260902 | 51.70 | | 1260911 | 39.30 | | 1260922 | 37.80 |
+| 1260903 | 50.40 | | 1260914 | 29.70 | | 1260923 | 37.50 |
+| 1260904 | 20.60 | | 1260915 | 34.40 | | 1260924 | 30.00 |
+| 1260907 | 44.20 | | 1260916 | 66.70 | | 1260925 | 31.70 |
+| 1260908 | 26.00 | | 1260917 | 51.80 | | 1260928 | 75.20 |
+| 1260909 | 44.30 | | 1260918 | 32.40 | | 1260929 | 26.60 |
+| 1260910 | 31.30 | | 1260921 | 26.70 | | 1260930 | 21.10 |
+
+### Un'incertezza dichiarata, non una previsione
+
+`MaxBarsBack`. Il codice non usa funzioni con lookback, quindi in teoria basta 1 barra. Ma
+se MC lo imposta in automatico su un valore più alto (il default è spesso 50, cioè ~12 ore
+su un chart a 15 minuti), le prime barre vengono saltate e **il primo trade potrebbe cadere
+il 03/09 invece del 02/09**. Se accade questo, non è un difetto della strategia: è
+`MaxBarsBack`, e si verifica leggendolo nelle proprietà. Lo scrivo adesso per non poterlo
+usare dopo come spiegazione comoda.
+
+### Domanda secondaria che questo run chiude
+
+Nel run dello Stage 1: **zero entrate alle 00:15, sedici alle 00:30**. L'arming avviene
+sulla barra delle 00:00, quindi `next bar at rHi stop` dovrebbe poter riempire già sulla
+barra delle 00:15. Con `ShowLog 1` si confronta l'`armTime` di `GAR RNG` con l'ora di
+`GAR ENT` e si vede se c'è un ritardo di una barra. Per un breakout la prima barra dopo la
+rottura è quella che conta, quindi la risposta serve.
+
+Attesa: le 21 entrate cadono a 08:15, 00:30, 01:44, 02:15, 00:30, 01:15, 01:44, 01:44,
+00:45, 03:45, 06:14, 03:14, 00:45, 00:59, 00:30, 01:44, 04:30, 00:59, 01:15, 02:00, 01:30
+— **nessuna alle 00:15**.
+
+### Risultato del gate date (13/10/2026) — **8 attese su 9 esatte, la nona scopre una cosa**
+
+| # | Attesa | Risultato | |
+|---|---|---|---|
+| 1 | `Start`/`End Date` = la finestra | `End Date` = 30/09 23:59 ✔. `Start Date` = **02/09 08:15**, cioè il **primo trade**, non l'inizio del chart | ⚠️ |
+| 2 | 21 trade (il 01/09 perde il trade) | **21** | ✅ |
+| 3 | Net Profit $20.625 | **$20.625** | ✅ |
+| 4 | Primo: 02/09 08:15 L 4380.90 → `L-TP` 4432.60 +$5.145 | identico | ✅ |
+| 5 | Ultimo: 30/09 01:30 S 4198.60 → `S-SL` 4219.70 −$2.135 | identico | ✅ |
+| 6 | `L-TP` 5 · `S-TP` 3 · `L-SL` 3 · `S-SL` 3 · `EXIT-S` 5 · `EXIT-L` 2 | **tutti e sei esatti** | ✅ |
+| 7 | long/short 10/11 · vinc/perd 12/9 | identico | ✅ |
+| 8 | 21 righe `GAR RNG`, tutte `barre= 16` e `armTime= 0` | 21 righe ✔, date 1260902→1260930 ✔, ma **`barre= 17` e `armTime= 15`** | ❌ |
+| 9 | I 21 `range=` identici a `GAR_ADR_log.txt` | **tutti e 21 identici** | ✅ |
+
+Sull'attesa 1: `Start Date` nel foglio Settings è il timestamp del **primo trade**, non
+l'inizio del chart (vale anche per il run dello Stage 1, dove coincidevano). L'inizio del
+chart è confermato indirettamente dall'attesa 2, che è il controllo che conta.
+
+Sull'incertezza dichiarata: `MaxBarsBack` **non ha dato problemi**, il primo trade è il
+02/09 come previsto e non il 03/09.
+
+#### L'attesa 9 è quella che doveva passare, e passa
+
+I 21 valori `range=` del run di settembre sono **identici** a quelli del run di giugno‑ottobre.
+La misura del range **non dipende da dove parte il chart**: nessuna contaminazione, e tutto
+quello che abbiamo concluso sull'ADR resta in piedi.
+
+#### Cosa ha scoperto l'attesa 8
+
+**Con il template 24/7 MC timbra la barra di mezzanotte `2400`, non `0`.** Quindi
+`Time >= 2000` la include:
+
+- barre nella finestra: 20:00, 20:15, …, 23:45, **2400** = **17**
+- prima barra con `inWindow = false`: **00:15** → `armTime= 15`
+- gli ordini `next bar at rHi/rLo stop` vanno quindi sulla barra delle **00:30**
+
+**Questo chiude la domanda secondaria.** Zero entrate alle 00:15 e sedici alle 00:30 non
+erano un ritardo di una barra: sono l'aritmetica di una finestra che si chiude sulle 00:15
+invece che sulle 00:00. Nessun difetto, e la prima barra utile dopo la rottura viene usata.
+
+**Conseguenza sulla spec.** Le barre sono timbrate a fine periodo, quindi la barra «20:00»
+copre 19:45–20:00 e la barra «2400» copre 23:45–00:00: la finestra misurata è
+**19:45 → 00:00 (4h15)**, non 20:00 → 00:00 (4h00). **15 minuti più larga della spec**,
+in modo perfettamente costante su tutte le 84 giornate.
+
+#### Decisione: si corregge la spec, non il codice
+
+Due opzioni c'erano:
+
+| | Cosa | Costo |
+|---|---|---|
+| a | `RangeStart 2015` → barre 20:15…2400 = 16, finestra 20:00→00:00 esatta | **ri‑lanciare tutto il Gate 1** (A/B/C/D + gate date): ogni numero cambia |
+| b | Correggere la spec a 19:45–00:00 e lasciare il codice | zero run |
+
+**Scelta: (b).** Tre ragioni, scritte prima di proseguire:
+
+1. La finestra è **già un asse di variante pre‑registrato allo Stage 4** («finestra range
+   22:00–01:00 CT»). La sensibilità all'orario verrà misurata là, dove è il suo posto: non
+   serve perfezionarla allo Stage 1, serve che sia **documentata e costante**, e lo è.
+2. Il «20:00» non è mai stato un confine validato: viene dal template del corso, il cui
+   chart era in ora NY con day boundary alle 17:00. Inseguire un allineamento di 15 minuti
+   a un numero non validato è lavoro senza una domanda dietro.
+3. Tutte le misure fatte finora (ADR, distribuzione del rischio, scaling) girano sullo
+   **stesso codice**, quindi sono coerenti fra loro. Il confronto che conta — range di
+   settembre vs range di giugno‑ottobre — passa.
+
+Ciò che **non** è accettabile è lasciare scritto nel repo che la finestra è 20:00–00:00:
+corretto in `SPEC.md` e sopra in questo file.
+
+## ✅ Gate date — **passato** (13/10/2026)
+
+8 attese su 9 esatte al dollaro e al prezzo. La nona ha trovato una deviazione reale di 15
+minuti nella finestra, costante, documentata e risolta correggendo la spec. Nessun difetto
+di meccanica.
+
+### Nota collaterale: lo slippage d'ingresso esiste e il codice lo gestisce bene
+
+Nel log del periodo intero, sette giornate mostrano un `entry=` diverso dal bordo del range
+perché la barra ha **aperto oltre lo stop** (gap through):
+
+| giorno | bordo | entry | scarto |
+|---|---|---|---|
+| 1260805 | 4193.80 | 4196.30 | 2,50 pt peggio |
+| 1260813 | 4457.00 | 4452.40 | 4,60 pt peggio |
+| 1260922 | 4376.30 | 4375.20 | 1,10 pt peggio |
+| 1261001 | 4206.40 | 4206.60 | 0,20 pt peggio |
+| 1261002 | 4213.30 | 4214.00 | 0,70 pt peggio |
+| 1261005 | 4164.00 | 4162.60 | 1,40 pt peggio |
+| 1261013 | 4211.70 | 4213.60 | 1,90 pt peggio |
+
+In tutti e sette i casi `SL` e `TP` sono ricalcolati **dall'`EntryPrice` effettivo**
+(`posSL = EntryPrice ± sd`), quindi il rischio in punti resta uguale all'ampiezza del range.
+È il comportamento voluto: lo slippage sposta il livello, non allarga il rischio.

@@ -1,0 +1,156 @@
+{ =====================================================================
+  ON_Reversal  -  fade del movimento overnight nella prima ora
+  ---------------------------------------------------------------------
+  Seconda gamba del basket. Spec: SPEC.md. Misura che l'ha autorizzata:
+  eccesso sul caso +4,40 pp su 1.160 setup risolti, 3,06 errori standard,
+  su due campioni INDIPENDENTI (2016-2019 e 2020-2024).
+
+  REGOLE
+    1) A fine sessione RTH si memorizza la chiusura (priorClose).
+    2) Sulla PRIMA barra della sessione successiva si misura
+       G = Close - priorClose, cioe' il movimento overnight.
+    3) GATE: si opera solo se |G| >= MinGapAtr x range medio delle
+       ultime AtrLen sessioni. Salta i giorni senza gap, dove si
+       faderebbe rumore.
+    4) INGRESSO: next bar at market, CONTRO G. Gap su -> short.
+    5) TARGET  = entry - RetraceFrac x G   (meta' ritracciamento)
+       STOP    = entry + StopFrac    x G
+       R:R 0,50/0,75 = 0,667, dentro la banda prop. Caso 60%.
+    6) FLAT a FlatTime (09:30): l'edge sta nella prima ora e si consuma
+       — misurato su entrambi i campioni, a fine giornata scende a
+       -0,27 e +2,00. Uscire alle 09:30 e' anche cio' che tiene la
+       correlazione con DriftPullback vicina a zero: in quell'ora lui
+       non ha un solo trade.
+    7) Un solo setup al giorno, per costruzione.
+
+  NOTA SUL FILL, da non dimenticare leggendo i risultati: la misura
+  calcolava l'ingresso alla CHIUSURA della prima barra, qui si entra
+  alla barra successiva a mercato. Il prezzo sara' vicino ma non uguale,
+  e l'avg trade ne risentira'.
+
+  NOTA SUI NON RISOLTI: il 29% dei setup non raggiunge ne' target ne'
+  stop entro l'ora e qui esce flat a FlatTime. Nel misuratore quel 29%
+  restava FUORI dal win rate: il loro P&L lo vediamo per la prima volta
+  in questo backtest.
+
+  SIZING: 1 contratto in sviluppo. R scala col gap, quindi col regime
+  ($37/micro nel 2016-19, $75 nel 2020-24): i contratti si decidono dal
+  simulatore sul gap corrente, non su una media storica.
+
+  CHART: @YM 5 min, timezone Exchange (CT). La sessione la impone il
+         CODICE, non il template. Bar Magnifier 1 min. IOG off.
+         Lead-in: AtrLen sessioni. Costi: $6,75/lato su YM intero
+         ($1,75 di commissione Lucid + 1 tick da $5 di slippage).
+  ===================================================================== }
+
+Inputs:
+    SessStart( 830 ),          { apertura RTH, ora del chart }
+    SessEnd( 1500 ),           { chiusura RTH: da qui si prende priorClose }
+    FlatTime( 930 ),           { uscita obbligatoria: fine della prima ora }
+    MinGapAtr( 0.15 ),         { gap minimo, in frazioni del range medio }
+    RetraceFrac( 0.50 ),       { target: frazione di G ritracciata }
+    StopFrac( 0.75 ),          { stop: frazione di G oltre l'ingresso }
+    AtrLen( 20 ),              { sessioni per la media del range }
+    TradeLongs( 1 ),
+    TradeShorts( 1 ),
+    Num_Contracts( 1 ),
+    TradeStartEL( 0 ),         { 0 = off, altrimenti YYYMMDD }
+    TradeEndEL( 0 ),
+    ShowLog( 0 ),
+    LogPath( "C:\mc_out\on_reversal_trades.txt" );
+
+Vars:
+    intrabarpersist priorClose( 0 ),
+    intrabarpersist sessHi( 0 ),
+    intrabarpersist sessLo( 999999 ),
+    intrabarpersist rngSum( 0 ),
+    intrabarpersist rngCnt( 0 ),
+    intrabarpersist avgRng( 0 ),
+    intrabarpersist inSess( false ),
+    intrabarpersist isFirst( false ),
+    intrabarpersist armLong( false ),
+    intrabarpersist armShort( false ),
+    intrabarpersist tgtPx( 0 ),
+    intrabarpersist stopPx( 0 ),
+    intrabarpersist gapPts( 0 ),
+    intrabarpersist tradedToday( false ),
+    dateOK( false );
+
+dateOK = ( TradeStartEL = 0 or Date >= TradeStartEL )
+     and ( TradeEndEL   = 0 or Date <= TradeEndEL );
+
+{ ===== APERTURA DI SESSIONE ===== }
+{ apertura di sessione. Il secondo test (`Date <> Date[1]`) serve sui chart RTH:
+  li' la barra precedente e' la 15:00 del giorno prima, e `Time[1] < SessStart`
+  sarebbe FALSA (1500 < 830 e' falso) — la sessione non verrebbe MAI rilevata e la
+  strategia non farebbe un solo trade, in silenzio. Su Globex 24h non cambia nulla:
+  a mezzanotte Date cambia ma Time e' 5, che non e' >= SessStart. }
+if Time >= SessStart and ( Time[1] < SessStart or Date <> Date[1] ) then begin
+    if sessHi > sessLo and sessLo < 999999 then begin
+        rngSum = rngSum + ( sessHi - sessLo );
+        rngCnt = rngCnt + 1;
+        if rngCnt > AtrLen then begin
+            rngSum = rngSum * AtrLen / rngCnt;
+            rngCnt = AtrLen;
+        end;
+        avgRng = rngSum / rngCnt;
+    end;
+    sessHi = High; sessLo = Low;
+    inSess = true; isFirst = true; tradedToday = false;
+    armLong = false; armShort = false;
+end
+else if inSess then begin
+    if High > sessHi then sessHi = High;
+    if Low  < sessLo then sessLo = Low;
+end;
+
+if Time > SessEnd then begin
+    if inSess then priorClose = Close;
+    inSess = false;
+end;
+
+{ ===== SEGNALE: solo sulla prima barra di sessione ===== }
+if inSess and isFirst then begin
+    isFirst = false;
+    armLong = false; armShort = false;
+    if dateOK and priorClose > 0 and avgRng > 0 and rngCnt >= AtrLen then begin
+        gapPts = Close - priorClose;
+        if AbsValue( gapPts ) >= MinGapAtr * avgRng then begin
+            tgtPx  = Close - RetraceFrac * gapPts;
+            stopPx = Close + StopFrac    * gapPts;
+            if gapPts > 0 then armShort = true else armLong = true;
+            if ShowLog = 1 then
+                Print( File(LogPath), "ONREV ", Date:8:0, " gap=", gapPts:9:2,
+                       " avgRng=", avgRng:9:2, " tgt=", tgtPx:9:2,
+                       " stop=", stopPx:9:2 );
+        end;
+    end;
+end;
+
+{ ===== INGRESSO ===== }
+if MarketPosition = 0 and tradedToday = false and inSess and Time < FlatTime then begin
+    if armShort and TradeShorts = 1 then begin
+        SellShort ( "ONREV-S" ) Num_Contracts contracts next bar at market;
+        tradedToday = true;
+    end;
+    if armLong and TradeLongs = 1 then begin
+        Buy ( "ONREV-L" ) Num_Contracts contracts next bar at market;
+        tradedToday = true;
+    end;
+end;
+
+{ ===== USCITE ===== }
+if MarketPosition = 1 then begin
+    Sell ( "L-tgt" )  next bar at tgtPx  limit;
+    Sell ( "L-stp" )  next bar at stopPx stop;
+end;
+if MarketPosition = -1 then begin
+    BuyToCover ( "S-tgt" ) next bar at tgtPx  limit;
+    BuyToCover ( "S-stp" ) next bar at stopPx stop;
+end;
+
+{ flat obbligatorio a fine prima ora, qualunque cosa sia successo }
+if MarketPosition <> 0 and Time >= FlatTime then begin
+    if MarketPosition = 1  then Sell       ( "L-flat" ) next bar at market;
+    if MarketPosition = -1 then BuyToCover ( "S-flat" ) next bar at market;
+end;

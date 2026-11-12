@@ -1,0 +1,175 @@
+{ =====================================================================
+  VaultBreak  -  NQ volatility breakout, long only  -  PowerLanguage
+  ---------------------------------------------------------------------
+  Dal template del corso "VaultBreak NQ longs-only, long rolling ATR"
+  (10. VaultBreak_LongRollingATR_Signal). Spec: SPEC.md.
+
+  REGOLE
+    1) Noise boundary: NoiseUp = open di sessione + NoiseMult x DailyATR,
+       con DailyATR = media ROLLING delle ultime DailyATRLen sessioni del
+       range (high-low) di sessione. Nessun seed, indipendente dalla data
+       di partenza; serve un lead-in di DailyATRLen sessioni.
+    2) Entry (long): close > NoiseUp e close > VWAP di sessione, fra
+       EarliestEntry e LatestEntry, flat, meno di MaxTradesPerDay ingressi
+       oggi -> "next bar at market".
+    3) Uscite: stop e target FISSI in punti (built-in SetStopLoss /
+       SetProfitTarget, attivi gia' sulla barra d'ingresso, scalati sui
+       contratti); VWAPExitBars chiusure consecutive sotto il VWAP;
+       flat a FlattenTime.
+    Re-entry ammesso nello stesso giorno fino a MaxTradesPerDay.
+
+  CHART: @NQ 5 min, sessione RTH (08:30-15:00 CT), timezone Exchange.
+         Il reset di sessione usa Date <> Date[1]: su un chart 24h il
+         "session open" sarebbe la mezzanotte -> usare SOLO chart RTH.
+         Orari in ORA DEL CHART (CT): il template originale li ha in ET
+         (0945/1500/1550) -> qui 0845/1400/1450.
+         IOG off. Max bars back >= 100.
+
+  PROFILO v8 DEL CORSO (SPEC_v8.md): stesso codice, altri input e altro
+         chart. @NQ **30 min, sessione Globex**, timezone Exchange.
+         NoiseMult 0.3 · DailyATRLen 15 · EarliestEntry 1000 ·
+         LatestEntry 1400 · FlattenTime 1430 · VWAPExitBars 7 ·
+         StopLossPts 75 · TakeProfitPts 40 · CarryGuard 1.
+         Su Globex il reset Date <> Date[1] cade a mezzanotte CT: l'"open"
+         e' quello della mezzanotte e il range e' del giorno intero. E' la
+         scelta dell'autore, non un errore.
+  ===================================================================== }
+
+Inputs:
+    NoiseMult(0.60),           { frazione del range medio sopra l'open }
+    DailyATRLen(252),          { finestra rolling in sessioni (<= 600) }
+    EarliestEntry(845),        { ora chart, prima barra utile all'ingresso }
+    LatestEntry(1400),         { ultimo ingresso }
+    FlattenTime(1450),         { flat }
+    MaxTradesPerDay(3),
+    VWAPExitBars(2),           { chiusure consecutive sotto il VWAP }
+    StopLossPts(100),          { 100 pt NQ = $2.000 per contratto }
+    TakeProfitPts(50),         { 50 pt NQ = $1.000 per contratto }
+    Num_Contracts(1),
+    CarryGuard(0),             { 1 = chiude a mercato una posizione rimasta aperta
+                                 a cambio data (sedute corte festive), come la v8 }
+    { --- finestra di trading (NON e' logica di trading: serve a separare il
+          lead-in dal periodo valutato). Formato data EasyLanguage = YYYMMDD
+          con YYY = anno - 1900:  1200101 = 1 gen 2020 · 1241231 = 31 dic 2024
+          0 = disattivato --- }
+    TradeStartEL(0),
+    TradeEndEL(0),
+    ShowLog(false);
+
+Variables:
+    intrabarpersist SessOpen(0),
+    intrabarpersist SessHigh(0),
+    intrabarpersist SessLow(999999),
+    intrabarpersist SessCount(0),
+    intrabarpersist DailyATR(0),
+    intrabarpersist RngSum(0),
+    intrabarpersist RngCnt(0),
+    intrabarpersist BufIdx(0),
+    intrabarpersist NoiseUp(0),
+    intrabarpersist cTPV(0),
+    intrabarpersist cVol(0),
+    intrabarpersist VWAP(0),
+    intrabarpersist BarsBelowVW(0),
+    intrabarpersist DTrades(0),
+    BarVol(0), Qty(0), dateOK(false);
+
+Arrays:
+    intrabarpersist RngBuf[600](0);
+
+{ ===== NUOVA SESSIONE: aggiorna il rolling ATR, azzera lo stato ===== }
+if Date <> Date[1] then begin
+
+    if CarryGuard = 1 and MarketPosition = 1 then
+        Sell ("VB-Carry") next bar at market;
+
+    if SessCount >= 1 then begin
+        Value1 = SessHigh - SessLow;
+        if Value1 > 0 then begin
+            if RngCnt < DailyATRLen then begin
+                RngBuf[RngCnt] = Value1;
+                RngSum = RngSum + Value1;
+                RngCnt = RngCnt + 1;
+            end
+            else begin
+                RngSum = RngSum - RngBuf[BufIdx] + Value1;
+                RngBuf[BufIdx] = Value1;
+                BufIdx = BufIdx + 1;
+                if BufIdx >= DailyATRLen then BufIdx = 0;
+            end;
+            if RngCnt >= DailyATRLen then DailyATR = RngSum / DailyATRLen;
+        end;
+    end;
+
+    SessOpen  = Open;
+    SessHigh  = High;
+    SessLow   = Low;
+    SessCount = SessCount + 1;
+    DTrades   = 0;
+    BarsBelowVW = 0;
+    cTPV = 0; cVol = 0; VWAP = Close;
+
+    if DailyATR > 0 then NoiseUp = SessOpen + NoiseMult * DailyATR
+    else NoiseUp = 0;
+
+    if ShowLog and DailyATR > 0 then
+        Print(GetSymbolName," VB ", Date:8:0, " open=", SessOpen:8:2, " ATR=", DailyATR:8:2, " NoiseUp=", NoiseUp:8:2);
+end
+else begin
+    if High > SessHigh then SessHigh = High;
+    if Low  < SessLow  then SessLow  = Low;
+end;
+
+{ ===== VWAP DI SESSIONE (typical price x volume) ===== }
+BarVol = Volume;
+if BarVol <= 0 then BarVol = Ticks;      { feed senza volume: usa i tick }
+if BarVol > 0 then begin
+    cTPV = cTPV + ((High + Low + Close) / 3.0) * BarVol;
+    cVol = cVol + BarVol;
+end;
+if cVol > 0 then VWAP = cTPV / cVol;
+
+{ ===== CONTATORE CHIUSURE SOTTO IL VWAP ===== }
+if Close < VWAP then BarsBelowVW = BarsBelowVW + 1
+else BarsBelowVW = 0;
+
+{ ===== FINESTRA DI TRADING =====
+  Il grafico puo' caricare storia precedente per il lead-in del rolling ATR
+  senza che quei giorni entrino nel periodo valutato. Gate solo sugli
+  INGRESSI: una posizione aperta resta gestita normalmente. }
+dateOK = (TradeStartEL = 0 or Date >= TradeStartEL)
+     and (TradeEndEL   = 0 or Date <= TradeEndEL);
+
+{ ===== ENTRY (long only) ===== }
+if MarketPosition = 0
+   and dateOK
+   and NoiseUp > 0
+   and Close > NoiseUp
+   and Close > VWAP
+   and Time >= EarliestEntry
+   and Time <= LatestEntry
+   and DTrades < MaxTradesPerDay then begin
+    Qty = Num_Contracts;
+    Buy ("VB-L") Qty contracts next bar at market;
+    DTrades = DTrades + 1;
+    if ShowLog then
+        Print("VB LONG ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
+              " NoiseUp=", NoiseUp:8:2, " VWAP=", VWAP:8:2, " #", DTrades:2:0);
+end;
+
+{ ===== STOP / TARGET built-in (per posizione -> scalati sui contratti) ===== }
+if MarketPosition = 1 then begin
+    SetStopLoss(StopLossPts * BigPointValue * CurrentContracts);
+    SetProfitTarget(TakeProfitPts * BigPointValue * CurrentContracts);
+end
+else begin
+    SetStopLoss(StopLossPts * BigPointValue * Num_Contracts);
+    SetProfitTarget(TakeProfitPts * BigPointValue * Num_Contracts);
+end;
+
+{ ===== USCITA VWAP ===== }
+if MarketPosition = 1 and BarsBelowVW >= VWAPExitBars then
+    Sell ("VB-VWAPX") next bar at market;
+
+{ ===== TIME EXIT ===== }
+if MarketPosition = 1 and Time >= FlattenTime then
+    Sell ("VB-TIMEX") next bar at market;

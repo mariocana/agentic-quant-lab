@@ -1,0 +1,47 @@
+{ Mario_IntraToOverNight — codice base di Andrea Unger, Trading System Supremacy
+  (12. Materiale extra/12x04.3 - IntraToOver.txt, lezione "Uscite da intraday ad
+  overnight"), ripulito il 24/10/2026. Richiede la funzione Mario_PtnBaseSA.
+  ARCHIVIO, non testata: e' il Develop del Trend Following con un'uscita in piu', e
+  Unger stesso lo definisce un codice base da adattare alla singola strategia.
+
+  Ingressi come il Develop: nella finestra MyStartTrade -> MyEndTrade (salvo la pausa),
+  buy stop al massimo del giorno se pattern MyPtnLY vero e MyPtnLN falso, sellshort stop
+  al minimo se MyPtnSY vero e MyPtnSN falso.
+  Uscita: di norma flat a fine sessione (setexitonclose). Se alla barra MycheckTime il
+  trade guadagna piu' di MycheckGain, ExitID = 1 e la posizione resta aperta la notte;
+  alla MyStartTrade del giorno dopo ExitID torna 0 e il trade chiude a fine sessione,
+  se stop e target non lo chiudono prima.
+  Stop e target sono in $ per unita' (setstopcontract): sul forex di TradeStation
+  0.0075 = 75 pip, 0.025 = 250 pip.
+
+  Unica modifica: i pattern si calcolano su ogni barra (come in UngerCT), perche' una
+  funzione con serie interne chiamata dentro un "if" puo' saltare barre. Il codice
+  originale li chiamava dentro l'if della finestra. }
+
+Input: MyPtnLY(41), MyPtnSY(41), MyPtnLN(42), MyPtnSN(42);
+Input: MyStartTrade(0300), MyEndTrade(0500), MyStartPause(1200), MyEndPause(1100);
+Input: MyStop(0.0075), MyProfit(0.025), MycheckGain(0), MycheckTime(1645);
+
+var: ExitID(0), pLY(false), pSY(false), pLN(false), pSN(false);
+
+pLY = Mario_PtnBaseSA(MyPtnLY);
+pSY = Mario_PtnBaseSA(MyPtnSY);
+pLN = Mario_PtnBaseSA(MyPtnLN);
+pSN = Mario_PtnBaseSA(MyPtnSN);
+
+if Time = MyStartTrade then ExitID = 0;
+
+if Time > MyStartTrade and Time < MyEndTrade and (Time < MyStartPause or Time > MyEndPause) then begin
+	if pLY and pLN = false then buy next bar at highd(0) stop;
+	if pSY and pSN = false then sellshort next bar at lowd(0) stop;
+end;
+
+setstopcontract;
+if MyStop > 0 then setstoploss(MyStop);
+if MyProfit > 0 then setprofittarget(MyProfit);
+
+if Time = MycheckTime then begin
+	if openpositionprofit > MycheckGain then ExitID = 1;
+end;
+
+if ExitID = 0 then setexitonclose;

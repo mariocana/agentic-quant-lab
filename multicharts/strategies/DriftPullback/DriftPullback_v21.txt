@@ -1,0 +1,285 @@
+// ==========================================================================
+//  Francesco Agnello Strategy shared in Strategies Feedbacks Section
+// ==========================================================================
+//  DriftPullback  |  NQ  |  Data1 = 5m execution  /  Data2 = 15m signal
+//  v2.1  post-review revision, lean input list
+// ==========================================================================
+//  SETUP IN MULTICHARTS
+//    Data1 = NQ 5 minute   (the execution series)
+//    Data2 = NQ 15 minute  (the signal series)  -- Insert -> Series, same symbol
+//
+//  >>> TIMEZONE — READ THIS BEFORE THE FIRST RUN <<<
+//  The five session inputs are in CHART time, and the defaults below are set
+//  for a CENTRAL-time chart (SessStart 930 = 09:30 CT = 10:30 ET).
+//
+//  The Bridge's own bars (C:\OFB\ofb_bars_NQ.csv) are keyed EASTERN. If you
+//  chart those -- which is what the backtest guide tells you to do -- these
+//  defaults are ONE HOUR OFF and the strategy will trade the wrong window.
+//
+//    Chart on EASTERN  ->  SessStart 1030 / SessEnd 1530 / FlatTime 1555
+//                          VwapStart 0930 / VwapEnd 1600
+//    Chart on CENTRAL  ->  SessStart 0930 / SessEnd 1430 / FlatTime 1455
+//                          VwapStart 0830 / VwapEnd 1500   <-- current defaults
+//
+//  Check the time axis on your chart and set all five accordingly. Nothing
+//  will error if you get it wrong; you will simply be trading a different
+//  hour than the one that was validated.
+// ==========================================================================
+//  vs v1:
+//  1) Session VWAP (AnchorType 2) is now accumulated on Data2 (15m) and
+//     frozen inside each 15m bar, exactly like the SMA and the MVWAP.
+//     Switching anchor no longer switches the computation series.
+//  2) StopSlipTicks: extra adverse ticks on stop exits only.
+//  3) SessStart moved to 0930 to skip the first RTH hour. Anchors, VWAP
+//     accumulation and arming still run from the open, only the entry
+//     trigger is gated.
+//  4) TradeLongs / TradeShorts toggles for the long-only test.
+// ==========================================================================
+
+inputs:
+    AnchorType( 2 ),          // 0=SMA | 1=rolling MVWAP | 2=session VWAP (15m, matched)
+    MALen( 20 ),
+    DriftLen( 4 ),
+    DriftThreshPct( 0.10 ),
+    // --- aggiunte nostre: sblocco del drift e log (tutto il resto e' dell'autore) ---
+    DriftMode( 0 ),           // 0 = drift in % (originale) | 1 = drift in unita' di ATR
+    DriftThreshAtr( 0.60 ),   // soglia per DriftMode 1 - DA CALIBRARE sul log, non indovinata
+    DriftAtrLen( 14 ),        // ATR sulla serie data2 (15m)
+    ShowLog( 0 ),
+    LogPath( "C:\mc_out\dpb_drift.txt" ),
+    ResetFile( 1 ),
+    PullbackWindow( 6 ),
+    ExitMode( 0 ),            // 0=fixed points | 1=ATR-relative (frozen at entry)
+    ATRExitLen( 14 ),         // ATR period on the 5m series for exit distances
+    LongSLpts( 80 ),          // ExitMode 0 - LONG  stop   [validated: 80]
+    LongTPpts( 40 ),          // ExitMode 0 - LONG  target [validated: 40]
+    ShortSLpts( 80 ),         // ExitMode 0 - SHORT stop   [validated: 80]
+    ShortTPpts( 50 ),         // ExitMode 0 - SHORT target [validated: 50]
+    LongSLatr( 3.0 ),         // ExitMode 1 - LONG  stop   = 3.0 ATR  (seed, TO BE CALIBRATED)
+    LongTPatr( 1.5 ),         // ExitMode 1 - LONG  target = 1.5 ATR
+    ShortSLatr( 3.0 ),        // ExitMode 1 - SHORT stop   = 3.0 ATR  (seed)
+    ShortTPatr( 1.9 ),        // ExitMode 1 - SHORT target = 1.9 ATR
+    StopSlipTicks( 2 ),       // adverse slippage on STOPS ONLY (1 NQ tick = 0.25 pt = $5)
+    TradeLongs( true ), TradeShorts( true ),
+    MaxTradesPerDay( 4 ),
+    MaxLossesPerDay( 2 ),
+    SessStart( 930 ), SessEnd( 1430 ), FlatTime( 1455 ),
+    VwapStart( 0830 ),        // type 2: RTH open (excludes premarket)
+    VwapEnd( 1500 ),          // type 2: end of accumulation
+    SizeMode( 1 ), BaseCts( 1 ), CushionStep( 2000 ), MaxCts( 3 ), CushionAdj( 0 );
+
+variables:
+    ma2( 0 ), ma2prev( 0 ), driftPct( 0 ), anchorOK( false ),
+    t2( -1 ), newBar2( false ),
+    longArmed( false ), shortArmed( false ), armedBars( 0 ),
+    tradesToday( 0 ), lossesToday( 0 ),
+    prevMP( 0 ), tradeCount( 0 ),
+    cushion( 0 ), curCts( 1 ),
+    sPV( 0 ), sVol( 0 ), sVwap( 0 ), sVwapLast( 0 ), sVwapPrev( 0 ),
+    atrEntry( 0 ), slipPts( 0 ),
+    atr2( 0 ), driftAtr( 0 ), driftLongOK( false ), driftShortOK( false );
+
+slipPts = StopSlipTicks * MinMove / PriceScale;
+
+// ------------------- daily reset + sizing -------------------
+if Date <> Date[1] then begin
+    tradesToday = 0;
+    lossesToday = 0;
+    longArmed   = false;
+    shortArmed  = false;
+    armedBars   = 0;
+
+    if AnchorType = 2 then begin
+        sPV = 0; sVol = 0; sVwap = 0; sVwapLast = 0; sVwapPrev = 0;
+    end;
+
+    if SizeMode = 2 then begin
+        cushion = MaxList( 0, NetProfit + CushionAdj );
+        curCts  = BaseCts + IntPortion( cushion / CushionStep );
+        curCts  = MinList( curCts, MaxCts );
+        curCts  = MaxList( curCts, 1 );
+    end
+    else
+        curCts = MaxList( BaseCts, 1 );
+end;
+
+// ------------------- new 15m bar -------------------
+newBar2 = false;
+if Time of data2 <> t2 then begin
+    newBar2 = true;
+    t2 = Time of data2;
+end;
+
+// ------------------- session VWAP accumulation on 15m (type 2 only) -------------------
+if newBar2 then begin
+    sVwapPrev = sVwapLast;                       // value at the previous 15m boundary
+
+    if AnchorType = 2 then begin
+        if Time of data2 > VwapStart and Time of data2 <= VwapEnd then begin
+            sPV  = sPV  + ( ( High of data2 + Low of data2 + Close of data2 ) / 3 ) * Volume of data2;
+            sVol = sVol + Volume of data2;
+        end;
+        if sVol > 0 then sVwap = sPV / sVol;
+    end;
+
+    sVwapLast = sVwap;                           // value at the current 15m boundary
+end;
+
+// ------------------- selectable ANCHOR -------------------
+if AnchorType = 0 then begin
+    ma2     = Average( Close of data2, MALen );
+    ma2prev = Average( Close[1] of data2, MALen );
+end
+else if AnchorType = 1 then begin
+    if Summation( Volume of data2, MALen ) > 0 then
+        ma2 = Summation( ( ( High of data2 + Low of data2 + Close of data2 ) / 3 ) * Volume of data2, MALen )
+              / Summation( Volume of data2, MALen );
+    if Summation( Volume[1] of data2, MALen ) > 0 then
+        ma2prev = Summation( ( ( High[1] of data2 + Low[1] of data2 + Close[1] of data2 ) / 3 ) * Volume[1] of data2, MALen )
+              / Summation( Volume[1] of data2, MALen );
+end
+else begin
+    ma2 = sVwapLast;                             // frozen inside the 15m bar, like the SMA
+    if sVwapPrev > 0 then ma2prev = sVwapPrev else ma2prev = ma2;
+end;
+
+anchorOK = ma2 > 0;
+
+// ------------------- drift % (on the raw 15m close, UNCHANGED) -------------------
+if Close[DriftLen] of data2 <> 0 then
+    driftPct = ( Close of data2 - Close[DriftLen] of data2 )
+               / ( Close[DriftLen] of data2 ) * 100;
+
+// ===== NOSTRO: drift in unita' di ATR =====================================
+// Il drift in % di prezzo e' inaffidabile su un continuous back-adjusted: i
+// livelli storici sono traslati, quindi la stessa soglia % seleziona movimenti
+// diversi in anni diversi. In unita' di ATR la soglia e' invariante di scala.
+// ==========================================================================
+atr2 = AvgTrueRange( DriftAtrLen ) of data2;
+if atr2 > 0 then
+    driftAtr = ( Close of data2 - Close[DriftLen] of data2 ) / atr2
+else
+    driftAtr = 0;
+
+if DriftMode = 1 then begin
+    driftLongOK  = driftAtr >=  DriftThreshAtr;
+    driftShortOK = driftAtr <= -DriftThreshAtr;
+end
+else begin
+    driftLongOK  = driftPct >=  DriftThreshPct;
+    driftShortOK = driftPct <= -DriftThreshPct;
+end;
+
+if ResetFile = 1 and CurrentBar = 1 then
+    FileDelete( LogPath );
+
+// ------------------- arming (runs from the open, entry is gated separately) -------------------
+if newBar2 then begin
+    if anchorOK
+       and Close of data2 > ma2
+       and ma2 > ma2prev
+       and driftLongOK then begin
+        longArmed  = true;
+        shortArmed = false;
+        armedBars  = 0;
+    end
+    else if anchorOK
+       and Close of data2 < ma2
+       and ma2 < ma2prev
+       and driftShortOK then begin
+        shortArmed = true;
+        longArmed  = false;
+        armedBars  = 0;
+    end
+    else begin
+        longArmed  = false;
+        shortArmed = false;
+    end;
+end;
+
+// ===== NOSTRO: log per calibrare la soglia in ATR =========================
+// Una riga per barra 15m con ancora valida: da' la distribuzione congiunta di
+// driftPct e driftAtr, cosi' DriftThreshAtr si MISURA invece di indovinarla.
+// ==========================================================================
+if ShowLog = 1 and newBar2 and anchorOK then
+    Print( File( LogPath ), "DPB ", Date of data2:8:0, " ", Time of data2:5:0,
+           " close=", Close of data2:9:2,
+           " atr2=", atr2:8:3,
+           " dPct=", driftPct:8:4,
+           " dAtr=", driftAtr:8:4,
+           " anchUp=", ( ma2 > ma2prev ):2:0,
+           " above=", ( Close of data2 > ma2 ):2:0 );
+
+// ------------------- setup expiry -------------------
+if longArmed or shortArmed then begin
+    armedBars = armedBars + 1;
+    if armedBars > PullbackWindow then begin
+        longArmed  = false;
+        shortArmed = false;
+    end;
+end;
+
+// ------------------- stop loss counter -------------------
+if TotalTrades > tradeCount then begin
+    if PositionProfit( 1 ) < 0 then
+        lossesToday = lossesToday + 1;
+    tradeCount = TotalTrades;
+end;
+
+// ------------------- entry counter -------------------
+if MarketPosition <> 0 and prevMP = 0 then
+    tradesToday = tradesToday + 1;
+prevMP = MarketPosition;
+
+// ------------------- entries: 5m pullback trigger -------------------
+if MarketPosition = 0
+   and Time >= SessStart
+   and Time <  SessEnd
+   and tradesToday < MaxTradesPerDay
+   and lossesToday < MaxLossesPerDay then begin
+
+    if TradeLongs and longArmed and Close < Open then begin
+        atrEntry = AvgTrueRange( ATRExitLen );
+        if atrEntry <= 0 then atrEntry = Range;
+        Buy ( "DriftPB.L" ) curCts contracts next bar at market;
+        longArmed = false;
+    end;
+
+    if TradeShorts and shortArmed and Close > Open then begin
+        atrEntry = AvgTrueRange( ATRExitLen );
+        if atrEntry <= 0 then atrEntry = Range;
+        SellShort ( "DriftPB.S" ) curCts contracts next bar at market;
+        shortArmed = false;
+    end;
+end;
+
+// ------------------- exits: stop carries extra adverse slippage -------------------
+if MarketPosition = 1 then begin
+    if ExitMode = 0 then begin
+        Sell ( "L.SL" ) next bar at EntryPrice - LongSLpts - slipPts stop;
+        Sell ( "L.TP" ) next bar at EntryPrice + LongTPpts limit;
+    end
+    else begin
+        Sell ( "L.SL" ) next bar at EntryPrice - LongSLatr * atrEntry - slipPts stop;
+        Sell ( "L.TP" ) next bar at EntryPrice + LongTPatr * atrEntry limit;
+    end;
+end;
+
+if MarketPosition = -1 then begin
+    if ExitMode = 0 then begin
+        BuyToCover ( "S.SL" ) next bar at EntryPrice + ShortSLpts + slipPts stop;
+        BuyToCover ( "S.TP" ) next bar at EntryPrice - ShortTPpts limit;
+    end
+    else begin
+        BuyToCover ( "S.SL" ) next bar at EntryPrice + ShortSLatr * atrEntry + slipPts stop;
+        BuyToCover ( "S.TP" ) next bar at EntryPrice - ShortTPatr * atrEntry limit;
+    end;
+end;
+
+// ------------------- forced flat + end of day -------------------
+if MarketPosition <> 0 and Time >= FlatTime then begin
+    Sell       ( "L.Flat" ) next bar at market;
+    BuyToCover ( "S.Flat" ) next bar at market;
+end;
+
+SetExitOnClose;

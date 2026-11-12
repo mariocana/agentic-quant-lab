@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Costi e profitti 2026</title>
+<style>
+:root{
+  color-scheme:light;
+  --page:#f6f6f3; --surface:#fcfcfb; --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --loss:#e34948; --gain:#2a78d6;
+  --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --c4:#a9a79f; --c5:#77756e;
+  --accent:#1c5cab; --accent-soft:#e6eefa;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+    --loss:#e66767; --gain:#3987e5;
+    --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#6f6d66; --c5:#9d9b93;
+    --accent:#86b6ef; --accent-soft:#16263b;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --page:#0d0d0d; --surface:#1a1a19; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+  --loss:#e66767; --gain:#3987e5;
+  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#6f6d66; --c5:#9d9b93;
+  --accent:#86b6ef; --accent-soft:#16263b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;padding-inline:16px;padding-block:32px 64px}
+main{max-width:960px;margin:0 auto;display:grid;gap:40px}
+h1{font-size:30px;line-height:1.15;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:20px;margin:0 0 6px;text-wrap:balance}
+h3{font-size:15px;margin:0 0 6px}
+p{margin:0;max-width:68ch}
+.lead{color:var(--ink-2);font-size:16px}
+.eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+section{display:grid;gap:14px}
+.card{background:var(--surface);border:1px solid var(--ring);border-radius:8px;padding:18px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--ring);border-radius:8px;padding:14px 16px;display:grid;gap:2px}
+.tile .v{font-size:26px;font-weight:650;letter-spacing:-.01em}
+.tile .l{font-size:13px;color:var(--ink-2)}
+.neg{color:var(--loss)} .pos{color:var(--gain)}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink-2);margin-bottom:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--surface);color:var(--ink);border:1px solid var(--ring);box-shadow:0 4px 16px rgba(0,0,0,.12);border-radius:6px;padding:8px 10px;font-size:13px;line-height:1.4;z-index:10;max-width:280px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.03em;text-transform:uppercase}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.note{font-size:13px;color:var(--ink-2)}
+ul.note{margin:0;padding-left:20px;display:grid;gap:4px}
+.rules{background:var(--accent-soft);border:1px solid var(--ring);border-radius:10px;padding:22px;display:grid;gap:12px}
+.rules ol{margin:0;padding-left:20px;display:grid;gap:6px}
+code{font-size:13px}
+</style>
+</head>
+<body>
+<main>
+
+<header style="display:grid;gap:10px">
+  <div class="eyebrow">Soldi tuoi · spese per il trading dal conto "Trading"</div>
+  <h1>Costi e profitti 2026</h1>
+  <p class="lead">Quanto ti è costato davvero il trading quest'anno: prop, formazione, strumenti. Il P&amp;L dei conti prop non è qui, perché non sono soldi tuoi. Qui ci sono solo i soldi usciti dal tuo conto e quelli rientrati come payout.</p>
+</header>
+
+<section><div class="tiles" id="tiles"></div></section>
+
+<section>
+  <div class="eyebrow">Dove vanno i soldi</div>
+  <h2>Spese per categoria</h2>
+  <div class="card"><div class="chart" id="cats"></div></div>
+  <p class="note" id="catnote"></p>
+</section>
+
+<section>
+  <div class="eyebrow">Formazione</div>
+  <h2>Tutti i corsi comprati</h2>
+  <p id="corsilead"></p>
+  <div class="card tbl"><table id="corsi"><thead><tr><th>Primo pagamento</th><th>Corso</th><th class="n">Totale</th></tr></thead><tbody></tbody></table></div>
+  <p class="note">Nel repo hai già il materiale di alcuni di questi (Institutional Protocol, Dax Trading Lab e Stock Trading Lab di Serafini, Stucchi). Il prossimo euro speso in formazione vale meno di un'ora passata a estrarre regole da quello che hai già e a provarle in demo.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Andamento</div>
+  <h2>Mese per mese</h2>
+  <div class="card">
+    <div class="legend" id="legend"></div>
+    <div class="chart" id="months"></div>
+  </div>
+  <h3 style="margin-top:6px">Saldo cumulativo (entrate − costi)</h3>
+  <div class="card"><div class="chart" id="cum"></div></div>
+</section>
+
+<section>
+  <div class="eyebrow">Soldi veri e soldi della prop</div>
+  <h2>Due numeri da non confondere</h2>
+  <div class="tiles">
+    <div class="tile"><div class="l">P&amp;L sui conti prop e demo, 16/06–18/08</div><div class="v">−6.892 $</div><div class="l">non sono soldi tuoi: è il punteggio</div></div>
+    <div class="tile"><div class="l">Soldi tuoi usciti per fare trading</div><div class="v neg" id="realcost"></div><div class="l">questo è il conto vero</div></div>
+  </div>
+  <p class="note">Le prop assorbono le perdite di trading, ma ogni conto bruciato si ripaga con una nuova valutazione. Il comportamento che nel diario costa dollari finti qui costa euro veri.</p>
+</section>
+
+<section>
+  <div class="eyebrow">Il collegamento con il diario</div>
+  <h2>Le prop comprate nei giorni di trading</h2>
+  <p>Metà delle valutazioni prop negli screenshot sono state comprate nello stesso giorno di una sessione, quasi sempre dopo averne bruciata una.</p>
+  <div class="card tbl">
+    <table>
+      <thead><tr><th>Data</th><th>Acquisto</th><th class="n">Costo</th><th class="n">P&amp;L della sessione</th><th>Dal diario</th></tr></thead>
+      <tbody>
+        <tr><td>18 giu</td><td>Apex, 16:10</td><td class="n">34,16 €</td><td class="n neg">−1.570 $</td><td>«hai bruciato la prop»</td></tr>
+        <tr><td>17 lug</td><td>Apex, 19:45</td><td class="n">21,88 €</td><td class="n pos">+742 $</td><td>68 trade, voto 2, «management non rispettato»</td></tr>
+        <tr><td>28 lug</td><td>MyFundedFX, 20:02</td><td class="n">55,13 €</td><td class="n neg">−1.412 $</td><td>«mi ha portato al disastro»</td></tr>
+        <tr><td>30 lug</td><td>Apex, 15:41</td><td class="n">17,30 €</td><td class="n neg">−120 $</td><td>«eliminare una prop… ne abbiamo presa un'altra»</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Comprare una nuova valutazione subito dopo averne persa una è lo stesso meccanismo dei trade aperti entro 3 minuti da una perdita: si prova a recuperare subito. Serve la stessa regola, una pausa obbligatoria.</p>
+</section>
+
+<section class="rules">
+  <div class="eyebrow" style="color:var(--accent)">Regole di spesa da oggi</div>
+  <h2 style="margin:0">Budget del trading</h2>
+  <ol>
+    <li><b>Nessuna nuova valutazione prop</b> finché la fase demo non ha superato il gate del playbook (≥90% regole rispettate, nessuna sessione oltre i limiti, expectancy positiva).</li>
+    <li><b>Mai comprare una prop nello stesso giorno</b> in cui ne hai bruciata una. Minimo 48 ore, e prima rileggi il diario della giornata.</li>
+    <li>Dopo il gate: <b>massimo 1 valutazione al mese</b>, dentro un budget mensile scritto a inizio mese.</li>
+    <li><b>Nessun nuovo corso o abbonamento</b> finché non hai estratto e provato in demo quello che hai già: 11 corsi da settembre 2025.</li>
+    <li>Ogni spesa e ogni payout vanno nei CSV il giorno stesso, poi si rigenera questa pagina.</li>
+  </ol>
+</section>
+
+<section>
+  <div class="eyebrow">Per rientrare</div>
+  <h2>Quanto serve per andare in pari</h2>
+  <p id="breakeven"></p>
+</section>
+
+<section>
+  <div class="eyebrow">Dettaglio</div>
+  <h2>Tutte le spese</h2>
+  <div class="card tbl"><table id="rows"><thead><tr><th>Data</th><th>Esercente</th><th>Voce</th><th>Categoria</th><th class="n">€</th><th class="n">$</th><th>Nota</th></tr></thead><tbody></tbody></table></div>
+  <h3 style="margin-top:6px">Entrate (payout)</h3>
+  <div class="card tbl"><table id="inc"><thead><tr><th>Data</th><th>Fonte</th><th class="n">€</th><th>Nota</th></tr></thead><tbody></tbody></table></div>
+</section>
+
+<section>
+  <div class="eyebrow">Cosa c'è e cosa manca</div>
+  <ul class="note">
+    <li>Fonti: screenshot dell'app bancaria del conto "Trading" (maggio–luglio 2026) ed elenco ordini dei corsi. Agosto e settembre confermati da te: nessuna prop, solo il datafeed del 10/09.</li>
+    <li>Le rate di Pro Trader Blueprint e Quant Lake che non compaiono negli screenshot sono prese dal totale dell'ordine e segnate nella nota.</li>
+    <li>Non contati: i giroconti tra tuoi conti (Personale → Trading, Terza rata verdura, Pockey, Pocket RevPoints), che restano soldi tuoi; gli arrotondamenti "Spiccioli"; le verifiche carta a 0 €; l'ordine Institutional Protocol del 24/08 annullato.</li>
+    <li>Non contati: 5 addebiti Gexbot da circa 45 € rifiutati per saldo insufficiente tra il 20 e il 27 giugno. Non sono stati pagati, ma dicono che a fine giugno il conto Trading era vuoto.</li>
+    <li>I 3 corsi del 2025 (settembre–novembre) sono nella tabella dei corsi e nel totale da settembre 2025, non nei grafici del 2026.</li>
+    <li>Importi in euro come addebitati; il dollaro è quello mostrato dall'app.</li>
+  </ul>
+  <p class="note">Per aggiornare: aggiungi righe a <code>costi_trading_2026.csv</code> o <code>entrate_trading_2026.csv</code>, poi nel Terminale: <code>python3 aggiorna_report_costi.py</code> dentro la cartella <code>Report</code>.</p>
+</section>
+
+</main>
+<div class="tip" id="tip" hidden></div>
+<script>
+const D = __DATA__;
+const CATS = ["Prop firm","Formazione","Strumenti e dati","PayPal da attribuire","Da attribuire"];
+const CV = ["--c1","--c2","--c3","--c4","--c5"];
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const grp = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const eur = (v,dec=0) => { const a=Math.abs(v); let s; if(dec){ const [i,d]=a.toFixed(2).split('.'); s=grp(i)+','+d; } else s=grp(Math.round(a)); return (v<0?'−':'')+s+' €'; };
+const MN = ['gen','feb','mar','apr','mag','giu','lug','ago','set','ott','nov','dic'];
+const mLab = m => MN[+m.slice(5,7)-1]+' '+m.slice(0,4);
+const dLab = d => +d.slice(8,10)+' '+MN[+d.slice(5,7)-1];
+const tip=document.getElementById('tip');
+const showTip=(e,h)=>{tip.innerHTML=h;tip.hidden=false;tip.style.left=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8)+'px';tip.style.top=(e.clientY+14)+'px';};
+const hideTip=()=>tip.hidden=true;
+const NS='http://www.w3.org/2000/svg';
+function el(t,a,p){const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);if(p)p.appendChild(n);return n;}
+function ticks(min,max,c=5){const sp=max-min||1,s0=sp/c,mg=Math.pow(10,Math.floor(Math.log10(s0)));const st=[1,2,2.5,5,10].map(x=>x*mg).find(x=>sp/x<=c)||mg*10;const lo=Math.floor(min/st)*st,hi=Math.ceil(max/st)*st;const t=[];for(let v=lo;v<=hi+1e-9;v+=st)t.push(Math.round(v));return t;}
+
+const net = D.tot_entrate - D.tot_costi;
+const nMesi = D.mesi.length;
+document.getElementById('tiles').innerHTML = [
+  [eur(-D.tot_costi),`costi ${D.anno}`,'neg'],
+  [eur(D.tot_entrate),'payout incassati', D.tot_entrate>0?'pos':''],
+  [eur(net),'saldo netto', net<0?'neg':'pos'],
+  [eur(-D.tot_costi/nMesi),`media al mese (${nMesi} mesi, ${mLab(D.mesi[0])}–${mLab(D.mesi[D.mesi.length-1])})`,'neg'],
+  [eur(-(D.tot_costi+D.tot_prima)),'totale da settembre 2025','neg'],
+  [String(D.n_prop),'valutazioni prop pagate','']
+].map(t=>`<div class="tile"><div class="v ${t[2]}">${t[0]}</div><div class="l">${t[1]}</div></div>`).join('');
+document.getElementById('realcost').textContent = eur(-D.tot_costi);
+const form = D.per_cat['Formazione']||0;
+document.getElementById('catnote').innerHTML = `Nel ${D.anno} la formazione è il <b>${Math.round(form/D.tot_costi*100)}%</b> delle spese, le prop il ${Math.round((D.per_cat['Prop firm']||0)/D.tot_costi*100)}%.`;
+const totCorsi = D.corsi.reduce((s,c)=>s+c.eur,0);
+document.getElementById('corsilead').innerHTML = `<b>${D.corsi.length} corsi</b> da settembre 2025, per un totale di <b>${eur(totCorsi,2)}</b>.`;
+document.querySelector('#corsi tbody').innerHTML = D.corsi.map(c=>`<tr><td style="white-space:nowrap">${dLab(c.data)} ${c.data.slice(0,4)}</td><td>${c.voce.replace(/[&<>]/g,'')}</td><td class="n">${eur(c.eur,2)}</td></tr>`).join('')+`<tr><td colspan="2"><b>Totale</b></td><td class="n"><b>${eur(totCorsi,2)}</b></td></tr>`;
+const usd = Math.round(D.tot_costi*1.14/100)*100;
+document.getElementById('breakeven').innerHTML = D.tot_entrate>=D.tot_costi
+  ? `Sei in pari: le entrate coprono i costi.`
+  : `Ti mancano <b>${eur(D.tot_costi-D.tot_entrate)}</b>, circa <b>${grp(usd)} $</b> di payout (cambio ~1,14 come negli addebiti). Oggi il modo più rapido per non allontanarsi dal pareggio è non aggiungere altri costi finché la demo non ha superato il gate.`;
+
+function draw(){
+  // categorie
+  (function(){
+    const box=document.getElementById('cats'); box.innerHTML='';
+    const items=CATS.map((c,i)=>({c,v:D.per_cat[c]||0,col:css(CV[i])})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+    const W=900,row=42,l=190,r=120,H=row*items.length+8, max=Math.max(...items.map(x=>x.v));
+    const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Spese per categoria'},box);
+    items.forEach((it,k)=>{const y=4+k*row+9,h=row-18,w=Math.max(2,(W-l-r)*it.v/max);
+      el('rect',{x:l,y,width:w,height:h,rx:3,fill:it.col},svg);
+      const a=el('text',{x:l-12,y:y+h/2+4,'text-anchor':'end','font-size':13,fill:css('--ink')},svg);a.textContent=it.c;
+      const b=el('text',{x:l+w+8,y:y+h/2+4,'font-size':13,fill:css('--ink-2'),'font-variant-numeric':'tabular-nums'},svg);b.textContent=eur(it.v)+'  ·  '+Math.round(it.v/D.tot_costi*100)+'%';
+      const hit=el('rect',{x:0,y:4+k*row,width:W,height:row,fill:'transparent'},svg);
+      const rows=D.costi.filter(c=>c.categoria===it.c);
+      hit.addEventListener('mousemove',e=>showTip(e,`<div><b>${it.c}</b>: ${eur(it.v,2)}</div><div>${rows.length} addebiti</div>`));hit.addEventListener('mouseleave',hideTip);});
+  })();
+  // mesi, barre impilate
+  (function(){
+    document.getElementById('legend').innerHTML=CATS.map((c,i)=>`<span><i style="background:${css(CV[i])}"></i>${c}</span>`).join('');
+    const box=document.getElementById('months'); box.innerHTML='';
+    const W=900,H=280,m={l:70,r:12,t:12,b:34};
+    const tot=D.mesi.map(mm=>CATS.reduce((s,c)=>s+(D.per_mese[mm][c]||0),0));
+    const tk=ticks(0,Math.max(...tot)); const top=tk[tk.length-1];
+    const Y=v=>m.t+(H-m.t-m.b)*(1-v/top); const bw=(W-m.l-m.r)/D.mesi.length, barW=Math.min(120,bw*0.5);
+    const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Spese per mese'},box);
+    tk.forEach(t=>{el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),stroke:t===0?css('--axis'):css('--grid')},svg);const tx=el('text',{x:m.l-8,y:Y(t)+4,'text-anchor':'end','font-size':12,fill:css('--muted')},svg);tx.textContent=eur(t);});
+    D.mesi.forEach((mm,i)=>{const x=m.l+i*bw+(bw-barW)/2;let acc=0;
+      CATS.forEach((c,k)=>{const v=D.per_mese[mm][c]||0;if(!v)return;const y1=Y(acc+v),y0=Y(acc);
+        el('rect',{x,y:y1,width:barW,height:Math.max(1,y0-y1-2),rx:2,fill:css(CV[k])},svg);acc+=v;});
+      if(tot[i]>0){const lt=el('text',{x:x+barW/2,y:Y(tot[i])-8,'text-anchor':'middle','font-size':13,fill:css('--ink'),'font-weight':600},svg);lt.textContent=eur(tot[i]);}
+      const xt=el('text',{x:x+barW/2,y:H-10,'text-anchor':'middle','font-size':12,fill:css('--muted')},svg);xt.textContent=mLab(mm);
+      const hit=el('rect',{x:m.l+i*bw,y:m.t,width:bw,height:H-m.t-m.b,fill:'transparent'},svg);
+      hit.addEventListener('mousemove',e=>showTip(e,`<div><b>${mLab(mm)}</b>: ${eur(tot[i],2)}</div>`+CATS.filter(c=>D.per_mese[mm][c]).map(c=>`<div>${c}: ${eur(D.per_mese[mm][c],2)}</div>`).join('')+(D.ent_mese[mm]?`<div>Entrate: ${eur(D.ent_mese[mm],2)}</div>`:'')));
+      hit.addEventListener('mouseleave',hideTip);});
+  })();
+  // cumulativo
+  (function(){
+    const box=document.getElementById('cum'); box.innerHTML='';
+    const ev=[...D.costi.map(c=>({d:c.data,v:-parseFloat(c.importo_eur),t:c.esercente})),...D.entrate.map(e=>({d:e.data,v:parseFloat(e.importo_eur),t:e.fonte}))].sort((a,b)=>a.d.localeCompare(b.d));
+    let s=0; const pts=ev.map(e=>({...e,s:(s+=e.v)}));
+    const W=900,H=240,m={l:70,r:90,t:12,b:34};
+    const tk=ticks(Math.min(0,...pts.map(p=>p.s)),Math.max(0,...pts.map(p=>p.s)));const y0=tk[0],y1=tk[tk.length-1];
+    const t0=new Date(pts[0].d),t1=new Date(pts[pts.length-1].d); const span=(t1-t0)||1;
+    const X=d=>m.l+(W-m.l-m.r)*((new Date(d)-t0)/span), Y=v=>m.t+(H-m.t-m.b)*(1-(v-y0)/(y1-y0));
+    const svg=el('svg',{viewBox:`0 0 ${W} ${H}`,role:'img','aria-label':'Saldo cumulativo'},box);
+    tk.forEach(t=>{el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),stroke:t===0?css('--axis'):css('--grid')},svg);const tx=el('text',{x:m.l-8,y:Y(t)+4,'text-anchor':'end','font-size':12,fill:css('--muted')},svg);tx.textContent=eur(t);});
+    let d='M'+X(pts[0].d)+','+Y(0); pts.forEach(p=>{d+=` L${X(p.d).toFixed(1)},${Y(p.s-p.v).toFixed(1)} L${X(p.d).toFixed(1)},${Y(p.s).toFixed(1)}`;});
+    el('path',{d,fill:'none',stroke:css('--loss'),'stroke-width':2,'stroke-linejoin':'round'},svg);
+    const last=pts[pts.length-1]; el('circle',{cx:X(last.d),cy:Y(last.s),r:4,fill:css('--loss'),stroke:css('--surface'),'stroke-width':2},svg);
+    const lt=el('text',{x:X(last.d)+8,y:Y(last.s)+4,'font-size':12,fill:css('--ink-2')},svg);lt.textContent=eur(last.s);
+    const months=[...new Set(pts.map(p=>p.d.slice(0,7)))];
+    months.forEach(mm=>{const x=X(mm+'-01')<m.l?m.l:X(mm+'-01');const xt=el('text',{x,y:H-10,'text-anchor':'start','font-size':12,fill:css('--muted')},svg);xt.textContent=mLab(mm);});
+    pts.forEach(p=>{const c=el('circle',{cx:X(p.d),cy:Y(p.s),r:9,fill:'transparent'},svg);
+      c.addEventListener('mousemove',e=>showTip(e,`<div>${dLab(p.d)}: ${p.t}</div><div>${eur(p.v,2)}</div><div>Saldo: <b>${eur(p.s,2)}</b></div>`));c.addEventListener('mouseleave',hideTip);});
+  })();
+}
+draw();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+document.querySelector('#rows tbody').innerHTML=D.costi.map(c=>{const i=CATS.indexOf(c.categoria);return `<tr><td style="white-space:nowrap">${dLab(c.data)}</td><td>${esc(c.esercente)}</td><td>${esc(c.voce)}</td><td><span class="dot" style="background:${css(CV[i<0?4:i])}"></span>${esc(c.categoria)}</td><td class="n">${eur(parseFloat(c.importo_eur),2)}</td><td class="n">${c.importo_usd?esc(c.importo_usd).replace('.',',')+' $':''}</td><td class="note">${esc(c.nota)}</td></tr>`;}).join('')
+  +`<tr><td colspan="4"><b>Totale 2026</b></td><td class="n"><b>${eur(D.tot_costi,2)}</b></td><td></td><td></td></tr>`;
+document.querySelector('#inc tbody').innerHTML=D.entrate.length?D.entrate.map(e=>`<tr><td>${dLab(e.data)}</td><td>${esc(e.fonte)}</td><td class="n pos">${eur(parseFloat(e.importo_eur),2)}</td><td class="note">${esc(e.nota)}</td></tr>`).join(''):`<tr><td colspan="4" class="note">Nessun payout registrato finora. Il primo va in <code>entrate_trading_2026.csv</code>.</td></tr>`;
+</script>
+</body>
+</html>

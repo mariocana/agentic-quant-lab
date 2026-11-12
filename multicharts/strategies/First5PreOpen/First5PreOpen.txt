@@ -1,0 +1,180 @@
+{ =====================================================================
+  First5PreOpen  -  NQ, prima candela da 5 minuti confermata dalla candela
+  pre-open, stop all'altro estremo, tenuta fino alle 15:00 CT  -  PowerLanguage
+  ---------------------------------------------------------------------
+  Spec: SPEC.md (commit 862759f). In MultiCharts: Mario_First5PreOpen.
+
+  REGOLE
+    1) ARMAMENTO: sulla barra Time = 835 (08:30-08:35), con la barra
+       precedente Time = 830 (08:25-08:30) e la stessa Date, lun-ven.
+       Una barra mancante vuol dire niente trade.
+    2) TRIGGER: segno = Close - Open delle due barre. Entrambi positivi ->
+       long; entrambi negativi -> short; discordi, o una con corpo nullo ->
+       niente trade. Con PreOpenFilter 0 conta solo il segno della 835.
+    3) INGRESSO: next bar at market, cioe' l'apertura delle 08:35 (timbro
+       08:40 in List of Trades).
+    4) STOP: long = Low della 835, short = High. Ordine stop a prezzo, al
+       livello, senza buffer: -SL0 parte sul segnale e copre la barra
+       d'ingresso, poi -SL a ogni barra in posizione. Non si muove.
+    5) TARGET: nessuno. TP_RR > 0 esiste solo per i controlli di meccanica:
+       limit a Close +/- TP_RR x |Close - stop| dalla close del segnale.
+    6) USCITA A TEMPO: prima barra con Time >= 1500 -> next bar at market
+       (prezzo delle 15:00, timbro 15:05). SetExitOnClose come rete per le
+       giornate corte.
+    Un trade al giorno per costruzione: una sola barra di segnale, nessun
+    rientro dopo lo stop. Gli orari 830, 835 e 1500 sono costanti: fanno
+    parte della regola. Niente calendario, niente tetto allo stop.
+
+  LOG (ShowLog 1, non e' logica)
+    F5P DAY  una riga al giorno: O H L C e segno della 830 e della 835,
+             decisione (LONG, SHORT, NONE-discordi, NONE-corpo0, NONE-barra)
+    F5P ENT  a ogni ingresso, sulla barra del fill: entry, stop, distanza,
+             target, Open della barra, chiuso=1 se e' gia' uscito li'
+
+  CHART: @NQ 5 min, sessione Globex 17:00-16:00 CT senza pause, timezone
+         Exchange (CT), Bar Magnifier 1 min, IOG off, commissione
+         7.5$ per Contract, slippage 0. Niente lead-in.
+         Su un chart che non e' in CT le barre 830 e 835 esistono lo stesso
+         e la strategia trada un'ora sbagliata senza dare errori.
+  ===================================================================== }
+
+Inputs:
+    PreOpenFilter(1),          { 1 = regola; 0 = solo prima candela, per i controlli }
+    TP_RR(0),                  { 0 = regola; > 0 solo per i controlli }
+    NumContracts(1),
+    ShowLog(0),                { 1 = stampa F5P DAY e F5P ENT (non e' logica) }
+    { --- finestra di trading (non e' logica): data EasyLanguage YYYMMDD,
+          YYY = anno - 1900 (1200101 = 1 gen 2020). 0 = disattivato.
+          Agisce solo sugli ingressi --- }
+    TradeStartEL(0),
+    TradeEndEL(0);
+
+Variables:
+    dateOK(false), dayDone(false), armed(false),
+    sgnPre(0), sgnFirst(0), tradeDir(0),
+    stopPx(0), tgtPx(0),
+    entPending(false), tradesBefore(0), entPx(0),
+    decTxt("");
+
+once begin
+    if PreOpenFilter <> 0 and PreOpenFilter <> 1 then
+        RaiseRunTimeError("PreOpenFilter deve essere 0 o 1.");
+    if TP_RR < 0 then
+        RaiseRunTimeError("TP_RR deve essere >= 0.");
+    if NumContracts < 1 then
+        RaiseRunTimeError("NumContracts deve essere >= 1.");
+end;
+
+{ ===== LOG DELL'INGRESSO, sulla barra del fill. Se lo stop ha gia' chiuso il
+  trade qui MarketPosition e' 0 e l'ingresso va letto dalla posizione chiusa ===== }
+if entPending then begin
+    entPending = false;
+    if ShowLog = 1 then begin
+        entPx = 0;
+        if MarketPosition <> 0 then entPx = EntryPrice
+        else if TotalTrades > tradesBefore then entPx = EntryPrice(1);
+        Print("F5P ENT ", Date:8:0, " ", Time:5:0, " dir=", tradeDir:2:0,
+              " entry=", entPx:9:2, " stop=", stopPx:9:2,
+              " dist=", AbsValue(entPx - stopPx):7:2, " tp=", tgtPx:9:2,
+              " open=", Open:9:2, " chiuso=", IFF(MarketPosition = 0, 1, 0):2:0);
+    end;
+end;
+
+{ ===== NUOVO GIORNO ===== }
+if Date <> Date[1] then
+    dayDone = false;
+
+dateOK = (TradeStartEL = 0 or Date >= TradeStartEL)
+     and (TradeEndEL   = 0 or Date <= TradeEndEL);
+
+{ ===== DECISIONE, una volta al giorno: sulla barra 835, o sulla prima barra
+  dopo se la 835 manca, cosi' anche quel giorno ha la sua riga nel log.
+  Il limite a 1500 tiene fuori le barre della sera (la domenica, Natale) ===== }
+if dayDone = false and Time >= 835 and Time <= 1500 then begin
+    dayDone  = true;
+    sgnPre   = 0;
+    sgnFirst = 0;
+    tradeDir = 0;
+    decTxt   = "NONE-barra";
+
+    armed = Time = 835 and Time[1] = 830 and Date[1] = Date
+            and DayOfWeek(Date) >= 1 and DayOfWeek(Date) <= 5;
+
+    if armed then begin
+        if Close > Open then sgnFirst = 1
+        else if Close < Open then sgnFirst = -1;
+        if Close[1] > Open[1] then sgnPre = 1
+        else if Close[1] < Open[1] then sgnPre = -1;
+
+        if PreOpenFilter = 1 then begin
+            if sgnFirst = 0 or sgnPre = 0 then decTxt = "NONE-corpo0"
+            else if sgnFirst <> sgnPre then decTxt = "NONE-discordi"
+            else tradeDir = sgnFirst;
+        end
+        else begin
+            if sgnFirst = 0 then decTxt = "NONE-corpo0"
+            else tradeDir = sgnFirst;
+        end;
+
+        if tradeDir = 1 then decTxt = "LONG";
+        if tradeDir = -1 then decTxt = "SHORT";
+    end;
+
+    if ShowLog = 1 and dateOK then begin
+        if armed then
+            Print("F5P DAY ", Date:8:0, " ", Time:5:0,
+                  " 830 O=", Open[1]:9:2, " H=", High[1]:9:2, " L=", Low[1]:9:2,
+                  " C=", Close[1]:9:2, " sgn=", sgnPre:2:0,
+                  " 835 O=", Open:9:2, " H=", High:9:2, " L=", Low:9:2,
+                  " C=", Close:9:2, " sgn=", sgnFirst:2:0, " dec=", decTxt)
+        else
+            Print("F5P DAY ", Date:8:0, " ", Time:5:0, " prec=", Time[1]:5:0, " dec=", decTxt);
+    end;
+
+    { ===== INGRESSO: stop ed eventuale target partono sul segnale, insieme
+      all'ingresso, e coprono la barra del fill ===== }
+    if dateOK and MarketPosition = 0 then begin
+        if tradeDir = 1 then begin
+            stopPx = Low;
+            tgtPx  = 0;
+            if TP_RR > 0 then tgtPx = Close + TP_RR * AbsValue(Close - stopPx);
+            tradesBefore = TotalTrades;
+            entPending   = true;
+            Buy ("F5P-L") NumContracts contracts next bar at market;
+            Sell ("F5P-L-SL0") next bar at stopPx stop;
+            if TP_RR > 0 then Sell ("F5P-L-TP0") next bar at tgtPx limit;
+        end;
+        if tradeDir = -1 then begin
+            stopPx = High;
+            tgtPx  = 0;
+            if TP_RR > 0 then tgtPx = Close - TP_RR * AbsValue(Close - stopPx);
+            tradesBefore = TotalTrades;
+            entPending   = true;
+            SellShort ("F5P-S") NumContracts contracts next bar at market;
+            BuyToCover ("F5P-S-SL0") next bar at stopPx stop;
+            if TP_RR > 0 then BuyToCover ("F5P-S-TP0") next bar at tgtPx limit;
+        end;
+    end;
+end;
+
+{ ===== USCITE: riemesse a ogni barra in posizione; il blocco d'ingresso copre
+  la barra del fill. stopPx e tgtPx restano quelli del segnale ===== }
+if MarketPosition = 1 then begin
+    if Time >= 1500 then
+        Sell ("F5P-XL") next bar at market
+    else begin
+        Sell ("F5P-L-SL") next bar at stopPx stop;
+        if TP_RR > 0 then Sell ("F5P-L-TP") next bar at tgtPx limit;
+    end;
+end;
+if MarketPosition = -1 then begin
+    if Time >= 1500 then
+        BuyToCover ("F5P-XS") next bar at market
+    else begin
+        BuyToCover ("F5P-S-SL") next bar at stopPx stop;
+        if TP_RR > 0 then BuyToCover ("F5P-S-TP") next bar at tgtPx limit;
+    end;
+end;
+
+{ ===== RETE PER LE GIORNATE CORTE ===== }
+SetExitOnClose;

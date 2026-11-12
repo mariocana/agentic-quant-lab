@@ -1,0 +1,3 @@
+date,instrument,direction,category,horizon,thesis,confidence,entry,stop,target,size,exit,result_r,note
+2026-09-14,NAS100,long,tecnica,intraday,Esempio: rottura del range di apertura con volume,2,20000,19900,20200,1,20200,,esempio - cancellare
+2026-09-15,EURUSD,short,macro,giorni,Esempio: dollaro forte dopo dati inflazione,3,1.0850,1.0900,1.0750,0.1,1.0900,,esempio - cancellare

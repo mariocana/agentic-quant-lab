@@ -1,0 +1,131 @@
+{ =====================================================================
+  NoiseAreaNQ  -  momentum intraday fuori dalla noise area, long e short
+                  -  PowerLanguage
+  ---------------------------------------------------------------------
+  Strategy of the Month ottobre 2026 (@Ron Yitzhaki), dal paper di
+  Zarattini, Aziz e Barbon (2024). In MultiCharts: Mario_NoiseAreaNQ.
+  ARCHIVIATA SENZA RUN (05/11/2026). Scritta dalla descrizione del PDF:
+  il codice dell'autore e' in The Bridge, ma non nella nostra copia.
+  Vedi README.md per le scelte che il PDF non fissa.
+
+  REGOLE
+    1) NOISE AREA: per ogni slot della sessione, media di |close - open
+       del giorno| negli ultimi LookbackDays giorni, oggi escluso.
+       Banda = open del giorno +/- quella media.
+    2) ENTRY: la barra chiude fuori dall'area nel suo verso: close sopra
+       la banda alta e barra rialzista -> long; close sotto la banda
+       bassa e barra ribassista -> short. Next bar at market.
+    3) USCITE: stop StopPts, target TargetPts (ordini speciali, attivi
+       dalla barra d'ingresso). Uscita anticipata se il close torna
+       dentro la banda o oltre la EMA(EmaLen). Flat dopo la barra di
+       FlatTime.
+
+  CHART: @NQ 15 min, sessione Globex 17:00-16:00 CT senza pause, timezone
+         Exchange (CT), Bar Magnifier 1 min. MC timbra la barra con l'ora
+         di CHIUSURA: lo slot 0 e' la barra con Time = 845.
+         Lead-in: almeno LookbackDays + 5 giorni prima del periodo.
+  ===================================================================== }
+
+Inputs:
+    SessStart(830),            { apertura RTH }
+    SessEnd(1500),             { ultimo slot misurato }
+    FlatTime(1430),            { niente ingressi da qui, flat alla barra dopo }
+    LookbackDays(20),          { 1..40 }
+    StopPts(50),
+    TargetPts(25),
+    EmaLen(20),
+    MaxTradesPerDay(0),        { 0 = nessun limite: il PDF non ne indica }
+    Num_Contracts(1),
+    ShowLog(0);
+
+Variables:
+    dayOpen(0), started(false), nDays(0), col(0),
+    slot(-1), mins(0), kk(0), ss(0), cnt(0), sum(0),
+    noise(0), upper(0), lower(0), emaV(0),
+    bandOK(false), tradesToday(0), wasIn(false);
+
+Arrays:
+    mv[26, 41](-1);            { slot x giorno: -1 = dato assente }
+
+if CurrentBar = 1 and (LookbackDays < 1 or LookbackDays > 40) then
+    RaiseRunTimeError("LookbackDays deve stare fra 1 e 40 (dimensione di mv).");
+
+{ ===== NUOVA SESSIONE: prima barra dopo SessStart ===== }
+if Time > SessStart and (Time[1] <= SessStart or Date <> Date[1]) then begin
+    dayOpen = Open;
+    tradesToday = 0;
+    if started then begin
+        col = col + 1;
+        if col > LookbackDays then col = 0;
+        if nDays < LookbackDays then nDays = nDays + 1;
+    end;
+    started = true;
+    for ss = 0 to 25 begin
+        mv[ss, col] = -1;
+    end;
+end;
+
+{ ===== SLOT della barra ===== }
+slot = -1;
+if started and Time > SessStart and Time <= SessEnd then begin
+    mins = (IntPortion(Time / 100) * 60 + Mod(Time, 100))
+         - (IntPortion(SessStart / 100) * 60 + Mod(SessStart, 100));
+    slot = mins / BarInterval - 1;
+    if slot < 0 or slot > 25 then slot = -1;
+end;
+
+emaV = XAverage(Close, EmaLen);
+
+{ ===== BANDE: media dello slot sugli altri giorni, oggi escluso ===== }
+bandOK = false;
+if slot >= 0 and nDays >= LookbackDays then begin
+    sum = 0;  cnt = 0;
+    for kk = 0 to LookbackDays begin
+        if kk <> col and mv[slot, kk] >= 0 then begin
+            sum = sum + mv[slot, kk];
+            cnt = cnt + 1;
+        end;
+    end;
+    if cnt > 0 then begin
+        noise = sum / cnt;
+        upper = dayOpen + noise;
+        lower = dayOpen - noise;
+        bandOK = true;
+    end;
+end;
+
+{ ===== MISURA DI OGGI, dopo aver calcolato le bande ===== }
+if slot >= 0 then mv[slot, col] = AbsValue(Close - dayOpen);
+
+{ ===== ENTRY ===== }
+if bandOK and MarketPosition = 0 and Time < FlatTime
+   and (MaxTradesPerDay = 0 or tradesToday < MaxTradesPerDay) then begin
+    if Close > upper and Close > Open then begin
+        Buy ("NA-L") Num_Contracts contracts next bar at market;
+        tradesToday = tradesToday + 1;
+    end
+    else if Close < lower and Close < Open then begin
+        SellShort ("NA-S") Num_Contracts contracts next bar at market;
+        tradesToday = tradesToday + 1;
+    end;
+end;
+
+{ ===== STOP / TARGET: per posizione, attivi dalla barra d'ingresso ===== }
+SetStopLoss(StopPts * BigPointValue * Num_Contracts);
+SetProfitTarget(TargetPts * BigPointValue * Num_Contracts);
+
+{ ===== USCITE ANTICIPATE E FLAT ===== }
+if MarketPosition = 1 then begin
+    if Time >= FlatTime or (bandOK and Close < upper) or Close < emaV then
+        Sell ("NA-XL") next bar at market;
+end;
+if MarketPosition = -1 then begin
+    if Time >= FlatTime or (bandOK and Close > lower) or Close > emaV then
+        BuyToCover ("NA-XS") next bar at market;
+end;
+
+if MarketPosition <> 0 and wasIn = false and ShowLog = 1 then
+    Print("NA ENT ", Date:8:0, " ", Time:5:0, " dir=", MarketPosition:3:0,
+          " entry=", EntryPrice:9:2, " open=", dayOpen:9:2, " noise=", noise:7:2,
+          " up=", upper:9:2, " lo=", lower:9:2, " ema=", emaV:9:2);
+wasIn = MarketPosition <> 0;

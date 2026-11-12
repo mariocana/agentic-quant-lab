@@ -1,0 +1,81 @@
+{ Mario_UngerTF — Trend Following di Andrea Unger, Trading System Supremacy, modulo 4,
+  per futures. Richiede la funzione Mario_PtnBaseSA. Spec: SPEC.md (in fondo le
+  trascrizioni fedeli dal video).
+
+  Versione 0 = A, "DevelopFineTune" (4x03), multi-day:
+      parametri finali di Unger (6, 4, 18, 19, 400, 1330, 1200, 1100, 0.011, 0.035, 0, 0)
+      finestra 04:00-13:30 New York; ieri giorno di indecisione (pattern 1);
+      long  se (pattern 6 o 39) e non 18 -> buy stop al massimo di oggi;
+      short se (pattern 4 o 39) e non 19 -> sellshort stop al minimo di oggi;
+      nessuna uscita a fine giornata: stop, target o inversione.
+  Versione 1 = B, "DevelopID" (4x04), intraday:
+      parametri finali di Unger (1, 1, 35, 35, 300, 500, 1200, 1100, 0.0075, 0.025)
+      finestra 03:00-05:00 New York;
+      long e short se pattern 1 (ieri corpo < 50% del range) e non 35 (oggi non inside)
+      -> buy stop al massimo / sellshort stop al minimo di oggi; flat a fine sessione.
+  Pattern e pausa (1200-1100, spenta) sono congelati ai valori di Unger nel codice.
+
+  Input da toccare per strumento (0 = default della versione):
+    MyStartTrade / MyEndTrade, nel fuso dell'exchange del chart.
+        Default (Chicago: @EC, @ES, @NQ): A 300 / 1230, B 200 / 400.
+        @GC (New York):                   A 400 / 1330, B 300 / 500.
+    StopPts / ProfitPts in punti di prezzo (x BigPointValue = $ a contratto).
+        Default = valori di Unger: A 0.011 / 0.035, B 0.0075 / 0.025 (per @EC).
+    StopPct / ProfitPct in % del prezzo; se > 0 hanno la precedenza (GC, ES, NQ):
+        A 0.83 / 2.6, B 0.56 / 1.9.
+      La % si calcola sul close finche' si e' flat (la barra dell'ordine) e sul prezzo
+      d'entrata in posizione: e' costante per tutto il trade.
+  Unica modifica alla logica: i pattern si calcolano su ogni barra (come in UngerCT).
+  ShowLog 1: una riga per ogni nuova posizione. }
+
+Input: Versione(0);
+Input: MyStartTrade(0), MyEndTrade(0);
+Input: StopPts(0), ProfitPts(0), StopPct(0), ProfitPct(0);
+Input: ShowLog(0);
+
+var: p1(false), p4(false), p6(false), p18(false), p19(false), p35(false), p39(false);
+var: tStart(0), tEnd(0), sPts(0), pPts(0), okL(false), okS(false), inWin(false);
+var: mp(0), base(0), stopUSD(0), tgtUSD(0);
+
+p1  = Mario_PtnBaseSA(1);
+p4  = Mario_PtnBaseSA(4);
+p6  = Mario_PtnBaseSA(6);
+p18 = Mario_PtnBaseSA(18);
+p19 = Mario_PtnBaseSA(19);
+p35 = Mario_PtnBaseSA(35);
+p39 = Mario_PtnBaseSA(39);
+
+if Versione = 0 then begin
+	tStart = 300;  tEnd = 1230;  sPts = 0.011;   pPts = 0.035;
+	okL = p1 and (p6 or p39) and p18 = false;
+	okS = p1 and (p4 or p39) and p19 = false;
+end
+else begin
+	tStart = 200;  tEnd = 400;   sPts = 0.0075;  pPts = 0.025;
+	okL = p1 and p35 = false;
+	okS = okL;
+end;
+if MyStartTrade > 0 then tStart = MyStartTrade;
+if MyEndTrade > 0 then tEnd = MyEndTrade;
+if StopPts > 0 then sPts = StopPts;
+if ProfitPts > 0 then pPts = ProfitPts;
+
+mp = marketposition;
+if mp = 0 then base = close else base = entryprice;
+if StopPct > 0 then stopUSD = base * StopPct / 100 * BigPointValue else stopUSD = sPts * BigPointValue;
+if ProfitPct > 0 then tgtUSD = base * ProfitPct / 100 * BigPointValue else tgtUSD = pPts * BigPointValue;
+
+inWin = Time > tStart and Time < tEnd and (Time < 1200 or Time > 1100);
+if inWin then begin
+	if okL then buy ("TF-L") next bar at highd(0) stop;
+	if okS then sellshort ("TF-S") next bar at lowd(0) stop;
+end;
+
+setstopcontract;
+if stopUSD > 0 then setstoploss(stopUSD);
+if tgtUSD > 0 then setprofittarget(tgtUSD);
+if Versione = 1 then setexitonclose;
+
+if ShowLog = 1 and mp <> 0 and (mp <> mp[1] or entryprice <> entryprice[1]) then
+	Print("TF", Versione:1:0, " ", Date:8:0, " ", Time:5:0, " mp=", mp:2:0, " entry=", entryprice:9:5,
+		" hiD=", highd(0):9:5, " loD=", lowd(0):9:5, " stop$=", stopUSD:8:2, " tgt$=", tgtUSD:8:2);

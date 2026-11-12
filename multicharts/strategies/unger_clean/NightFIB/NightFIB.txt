@@ -1,0 +1,25 @@
+{ Mario_NightFIB — codice di Andrea Unger, Trading System Supremacy
+  (13. Codici/Night FIB/EasyLanguage/Night FIB MC-TS.txt), trascritto senza modifiche.
+  ARCHIVIO, non testata: il FTSE MIB future (FIB) e' IDEM/Borsa Italiana, non tradabile
+  sulle prop futures (Lucid).
+  FTSE MIB 5 min (data1) + giornaliero 1440 min (data2), ora dell'exchange, default di Unger. }
+
+// EasyLanguage (TradeStation) / PowerLanguage (MultiCharts) code
+// basic code to play around with :-)
+
+//FTSEMIB Future, Time Frame 5 min data1 and 1440 min Data2, exchange time, default settings
+
+input: MyETime(1730);
+Input: MyXtime(0920);
+input: Mylows(2), myperc(0.5);
+
+var: conditionLow(false);
+var: filtrion(false);
+
+
+conditionLow = low of data2 = lowest(low of data2,mylows);
+filtrion = ((conditionLow and c<l of data2) or (opend(0) < closed(1)*(1-myperc/100)));
+
+
+if time = MyETime and filtrion then buy next bar at market;
+if time = MyXtime then sell next bar at market;

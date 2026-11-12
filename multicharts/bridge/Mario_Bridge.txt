@@ -1,0 +1,33 @@
+{ =====================================================================
+  Mario_Bridge  -  scrive una riga per il bridge MT5 (bridge/SPEC.md)
+  ---------------------------------------------------------------------
+  In MultiCharts: Function, Return Type Numeric, Storage Auto-detect.
+  Va compilata prima dei segnali che la chiamano.
+
+  Non fa niente con BFile vuoto o fuori dal tempo reale: backtest e
+  ricalcoli non scrivono mai. Ritorna 1 se ha scritto, 0 se no.
+
+  Azione: APRI, PENDENTE, CHIUDI. Stop e target sono distanze in punti;
+  Su e Giu, solo per PENDENTE, le distanze dei bordi dal prezzo.
+  ===================================================================== }
+
+Inputs:
+    BFile(StringSimple), Azione(StringSimple), BId(StringSimple),
+    Strat(StringSimple), Strum(StringSimple),
+    Lato(NumericSimple), Micro(NumericSimple),
+    StopPts(NumericSimple), TgtPts(NumericSimple),
+    Su(NumericSimple), Giu(NumericSimple);
+
+Variables:
+    riga("");
+
+Mario_Bridge = 0;
+
+if BFile <> "" and GetAppInfo(aiRealTimeCalc) = 1 then begin
+    riga = Azione + ";" + BId + ";" + Strat + ";" + Strum + ";" + NumToStr(Lato, 0) + ";"
+         + NumToStr(Micro, 0) + ";" + NumToStr(StopPts, 2) + ";" + NumToStr(TgtPts, 2);
+    if Azione = "PENDENTE" then
+        riga = riga + ";" + NumToStr(Su, 2) + ";" + NumToStr(Giu, 2);
+    FileAppend(BFile, riga + ";FINE" + NewLine);
+    Mario_Bridge = 1;
+end;

@@ -1,0 +1,15 @@
+DRIFTPERS symbol=CL DriftLen=  4 FwdBars=  2 DriftThresh=0.50 bigpointvalue=  1000.00
+
+=== CL ===
+barre valide         33371
+osservazioni         22956
+tasso d'armamento     68.8%   <- se e' oltre l'80% la soglia e' troppo bassa
+continuazioni        11320
+PERSISTENZA          49.31%
+il caso              50.00%
+ECCESSO              -0.69 pp
+errore standard       0.33 pp
+errori standard      -2.09   <- serve >= 3 per crederci
+drift medio          1.404 ATR
+mossa se continua    0.819 ATR
+mossa se inverte     0.782 ATR

@@ -1,0 +1,380 @@
+{ =====================================================================
+  DriftPullback v2.1  -  NQ, continuazione del drift intraday comprata
+  sul pullback  -  PowerLanguage, DUE SERIE DATI
+  ---------------------------------------------------------------------
+  Riscritto dal tutorial di Francesco Agnello
+  ("11. Strategy Feedbacks/1. DriftPullback_Tutorial_.pdf", 18 pagine:
+  riporta ogni blocco del sorgente v2.1). Spec: SPEC.md.
+  Origine dell'idea: paper "Fast Alpha" (Zarattini & Pagani), drift
+  intraday sui futures su indice.
+
+  REGOLE (tre frasi)
+    1) ARMAMENTO (serie 15 min, solo al confine di barra): il mercato ha
+       driftato almeno DriftThreshPct (0.10%) nell'ultima ora E la close
+       sta dalla parte giusta di un'ancora che si muove nella stessa
+       direzione -> setup armato long (o short).
+    2) TRIGGER (serie 5 min): la prima barra CONTRO il drift entro
+       PullbackWindow barre (rossa per il long, verde per lo short) ->
+       ingresso. Un solo trade per armamento.
+       TriggerMode 0 (VALIDATO, default): basta il segno di Close-Open.
+       TriggerMode 1 (variante Stage 4): si chiede anche che la chiusura
+       sia lontana almeno RejShadowFrac del range dall'estremo del
+       pullback -> il movimento contrario e' stato RIFIUTATO dentro la
+       barra, non e' stata solo una pausa.
+       EntryMode 0 (VALIDATO, default): "next bar at market".
+       EntryMode 1 (variante Stage 4, da Elder Triple Screen): ordine
+       STOP 1 tick oltre l'estremo della barra di pullback, valido
+       EntryStopBars barre. Il drift deve RIPRENDERE prima che si sia
+       dentro -> filtra i pullback che proseguono. Il livello e' fisso,
+       non insegue; scaduto, il setup muore ineseguito.
+       NOTA: EntryMode 1 rende noto in anticipo il PREZZO d'ingresso, ma
+       NON protegge la barra d'ingresso: il bracket resta un ordine
+       next-bar emesso dalla posizione, come in EntryMode 0.
+    3) USCITE: bracket fisso in punti (stop largo 80, target piccolo
+       40/50), flat incondizionato a FlatTime, SetExitOnClose dietro.
+    Guardrail: max MaxTradesPerDay ingressi e MaxLossesPerDay perdite
+    al giorno -> il worst day e' noto PRIMA del backtest.
+
+  PERCHE' IL BRACKET E' ASIMMETRICO (R:R 0.5): i pullback dentro un drift
+  si risolvono poco profondi e in fretta. La strategia compra un WR alto
+  su un tragitto corto e paga con stop pieni occasionali. E' esattamente
+  il profilo che serve alle prop.
+
+  ARCHITETTURA A DUE OROLOGI: tutti i valori della serie 15 min sono
+  CONGELATI dentro la barra (aggiornati solo su newBar2). Senza questo,
+  il segnale oscilla tre volte per barra lenta e il backtest sbircia una
+  barra non chiusa.
+
+  CHART (obbligatorio):
+    Data1 = @NQ 5 min   <- serie di esecuzione, tutti gli ordini
+    Data2 = @NQ 15 min  <- Insert > Instrument, STESSO simbolo
+    L'ordine conta: il codice assume data1 = 5m, data2 = 15m.
+    Sessione **Globex 24h** (17:00-16:00 CT): il drift della prima ora
+    deve poter vedere il premarket, la VWAP lo esclude da sola con
+    VwapStart/VwapEnd. Timezone **Exchange (CT)**.
+    Max bars back >= 100. IOG off.
+    Backtest con "Extended intra-bar precision" per fill realistici di
+    stop e limit sulle barre a 5 minuti.
+
+  ATTENZIONE TIMEZONE: i cinque input di sessione sono in ORA DEL CHART.
+  I default sono per chart CT. Con un chart ET sono sbagliati di un'ora
+  e nulla lo segnala -> vedi la tabella nel README.
+  ===================================================================== }
+
+Inputs:
+    { --- ancora e segnale (serie 15 min) --- }
+    AnchorType(2),             { 0 = SMA · 1 = MVWAP rolling · 2 = VWAP di sessione }
+    MALen(20),                 { lookback SMA/MVWAP in barre 15m (5 ore) }
+    DriftLen(4),               { lookback del drift in barre 15m (4 = 1 ora) }
+    DriftThreshPct(0.10),      { drift minimo in % per armare - NON ottimizzare }
+    PullbackWindow(6),         { vita del setup armato, in barre 5m (~30 min) }
+    TradeLongs(1),
+    TradeShorts(1),
+    { --- forma della barra di trigger --- }
+    TriggerMode(0),            { 0 = qualsiasi barra contraria (VALIDATO) }
+                               { 1 = barra contraria CON RIFIUTO (chiusura lontana
+                                     dall'estremo del pullback) }
+    RejShadowFrac(0.5),        { TriggerMode 1: quota minima del range della barra fra
+                                 la chiusura e l'estremo del pullback (0.5 = meta') }
+    { --- modo d'ingresso --- }
+    EntryMode(0),              { 0 = market alla barra dopo (VALIDATO) }
+                               { 1 = stop 1 tick oltre l'estremo della barra di pullback }
+    EntryStopBars(1),          { EntryMode 1: per quante barre 5m resta valido lo stop }
+    { --- uscite --- }
+    ExitMode(0),               { 0 = punti fissi (validato) · 1 = ATR (solo seed) }
+    LongSLpts(80), LongTPpts(40),
+    ShortSLpts(80), ShortTPpts(50),
+    ATRExitLen(14),
+    LongSLatr(3.0), LongTPatr(1.5),
+    ShortSLatr(3.0), ShortTPatr(1.9),
+    StopSlipTicks(2),          { tick avversi in piu' SOLO sugli stop }
+    { --- sessione (ORA DEL CHART, default = CT) --- }
+    SessStart(930),            { primo ingresso ammesso }
+    SessEnd(1430),             { ultimo ingresso ammesso }
+    FlatTime(1455),            { flat incondizionato }
+    VwapStart(830),            { accumulo VWAP di sessione (AnchorType 2) }
+    VwapEnd(1500),
+    { --- guardrail --- }
+    MaxTradesPerDay(4),
+    MaxLossesPerDay(2),
+    { --- sizing --- }
+    SizeMode(1),               { 1 = size fissa (nostro default) · 2 = cushion ladder }
+    BaseCts(1),
+    CushionStep(2000),         { $ di profitto bancato per ogni contratto in piu' }
+    MaxCts(3),
+    CushionAdj(0),
+    ShowLog(0);
+
+Variables:
+    slipPts(0),
+    { serie 15m }
+    intrabarpersist t2(-1),
+    newBar2(false),
+    bar2Count(0),
+    ma2(0), ma2prev(0), anchorOK(false),
+    driftPct(0),
+    { VWAP di sessione sulle barre 15m }
+    sPV(0), sVol(0), sVwap(0), sVwapLast(0), sVwapPrev(0),
+    { armamento }
+    longArmed(false), shortArmed(false), armedBars(0),
+    { contatori }
+    tradesToday(0), lossesToday(0), tradeCount(0), prevMP(0),
+    { sizing }
+    curCts(1), cushion(0),
+    { uscite }
+    atrEntry(0),
+    { forma della barra di trigger }
+    barRange(0), longTrig(false), shortTrig(false),
+    { ingresso su stop (EntryMode 1) }
+    oneTick(0),
+    pendingSide(0), pendingLevel(0), pendingBars(0),
+    { lavoro }
+    i1(0), pvSum(0), vSum(0), tp(0), v2(0), c2prev(0);
+
+{ ===== BLOCCO 1 - CONVERSIONE TICK -> PUNTI ===== }
+oneTick = MinMove / PriceScale;
+slipPts = StopSlipTicks * oneTick;
+
+{ ===== BLOCCO 2 - RESET GIORNALIERO E SIZING ===== }
+if Date <> Date[1] then begin
+    tradesToday = 0;
+    lossesToday = 0;
+    longArmed = false;
+    shortArmed = false;
+    armedBars = 0;
+    pendingSide = 0;
+    pendingBars = 0;
+
+    if AnchorType = 2 then begin
+        sPV = 0; sVol = 0; sVwap = 0; sVwapLast = 0; sVwapPrev = 0;
+        ma2 = 0; ma2prev = 0; anchorOK = false;
+    end;
+
+    { sizing: decisione GIORNALIERA, mai dentro la sessione }
+    if SizeMode = 2 then begin
+        cushion = MaxList(0, NetProfit + CushionAdj);
+        curCts  = BaseCts + IntPortion(cushion / CushionStep);
+        curCts  = MinList(curCts, MaxCts);
+    end
+    else
+        curCts = BaseCts;
+    if curCts < 1 then curCts = 1;
+end;
+
+{ ===== BLOCCO 3 - CONFINE DI BARRA 15 MIN ===== }
+newBar2 = false;
+if Time of data2 <> t2 then begin
+    newBar2 = true;
+    t2 = Time of data2;
+end;
+
+{ ===== BLOCCHI 4-7 - TUTTO IL SEGNALE, SOLO AL CONFINE ===== }
+if newBar2 then begin
+
+    bar2Count = bar2Count + 1;
+    ma2prev = ma2;                      { ancora al confine precedente }
+
+    { --- BLOCCO 4: VWAP di sessione accumulata sulle barre 15m --- }
+    sVwapPrev = sVwapLast;
+    if AnchorType = 2 then begin
+        if Time of data2 > VwapStart and Time of data2 <= VwapEnd then begin
+            v2 = Volume of data2;
+            if v2 <= 0 then v2 = Ticks of data2;
+            tp = (High of data2 + Low of data2 + Close of data2) / 3;
+            sPV  = sPV  + tp * v2;
+            sVol = sVol + v2;
+        end;
+        if sVol > 0 then sVwap = sPV / sVol;
+        sVwapLast = sVwap;
+    end;
+
+    { --- BLOCCO 5: selezione dell'ancora --- }
+    if AnchorType = 0 then begin
+        if bar2Count > MALen then ma2 = Average(Close of data2, MALen);
+    end
+    else if AnchorType = 1 then begin
+        if bar2Count > MALen then begin
+            pvSum = 0; vSum = 0;
+            for i1 = 0 to MALen - 1 begin
+                v2 = Volume[i1] of data2;
+                if v2 <= 0 then v2 = Ticks[i1] of data2;
+                tp = (High[i1] of data2 + Low[i1] of data2 + Close[i1] of data2) / 3;
+                pvSum = pvSum + tp * v2;
+                vSum  = vSum + v2;
+            end;
+            if vSum > 0 then ma2 = pvSum / vSum;
+        end;
+    end
+    else
+        ma2 = sVwapLast;
+
+    { ancora valida solo con un valore corrente E uno precedente reali:
+      blocca l'armamento in warm-up e sulla prima barra VWAP del giorno }
+    anchorOK = ma2 > 0 and ma2prev > 0;
+
+    { --- BLOCCO 6: drift = variazione % su DriftLen barre 15m --- }
+    c2prev = Close[DriftLen] of data2;
+    if c2prev <> 0 then
+        driftPct = (Close of data2 - c2prev) / c2prev * 100;
+
+    { --- BLOCCO 7: armamento (le tre condizioni) --- }
+    if anchorOK and Close of data2 > ma2 and ma2 > ma2prev
+       and driftPct >= DriftThreshPct then begin
+        longArmed = true;  shortArmed = false;  armedBars = 0;
+        if ShowLog = 1 then
+            Print("DPB ARM LONG ", Date:8:0, " ", Time:4:0,
+                  " drift=", driftPct:6:3, " anchor=", ma2:8:2);
+    end
+    else if anchorOK and Close of data2 < ma2 and ma2 < ma2prev
+       and driftPct <= -DriftThreshPct then begin
+        shortArmed = true;  longArmed = false;  armedBars = 0;
+        if ShowLog = 1 then
+            Print("DPB ARM SHORT ", Date:8:0, " ", Time:4:0,
+                  " drift=", driftPct:6:3, " anchor=", ma2:8:2);
+    end
+    else begin
+        { una barra segnale che non qualifica DISARMA: il setup non
+          sopravvive per inerzia, va riguadagnato ogni 15 minuti }
+        longArmed = false;  shortArmed = false;
+    end;
+end;
+
+{ ===== BLOCCO 8 - SCADENZA DEL SETUP (ogni barra 5m) ===== }
+if longArmed or shortArmed then begin
+    armedBars = armedBars + 1;
+    if armedBars > PullbackWindow then begin
+        longArmed = false;  shortArmed = false;
+    end;
+end;
+
+{ ===== BLOCCO 9 - CONTATORE PERDITE ===== }
+if TotalTrades > tradeCount then begin
+    if PositionProfit(1) < 0 then lossesToday = lossesToday + 1;
+    tradeCount = TotalTrades;
+end;
+
+{ ===== BLOCCO 10 - CONTATORE INGRESSI (transizione flat -> in posizione) ===== }
+if MarketPosition <> 0 and prevMP = 0 then tradesToday = tradesToday + 1;
+prevMP = MarketPosition;
+
+{ ===== BLOCCO 10b - FORMA DELLA BARRA DI TRIGGER =====
+  TriggerMode 0: basta il segno di Close-Open (versione validata).
+  TriggerMode 1: si chiede anche che la chiusura sia lontana dall'estremo
+  del pullback, cioe' che il movimento contrario sia stato RIFIUTATO
+  dentro la barra invece di limitarsi a una pausa. Misura robusta a un
+  solo parametro: posizione della chiusura nel range della barra. }
+barRange = High - Low;
+longTrig  = Close < Open;
+shortTrig = Close > Open;
+if TriggerMode = 1 then begin
+    if barRange > 0 then begin
+        longTrig  = longTrig  and (Close - Low)  >= RejShadowFrac * barRange;
+        shortTrig = shortTrig and (High - Close) >= RejShadowFrac * barRange;
+    end
+    else begin
+        longTrig = false;  shortTrig = false;
+    end;
+end;
+
+{ ===== BLOCCO 11 - INGRESSI ===== }
+if MarketPosition = 0
+   and Time >= SessStart and Time < SessEnd
+   and tradesToday < MaxTradesPerDay
+   and lossesToday < MaxLossesPerDay then begin
+
+    if TradeLongs = 1 and longArmed and longTrig then begin
+        atrEntry = AvgTrueRange(ATRExitLen);
+        if atrEntry <= 0 then atrEntry = Range;
+        longArmed = false;              { il flag si consuma comunque }
+        if EntryMode = 0 then begin
+            Buy ("DriftPB.L") curCts contracts next bar at market;
+            if ShowLog = 1 then
+                Print("DPB LONG mkt ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
+                      " cts=", curCts:3:0);
+        end
+        else begin
+            pendingSide  = 1;
+            pendingLevel = High + oneTick;
+            pendingBars  = 0;
+            if ShowLog = 1 then
+                Print("DPB LONG stop armato ", Date:8:0, " ", Time:4:0,
+                      " livello=", pendingLevel:8:2);
+        end;
+    end;
+
+    if TradeShorts = 1 and shortArmed and shortTrig then begin
+        atrEntry = AvgTrueRange(ATRExitLen);
+        if atrEntry <= 0 then atrEntry = Range;
+        shortArmed = false;
+        if EntryMode = 0 then begin
+            SellShort ("DriftPB.S") curCts contracts next bar at market;
+            if ShowLog = 1 then
+                Print("DPB SHORT mkt ", Date:8:0, " ", Time:4:0, " close=", Close:8:2,
+                      " cts=", curCts:3:0);
+        end
+        else begin
+            pendingSide  = -1;
+            pendingLevel = Low - oneTick;
+            pendingBars  = 0;
+            if ShowLog = 1 then
+                Print("DPB SHORT stop armato ", Date:8:0, " ", Time:4:0,
+                      " livello=", pendingLevel:8:2);
+        end;
+    end;
+end;
+
+{ ===== BLOCCO 11b - ORDINE STOP PENDENTE (solo EntryMode 1) =====
+  Il livello e' fissato sulla barra di pullback e NON insegue: se il drift
+  non riprende entro EntryStopBars barre, il setup muore ineseguito.
+  Gli stessi cancelli dell'ingresso a mercato valgono anche qui. }
+if pendingSide <> 0 then begin
+    if MarketPosition <> 0
+       or Time < SessStart or Time >= SessEnd
+       or tradesToday >= MaxTradesPerDay
+       or lossesToday >= MaxLossesPerDay then begin
+        pendingSide = 0;
+    end
+    else begin
+        pendingBars = pendingBars + 1;
+        if pendingBars > EntryStopBars then begin
+            pendingSide = 0;
+            if ShowLog = 1 then
+                Print("DPB stop scaduto ", Date:8:0, " ", Time:4:0);
+        end
+        else if pendingSide = 1 then
+            Buy ("DriftPB.LS") curCts contracts next bar at pendingLevel stop
+        else
+            SellShort ("DriftPB.SS") curCts contracts next bar at pendingLevel stop;
+    end;
+end;
+
+{ ===== BLOCCO 12 - BRACKET (riemesso ogni barra, ancorato a EntryPrice) ===== }
+if MarketPosition = 1 then begin
+    if ExitMode = 0 then begin
+        Sell ("L.SL") next bar at EntryPrice - LongSLpts - slipPts stop;
+        Sell ("L.TP") next bar at EntryPrice + LongTPpts limit;
+    end
+    else begin
+        Sell ("L.SL") next bar at EntryPrice - LongSLatr * atrEntry - slipPts stop;
+        Sell ("L.TP") next bar at EntryPrice + LongTPatr * atrEntry limit;
+    end;
+end;
+
+if MarketPosition = -1 then begin
+    if ExitMode = 0 then begin
+        BuyToCover ("S.SL") next bar at EntryPrice + ShortSLpts + slipPts stop;
+        BuyToCover ("S.TP") next bar at EntryPrice - ShortTPpts limit;
+    end
+    else begin
+        BuyToCover ("S.SL") next bar at EntryPrice + ShortSLatr * atrEntry + slipPts stop;
+        BuyToCover ("S.TP") next bar at EntryPrice - ShortTPatr * atrEntry limit;
+    end;
+end;
+
+{ ===== BLOCCO 13 - FLAT FORZATO ===== }
+if MarketPosition <> 0 and Time >= FlatTime then begin
+    Sell       ("L.Flat") next bar at market;
+    BuyToCover ("S.Flat") next bar at market;
+end;
+
+SetExitOnClose;

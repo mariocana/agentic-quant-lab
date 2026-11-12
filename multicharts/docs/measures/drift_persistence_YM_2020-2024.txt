@@ -1,0 +1,15 @@
+DRIFTPERS symbol=YM DriftLen=  4 FwdBars=  2 DriftThresh=0.50 bigpointvalue=     5.00
+
+=== YM ===
+barre valide         33039
+osservazioni         23039
+tasso d'armamento     69.7%   <- se e' oltre l'80% la soglia e' troppo bassa
+continuazioni        11561
+PERSISTENZA          50.18%
+il caso              50.00%
+ECCESSO               0.18 pp
+errore standard       0.33 pp
+errori standard       0.55   <- serve >= 3 per crederci
+drift medio          1.481 ATR
+mossa se continua    0.910 ATR
+mossa se inverte     0.874 ATR

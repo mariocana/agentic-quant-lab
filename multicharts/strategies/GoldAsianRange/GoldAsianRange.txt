@@ -1,0 +1,133 @@
+{ =====================================================================
+  GoldAsianRange  -  breakout del range asiatico su oro  -  PowerLanguage
+  ---------------------------------------------------------------------
+  Dal template "Gold_Asian_Breakout_Strategy" (Strategy of the Month
+  lug/ago 2026). Spec: SPEC.md.
+
+  REGOLE
+    1) RANGE: high/low della sessione asiatica (RangeStart -> RangeEnd,
+       la finestra attraversa la mezzanotte: il codice gestisce il wrap).
+    2) ENTRY: NEL MOMENTO in cui il range si chiude si piazzano buy stop
+       al massimo e sell stop al minimo. Il primo che riempie prende il
+       trade, l'altro viene cancellato (OCO tramite il check di posizione
+       piatta). Nessun ritardo fra livello e ordine: e' il motivo per cui
+       regge fill realistici.
+    3) STOP: StopFrac x ampiezza del range (default 1.0 = tutto il range).
+    4) TARGET: TP_RR x rischio se TP_RR > 0; con TP_RR = 0 nessun target
+       (variante A originale, la posizione corre fino all'uscita a tempo).
+    5) TIME EXIT: flat a ExitTime.
+    Un trade al giorno.
+
+  VARIANTI (spec): A = TP_RR 0 (WR ~34%, R:R > 1: NON rispetta il profilo
+  prop, serve solo come diversificatore nel basket funded).
+                   B = TP_RR 1.0 o 0.5 (profilo eval).
+
+  CHART: @GC 15 min, session template 24/7, timezone Exchange (CT),
+         Bar Magnifier 1 min ON. Orari in ORA DEL CHART: range 20:00-00:00
+         CT (= 21:00-01:00 NY), flat 10:00 CT (= 11:00 NY). IOG off.
+  NON USARE il template "COMEX: Metals Futures (Electronic)": lascia il
+         chart senza barre fra 07:45 e 14:15 e il time exit finisce sulle
+         14:15 invece che sulle 10:00 (Stage 1, primo giro invalidato).
+  ROLLOVER: verificato nello Stage 1 che la posizione NON resta mai
+         overnight (0/78: entrata dopo la mezzanotte, uscita alle 10:00
+         dello stesso giorno), quindi non attraversa i gap di rollover
+         del continuous.
+  ===================================================================== }
+
+Inputs:
+    RangeStart(2000),          { ora chart (CT): inizio range asiatico }
+    RangeEnd(0),               { fine range = momento in cui si armano gli stop }
+    ExitTime(1000),            { flat }
+    StopFrac(1.0),             { stop = StopFrac x ampiezza del range }
+    TP_RR(0),                  { 0 = nessun target (variante A); >0 = multipli di R }
+    TradeLongs(1),
+    TradeShorts(1),
+    MinRangePts(0),            { salta il giorno se il range e' piu' stretto (0 = off) }
+    MaxRangePts(0),            { salta il giorno se il range e' piu' largo  (0 = off) }
+    MaxRangePct(0),            { salta il giorno se il range supera questa % del prezzo (0 = off) }
+    Num_Contracts(1),
+    ShowLog(0);
+
+Variables:
+    inWindow(false),
+    rHi(0), rLo(0), rng(0), sd(0),
+    armed(false), tradeDone(false), rBars(0),
+    longStop(0), longTgt(0), shortStop(0), shortTgt(0),
+    posSL(0), posTP(0), wasIn(false);
+
+{ ===== FINESTRA DEL RANGE (gestisce il wrap oltre la mezzanotte) ===== }
+if RangeStart < RangeEnd then
+    inWindow = Time >= RangeStart and Time < RangeEnd
+else
+    inWindow = Time >= RangeStart or Time < RangeEnd;
+
+{ ===== RESET sulla prima barra di una nuova finestra ===== }
+if inWindow and inWindow[1] = false then begin
+    rHi = 0; rLo = 999999; rng = 0; sd = 0; rBars = 0;
+    armed = false; tradeDone = false;
+end;
+
+{ ===== COSTRUZIONE DEL RANGE ===== }
+if inWindow then begin
+    if High > rHi then rHi = High;
+    if Low  < rLo then rLo = Low;
+    rBars = rBars + 1;
+end;
+
+{ ===== CHIUSURA DEL RANGE: si arma ===== }
+if inWindow = false and inWindow[1] and rng = 0 and rHi > 0 then begin
+    rng = rHi - rLo;
+    sd  = StopFrac * rng;
+    armed = rng > 0
+        and (MinRangePts = 0 or rng >= MinRangePts)
+        and (MaxRangePts = 0 or rng <= MaxRangePts)
+        and (MaxRangePct = 0 or rng <= Close * MaxRangePct / 100);
+    if ShowLog = 1 then
+        Print("GAR RNG ", Date:8:0, " armTime=", Time:5:0, " barre=", rBars:3:0,
+              " range=", rng:8:2, " hi=", rHi:9:2,
+              " lo=", rLo:9:2, " pct=", 100 * rng / Close:5:2, " armed=", armed:2:0);
+end;
+
+{ ===== ORDINI STOP AI BORDI (OCO: solo da flat) ===== }
+if armed and tradeDone = false and MarketPosition = 0 and Time < ExitTime then begin
+    if TradeLongs = 1 then
+        Buy       ("GAR-L") Num_Contracts contracts next bar at rHi stop;
+    if TradeShorts = 1 then
+        SellShort ("GAR-S") Num_Contracts contracts next bar at rLo stop;
+end;
+
+{ ===== ALL'APERTURA: fissa stop e target, disarma ===== }
+if MarketPosition <> 0 and wasIn = false then begin
+    tradeDone = true;
+    armed = false;
+    if MarketPosition = 1 then begin
+        posSL = EntryPrice - sd;
+        if TP_RR > 0 then posTP = EntryPrice + TP_RR * sd else posTP = 0;
+    end
+    else begin
+        posSL = EntryPrice + sd;
+        if TP_RR > 0 then posTP = EntryPrice - TP_RR * sd else posTP = 0;
+    end;
+    if ShowLog = 1 then
+        Print("GAR ENT ", Date:8:0, " ", Time:5:0, " dir=", MarketPosition:3:0,
+              " entry=", EntryPrice:9:2, " SL=", posSL:9:2, " TP=", posTP:9:2,
+              " rischio_pt=", sd:7:2);
+end;
+wasIn = MarketPosition <> 0;
+
+{ ===== BRACKET ===== }
+if MarketPosition = 1 then begin
+    Sell ("L-SL") next bar at posSL stop;
+    if posTP > 0 then Sell ("L-TP") next bar at posTP limit;
+end;
+if MarketPosition = -1 then begin
+    BuyToCover ("S-SL") next bar at posSL stop;
+    if posTP > 0 then BuyToCover ("S-TP") next bar at posTP limit;
+end;
+
+{ ===== TIME EXIT ===== }
+if Time >= ExitTime and Time < RangeStart then begin
+    if MarketPosition = 1  then Sell       ("EXIT-L") next bar at market;
+    if MarketPosition = -1 then BuyToCover ("EXIT-S") next bar at market;
+    armed = false;
+end;

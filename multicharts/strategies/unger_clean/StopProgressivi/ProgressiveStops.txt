@@ -1,0 +1,52 @@
+{ Mario_ProgressiveStops — codice base di Andrea Unger, Trading System Supremacy
+  (12. Materiale extra/12x04.2 - ProgressiveStopsDevelop.txt, lezione "Stop
+  progressivi"), ripulito il 24/10/2026. Richiede la funzione Mario_PtnBaseSA.
+  MODULO D'USCITA, tenuto a disposizione: non e' una strategia da testare da sola.
+
+  Ingresso di esempio: alla barra oraX, buy stop al massimo della barra se pattern
+  MyPtnLY vero e MyPtnLN falso; sellshort stop al minimo se MyPtnSY vero e MyPtnSN falso.
+  Uscita: target MyGain e stop MyLoss in $ a contratto; per ogni giorno passato in
+  posizione si riducono di Gainfactor% e StopFactor% del valore iniziale:
+      TP = MyGain * (1 - 0,01 * Gainfactor * giorni)
+      SL = MyLoss * (1 - 0,01 * StopFactor * giorni)
+  Con i due fattori a 0 (default) stop e target restano fissi.
+  Per usarlo su un'altra strategia: si sostituisce il blocco d'ingresso e si tiene il resto.
+
+  Modifiche: i pattern si calcolano su ogni barra (vedi IntraToOverNight); tolta la
+  condizione commentata "and marketposition <> 0" dello stop. }
+
+Input: oraX(1600);
+Input: MyGain(2000), MyLoss(1000), MyPtnLY(41), MyPtnSY(41), MyPtnLN(42), MyPtnSN(42);
+Input: StopFactor(0), Gainfactor(0);
+
+var: TP(0), SL(0), MP(0), daysintrade(0);
+var: pLY(false), pSY(false), pLN(false), pSN(false);
+
+pLY = Mario_PtnBaseSA(MyPtnLY);
+pSY = Mario_PtnBaseSA(MyPtnSY);
+pLN = Mario_PtnBaseSA(MyPtnLN);
+pSN = Mario_PtnBaseSA(MyPtnSN);
+
+MP = marketposition;
+
+if time = oraX then begin
+	if pLY and pLN = false then buy next bar at high stop;
+	if pSY and pSN = false then sellshort next bar at low stop;
+end;
+
+if MP = 0 then begin
+	TP = MyGain;
+	SL = MyLoss;
+end;
+
+if MP <> MP[1] then daysintrade = 0;
+if MP <> 0 and d > d[1] then daysintrade = daysintrade + 1;
+
+if MP <> 0 and daysintrade > 0 then begin
+	TP = MyGain * (1 - 0.01 * Gainfactor * daysintrade);
+	SL = MyLoss * (1 - 0.01 * StopFactor * daysintrade);
+end;
+
+setstopcontract;
+if MyLoss > 0 then setstoploss(SL);
+if MyGain > 0 then setprofittarget(TP);

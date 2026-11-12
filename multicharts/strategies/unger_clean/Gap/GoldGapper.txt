@@ -1,0 +1,86 @@
+{ =====================================================================
+  Mario_GoldGapper  -  gap di Unger sull'oro (GoldGapper)  -  PowerLanguage
+  ---------------------------------------------------------------------
+  FONTE: Trading System Supremacy, modulo 7 ("lavorare sui gap").
+  Codice nell'editor di Unger, video 7x01 (MyGapFinder) e 7x02
+  (GoldGapper, righe 1-35 al 8:00-9:40). Parametri finali sul grafico
+  del 7x02: GoldGapper(2005, 1900, 2000, 0, 41, 41, 42, 42, 1),
+  @GC 5 min, dati TradeStation, grafico in ora di New York.
+  Spec: SPEC.md.
+
+  FUNZIONI RICHIESTE (del corso, NON rinominate):
+    _DayDefinition, Time00, TradesToday
+  Si importano dal file GapsFunctions.pla (13. Codici/Gap/GapsFunctions),
+  NON dai .txt: il _DayDefinition.txt (maggio 2016) ha una condizione di
+  reset modificata che fa scattare il reset proprio sulla barra sBeg, e
+  allora myhigh/mylow sarebbero il massimo e minimo di quella barra:
+  la strategia non farebbe mai trade. Il .pla (febbraio 2016, quello
+  dei video) resetta alla barra DOPO sBeg.
+
+  REGOLE (Unger)
+    1) Giornata personalizzata da sBeg a sEnd (attraversa la mezzanotte).
+       Sulla barra delle sBeg: myhigh / mylow = massimo e minimo della
+       giornata precedente, myopen = apertura di questa barra.
+    2) Nella finestra sBeg -> sEnd, al massimo un ingresso per data:
+       se myopen > myhigh  -> sell stop a myhigh (gap su che si richiude)
+       se myopen < mylow   -> buy stop a mylow  (gap giu' che si richiude)
+       I filtri di pattern sono COMMENTATI nel codice di Unger: input
+       tenuti, non usati.
+    3) Uscite: stop myloss $ per contratto, target myprofit $;
+       MyExit 0 = flat a fine sessione, MyExit 1 = flat alla barra sEnd.
+
+  ORARI: per TradeStation l'exchange di @GC e' il COMEX di NEW YORK:
+         con Time Zone "Exchange" il chart e' in ora di New York, come
+         quello di Unger (verificato il 24/10/2026: prima barra dopo la
+         pausa = 18:05). Quindi si usano i suoi orari: sBeg 2005,
+         sEnd 1900 (variante A) oppure 1600 (variante B).
+
+  CHART: @GC 5 min, timezone Exchange (= New York), session template
+         domenica-venerdi' 18:00-17:00 in ora dell'exchange, senza pause
+         (NON il "CME Globex 17-16 no break" di ES: su GC vale 17-16 di
+         New York, taglia l'ultima ora e non ha la barra delle 18:00).
+         Bar Magnifier 1 min ON.
+  COSTI: 12.5$ per Contract ($2,50 + tick $10), slippage 0.
+  ===================================================================== }
+
+Input: sBeg(2005), sEnd(1900);
+Input: myloss(2000), myprofit(0);
+input: MyptnLY(41), MyPtnSY(41), MyPtnLN(42), MyPtnSN(42);   { non usati (come in Unger) }
+input: Myexit(1);
+input: ShowLog(0);
+
+var: myHigh(0), myLow(0), myopen(0), mytimewindow(false), dh(0), dl(0);
+
+{ _DayDefinition chiamata su ogni barra (funzione di serie con stato
+  interno), letta sulla barra sBeg come nel codice di Unger }
+dh = _DayDefinition(0, sBeg, sEnd, high, 2);
+dl = _DayDefinition(0, sBeg, sEnd, low, 3);
+
+if time = sBeg then begin
+    myhigh = dh;
+    mylow = dl;
+    myopen = open;
+    if ShowLog = 1 then
+        Print("GAP DAY ", Date:8:0, " ", Time:5:0, " open=", myopen:8:2, " hi_ieri=", myhigh:8:2,
+              " lo_ieri=", mylow:8:2, " gap=", IFF(myopen > myhigh, 1, IFF(myopen < mylow, -1, 0)):2:0);
+end;
+
+if sBeg > sEnd then mytimewindow = (time > sBeg or time < sEnd);
+if sBeg < sEnd then mytimewindow = (time > sBeg and time < sEnd);
+
+if mytimewindow and TradesToday(date) = 0 then begin
+    if myopen > myhigh { and PtnBaseSA(myptnSY) = true and ptnbasesa(myptnSN) = False } then
+        sellshort ("GG-S") next bar at myhigh stop;
+    if myopen < mylow { and PtnBaseSA(myptnLY) = true and ptnbasesa(myptnLn) = False } then
+        buy ("GG-L") next bar at mylow stop;
+end;
+
+setstopcontract;
+if myloss > 0 then setstoploss(myloss);
+if myprofit > 0 then setprofittarget(myprofit);
+
+if MyExit = 0 then setexitonclose;
+if MyExit = 1 and Time = sEnd then begin
+    sell ("GG-XL") next bar at market;
+    buytocover ("GG-XS") next bar at market;
+end;

@@ -1,0 +1,137 @@
+B30 OR  1260623 t=  900 dow= 2 barre=  6 open= 63330.00 close= 63775.00 delta=  445.00 hi= 63815.00 lo= 63230.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260624 t=  900 dow= 3 barre=  6 open= 63060.00 close= 62560.00 delta= -500.00 hi= 63390.00 lo= 62480.00 rischio_pt=  830.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260624   905 dir= -1 entry= 62520.00 SL= 63350.00 TP=     0.00 rischio_pt=  830.00
+B30 OR  1260625 t=  900 dow= 4 barre=  6 open= 62410.00 close= 59390.00 delta=-3020.00 hi= 62520.00 lo= 59270.00 rischio_pt= 3130.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260625   905 dir= -1 entry= 59490.00 SL= 62620.00 TP=     0.00 rischio_pt= 3130.00
+B30 OR  1260626 t=  900 dow= 5 barre=  6 open= 60130.00 close= 61395.00 delta= 1265.00 hi= 61500.00 lo= 60085.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260628 t= 1625 dow= 0 barre=  0 open= 60725.00 close= 60745.00 delta=   20.00 hi= 60745.00 lo= 60725.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260629 t=  900 dow= 1 barre=  6 open= 61155.00 close= 60750.00 delta= -405.00 hi= 61455.00 lo= 60480.00 rischio_pt=  705.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260629   905 dir= -1 entry= 60635.00 SL= 61340.00 TP=     0.00 rischio_pt=  705.00
+B30 OR  1260630 t=  900 dow= 2 barre=  6 open= 59640.00 close= 59865.00 delta=  225.00 hi= 59935.00 lo= 59340.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260701 t=  900 dow= 3 barre=  6 open= 59990.00 close= 60755.00 delta=  765.00 hi= 60770.00 lo= 59790.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260702 t=  900 dow= 4 barre=  6 open= 62945.00 close= 63225.00 delta=  280.00 hi= 63345.00 lo= 62785.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260703 t=  900 dow= 5 barre=  6 open= 63295.00 close= 63360.00 delta=   65.00 hi= 63500.00 lo= 63285.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260705 t= 1605 dow= 0 barre=  0 open= 63920.00 close= 63920.00 delta=    0.00 hi= 63920.00 lo= 63920.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260706 t=  900 dow= 1 barre=  6 open= 62635.00 close= 62975.00 delta=  340.00 hi= 63280.00 lo= 62510.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260707 t=  900 dow= 2 barre=  6 open= 64295.00 close= 64245.00 delta=  -50.00 hi= 64605.00 lo= 64165.00 rischio_pt=  360.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260707   905 dir= -1 entry= 64225.00 SL= 64585.00 TP=     0.00 rischio_pt=  360.00
+B30 OR  1260708 t=  900 dow= 3 barre=  6 open= 63025.00 close= 63150.00 delta=  125.00 hi= 63290.00 lo= 62810.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260709 t=  900 dow= 4 barre=  6 open= 63930.00 close= 64285.00 delta=  355.00 hi= 64505.00 lo= 63705.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260710 t=  900 dow= 5 barre=  6 open= 65425.00 close= 65750.00 delta=  325.00 hi= 65995.00 lo= 65390.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260712 t= 1625 dow= 0 barre=  0 open= 65360.00 close= 65330.00 delta=  -30.00 hi= 65360.00 lo= 65330.00 rischio_pt=   30.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260713 t=  900 dow= 1 barre=  6 open= 63675.00 close= 63485.00 delta= -190.00 hi= 63935.00 lo= 63295.00 rischio_pt=  450.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260713   905 dir= -1 entry= 63470.00 SL= 63920.00 TP=     0.00 rischio_pt=  450.00
+B30 OR  1260714 t=  900 dow= 2 barre=  6 open= 65175.00 close= 65050.00 delta= -125.00 hi= 65200.00 lo= 64910.00 rischio_pt=  150.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260714   905 dir= -1 entry= 65055.00 SL= 65205.00 TP=     0.00 rischio_pt=  150.00
+B30 OR  1260715 t=  900 dow= 3 barre=  6 open= 66490.00 close= 66310.00 delta= -180.00 hi= 66735.00 lo= 66060.00 rischio_pt=  425.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260715   905 dir= -1 entry= 66365.00 SL= 66790.00 TP=     0.00 rischio_pt=  425.00
+B30 OR  1260716 t=  900 dow= 4 barre=  6 open= 65415.00 close= 65555.00 delta=  140.00 hi= 65670.00 lo= 65310.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260717 t=  900 dow= 5 barre=  6 open= 64005.00 close= 64305.00 delta=  300.00 hi= 64335.00 lo= 63650.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260719 t= 1610 dow= 0 barre=  0 open= 65700.00 close= 65700.00 delta=    0.00 hi= 65700.00 lo= 65700.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260720 t=  900 dow= 1 barre=  6 open= 65675.00 close= 65470.00 delta= -205.00 hi= 65900.00 lo= 65345.00 rischio_pt=  430.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260720   905 dir= -1 entry= 65500.00 SL= 65930.00 TP=     0.00 rischio_pt=  430.00
+B30 OR  1260721 t=  900 dow= 2 barre=  6 open= 67610.00 close= 67980.00 delta=  370.00 hi= 67995.00 lo= 67490.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260722 t=  900 dow= 3 barre=  6 open= 66760.00 close= 67095.00 delta=  335.00 hi= 67150.00 lo= 66740.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260723 t=  900 dow= 4 barre=  6 open= 66130.00 close= 65975.00 delta= -155.00 hi= 66320.00 lo= 65935.00 rischio_pt=  345.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260723   905 dir= -1 entry= 65975.00 SL= 66320.00 TP=     0.00 rischio_pt=  345.00
+B30 OR  1260724 t=  900 dow= 5 barre=  6 open= 65460.00 close= 65200.00 delta= -260.00 hi= 65500.00 lo= 64960.00 rischio_pt=  300.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260724   905 dir= -1 entry= 65210.00 SL= 65510.00 TP=     0.00 rischio_pt=  300.00
+B30 OR  1260726 t= 1625 dow= 0 barre=  0 open= 65810.00 close= 65810.00 delta=    0.00 hi= 65810.00 lo= 65810.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260727 t=  900 dow= 1 barre=  6 open= 66005.00 close= 66295.00 delta=  290.00 hi= 66815.00 lo= 65980.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260728 t=  900 dow= 2 barre=  6 open= 64330.00 close= 64110.00 delta= -220.00 hi= 64420.00 lo= 63760.00 rischio_pt=  310.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260728   905 dir= -1 entry= 64175.00 SL= 64485.00 TP=     0.00 rischio_pt=  310.00
+B30 OR  1260729 t=  900 dow= 3 barre=  6 open= 65240.00 close= 65760.00 delta=  520.00 hi= 65760.00 lo= 65210.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260730 t=  900 dow= 4 barre=  6 open= 65920.00 close= 66160.00 delta=  240.00 hi= 66285.00 lo= 65775.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260731 t=  900 dow= 5 barre=  6 open= 64820.00 close= 64245.00 delta= -575.00 hi= 64830.00 lo= 64190.00 rischio_pt=  585.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260731   905 dir= -1 entry= 64215.00 SL= 64800.00 TP=     0.00 rischio_pt=  585.00
+B30 OR  1260802 t= 1605 dow= 0 barre=  0 open= 64560.00 close= 64585.00 delta=   25.00 hi= 64585.00 lo= 64560.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260803 t=  900 dow= 1 barre=  6 open= 63740.00 close= 64350.00 delta=  610.00 hi= 64400.00 lo= 63540.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260804 t=  900 dow= 2 barre=  6 open= 64915.00 close= 64715.00 delta= -200.00 hi= 65165.00 lo= 64665.00 rischio_pt=  450.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260804   905 dir= -1 entry= 64715.00 SL= 65165.00 TP=     0.00 rischio_pt=  450.00
+B30 OR  1260805 t=  900 dow= 3 barre=  6 open= 65175.00 close= 65475.00 delta=  300.00 hi= 65475.00 lo= 64895.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260806 t=  900 dow= 4 barre=  6 open= 65250.00 close= 65470.00 delta=  220.00 hi= 65570.00 lo= 65165.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260807 t=  900 dow= 5 barre=  6 open= 66215.00 close= 66055.00 delta= -160.00 hi= 66420.00 lo= 66015.00 rischio_pt=  365.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260807   905 dir= -1 entry= 66055.00 SL= 66420.00 TP=     0.00 rischio_pt=  365.00
+B30 OR  1260809 t= 1610 dow= 0 barre=  0 open= 66170.00 close= 66170.00 delta=    0.00 hi= 66170.00 lo= 66170.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260810 t=  900 dow= 1 barre=  6 open= 65920.00 close= 65505.00 delta= -415.00 hi= 65920.00 lo= 65435.00 rischio_pt=  415.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260810   905 dir= -1 entry= 65505.00 SL= 65920.00 TP=     0.00 rischio_pt=  415.00
+B30 OR  1260811 t=  900 dow= 2 barre=  6 open= 65140.00 close= 65145.00 delta=    5.00 hi= 65190.00 lo= 64970.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260812 t=  900 dow= 3 barre=  6 open= 64875.00 close= 64755.00 delta= -120.00 hi= 65015.00 lo= 64750.00 rischio_pt=  260.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260812   905 dir= -1 entry= 64730.00 SL= 64990.00 TP=     0.00 rischio_pt=  260.00
+B30 OR  1260813 t=  900 dow= 4 barre=  6 open= 64485.00 close= 64615.00 delta=  130.00 hi= 64785.00 lo= 64460.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260814 t=  900 dow= 5 barre=  6 open= 63615.00 close= 63490.00 delta= -125.00 hi= 63660.00 lo= 63445.00 rischio_pt=  170.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260814   905 dir= -1 entry= 63525.00 SL= 63695.00 TP=     0.00 rischio_pt=  170.00
+B30 OR  1260816 t= 1610 dow= 0 barre=  0 open= 63880.00 close= 63880.00 delta=    0.00 hi= 63880.00 lo= 63880.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260817 t=  900 dow= 1 barre=  6 open= 64350.00 close= 64555.00 delta=  205.00 hi= 64710.00 lo= 64340.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260818 t=  900 dow= 2 barre=  6 open= 64965.00 close= 65135.00 delta=  170.00 hi= 65200.00 lo= 64920.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260819 t=  900 dow= 3 barre=  6 open= 65950.00 close= 65945.00 delta=   -5.00 hi= 66170.00 lo= 65705.00 rischio_pt=  225.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260819   905 dir= -1 entry= 66005.00 SL= 66230.00 TP=     0.00 rischio_pt=  225.00
+B30 OR  1260820 t=  900 dow= 4 barre=  6 open= 72960.00 close= 72690.00 delta= -270.00 hi= 72965.00 lo= 72130.00 rischio_pt=  275.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260820   905 dir= -1 entry= 72680.00 SL= 72955.00 TP=     0.00 rischio_pt=  275.00
+B30 OR  1260821 t=  900 dow= 5 barre=  6 open= 78085.00 close= 78295.00 delta=  210.00 hi= 78725.00 lo= 77210.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260823 t= 1605 dow= 0 barre=  0 open= 78600.00 close= 78600.00 delta=    0.00 hi= 78600.00 lo= 78600.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260824 t=  900 dow= 1 barre=  6 open= 79945.00 close= 79520.00 delta= -425.00 hi= 79995.00 lo= 78760.00 rischio_pt=  475.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260824   905 dir= -1 entry= 79605.00 SL= 80080.00 TP=     0.00 rischio_pt=  475.00
+B30 OR  1260825 t=  900 dow= 2 barre=  6 open= 79580.00 close= 79570.00 delta=  -10.00 hi= 80160.00 lo= 79030.00 rischio_pt=  590.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260825   905 dir= -1 entry= 79595.00 SL= 80185.00 TP=     0.00 rischio_pt=  590.00
+B30 OR  1260826 t=  900 dow= 3 barre=  6 open= 78990.00 close= 79385.00 delta=  395.00 hi= 79505.00 lo= 78970.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260827 t=  900 dow= 4 barre=  6 open= 80195.00 close= 80470.00 delta=  275.00 hi= 80495.00 lo= 79780.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260828 t=  900 dow= 5 barre=  6 open= 80010.00 close= 80165.00 delta=  155.00 hi= 80350.00 lo= 79870.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260830 t= 1605 dow= 0 barre=  0 open= 79280.00 close= 79300.00 delta=   20.00 hi= 79300.00 lo= 79280.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260831 t=  900 dow= 1 barre=  6 open= 78800.00 close= 78620.00 delta= -180.00 hi= 79070.00 lo= 78480.00 rischio_pt=  450.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260831   905 dir= -1 entry= 78645.00 SL= 79095.00 TP=     0.00 rischio_pt=  450.00
+B30 OR  1260901 t=  900 dow= 2 barre=  6 open= 78575.00 close= 78785.00 delta=  210.00 hi= 78965.00 lo= 78185.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260902 t=  900 dow= 3 barre=  6 open= 77590.00 close= 77870.00 delta=  280.00 hi= 78200.00 lo= 77305.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260903 t=  900 dow= 4 barre=  6 open= 79240.00 close= 79645.00 delta=  405.00 hi= 79775.00 lo= 79195.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260904 t=  900 dow= 5 barre=  6 open= 80015.00 close= 80065.00 delta=   50.00 hi= 80405.00 lo= 79675.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260906 t= 1610 dow= 0 barre=  0 open= 80710.00 close= 80710.00 delta=    0.00 hi= 80710.00 lo= 80710.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260907 t=  900 dow= 1 barre=  6 open= 80320.00 close= 80055.00 delta= -265.00 hi= 80320.00 lo= 80005.00 rischio_pt=  265.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260907   905 dir= -1 entry= 80025.00 SL= 80290.00 TP=     0.00 rischio_pt=  265.00
+B30 OR  1260908 t=  900 dow= 2 barre=  6 open= 78965.00 close= 78540.00 delta= -425.00 hi= 78975.00 lo= 78215.00 rischio_pt=  435.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260908   905 dir= -1 entry= 78555.00 SL= 78990.00 TP=     0.00 rischio_pt=  435.00
+B30 OR  1260909 t=  900 dow= 3 barre=  6 open= 80280.00 close= 79765.00 delta= -515.00 hi= 80330.00 lo= 79700.00 rischio_pt=  565.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260909   905 dir= -1 entry= 79725.00 SL= 80290.00 TP=     0.00 rischio_pt=  565.00
+B30 OR  1260910 t=  900 dow= 4 barre=  6 open= 77475.00 close= 77760.00 delta=  285.00 hi= 77855.00 lo= 77310.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260911 t=  900 dow= 5 barre=  6 open= 78045.00 close= 79845.00 delta= 1800.00 hi= 79915.00 lo= 77795.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260913 t= 1625 dow= 0 barre=  0 open= 77975.00 close= 78025.00 delta=   50.00 hi= 78030.00 lo= 77975.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260914 t=  900 dow= 1 barre=  6 open= 78435.00 close= 78815.00 delta=  380.00 hi= 79090.00 lo= 78410.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260915 t=  900 dow= 2 barre=  6 open= 77410.00 close= 77120.00 delta= -290.00 hi= 77435.00 lo= 76540.00 rischio_pt=  315.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260915   905 dir= -1 entry= 77115.00 SL= 77430.00 TP=     0.00 rischio_pt=  315.00
+B30 OR  1260916 t=  900 dow= 3 barre=  6 open= 76200.00 close= 76080.00 delta= -120.00 hi= 76405.00 lo= 76030.00 rischio_pt=  325.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260916   905 dir= -1 entry= 76115.00 SL= 76440.00 TP=     0.00 rischio_pt=  325.00
+B30 OR  1260917 t=  900 dow= 4 barre=  6 open= 76925.00 close= 77195.00 delta=  270.00 hi= 77195.00 lo= 76425.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260918 t=  900 dow= 5 barre=  6 open= 78695.00 close= 80670.00 delta= 1975.00 hi= 81075.00 lo= 78660.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260920 t= 1610 dow= 0 barre=  0 open= 81560.00 close= 81560.00 delta=    0.00 hi= 81560.00 lo= 81560.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260921 t=  900 dow= 1 barre=  6 open= 85485.00 close= 85970.00 delta=  485.00 hi= 86380.00 lo= 85300.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260922 t=  900 dow= 2 barre=  6 open= 86245.00 close= 86895.00 delta=  650.00 hi= 86920.00 lo= 86095.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260923 t=  900 dow= 3 barre=  6 open= 86100.00 close= 86325.00 delta=  225.00 hi= 86450.00 lo= 86055.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260924 t=  900 dow= 4 barre=  6 open= 84245.00 close= 84740.00 delta=  495.00 hi= 84830.00 lo= 84240.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260925 t=  900 dow= 5 barre=  6 open= 84515.00 close= 84320.00 delta= -195.00 hi= 84750.00 lo= 83885.00 rischio_pt=  430.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260925   905 dir= -1 entry= 84320.00 SL= 84750.00 TP=     0.00 rischio_pt=  430.00
+B30 OR  1260927 t= 1620 dow= 0 barre=  0 open= 85130.00 close= 85130.00 delta=    0.00 hi= 85130.00 lo= 85130.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1260928 t=  900 dow= 1 barre=  6 open= 83935.00 close= 84035.00 delta=  100.00 hi= 84215.00 lo= 83720.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1260929 t=  900 dow= 2 barre=  6 open= 84740.00 close= 84585.00 delta= -155.00 hi= 84865.00 lo= 84390.00 rischio_pt=  280.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260929   905 dir= -1 entry= 84620.00 SL= 84900.00 TP=     0.00 rischio_pt=  280.00
+B30 OR  1260930 t=  900 dow= 3 barre=  6 open= 85615.00 close= 84965.00 delta= -650.00 hi= 86005.00 lo= 84415.00 rischio_pt= 1040.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1260930   905 dir= -1 entry= 84985.00 SL= 86025.00 TP=     0.00 rischio_pt= 1040.00
+B30 OR  1261001 t=  900 dow= 4 barre=  6 open= 83720.00 close= 84290.00 delta=  570.00 hi= 84360.00 lo= 83705.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1261002 t=  900 dow= 5 barre=  6 open= 87010.00 close= 86970.00 delta=  -40.00 hi= 87600.00 lo= 86870.00 rischio_pt=  630.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1261002   905 dir= -1 entry= 86990.00 SL= 87620.00 TP=     0.00 rischio_pt=  630.00
+B30 OR  1261004 t= 1615 dow= 0 barre=  0 open= 86050.00 close= 86120.00 delta=   70.00 hi= 86120.00 lo= 86050.00 rischio_pt=    0.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1261005 t=  900 dow= 1 barre=  6 open= 86425.00 close= 86755.00 delta=  330.00 hi= 86820.00 lo= 86110.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1261006 t=  900 dow= 2 barre=  6 open= 86300.00 close= 86630.00 delta=  330.00 hi= 86820.00 lo= 86275.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1261007 t=  900 dow= 3 barre=  6 open= 83450.00 close= 83345.00 delta= -105.00 hi= 83600.00 lo= 82890.00 rischio_pt=  255.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1261007   905 dir= -1 entry= 83340.00 SL= 83595.00 TP=     0.00 rischio_pt=  255.00
+B30 OR  1261008 t=  900 dow= 4 barre=  6 open= 82435.00 close= 82345.00 delta=  -90.00 hi= 82605.00 lo= 81880.00 rischio_pt=  260.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1261008   905 dir= -1 entry= 82320.00 SL= 82580.00 TP=     0.00 rischio_pt=  260.00
+B30 OR  1261009 t=  900 dow= 5 barre=  6 open= 83130.00 close= 82765.00 delta= -365.00 hi= 83220.00 lo= 82630.00 rischio_pt=  455.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1261009   905 dir= -1 entry= 82755.00 SL= 83210.00 TP=     0.00 rischio_pt=  455.00
+B30 OR  1261011 t= 1610 dow= 0 barre=  0 open= 83750.00 close= 83730.00 delta=  -20.00 hi= 83750.00 lo= 83640.00 rischio_pt=   20.00 completa=FALSE short=FALSE long=FALSE
+B30 OR  1261012 t=  900 dow= 1 barre=  6 open= 82620.00 close= 83070.00 delta=  450.00 hi= 83145.00 lo= 82545.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE
+B30 OR  1261013 t=  900 dow= 2 barre=  6 open= 83525.00 close= 83390.00 delta= -135.00 hi= 83825.00 lo= 83300.00 rischio_pt=  435.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1261013   905 dir= -1 entry= 83345.00 SL= 83780.00 TP=     0.00 rischio_pt=  435.00
+B30 OR  1261014 t=  900 dow= 3 barre=  6 open= 82710.00 close= 82390.00 delta= -320.00 hi= 83215.00 lo= 82390.00 rischio_pt=  825.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1261014   905 dir= -1 entry= 82410.00 SL= 83235.00 TP=     0.00 rischio_pt=  825.00
+B30 OR  1261015 t=  900 dow= 4 barre=  6 open= 80285.00 close= 80235.00 delta=  -50.00 hi= 80855.00 lo= 79835.00 rischio_pt=  620.00 completa=TRUE short=TRUE long=FALSE
+B30 ENT  1261015   905 dir= -1 entry= 80245.00 SL= 80865.00 TP=     0.00 rischio_pt=  620.00
+B30 OR  1261016 t=  900 dow= 5 barre=  6 open= 82020.00 close= 82050.00 delta=   30.00 hi= 82210.00 lo= 81650.00 rischio_pt=    0.00 completa=TRUE short=FALSE long=FALSE

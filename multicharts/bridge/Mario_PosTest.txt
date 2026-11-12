@@ -1,0 +1,31 @@
+{ =====================================================================
+  Mario_PosTest  -  test per il bridge a stato (bridge/SPEC.md)
+  ---------------------------------------------------------------------
+  In MultiCharts: Indicator. Sul grafico ACCANTO alla strategia.
+  Format Study -> Properties: "Update on every tick" ACCESO.
+
+  Domanda: un indicatore vede la posizione della strategia cambiare nel
+  momento del fill, o solo alla chiusura della barra (strategia con IOG
+  spento)? Stampa nella finestra Output ogni cambio di posizione, con
+  l'ora del PC al secondo e l'ora della barra. Si confronta con l'ora
+  del fill nella scheda Orders.
+
+  Se l'ora del PC coincide col fill: il bridge a stato si puo' fare.
+  Se e' sempre quella di fine barra: no, e resta il bridge a eventi.
+  Non scrive file e non manda ordini.
+  ===================================================================== }
+
+Variables:
+    intrabarpersist ultimaPos(-999),
+    pos(0), cts(0);
+
+pos = i_MarketPosition;
+cts = i_CurrentContracts;
+
+if GetAppInfo(aiRealTimeCalc) = 1 and pos <> ultimaPos then begin
+    Print("POSTEST ", GetSymbolName, " PC=", FormatTime("HH:mm:ss", ComputerDateTime),
+          " barra=", Time:4:0, " pos=", pos:2:0, " contratti=", cts:3:0);
+    ultimaPos = pos;
+end;
+
+Plot1(pos * cts, "Pos");

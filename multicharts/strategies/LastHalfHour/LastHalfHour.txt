@@ -1,0 +1,103 @@
+{ =====================================================================
+  LastHalfHour  -  momentum della mezz'ora finale (Baltussen et al. 2021)
+  ---------------------------------------------------------------------
+  Fonte: Baltussen, Da, Lammers, Martens, "Hedging demand and market
+  intraday momentum", Journal of Financial Economics 142 (2021) 377-403.
+  Spec: SPEC.md.
+
+  IPOTESI: chi e' corto gamma (market maker di opzioni sull'indice, ETF a
+  leva) deve coprirsi nella direzione del mercato e lo fa soprattutto a
+  fine giornata. Il rendimento della mezz'ora finale ha quindi lo stesso
+  segno di quello del resto della giornata.
+
+  REGOLE — quelle del paper, senza aggiunte
+    segnale   r_ROD = Close alle 14:30 / chiusura RTH di ieri - 1
+              (overnight compreso: e' la definizione del paper)
+    ingresso  alle 14:30, a mercato: LONG se r_ROD > 0, SHORT altrimenti
+    uscita    alle 15:00, a mercato  (chiusura della sessione cash)
+
+  COSA NON C'E', E PERCHE'
+    - nessuno stop e nessun target: la strategia del paper non ne ha, e
+      aggiungerli cambierebbe la cosa che verifichiamo. Il rischio contro
+      l'MLL lo misura lo Stage 7, sull'escursione dentro il trade;
+    - nessun parametro da ottimizzare: gli input sono solo orari;
+    - nessun filtro "segnali concordi": e' nel paper, ma provarlo dopo la
+      versione base sugli stessi dati sarebbe scegliere il migliore.
+
+  LA CHIUSURA DI IERI si prende dall'ultima barra RTH del giorno prima,
+  qualunque sia: nei giorni a chiusura anticipata (12:15) e' quella, non
+  una 15:00 che non esiste. Il cambio di giorno si riconosce con
+  `Date <> lastRthDate` sulle barre RTH, quindi funziona sia su Globex
+  24h sia su RTH, senza il difetto di `Time[1] < SessStart` trovato su
+  ON_Reversal.
+
+  GIORNI A CHIUSURA ANTICIPATA: senza la barra delle 14:30 non si entra.
+
+  ORARI REGISTRATI DA MULTICHARTS (barre timbrate a fine periodo):
+    il segnale nasce sulla barra 14:30 (14:25-14:30), l'ordine e' "next
+    bar at market" -> fill all'apertura delle 14:30, timbrato 14:35.
+    L'uscita parte sulla barra 15:00 -> fill alle 15:00, timbrato 15:05.
+    Tenuta effettiva: 14:30 -> 15:00, come nel paper.
+
+  CHART: @NQ 5 min, Globex 24h, timezone Exchange (CT). Va compilato come
+         SEGNALE (strategy), non come indicatore: contiene ordini.
+  ===================================================================== }
+
+Inputs:
+    SessStart( 830 ),          { apertura cash, ora del chart (CT) }
+    SessEnd( 1500 ),           { chiusura cash: uscita }
+    EntryTime( 1430 ),         { 30 minuti prima della chiusura }
+    TradeLongs( 1 ),
+    TradeShorts( 1 ),
+    Num_Contracts( 1 ),
+    TradeStartEL( 0 ),         { 0 = off, altrimenti YYYMMDD }
+    TradeEndEL( 0 ),
+    ShowLog( 0 ),
+    LogPath( "C:\mc_out\lasthalfhour.txt" );
+
+Vars:
+    intrabarpersist priorClose( 0 ),
+    intrabarpersist lastRth( 0 ),
+    intrabarpersist lastRthDate( 0 ),
+    intrabarpersist tradedToday( false ),
+    rROD( 0 ),
+    dateOK( false );
+
+dateOK = ( TradeStartEL = 0 or Date >= TradeStartEL )
+     and ( TradeEndEL   = 0 or Date <= TradeEndEL );
+
+{ ===== chiusura RTH di ieri ===== }
+if Time > SessStart and Time <= SessEnd then begin
+    if Date <> lastRthDate then begin
+        { prima barra RTH di un nuovo giorno: lastRth e' ancora l'ultima
+          chiusura RTH di ieri }
+        priorClose  = lastRth;
+        lastRthDate = Date;
+        tradedToday = false;
+    end;
+    lastRth = Close;
+end;
+
+{ ===== INGRESSO alle 14:30 ===== }
+if Time = EntryTime and MarketPosition = 0 and tradedToday = false
+   and dateOK and priorClose > 0 then begin
+
+    rROD = Close / priorClose - 1;
+
+    if rROD > 0 and TradeLongs = 1 then begin
+        Buy ( "LHH-L" ) Num_Contracts contracts next bar at market;
+        tradedToday = true;
+    end
+    else if rROD <= 0 and TradeShorts = 1 then begin
+        SellShort ( "LHH-S" ) Num_Contracts contracts next bar at market;
+        tradedToday = true;
+    end;
+
+    if ShowLog = 1 then
+        Print( File(LogPath), "LHH ", Date:8:0, " priorClose=", priorClose:9:2,
+               " c1430=", Close:9:2, " rROD%=", (100 * rROD):7:3 );
+end;
+
+{ ===== USCITA alle 15:00 ===== }
+if MarketPosition = 1  and Time >= SessEnd then Sell       ( "LHH-L-x" ) next bar at market;
+if MarketPosition = -1 and Time >= SessEnd then BuyToCover ( "LHH-S-x" ) next bar at market;

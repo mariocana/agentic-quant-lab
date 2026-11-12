@@ -1,0 +1,226 @@
+{ =====================================================================
+  ON_Reversal_Study  -  INDICATORE DI MISURA, non una strategia
+  ---------------------------------------------------------------------
+  Overnight-Intraday Reversal. Ipotesi: il movimento fatto di notte e in
+  parte sbilanciamento di flusso impaziente, non informazione, e chi
+  fornisce liquidita viene ripagato nella prima ora di sessione.
+
+  MISURA, prima di scrivere qualunque strategia:
+    1) FREQUENZA  - quanti giorni hanno un gap abbastanza grande
+    2) ECCESSO    - di quelli, quanti ritracciano prima di andare contro
+    3) R in dollari - quanto vale lo stop per micro, che decide i contratti
+    4) PRIMA ORA vs GIORNATA - due risoluzioni separate, perche restare
+       dentro 08:30-09:30 e cio che tiene la correlazione con
+       DriftPullback vicina a zero (quell'ora e libera: zero suoi trade)
+
+  GEOMETRIA (pre-registrata, non ottimizzare):
+    G        = prezzo d'ingresso - chiusura RTH di ieri   (il movimento
+               che si fada, misurato al momento in cui si entra)
+    ingresso = chiusura della prima barra di sessione, in direzione
+               CONTRARIA a G
+    target   = ingresso - 0,50 * G     (meta ritracciamento)
+    stop     = ingresso + 0,75 * G
+    R:R      = 0,50 / 0,75 = 0,667     -> dentro la banda prop 0,5-1
+    caso     = 0,75 / (0,75 + 0,50) = 60%
+    soglia   = WR >= 66%, cioe ECCESSO >= +6 pp
+
+  IL CASO VA RICALCOLATO SULLA GEOMETRIA REALIZZATA. E l'errore che sul
+  VWAP Fade faceva leggere -15,47 dove c'era +0,41. Qui le distanze sono
+  proporzionali a G per costruzione, quindi il realizzato DEVE coincidere
+  col progetto: se `R:R realizzato` non e ~0,667, qualcosa e rotto e il
+  resto del log non si legge.
+
+  CHART: 5 min, timezone Exchange (CT). La sessione la impone il CODICE
+         (SessStart/SessEnd), non il template: funziona su RTH e su 24h.
+         Lead-in: AtrLen sessioni (20) per la media del range.
+
+  USO: applicare a @RTY (Tag "RTY") e poi a @YM (Tag "YM"), 2020-2024,
+       ShowLog 1, e mandare il contenuto di LogPath.
+  ===================================================================== }
+
+Inputs:
+    Tag( "RTY" ),              { lo scrivi tu: RTY, YM - finisce nel log }
+    SessStart( 830 ),          { apertura RTH, ora del chart }
+    SessEnd( 1500 ),           { chiusura RTH: da qui si prende il close di ieri }
+    FirstHourEnd( 930 ),       { fine della finestra "prima ora" }
+    MinGapAtr( 0.15 ),         { gap minimo per armare, in frazioni del range medio }
+    RetraceFrac( 0.50 ),       { target: frazione di G ritracciata }
+    StopFrac( 0.75 ),          { stop: frazione di G oltre l'ingresso }
+    AtrLen( 20 ),              { sessioni per la media del range }
+    ShowLog( 1 ),
+    LogPath( "C:\mc_out\on_reversal.txt" ),
+    ResetFile( 1 );
+
+Vars:
+    intrabarpersist priorClose( 0 ),
+    intrabarpersist sessHi( 0 ),
+    intrabarpersist sessLo( 999999 ),
+    intrabarpersist rngSum( 0 ),
+    intrabarpersist rngCnt( 0 ),
+    intrabarpersist avgRng( 0 ),
+    intrabarpersist inSess( false ),
+    intrabarpersist isFirst( false ),
+    intrabarpersist armed( 0 ),      { 0 = fuori, 1 = short (gap su), -1 = long }
+    intrabarpersist entryPx( 0 ),
+    intrabarpersist tgtPx( 0 ),
+    intrabarpersist stopPx( 0 ),
+    intrabarpersist gapPts( 0 ),
+    intrabarpersist doneHour( false ),
+    { totali }
+    intrabarpersist tDays( 0 ),
+    intrabarpersist tSetup( 0 ),
+    intrabarpersist tWinH( 0 ), intrabarpersist tLossH( 0 ), intrabarpersist tOpenH( 0 ),
+    intrabarpersist tWinD( 0 ), intrabarpersist tLossD( 0 ), intrabarpersist tOpenD( 0 ),
+    intrabarpersist sumGap( 0 ),
+    intrabarpersist sumTgt( 0 ),
+    intrabarpersist sumStop( 0 ),
+    intrabarpersist firstBar( true ),
+    obsWR( 0 ), nullWR( 0 ), rrReal( 0 );
+
+if firstBar then begin
+    firstBar = false;
+    if ShowLog = 1 and ResetFile = 1 then FileDelete( LogPath );
+    if ShowLog = 1 then
+        Print( File(LogPath), "ONREV symbol=", Tag,
+               " MinGapAtr=", MinGapAtr:4:2, " Retrace=", RetraceFrac:4:2,
+               " Stop=", StopFrac:4:2, " minmove=", MinMove:5:0,
+               " bigpointvalue=", BigPointValue:9:2 );
+end;
+
+{ ===== APERTURA DI SESSIONE ===== }
+{ apertura di sessione. Il secondo test (`Date <> Date[1]`) serve sui chart RTH:
+  li' la barra precedente e' la 15:00 del giorno prima, e `Time[1] < SessStart`
+  sarebbe FALSA (1500 < 830 e' falso) — la sessione non verrebbe MAI rilevata e la
+  strategia non farebbe un solo trade, in silenzio. Su Globex 24h non cambia nulla:
+  a mezzanotte Date cambia ma Time e' 5, che non e' >= SessStart. }
+if Time >= SessStart and ( Time[1] < SessStart or Date <> Date[1] ) then begin
+    { il range della sessione finita si accumula nella media }
+    if sessHi > sessLo and sessLo < 999999 then begin
+        rngSum = rngSum + ( sessHi - sessLo );
+        rngCnt = rngCnt + 1;
+        if rngCnt > AtrLen then begin
+            rngSum = rngSum * AtrLen / rngCnt;
+            rngCnt = AtrLen;
+        end;
+        avgRng = rngSum / rngCnt;
+    end;
+    sessHi = High; sessLo = Low;
+    inSess = true; isFirst = true; doneHour = false;
+    tDays = tDays + 1;
+end
+else if inSess then begin
+    if High > sessHi then sessHi = High;
+    if Low  < sessLo then sessLo = Low;
+end;
+
+if Time > SessEnd then begin
+    if inSess then priorClose = Close;     { chiusura RTH, serve domani }
+    inSess = false;
+end;
+
+if inSess then begin
+
+    { ----- INGRESSO: solo sulla prima barra, e solo se il gap e grande ----- }
+    if isFirst then begin
+        isFirst = false;
+        if priorClose > 0 and avgRng > 0 and rngCnt >= AtrLen then begin
+            gapPts = Close - priorClose;
+            if AbsValue( gapPts ) >= MinGapAtr * avgRng then begin
+                entryPx = Close;
+                if gapPts > 0 then begin
+                    armed  = 1;
+                    tgtPx  = entryPx - RetraceFrac * gapPts;
+                    stopPx = entryPx + StopFrac    * gapPts;
+                end
+                else begin
+                    armed  = -1;
+                    tgtPx  = entryPx - RetraceFrac * gapPts;
+                    stopPx = entryPx + StopFrac    * gapPts;
+                end;
+                tSetup  = tSetup  + 1;
+                sumGap  = sumGap  + AbsValue( gapPts );
+                sumTgt  = sumTgt  + AbsValue( entryPx - tgtPx );
+                sumStop = sumStop + AbsValue( stopPx - entryPx );
+            end;
+        end;
+    end;
+
+    { ----- RISOLUZIONE ----- }
+    if armed = 1 then begin
+        if Low <= tgtPx then begin
+            if Time <= FirstHourEnd then tWinH = tWinH + 1;
+            tWinD = tWinD + 1; armed = 0;
+        end
+        else if High >= stopPx then begin
+            if Time <= FirstHourEnd then tLossH = tLossH + 1;
+            tLossD = tLossD + 1; armed = 0;
+        end;
+    end
+    else if armed = -1 then begin
+        if High >= tgtPx then begin
+            if Time <= FirstHourEnd then tWinH = tWinH + 1;
+            tWinD = tWinD + 1; armed = 0;
+        end
+        else if Low <= stopPx then begin
+            if Time <= FirstHourEnd then tLossH = tLossH + 1;
+            tLossD = tLossD + 1; armed = 0;
+        end;
+    end;
+
+    { quanti restano aperti a fine prima ora }
+    if Time > FirstHourEnd and doneHour = false then begin
+        doneHour = true;
+        if armed <> 0 then tOpenH = tOpenH + 1;
+    end;
+end
+else begin
+    if armed <> 0 then begin
+        tOpenD = tOpenD + 1;
+        if doneHour = false then tOpenH = tOpenH + 1;
+        armed = 0;
+    end;
+end;
+
+{ ===== RIEPILOGO ===== }
+if ShowLog = 1 and LastBarOnChart then begin
+    Print( File(LogPath), "" );
+    Print( File(LogPath), "=== TOTALI ===" );
+    Print( File(LogPath), "sessioni          ", tDays:8:0 );
+    Print( File(LogPath), "setup             ", tSetup:8:0 );
+    if tDays > 0 then
+        Print( File(LogPath), "setup/giorno      ", (tSetup/tDays):8:3 );
+    if tSetup > 0 then begin
+        Print( File(LogPath), "gap medio         ", (sumGap/tSetup):8:2, " punti" );
+        Print( File(LogPath), "  = per micro     ", (sumGap/tSetup*BigPointValue/10):8:2, " dollari" );
+        Print( File(LogPath), "dist. target      ", (sumTgt/tSetup):8:2, " punti" );
+        Print( File(LogPath), "R per micro       ", (sumStop/tSetup*BigPointValue/10):8:2,
+               " dollari   <- decide quanti contratti" );
+        if sumStop > 0 then begin
+            rrReal = sumTgt / sumStop;
+            Print( File(LogPath), "R:R realizzato    ", rrReal:8:3,
+                   "   <- DEVE essere ~0,667" );
+        end;
+    end;
+    Print( File(LogPath), "" );
+    Print( File(LogPath), "--- risolti entro la PRIMA ORA (08:30-09:30) ---" );
+    Print( File(LogPath), "  target / stop / aperti  ", tWinH:6:0, tLossH:8:0, tOpenH:8:0 );
+    if tWinH + tLossH > 0 and sumStop > 0 then begin
+        obsWR  = 100 * tWinH / ( tWinH + tLossH );
+        nullWR = 100 * sumStop / ( sumStop + sumTgt );
+        Print( File(LogPath), "  WR               ", obsWR:8:2, "%" );
+        Print( File(LogPath), "  caso             ", nullWR:8:2, "%" );
+        Print( File(LogPath), "  ECCESSO          ", (obsWR - nullWR):8:2, " pp" );
+    end;
+    Print( File(LogPath), "" );
+    Print( File(LogPath), "--- risolti entro FINE GIORNATA ---" );
+    Print( File(LogPath), "  target / stop / aperti  ", tWinD:6:0, tLossD:8:0, tOpenD:8:0 );
+    if tWinD + tLossD > 0 and sumStop > 0 then begin
+        obsWR  = 100 * tWinD / ( tWinD + tLossD );
+        nullWR = 100 * sumStop / ( sumStop + sumTgt );
+        Print( File(LogPath), "  WR               ", obsWR:8:2, "%" );
+        Print( File(LogPath), "  caso             ", nullWR:8:2, "%" );
+        Print( File(LogPath), "  ECCESSO          ", (obsWR - nullWR):8:2, " pp" );
+    end;
+end;
+
+Plot1( priorClose, "Close di ieri" );

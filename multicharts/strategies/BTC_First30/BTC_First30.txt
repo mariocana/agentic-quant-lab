@@ -1,0 +1,155 @@
+{ =====================================================================
+  BTC_First30  -  short se i primi 30 min della sessione USA chiudono
+                  in negativo, flat alle 15:00 CT  -  PowerLanguage
+  ---------------------------------------------------------------------
+  Dalla Strategy of the Month settembre 2026 (@adri27). Spec: SPEC.md.
+
+  REGOLE
+    1) FINESTRA: barre che chiudono da ORStart+5 a OREnd (default
+       08:35 -> 09:00 CT). orOpen = open della prima barra (08:30),
+       orClose = close della barra delle 09:00, orHi/orLo = estremi.
+    2) ENTRY: se orClose < orOpen - MinDropPts -> short next bar at
+       market (riempie alle 09:00). Lato long solo come controllo
+       dell'ipotesi (TradeLongs 1): orClose > orOpen + MinDropPts.
+    3) STOP: StopMode 0 = nessuno (originale, NON deployabile);
+             StopMode 1 = estremo della finestra +/- StopBufTicks
+                          (short: orHi + buffer; long: orLo - buffer);
+             StopMode 2 = StopPts fissi dall'ingresso.
+    4) GUARDRAIL: MaxRiskPts > 0 salta il giorno se lo stop e' piu'
+       lontano di MaxRiskPts dal close delle 09:00 (vale con StopMode 1/2).
+       Si salta anche il giorno con la finestra incompleta (manca una
+       barra fra 08:35 e 09:00): il log lo segna con completa=0.
+    5) TARGET: TP_RR x rischio se TP_RR > 0; 0 = nessun target.
+       Stop e target sono ordini speciali (SetStopLoss/SetProfitTarget),
+       attivi dalla barra d'ingresso. In List of Trades escono come
+       "Stop Loss" e "Profit Target".
+    6) TIME EXIT: prima barra con Time >= ExitTime -> next bar at market
+       (riempie alle 15:00).
+    Un trade al giorno, solo lunedi'-venerdi'.
+
+  CHART: @BTC 5 min (sviluppo; MBT = 1/50), session template 24h
+         17:00-16:00 CT senza pause, timezone Exchange (CT), Bar
+         Magnifier 1 min ON. Orari in ORA DEL CHART. MC timbra la barra
+         con l'ora di CHIUSURA: la barra 08:30-08:35 ha Time = 835.
+  COSTI: commissione 175$ per Contract (= 50 MBT x $3,50/lato, slippage
+         incluso), campo slippage 0. Vedi SPEC.md, sezione Costi.
+  ROLLOVER: futures BTC mensili, posizione sempre intraday: nessun roll
+         attraversato. Tutto in punti, niente percentuali (back-adjusted).
+  ===================================================================== }
+
+Inputs:
+    ORStart(830),              { ora chart (CT): inizio finestra di misura }
+    OREnd(900),                { fine finestra = barra su cui si decide }
+    ExitTime(1500),            { flat }
+    StopMode(1),               { 0 nessuno | 1 estremo finestra | 2 StopPts fissi }
+    StopBufTicks(0),           { buffer oltre l'estremo, in tick (StopMode 1) }
+    StopPts(0),                { distanza fissa in punti (StopMode 2) }
+    MaxRiskPts(4000),          { salta il giorno se stop piu' lontano (0 = off) }
+    TP_RR(0),                  { 0 = nessun target; >0 = multipli di R }
+    MinDropPts(0),             { calo minimo della finestra per entrare (0 = qualsiasi) }
+    TradeShorts(1),
+    TradeLongs(0),             { solo controllo dell'ipotesi, non variante da adottare }
+    Num_Contracts(1),
+    ShowLog(0);
+
+Variables:
+    tick(0), dow(0),
+    orOpen(0), orHi(0), orLo(0), orClose(0), orBars(0), orExpected(0),
+    inOR(false), decided(false), fullWindow(false),
+    goShort(false), goLong(false),
+    lvlSL(0), riskPts(0), dayRisk(0), wasIn(false);
+
+tick = MinMove / PriceScale;
+dow  = DayOfWeek(Date);
+{ barre attese nella finestra: (OREnd - ORStart) in minuti / BarInterval (30/5 = 6) }
+orExpected = ((IntPortion(OREnd / 100) * 60 + Mod(OREnd, 100))
+            - (IntPortion(ORStart / 100) * 60 + Mod(ORStart, 100))) / BarInterval;
+
+{ ===== NUOVA GIORNATA: prima barra dopo ORStart ===== }
+if Time > ORStart and (Time[1] <= ORStart or Date <> Date[1]) then begin
+    orOpen = Open; orHi = High; orLo = Low; orClose = 0; orBars = 0;
+    inOR = true; decided = false;
+    goShort = false; goLong = false;
+end;
+
+{ ===== COSTRUZIONE DELLA FINESTRA ===== }
+if inOR and Time <= OREnd then begin
+    if High > orHi then orHi = High;
+    if Low  < orLo then orLo = Low;
+    orBars = orBars + 1;
+end;
+
+{ ===== DECISIONE sulla barra delle 09:00 ===== }
+if inOR and decided = false and Time >= OREnd then begin
+    inOR = false;
+    decided = true;
+    orClose = Close;
+    { finestra completa: la barra delle 09:00 esiste e ci sono tutte le barre }
+    fullWindow = (Time = OREnd) and (orBars = orExpected);
+
+    goShort = (TradeShorts = 1) and (orClose < orOpen - MinDropPts);
+    goLong  = (TradeLongs = 1) and (orClose > orOpen + MinDropPts);
+
+    { livello di stop e rischio stimato sul close delle 09:00 }
+    lvlSL = 0; riskPts = 0;
+    if goShort then begin
+        if StopMode = 1 then lvlSL = orHi + StopBufTicks * tick;
+        if StopMode = 2 then lvlSL = orClose + StopPts;
+        if lvlSL > 0 then riskPts = lvlSL - orClose;
+    end;
+    if goLong then begin
+        if StopMode = 1 then lvlSL = orLo - StopBufTicks * tick;
+        if StopMode = 2 then lvlSL = orClose - StopPts;
+        if lvlSL > 0 then riskPts = orClose - lvlSL;
+    end;
+
+    { filtri: solo lun-ven, finestra completa, guardrail sul rischio }
+    if dow < 1 or dow > 5 then begin goShort = false; goLong = false; end;
+    if fullWindow = false then begin goShort = false; goLong = false; end;
+    if MaxRiskPts > 0 and StopMode > 0 and riskPts > MaxRiskPts then begin
+        goShort = false; goLong = false;
+    end;
+    if StopMode > 0 and riskPts <= 0 then begin goShort = false; goLong = false; end;
+
+    if ShowLog = 1 then
+        Print("B30 OR ", Date:8:0, " t=", Time:5:0, " dow=", dow:2:0, " barre=", orBars:3:0,
+              " open=", orOpen:9:2, " close=", orClose:9:2, " delta=", orClose - orOpen:8:2,
+              " hi=", orHi:9:2, " lo=", orLo:9:2, " rischio_pt=", riskPts:8:2, " completa=", fullWindow:2:0,
+              " short=", goShort:2:0, " long=", goLong:2:0);
+
+    { distanza di stop del giorno (0 = nessuno stop: StopMode 0 o nessun trade) }
+    dayRisk = 0;
+    if (goShort or goLong) and StopMode > 0 then dayRisk = riskPts;
+
+    if MarketPosition = 0 and Time < ExitTime then begin
+        if goShort then SellShort ("B30-S") Num_Contracts contracts next bar at market;
+        if goLong  then Buy       ("B30-L") Num_Contracts contracts next bar at market;
+    end;
+end;
+
+{ ===== STOP / TARGET built-in, attivi gia' sulla barra d'ingresso =====
+  Ordini speciali: valgono anche dentro la barra in cui la posizione entra
+  (09:00-09:05). Il primo giro dello Stage 1 usava ordini "next bar" emessi
+  dopo l'ingresso, e quella barra restava scoperta (14/07/2026: il target e'
+  stato preso 85 pt oltre il suo prezzo). Distanza = dayRisk, misurata dal
+  close delle 09:00: lo stop reale e' EntryPrice + dayRisk, cioe' l'estremo
+  della finestra a meno dello scarto fra close e open delle 09:00.
+  `SetStopLoss` e' PER POSIZIONE: si moltiplica per Num_Contracts, mai per
+  CurrentContracts, che sulla barra d'ingresso vale 0 (lezione di NQ_First5). }
+if dayRisk > 0 then begin
+    SetStopLoss(dayRisk * BigPointValue * Num_Contracts);
+    if TP_RR > 0 then SetProfitTarget(TP_RR * dayRisk * BigPointValue * Num_Contracts);
+end;
+
+if MarketPosition <> 0 and wasIn = false and ShowLog = 1 then
+    Print("B30 ENT ", Date:8:0, " ", Time:5:0, " dir=", MarketPosition:3:0,
+          " entry=", EntryPrice:9:2, " SL=", EntryPrice - MarketPosition * dayRisk:9:2,
+          " TP=", IFF(TP_RR > 0, EntryPrice + MarketPosition * TP_RR * dayRisk, 0):9:2,
+          " rischio_pt=", dayRisk:8:2);
+wasIn = MarketPosition <> 0;
+
+{ ===== TIME EXIT (anche se la sessione salta le 15:00: prima barra oltre) ===== }
+if MarketPosition <> 0 and (Time >= ExitTime or Date <> Date[1]) then begin
+    if MarketPosition = -1 then BuyToCover ("EXIT-S") next bar at market;
+    if MarketPosition = 1  then Sell       ("EXIT-L") next bar at market;
+end;

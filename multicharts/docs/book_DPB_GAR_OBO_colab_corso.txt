@@ -1,0 +1,384 @@
+
+✅ 3 file(s) uploaded - one strategy per file:
+
+  📄 strategies/DriftPullback/reports/DPB_S5_OOS_2025-2026.xlsx (2,958,283 bytes)
+     Excel workbook with sheets: ['Strategy Analysis', 'Strategy Analysis Graphs', 'List of Trades', 'Trade Analysis', 'Trade Analysis Graphs', 'Periodical Analysis', 'Periodical Analysis Graphs', 'Settings']
+     'List of Trades' sheet found - CELL 3 will read it directly (no manual prep needed).
+
+  📄 strategies/GoldAsianRange/reports/GAR_S5_OOS_A_pct1_2025-2026.xlsx (2,667,241 bytes)
+     Excel workbook with sheets: ['Strategy Analysis', 'Strategy Analysis Graphs', 'List of Trades', 'Trade Analysis', 'Trade Analysis Graphs', 'Periodical Analysis', 'Periodical Analysis Graphs', 'Settings']
+     'List of Trades' sheet found - CELL 3 will read it directly (no manual prep needed).
+
+  📄 strategies/OvernightBiasORB/reports/OBO_S5_OOS_2025-2026.xlsx (2,273,742 bytes)
+     Excel workbook with sheets: ['Strategy Analysis', 'Strategy Analysis Graphs', 'List of Trades', 'Trade Analysis', 'Trade Analysis Graphs', 'Periodical Analysis', 'Periodical Analysis Graphs', 'Settings']
+     'List of Trades' sheet found - CELL 3 will read it directly (no manual prep needed).
+
+➡️  Now run CELL 2 (settings incl. STRATEGY_WEIGHTS), then CELL 3.
+✅ Inputs set.
+   Strategy weights: {'dpb': 0.1, 'gar': 0.1, 'obo': 0.1}  (default 1.0 for unmatched files)
+   Exposure cap: 2.5 NQ total (model validity), 6 NQ legal max
+
+──────────────────────────────────────────────────────────────────────
+Loading: strategies/DriftPullback/reports/DPB_S5_OOS_2025-2026.xlsx
+ℹ️  MultiCharts .xlsx detected - sheet 'List of Trades', header on row 3, 2878 raw rows.
+ℹ️  Kept 1439 entry rows (dropped 1439 exit/blank rows).
+Columns found: ['trade #', 'order #', 'type', 'signal', 'price', 'contracts', 'profit ($)', 'profit (%)', 'cum. profit ($)', 'cum. profit (%)', 'run-up ($)', 'run-up (%)', 'drawdown ($)', 'drawdown (%)', 'datetime']
+Rows loaded:   1439
+ℹ️  Auto-renamed columns: 'trade #' → trade_id, 'order #' → order_id, 'profit ($)' → profit_usd
+ℹ️  Derived 'direction' from the 'type' column.
+✅ DPB_S5_OOS_2025-2026: 1439 trades | 2025-01-02 → 2026-10-15 | win 64% | avg $5.73 | weight 0.1
+
+──────────────────────────────────────────────────────────────────────
+Loading: strategies/GoldAsianRange/reports/GAR_S5_OOS_A_pct1_2025-2026.xlsx
+ℹ️  MultiCharts .xlsx detected - sheet 'List of Trades', header on row 3, 706 raw rows.
+ℹ️  Kept 353 entry rows (dropped 353 exit/blank rows).
+Columns found: ['trade #', 'order #', 'type', 'signal', 'price', 'contracts', 'profit ($)', 'profit (%)', 'cum. profit ($)', 'cum. profit (%)', 'run-up ($)', 'run-up (%)', 'drawdown ($)', 'drawdown (%)', 'datetime']
+Rows loaded:   353
+ℹ️  Auto-renamed columns: 'trade #' → trade_id, 'order #' → order_id, 'profit ($)' → profit_usd
+ℹ️  Derived 'direction' from the 'type' column.
+✅ GAR_S5_OOS_A_pct1_2025-2026: 353 trades | 2024-12-23 → 2026-11-02 | win 49% | avg $47.17 | weight 0.1
+
+──────────────────────────────────────────────────────────────────────
+Loading: strategies/OvernightBiasORB/reports/OBO_S5_OOS_2025-2026.xlsx
+ℹ️  MultiCharts .xlsx detected - sheet 'List of Trades', header on row 3, 332 raw rows.
+ℹ️  Kept 166 entry rows (dropped 166 exit/blank rows).
+Columns found: ['trade #', 'order #', 'type', 'signal', 'price', 'contracts', 'profit ($)', 'profit (%)', 'cum. profit ($)', 'cum. profit (%)', 'run-up ($)', 'run-up (%)', 'drawdown ($)', 'drawdown (%)', 'datetime']
+Rows loaded:   166
+ℹ️  Auto-renamed columns: 'trade #' → trade_id, 'order #' → order_id, 'profit ($)' → profit_usd
+ℹ️  Derived 'direction' from the 'type' column.
+✅ OBO_S5_OOS_2025-2026: 166 trades | 2025-01-03 → 2026-10-30 | win 55% | avg $49.06 | weight 0.1
+
+══════════════════════════════════════════════════════════════════════
+✅ COMBINED BOOK: 3 strategies, 1958 trades total
+   DPB_S5_OOS_2025-2026      1439 trades  2025-01-02 → 2026-10-15   weight 0.1
+   GAR_S5_OOS_A_pct1_2025-2026   353 trades  2024-12-23 → 2026-11-02   weight 0.1
+   OBO_S5_OOS_2025-2026       166 trades  2025-01-03 → 2026-10-30   weight 0.1
+   Overlap window (all strategies live): 2025-01-03 → 2026-10-15  - CELL 5 restricts the daily pool to this window.
+⚠️  No OOS_START_DATE set - statistics below use the FULL uploaded sample.
+   If this file is a raw backtest, these are IN-SAMPLE numbers and the
+   pass probabilities downstream will be optimistic.
+══════════════════════════════════════════════════
+  TRADE STATISTICS (full sample)
+══════════════════════════════════════════════════
+  Trades         : 1958
+  Date range     : 2024-12-23 → 2026-11-02
+  Win Rate (net) : 60.8%
+  Avg Trade (net): $16.88
+  EV (R/trade)   : 0.1688 R
+  Avg Winner     : $128.83
+  Avg Loser      : $-156.97
+
+  Per strategy (net, after OOS filter):
+  Strategy                Trades   Win%   AvgTrade        Total
+  ──────────────────────────────────────────────────────────────
+  DPB_S5_OOS_2025-2026      1439    64%      $5.73       $8,248
+  GAR_S5_OOS_A_pct1_2025-2026     353    49%     $47.17      $16,651
+  OBO_S5_OOS_2025-2026       166    55%     $49.06       $8,144
+
+  Bootstrap 95% CI (per trade, all strategies pooled)
+  EV $: [$8.24, $25.71]
+  EV R: [0.0824, 0.2571]
+  P(EV_R ≤ 0): 0.000
+  P(EV_$ ≤ 0): 0.000
+✅ Excursions merged for 100% of simulation trades.
+   DPB_S5_OOS_2025-2026     MAE/1x contract: median $822 | P90 $1,618 | max $3,178
+   GAR_S5_OOS_A_pct1_2025-2026 MAE/1x contract: median $1,302 | P90 $3,170 | max $4,752
+   OBO_S5_OOS_2025-2026     MAE/1x contract: median $1,458 | P90 $2,690 | max $5,418
+ℹ️  Overlap restriction: kept 1932 of 1958 trades inside 2025-01-03 → 2026-10-15 (all strategies live).
+══════════════════════════════════════════════════
+  DAILY DATASET (full sample)
+══════════════════════════════════════════════════
+  Date range        : 2025-01-03 → 2026-10-15
+  Total weekdays    : 465
+  Active trade days : 459
+  0-trade weekdays  : 6
+  % active          : 98.7%
+  Avg trades/weekday: 4.15
+  Book              : 3 strategies, total 0.3 NQ per unit size (weights: DPB_S5_OOS_2025-2026 0.1, GAR_S5_OOS_A_pct1_2025-2026 0.1, OBO_S5_OOS_2025-2026 0.1)
+  DPB_S5_OOS_2025-2026     total     $8,398   max DD    $3,650
+  GAR_S5_OOS_A_pct1_2025-2026 total    $15,893   max DD    $2,312
+  OBO_S5_OOS_2025-2026     total     $6,984   max DD    $1,706
+  COMBINED BOOK (norm.)    total   $104,252   max DD   $12,463
+  Note: the book's per-contract max DD is NOT below the average standalone DD ($2,556) - these strategies drew down together in this sample; check the correlation matrix in Cell 8.
+Challenge : Apex 50K EOD
+Target    : $3,000
+Max DD    : $2,000 (EOD trailing, locks at +$100)
+Deadline  : 21 trading days
+Size      : 1 x book of 3 strategies = 0.3 NQ total (3 micro-equivalents)
+Backtest  : each strategy exported at 1 contract; weights applied at load
+Simulation engine loaded: simulate_apex, simulate_paths, print_results, verdict_tag
+✅ ENGINE = 'excursion' - Cells 7-10 will use it on re-run.
+   Trade bag: 465 weekdays, 1932 trades (3 strategies interleaved by timestamp).
+   Path bound (book weights, 1932 trades): P95 MAE $245/unit fills the $2,000 room at 8.2x from a fresh start.
+Using NUM_CONTRACTS = 1 (from CELL 2; note CELL 8 intentionally sets this to the sweep-optimal size for Cells 9-16)
+Sample : FULL sample (in-sample if raw backtest)  |  1932 trades over 465 weekdays (overlap of 3 strategies)
+Sizing : 1 x book = 0.3 NQ total (3 strategies)
+
+=======================================================
+  Apex 50K EOD
+=======================================================
+  Target: $3,000  |  Max DD: $2,000 (EOD trailing)
+  Deadline: 21 days  |  Sims: 20,000
+
+  >>> PASS RATE: 25.8%  [95% CI: 25.2% - 26.4%] <<<
+
+  OUTCOMES:
+    Passed     :  5,153  (25.8%)
+    Fail DD    :  2,919  (14.6%)
+    Fail Daily :      0  (0.0%)
+    Fail Time  : 11,928  (59.6%)
+
+  TIMING:
+    Avg days to pass : 14.0  (calendar weekdays)
+    Median           : 15.0
+    Avg TRADING days : 13.9
+
+  DRAWDOWN:
+    Avg Max DD  : $   1,261
+    P90 Max DD  : $   2,039
+    P95 Max DD  : $   2,099
+    Worst DD    : $   2,732
+
+  VERDICT: RISKY
+
+══════════════════════════════════════════════════════════════════════════════
+  STAGE A — ANALYTIC MIX SCREEN  (FULL sample, 465 overlap days)
+══════════════════════════════════════════════════════════════════════════════
+  Strategy                  mu/day    sd/day  Sharpe/day
+  ───────────────────────────────────────────────────────
+  DPB_S5_OOS_2025-2026        $181    $2,172      0.0832
+  GAR_S5_OOS_A_pct1_2025-2026      $342    $2,964      0.1153
+  OBO_S5_OOS_2025-2026        $150    $1,684      0.0892
+
+  Daily P&L correlations:
+    DPB_S5_OOS_2025-2026 <-> GAR_S5_OOS_A_pct1_2025-2026: -0.12
+    DPB_S5_OOS_2025-2026 <-> OBO_S5_OOS_2025-2026: +0.18
+    GAR_S5_OOS_A_pct1_2025-2026 <-> OBO_S5_OOS_2025-2026: +0.04
+
+  Estimation noise: SE(mu) = $101, $137, $78  (465 days) - mixes within this are statistically tied.
+
+══════════════════════════════════════════════════════════════════════════════
+  STAGE B — SIMULATED SHORTLIST (each mix at its own best size, 3,000 sims/point)
+══════════════════════════════════════════════════════════════════════════════
+  Mix (DPB_S5_OOS_2025-2026/GAR_S5_OOS_A_pct1_2025-2026/OBO_S5_OOS_2025-2026)  Sharpe  BestSize  TotNQ   Pass%
+  ──────────────────────────────────────────────────────────────────────────────
+  EQUAL WEIGHT [1/1/1]                          0.1654       0.4   1.20   42.1%
+  solo DPB_S5_OOS_2025-2026 [1/0/0]             0.0833       1.0   1.00   36.2%
+  solo GAR_S5_OOS_A_pct1_2025-2026 [0/1/0]      0.1154       0.4   0.40   37.7%
+  solo OBO_S5_OOS_2025-2026 [0/0/1]             0.0893       0.8   0.80   33.0%
+  TANGENCY (max-Sharpe) [0.95/1/1]              0.1655       0.4   1.18   42.4%
+  lattice 1/1/0.75 [1/1/0.75]                   0.1647       0.4   1.10   41.9%
+  lattice 0.75/1/1 [0.75/1/1]                   0.1647       0.4   1.10   42.2%
+  lattice 0.75/0.75/1 [0.75/0.75/1]             0.1645       0.4   1.00   44.1%
+
+  ⚖️  lattice 0.75/0.75/1 (44.1%) is NOT statistically separated from EQUAL WEIGHT (42.1%).
+      Keeping EQUAL WEIGHT - an optimized mix inside the noise is fitted noise.
+
+  >>> SELECTED MIX: EQUAL WEIGHT  [1/1/1]  (screen pass 42.1% at size 0.4) <<<
+      To make the WHOLE notebook (funded cells included) use this mix,
+      set in CELL 2:  STRATEGY_WEIGHTS = {"DPB_S5_OOS_2025-2026": 1, "GAR_S5_OOS_A_pct1_2025-2026": 1, "OBO_S5_OOS_2025-2026": 1}  and re-run 3->16.
+
+══════════════════════════════════════════════════════════════════════
+  SIZE SWEEP OF SELECTED MIX — Apex 50K EOD  (FULL sample)
+  (size = multiplier on the mix; total NQ = size x 3; capped at 2.5 NQ total - above that the EOD-only DD check understates intraday bust risk)
+══════════════════════════════════════════════════════════════════════
+    Size  TotNQ    Pass%            95% CI      AvgDD      P95DD  AvgDays
+  ────────────────────────────────────────────────────────────────────────
+    0.3x   0.90   44.1%   [43.4% - 44.8%]  $   1,743  $   2,611      5.3
+    0.5x   1.50   38.3%   [37.6% - 38.9%]  $   1,865  $   2,991      2.7
+    0.7x   2.10   36.5%   [35.8% - 37.1%]  $   1,984  $   3,253      1.9
+
+  >>> BEST: size 0.3x → 44.1% <<<
+
+  ✅ HAND-OFF: Cells 9-16 will use the OPTIMAL configuration:
+     mix [1/1/1] at size 0.3x = 0.9 NQ total
+     pass 44.5% [43.8% - 45.2%]
+     ⚠️  NUM_CONTRACTS overridden for this run: CELL 2 said 1, sweep-optimal is 0.3.
+         Re-run CELL 2 to restore your manual value.
+     TRADABILITY: legs at this size are 3/3/3 MNQ - round to whole micros when placing orders.
+══════════════════════════════════════════════════════════════════════════
+  STAGED SIZING - small until +$1,000, then 0.3x (dynamic mode, ENGINE='excursion', 20,000 sims)
+══════════════════════════════════════════════════════════════════════════
+    Stage 1 size    Pass%            95% CI   vs flat
+  ──────────────────────────────────────────────────────
+       flat 0.3x    44.2%   [43.5% - 44.9%]  baseline
+     0.07x->0.3x    26.2%   [25.6% - 26.8%]     -18.0pp
+     0.15x->0.3x    47.6%   [46.9% - 48.3%]      +3.4pp
+     0.22x->0.3x    47.4%   [46.7% - 48.1%]      +3.2pp
+
+  >>> Staging HELPS here: 0.15x until the buffer beats flat sizing outside the CIs (47.6% vs 44.2%). <<<
+
+  Consistency check: the flat baseline should sit within CI of the
+  Cell 8 sweep row for the same size (different seed stream, same engine).
+══════════════════════════════════════════════════════════════════════════
+  TRADE-LEVEL SIZE SWEEP - selected mix [1/1/1]
+  (floor enforced at every trade close; compare with the Cell 8 table)
+══════════════════════════════════════════════════════════════════════════
+    Size  TotNQ    Pass%            95% CI      P95DD  AvgDays
+  ──────────────────────────────────────────────────────────────
+    0.3x   0.90   49.6%   [48.9% - 50.3%]  $   2,637      5.7
+    0.5x   1.50   45.1%   [44.4% - 45.8%]  $   3,048      3.0
+    0.7x   2.10   43.4%   [42.7% - 44.1%]  $   3,241      2.1
+
+  Where this table and Cell 8's agree, the day-level results stand.
+  Where they diverge (typically at larger sizes), trust THIS one - the
+  divergence is exactly the intraday netting the day-level engine
+  cannot see. Note the mix optimizer's RANKING remains day-level;
+  this cell verifies the chosen book, it does not re-select it.
+
+═══════════════════════════════════════════════════════
+  FINAL SUMMARY — Apex 50K EOD  (FULL sample)
+═══════════════════════════════════════════════════════
+  Book            : 3 strategies, mix [1/1/1]
+                    (DPB_S5_OOS_2025-2026 1, GAR_S5_OOS_A_pct1_2025-2026 1, OBO_S5_OOS_2025-2026 1)
+  Size            : 0.3 x mix = 0.9 NQ total (9 micro-equivalents)
+  Daily pool size : 465 weekdays (459 active)
+  Simulations     : 20,000
+
+  Pass Rate       : 44.5%  [43.8% — 45.2%]
+  Avg Days to Pass: 5.3
+  Avg Max DD      : $1,739
+  P95 Max DD      : $2,612
+  #1 Failure Mode : DD (55.4%)
+
+  Expected challenges to pass 1 eval: 2.2
+
+  Cumulative pass probability (independent attempts assumed):
+    Challenges   P(pass ≥ 1)
+  ────────────  ────────────
+             1        44.5%
+             2        69.2%
+             3        82.9%
+             4        90.5%
+
+  🟠 MODERATE — Coin-flip territory, consider tighter risk.
+═══════════════════════════════════════════════════════
+Funded account simulation engine v4 loaded.
+   Rule set: apex40 | qualifying days: 5 at >=$250
+   Safety net: +$2,600 (withdraw only above it, min $500) | consistency: 50% | payout cap: $1,500
+   Max DD: $2,000 EOD trailing, locks at +$100 | horizon guard: 250 days
+   Inactivity: 2 days of >=$50 net profit per rolling 30 calendar days (Apex support docs); modeled as 22 trading days
+   No deadline on qualifying days - accounts run until qualified, blown, or closed for inactivity.
+
+════════════════════════════════════════════════════════════════════════════════════
+  FUNDED MIX SCREEN - first-payout net EV, each mix at its own best size
+  (sizes capped at 2 NQ total: PA day-one allowance and model-validity cap; 3,000 sims/point)
+════════════════════════════════════════════════════════════════════════════════════
+  Mix (DPB_S5_OOS_2025-2026/GAR_S5_OOS_A_pct1_2025-2026/OBO_S5_OOS_2025-2026)  BestSize  TotNQ   Qual%    E[net]
+  ────────────────────────────────────────────────────────────────────────────────
+  EVAL-OPTIMAL (Cell 8) [1/1/1]                      0.2   0.60   54.3%      $631
+  solo DPB_S5_OOS_2025-2026 [1/0/0]                  0.6   0.60   33.5%      $387
+  solo GAR_S5_OOS_A_pct1_2025-2026 [0/1/0]           0.2   0.20   52.9%      $584
+  solo OBO_S5_OOS_2025-2026 [0/0/1]                  0.3   0.30   35.4%      $366
+  TANGENCY (max-Sharpe) [0.95/1/1]                   0.2   0.59   54.8%      $638
+  lattice 1/1/0.75 [1/1/0.75]                        0.2   0.55   55.5%      $631
+  lattice 0.75/1/1 [0.75/1/1]                        0.2   0.55   56.6%      $653
+  lattice 0.75/0.75/1 [0.75/0.75/1]                  0.2   0.50   59.9%      $663
+
+  ⚖️  lattice 0.75/0.75/1 (E[net] $663) is NOT separated from the eval mix ($631) beyond noise - keeping the EVAL-OPTIMAL mix for consistency.
+
+  >>> FUNDED MIX: EVAL-OPTIMAL (Cell 8)  [1/1/1]  (screen E[net] $631 at size 0.2) <<<
+  ℹ️  Funded-optimal mix = eval-optimal mix; Cells 13-17 continue on the same book.
+      Cells 13-17 now run on this mix - no re-run needed. Cell 13 sweeps its size; Cell 16 gives the lifetime verdict.
+
+════════════════════════════════════════════════════════════════════════════════════════════
+  FUNDED ACCOUNT — POSITION SIZE SWEEP (first payout)
+  (sizes capped at 2 NQ total: PA day-one allowance ~2 NQ and model-validity cap)
+════════════════════════════════════════════════════════════════════════════════════════════
+   Size  TotNQ  Qualify%   Blown%   Inact%  AtHorizon%   AvgPay   E[Pay]   E[net]
+  ────────────────────────────────────────────────────────────────────────────────────────
+   0.2x   0.60     53.1%    46.9%     0.0%        0.0%   $1,295     $688     $617
+   0.3x   0.90     44.3%    55.7%     0.0%        0.0%   $1,430     $634     $550
+   0.4x   1.20     39.5%    60.5%     0.0%        0.0%   $1,464     $578     $487
+   0.5x   1.50     36.0%    64.0%     0.0%        0.0%   $1,486     $535     $439
+   0.6x   1.80     33.7%    66.3%     0.0%        0.0%   $1,495     $503     $404
+
+  Diagnostic - max first-payout E[net]: size 0.2x (0.60 NQ) → $617, blown 46.9%.
+  This objective prices a lost account at only $150 and ignores the lost ladder, so it over-sizes by construction.
+
+  >>> RECOMMENDED (survival-adjusted): size 0.2x (0.60 NQ total) → E[net] $617 (100% of max), qualify 53.1%, blown 46.9% vs 46.9% at the max <<<
+      Smallest size within 15% of max E[net]: nearly the same first check, 0% fewer accounts destroyed before payouts 2-6.
+      FINAL size verdict comes from lifetime E[Total] in CELL 16 (recommendation in CELL 17).
+
+════════════════════════════════════════════════════════════
+  FUNDED ACCOUNT DETAIL — size 0.2x (0.60 NQ total)  (FULL sample)
+════════════════════════════════════════════════════════════
+  Simulations     : 20,000
+  Qualify Rate    : 54.6%  [53.9% — 55.3%]
+  Blown (DD)      : 45.4%
+  Closed (inactive): 0.0%
+  Still open at horizon : 0.0%
+
+  Median days to qualify : 16
+  P90 days to qualify    : 35
+
+  Avg Payout      : $1,289
+  Median Payout   : $1,500
+  P10 Payout      : $702
+  P90 Payout      : $1,500
+  Expected Payout : $704
+  (Expected = qualify rate x avg payout; first payout of the ladder only.)
+
+════════════════════════════════════════════════════════════════════════════════════════════════
+  FUNDED ACCOUNT - LIFETIME EXTRACTION SWEEP (6-payout ladder, $13,000 ceiling)
+  (sizes capped at 2 NQ total: PA day-one allowance and model-validity cap)
+════════════════════════════════════════════════════════════════════════════════════════════════
+   Size  TotNQ   E[Total]  MedTotal   P($0)  P(>=1)  P(all 6)  AvgPays   Blown%   Inact%  AvgDays
+  ────────────────────────────────────────────────────────────────────────────────────────────
+   0.2x   0.60     $5,617    $1,096   46.3%   53.7%     41.9%     2.69    57.8%     0.0%       99
+   0.3x   0.90     $4,768        $0   54.5%   45.5%     35.2%     2.25    64.5%     0.0%       80
+   0.4x   1.20     $4,225        $0   59.6%   40.4%     31.2%     1.99    68.6%     0.0%       69
+   0.5x   1.50     $4,008        $0   62.7%   37.3%     29.7%     1.88    70.2%     0.0%       65
+   0.6x   1.80     $3,623        $0   66.2%   33.8%     26.9%     1.70    73.0%     0.0%       58
+
+  >>> LIFETIME OPTIMAL: size 0.2x (0.60 NQ total) → E[total extraction] $5,617 of $13,000 max
+      (avg 2.69 payouts, P(at least 1) 53.7%, P(full ladder) 41.9%, avg account life 99 trading days)
+      This is the objective that prices survival AND extraction together - the number CELL 17 uses.
+
+══════════════════════════════════════════════════════════════════════════════
+  THE SIZING FUNNEL - one book, three phases, three sizes
+══════════════════════════════════════════════════════════════════════════════
+  Phase                                Size  TotNQ             Legs             Key metric
+  ──────────────────────────────────────────────────────────────────────────
+  EVAL - pass the challenge            0.3x   0.90        3/3/3 MNQ             pass 44.5%
+  FUNDED - max first-check (diag.)     0.2x   0.60        2/2/2 MNQ            E[net] $617
+  FUNDED - first check, survival       0.2x   0.60        2/2/2 MNQ          qualify 53.1%
+  FUNDED - LIFETIME (the verdict)      0.2x   0.60        2/2/2 MNQ        E[Total] $5,617
+
+  Read it top to bottom: size UP to pass, then size DOWN (0.90 → 0.60 NQ, a 1.5x reduction) once funded.
+
+  At the lifetime-optimal size (0.2x, 0.60 NQ):
+    P(at least 1 payout)   : 53.7%
+    P(account pays $0)     : 46.3%
+    P(full 6-payout ladder): 41.9%
+    Avg payouts per account: 2.69
+    Avg account life       : 99 trading days
+    Ends blown / inactive  : 58% / 0%
+
+  Top 5 sizes by lifetime extraction:
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │   0.2x (0.60 NQ)  │  E[total] $ 5,617  P(>=1)  54%  blown  58%  inact   0% ◀ BEST
+  │   0.3x (0.90 NQ)  │  E[total] $ 4,768  P(>=1)  45%  blown  65%  inact   0%
+  │   0.4x (1.20 NQ)  │  E[total] $ 4,225  P(>=1)  40%  blown  69%  inact   0%
+  │   0.5x (1.50 NQ)  │  E[total] $ 4,008  P(>=1)  37%  blown  70%  inact   0%
+  │   0.6x (1.80 NQ)  │  E[total] $ 3,623  P(>=1)  34%  blown  73%  inact   0%
+  └────────────────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════════════════
+  ACCOUNT ECONOMICS (per funded account, at the lifetime-optimal size)
+══════════════════════════════════════════════════════════════════════════════
+  Expected eval attempts to pass : 2.2  (x $100 = $225 acquisition)
+  Avg account life               : 99 trading days (~4.7 months)
+  Gross extraction rate          : $57 per trading day
+
+  Plan                             Fees   E[net] per account   Multiple on cost
+  ──────────────────────────────────────────────────────────────────────────
+  Lifetime activation              $140               $5,252      15.4x  STRONG
+  Monthly ($85/mo)                 $402               $4,990       9.0x  STRONG
+
+  ⚠️  The lifetime optimum sits at the smallest simulated size - the true optimum may lie beyond the grid. Note that much smaller books trade slower (mind monthly fees) and eventually collide with the absolute $50 activity / $250 qualifying-day thresholds.
+
+  NOTES: E[Total] is per account under iid resampling of the backtest -
+  live degradation, the intraday DD blind spot, and consistency-rule edge
+  cases all push these numbers DOWN.
+  VERIFY fees and the PA contract tier on the Apex dashboard before relying on the economics.

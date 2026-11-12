@@ -1,0 +1,233 @@
+{ =====================================================================
+  VWAP_Fade_Study  -  INDICATORE DI MISURA, non una strategia
+  ---------------------------------------------------------------------
+  Risponde a due domande PRIMA di scrivere la strategia, perche' sono le
+  due che hanno ucciso le candidate precedenti:
+
+    1) FREQUENZA. Quante volte al giorno il prezzo si allontana di
+       EntrySD deviazioni standard dal VWAP di sessione? Serve >= 2
+       setup/giorno, altrimenti l'economia della eval non regge
+       (vedi prompt_ricerca_strategie.md).
+
+    2) ECCESSO SUL CASO. Di quelle volte, quante tornano al VWAP PRIMA
+       di raggiungere StopSD? In un random walk senza drift la
+       probabilita' e' nota: (StopSD - EntrySD) / StopSD. Con i default
+       (1,0 e 2,5) vale 1,5/2,5 = 60%. Serve almeno +6 punti, cioe'
+       WR >= 66%, per arrivare a PF 1,3 con questo R:R.
+
+  GEOMETRIA (pre-registrata, non ottimizzare):
+    ingresso  = chiusura oltre VWAP +/- EntrySD * sigma
+    target    = il VWAP
+    stop      = VWAP +/- StopSD * sigma, con sigma CONGELATA all'ingresso
+    R:R       = EntrySD / (StopSD - EntrySD) = 1,0 / 1,5 = 0,67
+
+  Il sigma e' la deviazione standard PESATA PER VOLUME del prezzo tipico
+  attorno al VWAP, cioe' la banda classica, non una deviazione sui
+  rendimenti.
+
+  LA SESSIONE E' DEFINITA DAL CODICE, non dal template del grafico:
+  e' la lezione dei due run buttati su ATR_Window_Study. Orari in ORA
+  DEL CHART. Con un chart CT i default sono giusti.
+
+  CHART: 5 min, timezone Exchange (CT), Bar Magnifier 1 min.
+         Funziona sia su RTH sia su Globex 24h: la finestra la impone
+         SessStart/SessEnd, non il template.
+
+  USO: aggiungere a @NQ e poi a @YM, ShowLog 1, e mandare il contenuto
+       di LogPath. Non serve nessun backtest.
+  ===================================================================== }
+
+Inputs:
+    Tag( "YM" ),               { lo scrivi tu: YM, NQ, CL - finisce nel log }
+    SessStart( 830 ),          { inizio accumulo VWAP, ora del chart }
+    SessEnd( 1455 ),           { ultima barra utile: dopo si chiude tutto }
+    EntrySD( 1.0 ),            { quante sigma per armare il fade }
+    StopSD( 2.5 ),             { quante sigma per lo stop }
+    MinSigmaPts( 0 ),          { 0 = off; filtro anti-rumore sulle sigma piccole }
+    MinBars( 12 ),             { barre minime prima di armare: con poche barre la
+                                 sigma non e' ancora definita (12 = 1 ora a 5 min) }
+    ShowLog( 1 ),
+    LogPath( "C:\mc_out\vwap_fade.txt" ),
+    ResetFile( 1 );
+
+Vars:
+    intrabarpersist sPV( 0 ),        { somma prezzo tipico * volume }
+    intrabarpersist sPV2( 0 ),       { somma prezzo tipico^2 * volume }
+    intrabarpersist sVol( 0 ),
+    intrabarpersist sVwap( 0 ),
+    intrabarpersist sigma( 0 ),
+    intrabarpersist inSess( false ),
+    intrabarpersist armed( 0 ),      { 0 = nessun setup, 1 = short, -1 = long }
+    intrabarpersist entryPx( 0 ),
+    intrabarpersist tgtPx( 0 ),
+    intrabarpersist stopPx( 0 ),
+    intrabarpersist sigAtEntry( 0 ),
+    { conteggi del giorno }
+    intrabarpersist nSetup( 0 ),
+    intrabarpersist nWin( 0 ),
+    intrabarpersist nLoss( 0 ),
+    intrabarpersist nOpen( 0 ),
+    { totali }
+    intrabarpersist tSetup( 0 ),
+    intrabarpersist tWin( 0 ),
+    intrabarpersist tLoss( 0 ),
+    intrabarpersist tOpen( 0 ),
+    intrabarpersist tDays( 0 ),
+    intrabarpersist sumTgtPts( 0 ),
+    intrabarpersist sumStopPts( 0 ),
+    intrabarpersist sumSdAtEntry( 0 ),
+    intrabarpersist canArm( false ),   { il prezzo e' rientrato nella banda? }
+    intrabarpersist nBars( 0 ),
+    intrabarpersist firstBar( true ),
+    tp( 0 ), vBar( 0 ), vrc( 0 ), nullWR( 0 ), obsWR( 0 );
+    { nomi evitati perche' GIA' DEFINITI in PowerLanguage:
+      V = alias di Volume · Var1 = variabile built-in · VWAP = funzione }
+
+if firstBar then begin
+    firstBar = false;
+    if ShowLog = 1 and ResetFile = 1 then FileDelete( LogPath );
+    if ShowLog = 1 then begin
+        Print( File(LogPath), "VWAPFADE symbol=", Tag,
+               " EntrySD=", EntrySD:3:2, " StopSD=", StopSD:3:2,
+               " minmove=", MinMove:5:0, " pricescale=", PriceScale:6:0,
+               " bigpointvalue=", BigPointValue:8:2 );
+        Print( File(LogPath),
+               "data        setup  verso_vwap  verso_stop  aperti" );
+    end;
+end;
+
+{ ===== NUOVA SESSIONE ===== }
+if Time >= SessStart and Time[1] < SessStart then begin
+    if tDays > 0 or nSetup > 0 then begin
+        { chiude il giorno precedente }
+        if ShowLog = 1 then
+            Print( File(LogPath), Date[1]:8:0, "  ", nSetup:5:0,
+                   "  ", nWin:10:0, "  ", nLoss:10:0, "  ", nOpen:6:0 );
+    end;
+    sPV = 0; sPV2 = 0; sVol = 0; sVwap = 0; sigma = 0;
+    armed = 0; canArm = false; nBars = 0;
+    nSetup = 0; nWin = 0; nLoss = 0; nOpen = 0;
+    tDays = tDays + 1;
+    inSess = true;
+end;
+
+if Time > SessEnd then inSess = false;
+
+if inSess then begin
+
+    { ----- VWAP e sigma pesata per volume ----- }
+    vBar = Volume;
+    if vBar <= 0 then vBar = Ticks;
+    tp = ( High + Low + Close ) / 3;
+    sPV  = sPV  + tp * vBar;
+    sPV2 = sPV2 + tp * tp * vBar;
+    sVol = sVol + vBar;
+    if sVol > 0 then begin
+        sVwap = sPV / sVol;
+        vrc = sPV2 / sVol - sVwap * sVwap;
+        if vrc > 0 then sigma = SquareRoot( vrc ) else sigma = 0;
+    end;
+
+    { ----- risoluzione del setup aperto: primo tocco ----- }
+    if armed = 1 then begin                      { fade short, torna giu' }
+        if Low <= tgtPx then begin
+            nWin = nWin + 1; tWin = tWin + 1; armed = 0;
+        end
+        else if High >= stopPx then begin
+            nLoss = nLoss + 1; tLoss = tLoss + 1; armed = 0;
+        end;
+    end
+    else if armed = -1 then begin                { fade long, torna su' }
+        if High >= tgtPx then begin
+            nWin = nWin + 1; tWin = tWin + 1; armed = 0;
+        end
+        else if Low <= stopPx then begin
+            nLoss = nLoss + 1; tLoss = tLoss + 1; armed = 0;
+        end;
+    end;
+
+    nBars = nBars + 1;
+
+    { ----- RIARMO: il prezzo deve essere RIENTRATO nella banda -----
+      Senza questo, dentro un trend il setup si riapre a ogni barra sempre
+      piu' lontano dal VWAP, con lo stop sempre piu' vicino: era il difetto
+      del run del 17/10, che dava ingressi a 2,06 sigma invece che a 1,00
+      e un R:R realizzato di 4,62 invece di 0,67. }
+    if armed = 0 and sigma > 0
+       and AbsValue( Close - sVwap ) < EntrySD * sigma then canArm = true;
+
+    { ----- nuovo setup: prima chiusura oltre la banda dopo un rientro ----- }
+    if armed = 0 and canArm and nBars >= MinBars and sigma > 0
+       and ( MinSigmaPts = 0 or sigma >= MinSigmaPts ) then begin
+
+        if Close > sVwap + EntrySD * sigma then begin
+            armed = 1; entryPx = Close; sigAtEntry = sigma;
+            tgtPx  = sVwap;
+            stopPx = sVwap + StopSD * sigma;
+            canArm = false;
+            nSetup = nSetup + 1; tSetup = tSetup + 1;
+            sumTgtPts  = sumTgtPts  + ( entryPx - tgtPx );
+            sumStopPts = sumStopPts + ( stopPx - entryPx );
+            if sigma > 0 then sumSdAtEntry = sumSdAtEntry + ( entryPx - sVwap ) / sigma;
+        end
+        else if Close < sVwap - EntrySD * sigma then begin
+            armed = -1; entryPx = Close; sigAtEntry = sigma;
+            tgtPx  = sVwap;
+            stopPx = sVwap - StopSD * sigma;
+            canArm = false;
+            nSetup = nSetup + 1; tSetup = tSetup + 1;
+            sumTgtPts  = sumTgtPts  + ( tgtPx - entryPx );
+            sumStopPts = sumStopPts + ( entryPx - stopPx );
+            if sigma > 0 then sumSdAtEntry = sumSdAtEntry + ( sVwap - entryPx ) / sigma;
+        end;
+    end;
+end
+else begin
+    { fine sessione: quello che resta aperto si conta come NON risolto }
+    if armed <> 0 then begin
+        nOpen = nOpen + 1; tOpen = tOpen + 1; armed = 0;
+    end;
+end;
+
+{ ===== RIEPILOGO sull'ultima barra ===== }
+if ShowLog = 1 and LastBarOnChart then begin
+    Print( File(LogPath), "" );
+    Print( File(LogPath), "=== TOTALI ===" );
+    Print( File(LogPath), "giorni            ", tDays:8:0 );
+    Print( File(LogPath), "setup             ", tSetup:8:0 );
+    if tDays > 0 then
+        Print( File(LogPath), "setup/giorno      ", (tSetup/tDays):8:2,
+               "   <- serve >= 2,0" );
+    Print( File(LogPath), "verso il VWAP     ", tWin:8:0 );
+    Print( File(LogPath), "verso lo stop     ", tLoss:8:0 );
+    Print( File(LogPath), "non risolti a EOD ", tOpen:8:0 );
+    if tWin + tLoss > 0 and tSetup > 0 then begin
+        obsWR  = 100 * tWin / ( tWin + tLoss );
+        { IL CASO VA CALCOLATO SULLA GEOMETRIA REALIZZATA, NON SU QUELLA DI PROGETTO.
+          Entrando alla chiusura della barra che rompe la banda si sfora: l'ingresso
+          medio cade a ~1,4 sigma invece che a 1,0, e il caso scende dal 60% al 44%.
+          Confrontare col 60% era l'errore del run del 17/10, che faceva sembrare
+          un -15,47 pp quello che e un +0,41. }
+        nullWR = 100 * ( StopSD - sumSdAtEntry / tSetup ) / StopSD;
+        Print( File(LogPath), "WR sui risolti    ", obsWR:8:2, "%" );
+        Print( File(LogPath), "WR del caso       ", nullWR:8:2,
+               "%  (sulla geometria REALIZZATA)" );
+        Print( File(LogPath), "ECCESSO SUL CASO  ", (obsWR - nullWR):8:2,
+               " pp   <- serve >= +6,0" );
+    end;
+    if tSetup > 0 then begin
+        Print( File(LogPath), "dist. media target", (sumTgtPts/tSetup):8:2, " punti" );
+        Print( File(LogPath), "dist. media stop  ", (sumStopPts/tSetup):8:2, " punti" );
+        if sumStopPts > 0 then
+            Print( File(LogPath), "R:R realizzato    ", (sumTgtPts/sumStopPts):8:3,
+                   "   <- serve 0,5-1,0" );
+        Print( File(LogPath), "sigma all'ingresso", (sumSdAtEntry/tSetup):8:3,
+               "   <- DEVE essere ~1,00: se e' piu' alto il riarmo e' rotto" );
+    end;
+end;
+
+Plot1( sVwap, "VWAP" );
+Plot2( sVwap + EntrySD * sigma, "Entry+" );
+Plot3( sVwap - EntrySD * sigma, "Entry-" );
+Plot4( sVwap + StopSD  * sigma, "Stop+" );
+Plot5( sVwap - StopSD  * sigma, "Stop-" );

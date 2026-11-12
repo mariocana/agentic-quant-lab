@@ -1,0 +1,61 @@
+### macOS
+# Finder metadata
+.DS_Store
+
+# Thumbnails
+._*
+
+# Custom folder icons
+Icon
+
+
+# Volume root files
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Claude Code: si versionano solo agenti e skill di /lab, il resto e' locale
+.claude/*
+!.claude/agents/
+!.claude/skills/
+### Materiale corso MultiCharts: binari pesanti (video, zip, installer)
+mc/**/*.mp4
+mc/**/*.mov
+mc/**/*.zip
+mc/**/*.exe
+mc/*.zip
+protocollo/9.TheBridge/DATA/
+
+# Video dei corsi (troppo grandi per GitHub)
+*.mp4
+*.mov
+
+### Python
+__pycache__/
+*.py[cod]
+.venv/
+.ipynb_checkpoints/
+.pytest_cache/
+
+.idea/
+# archivi e dati pesanti
+*.zip
+**/DATA/
+
+# slide estratte dai video del corso (si rigenerano con mc/docs/estrai_slide.sh)
+protocollo/_slide/
+
+# lanciatore del Monte Carlo del corso: openpyxl installato localmente
+
+docs/colab_corso/libs/
+
+# /lab: giudizi in attesa di verbale
+strategies/*/verdicts/*.pending.json
+
+# cache del motore
+motore/.cache/
+__pycache__/
