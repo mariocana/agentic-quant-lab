@@ -1,0 +1,30 @@
+[project]
+name = "hyperliquid-bridge"
+version = "0.1.0"
+description = "Execution, risk and journal on Hyperliquid: the connector a MultiCharts bridge will drive. No strategy lives here."
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.7",
+    "pyyaml>=6.0",
+    "hyperliquid-python-sdk>=0.10",
+    "eth-account>=0.10",
+    "python-dotenv>=1.0",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+hlbridge = "hlbridge.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["hlbridge"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

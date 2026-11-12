@@ -1,0 +1,199 @@
+"""The ledger is what makes the live path safe: it decides which positions the desk
+owns. These tests cover the two failure modes that cost money — forgetting a
+position we opened, and adopting one we did not."""
+from datetime import datetime, timedelta, timezone
+
+import pytest
+
+from hlbridge.execution.ledger import PositionLedger
+from hlbridge.schemas import AccountState, Fill, OrderIntent, Position
+
+
+@pytest.fixture
+def ledger(tmp_path):
+    return PositionLedger(tmp_path / "ledger.json")
+
+
+def intent(asset="BTC", side="buy", usd=500.0, strategy="reversal_v1", horizon=120, reduce_only=False):
+    return OrderIntent(asset=asset, side=side, notional_usd=usd, reduce_only=reduce_only,
+                       strategy_id=strategy, horizon_hours=horizon, reason="t")
+
+
+def fill(i: OrderIntent, stop_oid=None):
+    return Fill(intent_id=i.id, asset=i.asset, side=i.side, requested_usd=i.notional_usd,
+                filled_usd=i.notional_usd, decision_px=100.0, fill_px=100.0, fee_usd=0.2,
+                partial=False, exchange_oid="999", stop_oid=stop_oid)
+
+
+def position(asset="BTC", size=5.0):
+    return Position(asset=asset, notional_usd=size * 100, size=size, entry_px=100.0,
+                    mark_px=100.0, unrealized_pnl_usd=0.0)
+
+
+def test_exchange_position_gains_its_context(ledger):
+    i = intent()
+    ledger.record(fill(i, stop_oid="42"), i, cloid="0xabc")
+    p = ledger.enrich([position()])[0]
+    assert p.managed and p.strategy_id == "reversal_v1" and p.horizon_hours == 120
+    assert p.opened_at is not None and ledger.stop_oid("BTC") == "42"
+
+
+def test_unknown_position_is_not_adopted(ledger):
+    """Opened by hand, or by a desk whose ledger was lost. Either way: not ours."""
+    p = ledger.enrich([position("ETH")])[0]
+    assert p.managed is False and p.strategy_id is None and p.opened_at is None
+
+
+def test_adding_to_a_position_does_not_restart_its_clock(ledger):
+    i = intent()
+    ledger.record(fill(i), i, cloid="0xaaa")
+    first = ledger.rows["BTC"]["opened_at"]
+    ledger.record(fill(intent(usd=100.0)), intent(usd=100.0), cloid="0xbbb")
+    assert ledger.rows["BTC"]["opened_at"] == first, "a top-up must not reset the time stop"
+    assert ledger.rows["BTC"]["cloids"] == ["0xaaa", "0xbbb"]
+
+
+def test_the_clock_starts_when_the_fill_happened_not_when_we_noticed(ledger):
+    """A maker order rests on the book and its fill is only picked up by the next
+    cycle's reconcile. Stamping `opened_at` at that moment started the time stop a
+    whole cycle late: on testnet five positions filled on three different days all
+    reported the same opened_at to the second — the instant one reconcile folded
+    them in — and a position opened on the 8th claimed to be 24h younger than it was."""
+    i = intent()
+    filled_at = datetime.now(timezone.utc) - timedelta(hours=20)
+    ledger.record(fill(i).model_copy(update={"created_at": filled_at}), i, cloid="0xabc")
+    assert ledger.rows["BTC"]["opened_at"] == filled_at.isoformat()
+    assert ledger.enrich([position()])[0].opened_at == filled_at
+
+
+def test_reconcile_drops_what_the_exchange_closed(ledger):
+    for a in ("BTC", "ETH"):
+        i = intent(asset=a)
+        ledger.record(fill(i), i)
+    assert ledger.reconcile({"BTC"}) == ["ETH"]
+    assert ledger.enrich([position("ETH")])[0].managed is False
+
+
+def test_a_reopened_asset_starts_a_new_clock(ledger):
+    i = intent()
+    ledger.record(fill(i), i)
+    old = ledger.rows["BTC"]["opened_at"]
+    ledger.forget("BTC")
+    ledger.record(fill(i), i)
+    assert ledger.rows["BTC"]["opened_at"] >= old
+    assert ledger.enrich([position()])[0].managed
+
+
+def test_survives_a_restart(tmp_path):
+    path = tmp_path / "l.json"
+    i = intent()
+    PositionLedger(path).record(fill(i), i, cloid="0xabc")
+    assert PositionLedger(path).enrich([position()])[0].strategy_id == "reversal_v1"
+
+
+# ---- what the rest of the desk does with it ---------------------------------
+
+def _account(positions):
+    return AccountState(equity_usd=10_000, margin_used_usd=0, positions=positions)
+
+
+def test_spot_is_not_margin_unless_declared():
+    """A Unified account lets spot USDC back perp margin and the app shows the sum.
+    The API never says which mode the account is in, so the desk is told — guessing
+    would mean sizing every limit off a number that might not be collateral."""
+    from unittest.mock import patch
+
+    from hlbridge.data.hl_market import HLMarket
+
+    empty_perps = {"marginSummary": {"accountValue": "0.0", "totalMarginUsed": "0.0"}, "assetPositions": []}
+    m = HLMarket("https://api.hyperliquid-testnet.xyz")
+    with patch.object(m.info, "user_state", return_value=empty_perps), \
+         patch.object(m, "spot_usdc", return_value=999.0):
+        classic = m.account_state("0xabc", unified_collateral=False)
+        unified = m.account_state("0xabc", unified_collateral=True)
+
+    assert classic.equity_usd == 0.0 and classic.spot_usdc == 999.0, "spot must not be sized against"
+    assert unified.equity_usd == 999.0
+
+
+def test_a_resting_order_that_filled_is_ours_before_it_is_booked(ledger):
+    """execute() returns None for an order that rests; the fill can land before the
+    next reconcile(). In that window the position has no row yet — but calling it
+    unmanaged would make the desk disown its own trade and warn about it."""
+    i = intent(asset="SUI")
+    ledger.record_sent(i, cloid="0xaaa", oid="1")
+    p = ledger.enrich([position("SUI")])[0]
+    assert p.managed and p.strategy_id == "reversal_v1"
+    assert "SUI" not in ledger.rows, "still not booked, just recognised"
+
+
+def test_truly_foreign_positions_stay_unmanaged(ledger):
+    ledger.record_sent(intent(asset="SUI"), cloid="0xaaa", oid="1")
+    p = ledger.enrich([position("DOGE")])[0]
+    assert p.managed is False
+
+
+def test_two_ledgers_on_one_file_do_not_erase_each_other(tmp_path):
+    """The dashboard, a cycle and a script can each hold a ledger. A whole-file
+    write from one erased what another had just recorded — eight positions lost
+    their context that way in a single evening."""
+    path = tmp_path / "l.json"
+    ui, script = PositionLedger(path), PositionLedger(path)
+
+    ui.record_sent(intent(asset="SUI"), cloid="0xui", oid="1")
+    script.record_sent(intent(asset="BTC"), cloid="0xscript", oid="2")
+
+    fresh = PositionLedger(path)
+    assert set(fresh.pending) == {"0xui", "0xscript"}, "a writer dropped the other's order"
+
+
+def test_the_file_is_never_left_half_written(tmp_path):
+    import json
+
+    path = tmp_path / "l.json"
+    led = PositionLedger(path)
+    for n in range(20):
+        led.record_sent(intent(asset=f"A{n}"), cloid=f"0x{n:02d}", oid=str(n))
+        json.loads(path.read_text())            # readable after every single write
+    assert len(PositionLedger(path).pending) == 20
+
+
+def test_every_order_the_desk_sends_carries_its_context():
+    """Orders sent outside execute() — the exchange-side stop, and flatten_all —
+    used to go out with no cloid and no ledger row. Their fills then came back as
+    "a fill this desk did not send", so the desk disowned trades it had made
+    itself: eight of them after one Close all positions."""
+    import ast
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parent.parent / "hlbridge" / "execution" / "hyperliquid.py").read_text()
+    tree = ast.parse(src)
+    senders = {"order", "market_close", "market_open"}
+
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.FunctionDef):
+            continue
+        body = ast.dump(node)
+        sends = any(f"attr='{m}'" in body for m in senders)
+        if sends and node.name != "cancel_stale_orders":
+            assert "cloid" in body, f"{node.name}() sends an order without a cloid"
+            assert "record_sent" in body or "_place_stop" in body, \
+                f"{node.name}() sends an order without recording it in the ledger"
+
+
+def test_flatten_cancels_before_it_closes():
+    """A resting order keeps filling while the close is in flight: the position
+    moves under it and the exchange rejects with "reduce only order would increase
+    position". Five of seven closes failed that way. Triggers go too — a stop left
+    behind guards a position that no longer exists."""
+    import ast
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parent.parent / "hlbridge" / "execution" / "hyperliquid.py").read_text()
+    fn = next(n for n in ast.walk(ast.parse(src))
+              if isinstance(n, ast.FunctionDef) and n.name == "flatten_all")
+    body = ast.dump(fn)
+    assert "cancel_orders" in body, "flatten_all must cancel resting orders first"
+    cancel_at = body.index("cancel_orders")
+    close_at = body.index("market_close")
+    assert cancel_at < close_at, "cancelling has to happen before closing, not after"

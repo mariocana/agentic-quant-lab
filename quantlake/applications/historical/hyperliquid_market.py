@@ -1,4 +1,4 @@
-"""Pull the trading desk's hourly market samples into bronze.
+"""Pull the Hyperliquid bridge's hourly market samples into bronze.
 
 Copies every day file the desk has and we don't (or that grew since: today's file
 grows every hour), then merges them into bronze/hyperliquid_market. Safe to run

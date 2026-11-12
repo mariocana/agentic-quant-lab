@@ -231,7 +231,7 @@ L'ultima riga è il lavoro sui dati che questa proposta richiede davvero.
 | Misura | `multicharts/motore/misura.py` | nuova |
 | `quantlake/` | | resta, ed è il centro. Serve un backup (punto 3 della scaletta) |
 | `alpha-quant/`, `/quant-factory`, agenti `factory-*` | | tolti il 12/11/2026: la fabbrica Hyperliquid è chiusa. Restano nella storia di git, fino al commit `7cc21f9` |
-| `trading-desk/` | | resta, fermo: sarà l'esecutore del bridge MultiCharts → Hyperliquid. Le cinque correzioni dell'audit si fanno prima di aprire quella via |
+| `hyperliquid-bridge/` | | era `trading-desk/`: tolte strategie, ciclo e shadow, resta il connettore. Fermo finché il bridge MultiCharts → Hyperliquid non c'è; cosa manca è nel suo README |
 
 ## Il confine con `/lab`
 

@@ -2,13 +2,13 @@
 
     Dati            quantlake's tables and charts (its own React app, fe/web)
     COT, Equity     quantlake's desks, Flask apps mounted under /cot and /equity
-    Trading desk    the deployed desk (Railway), proxied under /desk/
+    Hyperliquid bridge  the deployed connector (Railway), proxied under /desk/
     Laboratorio     the ideas of the research desk and their registry, under /lab/
 
 Everything that was a portal of its own is a tab here: the React shell asks
 /api/apps which tabs exist and keeps each one mounted once opened.
 
-The trading desk is reached through this server, not by the browser directly:
+The bridge is reached through this server, not by the browser directly:
 the desk sits behind a password, and a browser does not show a password prompt
 inside a frame from another site. The password is added here, server side, from
 quantlake/.env (DESK_URL, DESK_PASSWORD). This server binds 127.0.0.1 only:
@@ -41,7 +41,7 @@ STAGING = LAB / "ricerca" / "idee"
 # quantlake's API (/api/...) with COT and Equity already mounted as tabs
 from quantlake.dashboard.server import _mounted, app  # noqa: E402
 
-# ── Trading desk, proxied ────────────────────────────────────────────────────
+# ── Hyperliquid bridge, proxied ────────────────────────────────────────────────────
 _env = dotenv_values(LAB / "quantlake" / ".env")
 DESK_URL = (os.getenv("DESK_URL") or _env.get("DESK_URL") or "").rstrip("/")
 _pw = os.getenv("DESK_PASSWORD") or _env.get("DESK_PASSWORD") or ""
@@ -68,7 +68,7 @@ async def desk_proxy(path: str, request: Request):
 
 
 if DESK_URL:
-    _mounted.insert(0, {"key": "desk", "label": "Trading desk", "path": "/desk/"})
+    _mounted.insert(0, {"key": "desk", "label": "Hyperliquid bridge", "path": "/desk/"})
 
 
 # ── Laboratorio: the research desk's ideas and registry ─────────────────────────

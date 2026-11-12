@@ -1,4 +1,4 @@
-"""Hyperliquid market state, as the trading desk recorded it.
+"""Hyperliquid market state, as the Hyperliquid bridge (formerly trading-desk) recorded it.
 
 The desk samples `metaAndAssetCtxs` every hour for the main dex and every HIP-3
 dex, and serves one gzip file per UTC day at /api/market/{day}. It is the only

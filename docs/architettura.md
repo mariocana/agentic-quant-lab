@@ -11,7 +11,7 @@ Lo schema completo, con le tre vie di esecuzione, è in [desk_ricerca.md](desk_r
 | `quantlake/` | i dati: connettori, bronze → silver → gold, lo storico a 1 minuto di MultiCharts | la misura, `motore`, le dashboard |
 | `ricerca/` | il desk di ricerca: perimetro, registro delle idee, comandi | la skill `/ricerca` |
 | `multicharts/` | strategie, SPEC, `motore`, `lab.py`, pipeline prop e live, bridge MT5 | la skill `/lab` |
-| `trading-desk/` | il desk su Hyperliquid, fermo: esecutore del futuro bridge MultiCharts → Hyperliquid | Railway |
+| `hyperliquid-bridge/` | il connettore verso Hyperliquid: esecuzione, rischio, journal. Nessuna strategia. Fermo finché il bridge da MultiCharts non c'è | Railway |
 | `fe/` | una pagina sola: dati, trading desk, COT, Equity, laboratorio | il browser |
 
 ## La catena
@@ -21,7 +21,7 @@ Lo schema completo, con le tre vie di esecuzione, è in [desk_ricerca.md](desk_r
 2. **Validazione** (`/lab`, agenti `lab-coder` e `lab-judge`): SPEC pre-registrata, codice
    EasyLanguage, fasi della pipeline giudicate da `multicharts/docs/lab.py`.
 3. **Esecuzione**: MultiCharts sul VPS, verso il broker futures, il bridge MT5 e, più avanti,
-   il bridge verso `trading-desk/`.
+   il bridge verso `hyperliquid-bridge/`.
 
 ## Perché i confini cadono qui
 
@@ -46,7 +46,7 @@ report o un verdetto. È una regola che gli agenti seguono, non una sandbox.
 **Ogni numero preso da un paper porta la pagina.** È la difesa contro un modello che
 attribuisce a un autore cose che l'autore non ha scritto.
 
-**`trading-desk/` non importa niente dal resto.** Tiene la chiave dell'API wallet (nelle
+**`hyperliquid-bridge/` non importa niente dal resto.** Tiene la chiave dell'API wallet (nelle
 variabili di Railway, mai nel repository) e deve poter girare con il minimo installato. Un
 test sui confini di import lo verifica.
 
@@ -77,5 +77,7 @@ git fino al commit `7cc21f9`, l'audit in [audit_2026-11-12.md](audit_2026-11-12.
 
 ## Il deploy
 
-Railway costruisce da `trading-desk/` (Root Directory) e guarda solo `trading-desk/**`
-(watch paths): un commit nel resto del repository non fa ripartire il servizio.
+Railway deve costruire da `hyperliquid-bridge/` (Root Directory) e guardare solo
+`hyperliquid-bridge/**` (watch paths): un commit nel resto del repository non fa ripartire il
+servizio. La cartella si chiamava `trading-desk/` fino al 12/11/2026: le due impostazioni vanno
+cambiate a mano su Railway.

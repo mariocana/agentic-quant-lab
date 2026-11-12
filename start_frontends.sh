@@ -2,7 +2,7 @@
 # Avvia la pagina unica del laboratorio e la apre nel browser: http://127.0.0.1:8000
 #
 #   Dati, COT, Equity   quantlake (le sue tabelle e i suoi desk)
-#   Trading desk        il desk su Railway, attraverso il server (password presa da quantlake/.env)
+#   Hyperliquid bridge  il connettore su Railway, attraverso il server (password presa da quantlake/.env)
 #   Laboratorio         registro delle prove e idee in fabbrica
 #
 # Uso:

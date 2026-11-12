@@ -1,5 +1,5 @@
 // Top-level tabs of the lab's single page: the data lake (this app) and every other
-// app the server mounts (GET /api/apps): trading desk, COT, Equity, Laboratorio.
+// app the server mounts (GET /api/apps): Hyperliquid bridge, COT, Equity, Laboratorio.
 // The active tab lives in the URL hash.
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
