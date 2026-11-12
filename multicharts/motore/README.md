@@ -19,7 +19,11 @@ MC da TradeStation, ora di Chicago, sessione 17-16 senza pause. Le barre da 5/15
 costruiscono da quelle a 1 minuto, che restano dentro ogni barra per il Bar Magnifier. Nessun dato
 nel repo: la cache sta in `motore/.cache/` (ignorata).
 
-**Gold manca**: serve l'export `GC_1min.csv` con `ExportBars`, stessa procedura di NQ.
+**Export** con l'indicatore `motore/ExportBars.txt` (copia di quello di quantlake, con le regole in
+testa): storico `<SIMBOLO>_1min.csv` dal 2016, riesportato a ogni rollover, e recente
+`<SIMBOLO>_recent.csv` dal workspace sempre aperto, con "From date" 2 giorni prima della fine dello
+storico. Il motore li unisce e si ferma se non combaciano (rollover) o se fra i due c'e' un buco.
+Simboli: @NQ, @ES (storico fino all'08/10/2026), @GC e @CL (storico da fare). Time Zone **Local**.
 
 ## Semantica (MC Classic, IOG spento, Bar Magnifier 1 minuto)
 
