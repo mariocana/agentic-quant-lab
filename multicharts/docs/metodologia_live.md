@@ -3,6 +3,10 @@
 **Stato:** congelata il 15/10/2026. **Da riesumare quando:** i payout iniziano e il conto si
 forma. Fino a quel momento **non si applica a nessuna candidata**.
 
+**Bozza della pipeline (12/11/2026):** [pipeline_live.md](pipeline_live.md), dalla SPEC al live,
+con il conto minimo a $100.000. Non in vigore: i criteri qui sotto restano la fonte finche' Mario
+non la conferma.
+
 **Perche esiste questo file:** il corso separa i due mondi in modo esplicito e noi li avevamo
 mescolati. Vedi [prop_vs_live.md](prop_vs_live.md). Questi criteri non sono sbagliati: sono
 **fuori tempo**. Applicati a una eval uccidono candidate che la eval accetterebbe.
