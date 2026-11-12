@@ -8,6 +8,15 @@
     factory promote <id>             copy into trading-desk as a shadow strategy
     factory status                   every staged idea and where it stands
 
+The research desk (docs/desk_ricerca.md) stops at the dossier and uses three more:
+
+    factory idea <id> --title T --door user|researcher [--parent ID]
+                                     the idea exists: a folder and a line in the registry
+    factory measure <id>             record staging/<id>/misura.json (written by
+                                     `python3 -m motore.misura ... --json`): a counted look
+    factory kill <id> --step critic|measure|user --reason R
+                                     close the idea; it stays in the registry
+
 The information barrier: `evaluate` prints only PASS/FAIL and the names of the
 failing checks. The numbers go to staging/<id>/validation.json, which the coder
 is never pointed at: a coder that sees a Sharpe tunes to it, and every tune is a
@@ -80,6 +89,35 @@ def cmd_new(a):
     d.mkdir(parents=True)
     (d / "hypothesis.md").write_text(HYPOTHESIS_TEMPLATE.format(id=a.id))
     print(f"created {d.relative_to(LAB)}/hypothesis.md")
+
+
+def cmd_idea(a):
+    from alphaquant.registry import Registry
+    d = _dir(a.id)
+    if d.exists():
+        sys.exit(f"{d} exists already")
+    Registry().register_idea(a.id, a.title, a.door, a.parent)      # refuses before anything is written
+    d.mkdir(parents=True)
+    (d / "hypothesis.md").write_text(HYPOTHESIS_TEMPLATE.format(id=a.id))
+    print(f"idea {a.id} registered ({a.door}); created factory/staging/{a.id}/hypothesis.md")
+
+
+def cmd_measure(a):
+    from alphaquant.registry import Registry
+    f = _dir(a.id) / "misura.json"
+    if not f.exists():
+        sys.exit(f"factory/staging/{a.id}/misura.json is missing: run the measure with --json first")
+    reg = Registry()
+    reg.record_measure(a.id, json.loads(f.read_text()))
+    print(f"measure of {a.id} recorded; ideas measured so far: {reg.ideas_measured()}")
+
+
+def cmd_kill(a):
+    from alphaquant.registry import Registry
+    Registry().kill_idea(a.id, a.step, a.reason)
+    if _dir(a.id).exists():
+        (_dir(a.id) / "KILLED").write_text(f"{a.step}: {a.reason}\n")
+    print(f"idea {a.id} killed at {a.step}")
 
 
 def cmd_check(a):
@@ -189,6 +227,7 @@ def cmd_status(a):
                 extra += f" {f.split('.')[0]}={'PASS' if json.loads((d / f).read_text())['passed'] else 'FAIL'}"
         print(f"{d.name:30} {stage:10}{extra}")
     print(f"\nk (specs judged on validation): {reg.trials()}")
+    print(f"ideas: {len(reg.ideas())} registered, {reg.ideas_measured()} measured, {len(reg.killed())} killed")
 
 
 def main():
@@ -203,6 +242,20 @@ def main():
     p.add_argument("id")
     p.add_argument("--yes", action="store_true")
     p.set_defaults(fn=cmd_holdout)
+    p = sub.add_parser("idea")
+    p.add_argument("id")
+    p.add_argument("--title", required=True)
+    p.add_argument("--door", required=True, choices=("user", "researcher"))
+    p.add_argument("--parent")
+    p.set_defaults(fn=cmd_idea)
+    p = sub.add_parser("measure")
+    p.add_argument("id")
+    p.set_defaults(fn=cmd_measure)
+    p = sub.add_parser("kill")
+    p.add_argument("id")
+    p.add_argument("--step", required=True, choices=("critic", "measure", "user"))
+    p.add_argument("--reason", required=True)
+    p.set_defaults(fn=cmd_kill)
     sub.add_parser("status").set_defaults(fn=cmd_status)
     a = ap.parse_args()
     a.fn(a)

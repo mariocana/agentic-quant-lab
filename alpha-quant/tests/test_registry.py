@@ -65,3 +65,56 @@ def test_any_rewrite_of_the_past_is_caught(tmp_path, tamper):
         r.verify()
     with pytest.raises(RegistryError):
         r.register_spec({**SPEC, "params": {"lookback": 20}})   # and nothing is appended to it
+
+
+# ---- the research desk: ideas ---------------------------------------------------
+
+def test_an_idea_is_counted_from_birth_and_only_once(tmp_path):
+    r = Registry(tmp_path / "t.jsonl")
+    r.register_idea("fine_mese", "Flussi di fine mese sui futures su indice", "user")
+    assert r.ideas() == ["fine_mese"]
+    with pytest.raises(RegistryError):
+        r.register_idea("fine_mese", "la stessa, con altre parole", "researcher")
+    r.verify()
+
+
+def test_a_variant_names_the_idea_it_varies(tmp_path):
+    r = Registry(tmp_path / "t.jsonl")
+    with pytest.raises(RegistryError):
+        r.register_idea("fine_mese_v2", "variante", "user", parent="fine_mese")
+    r.register_idea("fine_mese", "madre", "user")
+    r.register_idea("fine_mese_v2", "variante", "user", parent="fine_mese")
+    assert r.ideas() == ["fine_mese", "fine_mese_v2"]
+
+
+def test_a_killed_idea_stays_and_cannot_be_measured_or_killed_again(tmp_path):
+    r = Registry(tmp_path / "t.jsonl")
+    r.register_idea("a", "idea a", "researcher")
+    r.kill_idea("a", "critic", "nessuno che perde")
+    assert "a" in r.ideas() and r.killed()["a"]["step"] == "critic"
+    with pytest.raises(RegistryError):
+        r.record_measure("a", {"eccesso_pp": 1.0})
+    with pytest.raises(RegistryError):
+        r.kill_idea("a", "user", "di nuovo")
+
+
+def test_every_measured_idea_counts_once_whatever_its_fate(tmp_path):
+    r = Registry(tmp_path / "t.jsonl")
+    for i in ("a", "b", "c"):
+        r.register_idea(i, f"idea {i}", "user")
+    r.record_measure("a", {"eccesso_pp": 2.6})
+    r.record_measure("a", {"eccesso_pp": 2.6})          # rerun after a bug: still one idea
+    r.record_measure("b", {"eccesso_pp": -0.6})
+    r.kill_idea("b", "measure", "sotto soglia")
+    r.kill_idea("c", "critic", "le fonti non lo dicono")
+    assert r.ideas_measured() == 2
+    assert r.trials() == 0                               # ideas do not touch the factory's k
+
+
+def test_door_and_step_are_closed_sets(tmp_path):
+    r = Registry(tmp_path / "t.jsonl")
+    with pytest.raises(ValueError):
+        r.register_idea("a", "idea", "corso")
+    r.register_idea("a", "idea", "user")
+    with pytest.raises(ValueError):
+        r.kill_idea("a", "coder", "no")

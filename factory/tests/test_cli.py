@@ -78,3 +78,44 @@ def test_nothing_is_promoted_without_a_passed_holdout(lab):
 def test_the_staged_class_loads_from_its_file(lab):
     s = cli._strategy("toy_v1", cli._spec("toy_v1"))
     assert s.id == "toy_v1"
+
+
+# ---- the research desk ----------------------------------------------------------
+
+def idea_args(**kw):
+    class A:
+        pass
+    a = A()
+    a.id, a.title, a.door, a.parent, a.step, a.reason = "fine_mese", "Flussi di fine mese", "user", None, None, None
+    for k, v in kw.items():
+        setattr(a, k, v)
+    return a
+
+
+def test_an_idea_gets_a_folder_and_a_line_in_the_registry(lab, tmp_path):
+    from alphaquant.registry import Registry
+    cli.cmd_idea(idea_args())
+    assert (tmp_path / "staging" / "fine_mese" / "hypothesis.md").exists()
+    assert Registry().ideas() == ["fine_mese"]
+    with pytest.raises(SystemExit, match="exists already"):
+        cli.cmd_idea(idea_args())
+
+
+def test_a_measure_is_recorded_from_its_file_and_counted(lab, tmp_path):
+    from alphaquant.registry import Registry
+    cli.cmd_idea(idea_args())
+    with pytest.raises(SystemExit, match="misura.json"):
+        cli.cmd_measure(idea_args())
+    (tmp_path / "staging" / "fine_mese" / "misura.json").write_text(json.dumps({"eccesso_pp": 0.4, "trade": 900}))
+    cli.cmd_measure(idea_args())
+    assert Registry().ideas_measured() == 1
+
+
+def test_a_killed_idea_is_closed_for_good(lab, tmp_path):
+    from alphaquant.registry import Registry, RegistryError
+    cli.cmd_idea(idea_args())
+    cli.cmd_kill(idea_args(step="critic", reason="nessuno che perde"))
+    assert (tmp_path / "staging" / "fine_mese" / "KILLED").read_text().startswith("critic")
+    assert "fine_mese" in Registry().killed()
+    with pytest.raises(RegistryError):
+        cli.cmd_kill(idea_args(step="user", reason="di nuovo"))

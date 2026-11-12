@@ -16,6 +16,13 @@ Entries:
   holdout     the holdout opened for a spec. Written BEFORE the data is served,
               so a second opening is refused even if the first run crashed
   note        anything that changes how a result should be read (a peek, a bug)
+
+The research desk (docs/desk_ricerca.md) adds three, keyed by the idea's id:
+  idea        an idea exists, the moment it is born: who brought it (the user or the
+              researcher) and, for a variant, the idea it varies
+  measure     the preliminary measure was run on it: a look at the data, counted
+  killed      the idea is closed, by the critic, by the measure or by the user. It
+              stays here so it cannot come back in other words
 """
 from __future__ import annotations
 
@@ -105,6 +112,45 @@ class Registry:
 
     def note(self, h: str | None, text: str) -> None:
         self._append("note", {"spec_hash": h, "text": text})
+
+    # ---- the research desk: ideas ------------------------------------------------
+
+    def register_idea(self, idea: str, title: str, door: str, parent: str | None = None) -> None:
+        """An idea is counted from birth, whatever happens to it next."""
+        if door not in ("user", "researcher"):
+            raise ValueError(f"door is 'user' or 'researcher', not {door!r}")
+        if idea in self.ideas():
+            raise RegistryError(f"idea {idea!r} is already registered: a variant is a new idea with parent=")
+        if parent is not None and parent not in self.ideas():
+            raise RegistryError(f"parent {parent!r} is not a registered idea")
+        self._append("idea", {"idea": idea, "title": title, "door": door, "parent": parent})
+
+    def record_measure(self, idea: str, metrics: dict) -> None:
+        self._require_open(idea)
+        self._append("measure", {"idea": idea, "metrics": metrics})
+
+    def kill_idea(self, idea: str, step: str, reason: str) -> None:
+        if step not in ("critic", "measure", "user"):
+            raise ValueError(f"step is 'critic', 'measure' or 'user', not {step!r}")
+        self._require_open(idea)
+        self._append("killed", {"idea": idea, "step": step, "reason": reason})
+
+    def _require_open(self, idea: str) -> None:
+        if idea not in self.ideas():
+            raise RegistryError(f"idea {idea!r} is not registered")
+        if idea in self.killed():
+            raise RegistryError(f"idea {idea!r} was killed: a new attempt is a new idea with parent=")
+
+    def ideas(self) -> list[str]:
+        return [e["idea"] for e in self.entries() if e["kind"] == "idea"]
+
+    def killed(self) -> dict[str, dict]:
+        return {e["idea"]: e for e in self.entries() if e["kind"] == "killed"}
+
+    def ideas_measured(self) -> int:
+        """How many ideas have looked at the data: the number the pipeline's t
+        threshold rises with (pipeline_live.md, fase 2)."""
+        return len({e["idea"] for e in self.entries() if e["kind"] == "measure"})
 
     # ---- what gets read --------------------------------------------------------
 
