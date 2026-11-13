@@ -1,7 +1,7 @@
 # Il laboratorio come desk di ricerca (12/11/2026)
 
-**Stato: costruito il 12/11/2026, mai provato su un'idea vera.** Skill `/ricerca`, tre agenti,
-misura, registro e perimetro ci sono e i test passano; manca il giro di prova in fondo. Segue l'[audit del 12/11](audit_2026-11-12.md) e la
+**Stato: costruito il 12/11/2026, provato il 13/11 su quattro idee note.** La misura e il coder
+reggono; il critico no: ha ucciso anche l'unica strategia viva (sezione «Il giro di prova»). Segue l'[audit del 12/11](audit_2026-11-12.md) e la
 decisione di Mario di portare le strategie in live con MultiCharts e la pipeline live di
 multicharts (`pipeline_live.md`, ancora in bozza). L'esecuzione ha tre vie: broker futures, bridge
 MT5 e, se si vuole, bridge verso il desk Hyperliquid.
@@ -263,11 +263,72 @@ Dal 12/11/2026 multicharts sta in questo repository, in `multicharts/`.
 | Chi tiene il conto totale delle idee per la soglia t di `pipeline_live.md` | il registro di qui (`ricerca status`), letto a mano quando `/lab` scrive la SPEC | un conto in `lab.py` |
 | Le idee dei praticanti | alla pari dei paper | solo paper |
 
+## Il giro di prova (12-13/11/2026)
+
+Quattro idee già note, rifatte da zero con gli agenti alla cieca (senza il cimitero, le cartelle
+delle strategie e le misure). Registro a parte, `ricerca/registro/prova_impianto.jsonl`, per non
+contare nel totale idee già guardate. Cartelle in `ricerca/idee/prova_*`.
+
+| idea | esito vero | critico | misura | misura contro il noto |
+|---|---|---|---|---|
+| VWAP Pullback | morta al Gate 2 | **KILL**: 0,5-0,7 trade al giorno, sotto il minimo; $3 al giorno per micro anche con i numeri del corso | non misurata | |
+| NQ First5 | morta al Gate 2 | **KILL**: non testata su futures, nessuna prova dopo il 2021 | **sotto soglia**: eccesso +1,81 pp, 1,3 errori standard, $8,52 al giorno | 1.291 trade, WR 51,43%, media $85,75. Il report MC: 1.291 trade, WR 51,4%, $86,83 |
+| VWAP Fade | morta alla misura | **KILL**: nessuna fonte misura il fade, l'unica evidenza recente va al contrario | **sotto soglia**: eccesso −3,10 pp, −5,1 errori standard | la misura a primo tocco su NQ dava −1,67 pp: stesso segno |
+| DriftPullback | **viva** | **KILL**: fonti non apribili, nessun flusso obbligato, nessuno che perde | **sopra soglia**: +2,62 pp, 3,18 errori standard, $15,05 al giorno | la SPEC: +2,6 pp, t 3,01 |
+
+La misura è stata lanciata anche dopo un KILL, come diagnosi: nel flusso vero un KILL chiude l'idea.
+
+**Cosa ha funzionato.**
+
+- **La misura distingue le tre che ha visto**: due morte sotto soglia, la viva sopra.
+- **Il coder regge.** Da una regola scritta in prosa ha rifatto NQ First5 con lo stesso numero di
+  trade del report MultiCharts, 1.291, e la media a $1 di distanza.
+- **Il ricercatore non abbellisce.** Su tutte e quattro ha scritto da solo che le fonti non
+  avevano pagine verificate e, dove era vero, che non sapeva nominare chi perde.
+- **Il critico ha ucciso VWAP Pullback per la ragione giusta**, con il conto: frequenza sotto
+  il minimo per costruzione.
+
+**Cosa non ha funzionato.**
+
+- **Il critico ha ucciso anche DriftPullback, l'unica viva.** Così com'è uccide tutto: quattro
+  KILL su quattro. Non distingue, quindi oggi non serve.
+- **Le ragioni dicono dove sbaglia.** Applica i filtri dei paper a una strategia di un
+  praticante: «testata su futures», «flusso obbligato», «t ≥ 3 dichiarato». DriftPullback non
+  ne passa nessuno e funziona lo stesso. `prompt_ricerca_strategie.md` lo diceva già il 26/10:
+  i praticanti entrano con un filtro loro, perché l'unica viva viene da lì.
+- **Una fonte che non si può aprire è diventata un KILL.** Il tutorial di DriftPullback sta in
+  `protocollo/`, che non è stato importato nell'unione. Il critico non poteva aprirlo.
+- **Il conto dei costi dipende dalla frequenza attesa**, che prima della misura è una stima:
+  per DriftPullback a 1 segnale al giorno non passava, a 2 sì. Quella vera è 2,7.
+
+**Limiti della prova.**
+
+- Quattro idee. Dice che il critico è troppo severo, non di quanto.
+- Su DriftPullback non era alla cieca fino in fondo: `come_scegliere_un_paper.md`, lettura
+  obbligata, dice che è «l'unica sopravvissuta». Il critico l'ha uccisa lo stesso.
+- Per DriftPullback la misura ha usato la strategia già calibrata nel motore, non una
+  riscritta dal coder: su quell'idea la misura sopra soglia era già nota.
+- Due limiti del motore emersi dai coder: non esegue «alla chiusura di questa barra» (entra
+  all'apertura della dopo), e quando stop e target cadono nello stesso minuto decide con il
+  percorso della barra, non «vince lo stop».
+
+**Cosa cambiare nel critico, da decidere.** Correggerlo guardando queste quattro idee è
+adattarlo a un campione di quattro: va fatto con poche regole e una ragione per ciascuna.
+
+| | proposta | perché |
+|---|---|---|
+| 1 | KILL solo per ragioni dure: fuori perimetro, regola non eseguibile, conto dei costi che non passa nemmeno nel caso favorevole | sono le ragioni che la misura non può smentire |
+| 2 | fonti deboli, nessun flusso obbligato, nessuno che perde: diventano i punti deboli nel dossier, non un KILL | la misura costa minuti e decide meglio; DriftPullback li ha tutti e tre |
+| 3 | un filtro a parte per le strategie dei praticanti | quello dei paper le uccide tutte, e l'unica viva è una di loro |
+| 4 | fonte non apribile = «non verificata», mai KILL da sola | altrimenti decide cosa c'è nel repository, non cosa dice la fonte |
+
+Il costo della proposta: più idee arrivano alla misura, e ogni misura conta nel totale che alza
+la soglia t. Il tetto mensile serve a questo.
+
 ## Cosa manca
 
-1. **Il giro di prova.** Tre idee già morte (per esempio VWAP Fade, ON Reversal, NQ First5) e
-   DriftPullback, rifatte da zero con `/ricerca`: critico e misura devono uccidere le prime e
-   lasciare viva la quarta. Se non distingue quelle quattro, l'impianto non serve. Consuma
-   quattro degli otto posti del mese.
+1. **Correggere il critico** come sopra, e rifare il giro su idee diverse da queste quattro.
 2. **La misura per daily e swing**, il giorno in cui si accendono.
 3. **Il conto delle idee dentro `lab.py`**, se si decide di non leggerlo a mano.
+4. **Due cose nel motore**, se servono: l'ordine «alla chiusura di questa barra» e la regola
+   prudente quando stop e target cadono nello stesso minuto.

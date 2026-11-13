@@ -1,0 +1,30 @@
+{
+  "trade": 1291,
+  "giorni": 1299,
+  "trade_al_giorno": 0.993841416474211,
+  "wr": 0.5143299767621998,
+  "rr": 1.0152736995204807,
+  "null": 0.49621051484864936,
+  "eccesso_pp": 1.811946191355046,
+  "errore_standard_pp": 1.3915358827958222,
+  "errori_standard": 1.3021196318089556,
+  "media_per_trade": 85.74748257164988,
+  "t": 0.9860108890324188,
+  "dollari_al_giorno_per_micro": 8.521939953810623,
+  "strategia": "prova_nq_first5",
+  "simbolo": "NQ",
+  "periodo": [
+    "2020-01-01",
+    "2024-12-31"
+  ],
+  "commissione_per_lato": 7.5,
+  "parametri": {
+    "EMALen": 12,
+    "EntryTime": 835,
+    "ExitTime": 1500,
+    "AllowLongs": true,
+    "AllowShorts": true,
+    "NumContracts": 1
+  },
+  "misurata_il": "2026-11-13"
+}
